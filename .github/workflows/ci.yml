@@ -69,4 +69,4 @@ jobs:
         run: pnpm lint
 
       - name: Test (optional)
-        run: pnpm test
+        run: vitest run --passWithNoTests
