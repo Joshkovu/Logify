@@ -2,12 +2,12 @@
     hooks:
       - id: frontend-lint
         name: Frontend Lint
-        entry: cmd /c "cd logify && pnpm lint"
+        entry: cmd /c "cd logify-frontend && pnpm lint"
         language: system
         pass_filenames: false
 
       - id: frontend-format
         name: Frontend Format
-        entry: cmd /c "cd logify && pnpm format"
+        entry: cmd /c "cd logify-frontend && pnpm format"
         language: system
         pass_filenames: false
