@@ -85,7 +85,7 @@ organizations {
     text id
     text name
     text industry
-    text country
+
     text city
     text address
     text contact_email
