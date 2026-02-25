@@ -32,12 +32,12 @@ repos:
     hooks:
       - id: frontend-lint
         name: Frontend Lint (pnpm)
-        entry: cmd /c "cd logify-frontend && pnpm lint"
+        entry:  "cd logify-frontend && pnpm lint"
         language: system
         pass_filenames: false
 
       - id: frontend-format
         name: Frontend Format (pnpm)
-        entry: cmd /c "cd logify-frontend && pnpm format"
+        entry:  "cd logify-frontend && pnpm format"
         language: system
         pass_filenames: false
