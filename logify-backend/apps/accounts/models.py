@@ -4,9 +4,21 @@ from django.db import models
 
 
 class User(models.Model):
+    STUDENT = "student"
+    WORKPLACE_SUPERVISOR = "workplace_supervisor"
+    ACADEMIC_SUPERVISOR = "academic_supervisor"
+    INTERNSHIP_ADMIN = "internship_admin"
+
+    ROLE_CHOICES = [
+        (STUDENT, "Student"),
+        (WORKPLACE_SUPERVISOR, "Workplace Supervisor"),
+        (ACADEMIC_SUPERVISOR, "Academic Supervisor"),
+        (INTERNSHIP_ADMIN, "Internship Administrator"),
+    ]
+
     email = models.EmailField(unique=True)
     password_hash = models.CharField(max_length=255)
-    role = models.CharField(max_length=50)
+    role = models.CharField(max_length=32, choices=ROLE_CHOICES)
     institution_id = models.CharField(max_length=255, null=True, blank=True)
     programme_id = models.CharField(max_length=255, null=True, blank=True)
     student_registry_id = models.CharField(max_length=255, null=True, blank=True)
@@ -244,9 +256,7 @@ class PlacementStatusHistory(models.Model):
     changed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"{self.placement.internship_title}: {self.from_status} -> {self.to_status}"
-        )
+        return f"{self.placement.internship_title}: {self.from_status} -> {self.to_status}"
 
 
 # placement_contacts {
@@ -417,10 +427,7 @@ class Evaluations(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"Evaluation by {self.evaluator.email} "
-            f"for {self.placement.internship_title}"
-        )
+        return f"Evaluation by {self.evaluator.email} " f"for {self.placement.internship_title}"
 
 
 # evaluation_scores {
