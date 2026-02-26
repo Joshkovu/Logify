@@ -27,6 +27,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = "__all__"
+        exclude = ("password_hash",)
 
 
 class InstitutionsSerializer(serializers.ModelSerializer):
@@ -57,6 +58,7 @@ class RegistrationAttemptsSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationAttempts
         fields = "__all__"
+        exclude = ("otp_hash",)
 
 
 class StaffProfilesSerializer(serializers.ModelSerializer):
