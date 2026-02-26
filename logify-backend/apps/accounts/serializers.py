@@ -1,18 +1,15 @@
 from rest_framework import serializers
 
 from .models import (
-    Departments,
     EvaluationCriteria,
     EvaluationRubrics,
     Evaluations,
     EvaluationScores,
     FinalResults,
-    Institutions,
     InternshipPlacements,
     Organizations,
     PlacementContacts,
     PlacementStatusHistory,
-    Programmes,
     RegistrationAttempts,
     StaffProfiles,
     StudentRegistry,
@@ -56,24 +53,6 @@ class UserSerializer(serializers.ModelSerializer):
         if "password_hash" in data:
             data.pop("password_hash")
         return data
-
-
-class InstitutionsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Institutions
-        fields = "__all__"
-
-
-class DepartmentsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Departments
-        fields = "__all__"
-
-
-class ProgrammesSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Programmes
-        fields = "__all__"
 
 
 class StudentRegistrySerializer(serializers.ModelSerializer):
