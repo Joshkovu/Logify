@@ -26,30 +26,36 @@ from .models import (
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = "__all__"
         exclude = ("password_hash",)
 
-    def validate(self, attrs):
-        """
-        Prevent non-privileged users from modifying sensitive fields on User.
-        """
-        request = self.context.get("request")
-        instance = getattr(self, "instance", None)
-        if request and not request.user.is_staff or instance is None:
-            if "is_staff" in attrs or "is_superuser" in attrs:
-                raise serializers.ValidationError(
-                    "You do not have permission to modify this field."
-                )
+    def validate_role(self, value):
+        allowed_roles = [choice[0] for choice in User.ROLE_CHOICES]
+        if value not in allowed_roles:
+            raise serializers.ValidationError("Invalid role.")
+        return value
 
+    def validate(self, attrs):
+        request = self.context.get("request")
         user = request.user if request else None
-        is_privileged = bool(
-            getattr(user, "is_staff", False) or getattr(user, "is_superuser", False)
-        )
-        if not is_privileged and ("is_staff" in attrs or "is_superuser" in attrs):
-            raise serializers.ValidationError(
-                "You do not have permission to modify this field."
-            )
-        return super().validate(attrs)
+
+        if "role" in attrs:
+            if attrs["role"] in [
+                User.WORKPLACE_SUPERVISOR,
+                User.ACADEMIC_SUPERVISOR,
+                User.INTERNSHIP_ADMIN,
+            ]:
+                if not user or user.role != User.INTERNSHIP_ADMIN:
+                    raise serializers.ValidationError(
+                        "Only internship administrators can assign supervisor or admin roles."
+                    )
+        return attrs
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+
+        if "password_hash" in data:
+            data.pop("password_hash")
+        return data
 
 
 class InstitutionsSerializer(serializers.ModelSerializer):
