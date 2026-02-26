@@ -1,7 +1,7 @@
-from academics.models import Institutions, Programmes
-from accounts.models import User
+from apps.academics.models import Institutions, Programmes
+from apps.accounts.models import User
+from apps.organizations.models import Organizations
 from django.db import models
-from organizations.models import Organizations
 
 # Create your models here.
 # internship_placements {

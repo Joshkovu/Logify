@@ -1,4 +1,4 @@
-from academics.models import Institutions, Programmes
+from apps.academics.models import Institutions, Programmes
 from django.db import models
 
 # Create your models here.
