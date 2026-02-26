@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "apps.accounts",
     "apps.academics",
-    "apps.workplace",
+    "apps.evaluations",
     "apps.registry",
     "apps.organizations",
     "apps.placements",
