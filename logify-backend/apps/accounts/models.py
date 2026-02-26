@@ -256,9 +256,7 @@ class PlacementStatusHistory(models.Model):
     changed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"{self.placement.internship_title}: {self.from_status} -> {self.to_status}"
-        )
+        return f"{self.placement.internship_title}: {self.from_status} -> {self.to_status}"
 
 
 # placement_contacts {
@@ -429,10 +427,7 @@ class Evaluations(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return (
-            f"Evaluation by {self.evaluator.email} "
-            f"for {self.placement.internship_title}"
-        )
+        return f"Evaluation by {self.evaluator.email} " f"for {self.placement.internship_title}"
 
 
 # evaluation_scores {
