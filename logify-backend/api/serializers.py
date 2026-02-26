@@ -29,6 +29,28 @@ class UserSerializer(serializers.ModelSerializer):
         fields = "__all__"
         exclude = ("password_hash",)
 
+    def validate(self, attrs):
+        """
+        Prevent non-privileged users from modifying sensitive fields on User.
+        """
+        request = self.context.get("request")
+        instance = getattr(self, "instance", None)
+        if request and not request.user.is_staff or instance is None:
+            if "is_staff" in attrs or "is_superuser" in attrs:
+                raise serializers.ValidationError(
+                    "You do not have permission to modify this field."
+                )
+
+        user = request.user if request else None
+        is_privileged = bool(
+            getattr(user, "is_staff", False) or getattr(user, "is_superuser", False)
+        )
+        if not is_privileged and ("is_staff" in attrs or "is_superuser" in attrs):
+            raise serializers.ValidationError(
+                "You do not have permission to modify this field."
+            )
+        return super().validate(attrs)
+
 
 class InstitutionsSerializer(serializers.ModelSerializer):
     class Meta:
