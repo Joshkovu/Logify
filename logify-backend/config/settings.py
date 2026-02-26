@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     "apps.accounts",
     "apps.academics",
     "apps.workplace",
+    "apps.registry",
+    "apps.organizations",
     "rest_framework",
 ]
 
