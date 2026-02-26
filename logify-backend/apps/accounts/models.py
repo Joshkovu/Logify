@@ -1,4 +1,4 @@
-from academics.models import Departments
+from apps.academics.models import Departments
 from django.db import models
 
 # Create your models here.
