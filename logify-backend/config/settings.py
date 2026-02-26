@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "apps.workplace",
     "apps.registry",
     "apps.organizations",
+    "apps.placements",
     "rest_framework",
 ]
 
