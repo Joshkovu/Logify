@@ -10,9 +10,7 @@ from .models import (
     Organizations,
     PlacementContacts,
     PlacementStatusHistory,
-    RegistrationAttempts,
     StaffProfiles,
-    StudentRegistry,
     SupervisorReviews,
     User,
     WeeklyLogs,
@@ -53,19 +51,6 @@ class UserSerializer(serializers.ModelSerializer):
         if "password_hash" in data:
             data.pop("password_hash")
         return data
-
-
-class StudentRegistrySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = StudentRegistry
-        fields = "__all__"
-
-
-class RegistrationAttemptsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = RegistrationAttempts
-        fields = "__all__"
-        exclude = ("otp_hash",)
 
 
 class StaffProfilesSerializer(serializers.ModelSerializer):
