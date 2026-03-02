@@ -4,6 +4,9 @@ import Supervisors from "./pages/Supervisors.jsx";
 import Institutions from "./pages/Institutions.jsx";
 import Students from "./pages/Students.jsx";
 import Placements from "./pages/Placements.jsx";
+import Evaluations from "./pages/Evaluations.jsx";
+import Reports from "./pages/Reports.jsx";
+import Settings from "./pages/Settings.jsx";
 
 const App1 = () => {
   return (
@@ -15,6 +18,9 @@ const App1 = () => {
           <Route path="/institutions" element={<Institutions />} />
           <Route path="/students" element={<Students />} />
           <Route path="/placements" element={<Placements />} />
+          <Route path="/evaluations" element={<Evaluations />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/settings" element={<Settings />} />
         </Routes>
       </div>
     </Router>
