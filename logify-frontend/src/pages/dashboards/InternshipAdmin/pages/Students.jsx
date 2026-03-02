@@ -19,19 +19,19 @@ const Students = () => {
         </div>
       </div>
       <section className="flex mt-4 mb-4">
-        <div className="border rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
+        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
           <h1>Total Students</h1>
           <span>5</span>
         </div>
-        <div className="border rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
+        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
           <h1>Active Internships</h1>
           <span>3</span>
         </div>
-        <div className="border rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
+        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
           <h1>Pending Placements</h1>
           <span>2</span>
         </div>
-        <div className="border rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
+        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
           <h1>Average Score</h1>
           <span>84.2%</span>
         </div>
