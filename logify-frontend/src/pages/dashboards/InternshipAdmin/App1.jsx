@@ -1,10 +1,10 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard.jsx";
 import Supervisors from "./pages/Supervisors.jsx";
-import Institutions from "./pages/Institutions.jsx";
+import Institutions from "./pages/Evaluations.jsx";
 import Students from "./pages/Students.jsx";
 import Placements from "./pages/Placements.jsx";
-import Evaluations from "./pages/Evaluations.jsx";
+import Evaluations from "./pages/Institutions.jsx";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings.jsx";
 
