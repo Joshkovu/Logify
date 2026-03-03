@@ -1,6 +1,6 @@
 const Dashboard = () => {
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full ml-5">
       <nav></nav>
       <h1 className="text-2xl font-bold mb-4">System Dashboard</h1>
       <p>Complete overview of the internship management system</p>
