@@ -1,14 +1,16 @@
 const Students = () => {
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full ml-4">
       <nav></nav>
-      <div className="flex">
+      <div className="flex mt-3">
         <div className="w-1/2">
-          <h1>Student Management</h1>
-          <p>Overview of student performance and engagement</p>
+          <h1 className="text-3xl mb-3 ">Student Management</h1>
+          <p className="text-xl">
+            Overview of student performance and engagement
+          </p>
         </div>
-        <div className="w-1/2">
-          <button className="flex">
+        <div className="w-1/2 ">
+          <button className="flex bg-gray-500  mb-4 text-white px-4 py-2 rounded">
             {/* Placeholder for an icon */}
             Upload CSV
           </button>
