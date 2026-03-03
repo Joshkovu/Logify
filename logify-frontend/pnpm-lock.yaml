@@ -19,9 +19,6 @@ importers:
       react-router-dom:
         specifier: ^7.13.1
         version: 7.13.1(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
-      tailwindcss:
-        specifier: ^4.2.1
-        version: 4.2.1
     devDependencies:
       "@eslint/js":
         specifier: ^9.39.1
@@ -29,6 +26,9 @@ importers:
       "@radix-ui/react-slot":
         specifier: ^1.2.4
         version: 1.2.4(@types/react@19.2.14)(react@19.2.4)
+      "@tailwindcss/postcss":
+        specifier: ^4.2.1
+        version: 4.2.1
       "@types/node":
         specifier: ^25.3.3
         version: 25.3.3
@@ -41,6 +41,9 @@ importers:
       "@vitejs/plugin-react":
         specifier: ^5.1.1
         version: 5.1.4(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1))
+      autoprefixer:
+        specifier: ^10.4.27
+        version: 10.4.27(postcss@8.5.6)
       babel-plugin-react-compiler:
         specifier: ^1.0.0
         version: 1.0.0
@@ -71,6 +74,9 @@ importers:
       tailwind-merge:
         specifier: ^3.5.0
         version: 3.5.0
+      tailwindcss:
+        specifier: ^4.2.1
+        version: 4.2.1
       vite:
         specifier: ^7.3.1
         version: 7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)
@@ -79,6 +85,13 @@ importers:
         version: 4.0.18(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1)
 
 packages:
+  "@alloc/quick-lru@5.2.0":
+    resolution:
+      {
+        integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==,
+      }
+    engines: { node: ">=10" }
+
   "@babel/code-frame@7.29.0":
     resolution:
       {
@@ -940,6 +953,12 @@ packages:
       }
     engines: { node: ">= 20" }
 
+  "@tailwindcss/postcss@4.2.1":
+    resolution:
+      {
+        integrity: sha512-OEwGIBnXnj7zJeonOh6ZG9woofIjGrd2BORfvE5p9USYKDCZoQmfqLcfNiRWoJlRWLdNPn2IgVZuWAOM4iTYMw==,
+      }
+
   "@tailwindcss/vite@4.2.1":
     resolution:
       {
@@ -1173,6 +1192,16 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
+  autoprefixer@10.4.27:
+    resolution:
+      {
+        integrity: sha512-NP9APE+tO+LuJGn7/9+cohklunJsXWiaWEfV3si4Gi/XHDwVNgkwr1J3RQYFIvPy76GmJ9/bW8vyoU1LcxwKHA==,
+      }
+    engines: { node: ^10 || ^12 || >=14 }
+    hasBin: true
+    peerDependencies:
+      postcss: ^8.1.0
+
   available-typed-arrays@1.0.7:
     resolution:
       {
@@ -1246,6 +1275,12 @@ packages:
     resolution:
       {
         integrity: sha512-mIwLZICj+ntVTw4BT2zfp+yu/AqV6GMKfJVJMx3MwPxs+uk/uj2GLl2dH8LQbjiLDX66amCga5nKFyDgRR43kg==,
+      }
+
+  caniuse-lite@1.0.30001776:
+    resolution:
+      {
+        integrity: sha512-sg01JDPzZ9jGshqKSckOQthXnYwOEP50jeVFhaSFbZcOy05TiuuaffDOfcwtCisJ9kNQuLBFibYywv2Bgm9osw==,
       }
 
   chai@6.2.2:
@@ -1669,6 +1704,12 @@ packages:
         integrity: sha512-dKx12eRCVIzqCxFGplyFKJMPvLEWgmNtUrpTiJIR5u97zEhRG8ySrtboPHZXx7daLxQVrl643cTzbab2tkQjxg==,
       }
     engines: { node: ">= 0.4" }
+
+  fraction.js@5.3.4:
+    resolution:
+      {
+        integrity: sha512-1X1NTtiJphryn/uLQz3whtY6jK3fTqoE3ohKs0tT+Ujr1W59oopxmoEh7Lu5p6vBaPbgoM0bzveAW4Qi5RyWDQ==,
+      }
 
   fsevents@2.3.3:
     resolution:
@@ -2442,6 +2483,12 @@ packages:
       }
     engines: { node: ">= 0.4" }
 
+  postcss-value-parser@4.2.0:
+    resolution:
+      {
+        integrity: sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==,
+      }
+
   postcss@8.5.6:
     resolution:
       {
@@ -3031,6 +3078,8 @@ packages:
       }
 
 snapshots:
+  "@alloc/quick-lru@5.2.0": {}
+
   "@babel/code-frame@7.29.0":
     dependencies:
       "@babel/helper-validator-identifier": 7.28.5
@@ -3450,6 +3499,14 @@ snapshots:
       "@tailwindcss/oxide-win32-arm64-msvc": 4.2.1
       "@tailwindcss/oxide-win32-x64-msvc": 4.2.1
 
+  "@tailwindcss/postcss@4.2.1":
+    dependencies:
+      "@alloc/quick-lru": 5.2.0
+      "@tailwindcss/node": 4.2.1
+      "@tailwindcss/oxide": 4.2.1
+      postcss: 8.5.6
+      tailwindcss: 4.2.1
+
   "@tailwindcss/vite@4.2.1(vite@7.3.1(@types/node@25.3.3)(jiti@2.6.1)(lightningcss@1.31.1))":
     dependencies:
       "@tailwindcss/node": 4.2.1
@@ -3632,6 +3689,15 @@ snapshots:
 
   async-function@1.0.0: {}
 
+  autoprefixer@10.4.27(postcss@8.5.6):
+    dependencies:
+      browserslist: 4.28.1
+      caniuse-lite: 1.0.30001776
+      fraction.js: 5.3.4
+      picocolors: 1.1.1
+      postcss: 8.5.6
+      postcss-value-parser: 4.2.0
+
   available-typed-arrays@1.0.7:
     dependencies:
       possible-typed-array-names: 1.1.0
@@ -3677,6 +3743,8 @@ snapshots:
   callsites@3.1.0: {}
 
   caniuse-lite@1.0.30001772: {}
+
+  caniuse-lite@1.0.30001776: {}
 
   chai@6.2.2: {}
 
@@ -4044,6 +4112,8 @@ snapshots:
   for-each@0.3.5:
     dependencies:
       is-callable: 1.2.7
+
+  fraction.js@5.3.4: {}
 
   fsevents@2.3.3:
     optional: true
@@ -4468,6 +4538,8 @@ snapshots:
   picomatch@4.0.3: {}
 
   possible-typed-array-names@1.1.0: {}
+
+  postcss-value-parser@4.2.0: {}
 
   postcss@8.5.6:
     dependencies:
