@@ -12,7 +12,7 @@ const Dashboard = () => {
         Welcome back, {person.firstName}! Here&apos;s your internship overview.
       </p>
       <section className="flex mt-4 gap-6">
-        <div className="text-gray-600 w-65 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Internship Status</h3>
@@ -26,7 +26,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-65 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Weekly Logs</h3>
@@ -40,7 +40,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-65 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Pending Tasks</h3>
@@ -54,7 +54,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-65 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Final Score</h3>

@@ -1,8 +1,11 @@
 import { Link, useLocation } from "react-router-dom";
 
 const navLinks = [
-  { name: "Dashboard", path: "/" },
-  { name: "Internship Placement", path: "/internshipplacement" },
+  { name: "Dashboard", path: "/dashboard" },
+  { name: "Internship Placement", path: "/internship-placement" },
+  { name: "Weekly Logs", path: "/weekly-logs" },
+  { name: "Evaluations", path: "/evaluations" },
+  { name: "Profile", path: "/profile" },
 ];
 
 const Sidebar = () => {
