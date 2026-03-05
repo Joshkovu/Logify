@@ -15,7 +15,7 @@ const InternshipPlacement = () => {
       </div>
       <section className="mt-8 p-6 border border-gray-200 rounded-xl w-full">
         <div className="flex ">
-          <div className="">
+          <div>
             <p className="font-semibold">Placement Status</p>
             <p className="text-gray-600">
               Current status of your internship placement
