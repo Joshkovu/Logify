@@ -1,6 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 
-const navLinks = [{ name: "Dashboard", path: "/" }];
+const navLinks = [
+  { name: "Dashboard", path: "/" },
+  { name: "Internship Placement", path: "/internshipplacement" },
+];
 
 const Sidebar = () => {
   const location = useLocation();
