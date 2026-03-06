@@ -7,6 +7,7 @@ import Placements from "./pages/Placements.jsx";
 import Evaluations from "./pages/Evaluations.jsx";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings.jsx";
+import NotFound from "../../../components/NotFound.jsx";
 import Sidebar from "./Sidebar.jsx";
 
 const App1 = () => {
@@ -24,6 +25,7 @@ const App1 = () => {
             <Route path="/evaluations" element={<Evaluations />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/notfound" element={<NotFound />} />
           </Routes>
         </main>
       </div>
