@@ -6,6 +6,7 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../../../../components/ui/table";
+
 import { students } from "./students-data";
 
 const Students = () => {
@@ -20,12 +21,8 @@ const Students = () => {
           </p>
         </div>
         <div className="w-1/2 ">
-          <button className="flex bg-gray-500  mb-4 text-white px-4 py-2 rounded">
-            Upload CSV
-          </button>
-          <button className="bg-blue-500 flex text-white px-4 py-2 rounded">
-            Generate Report
-          </button>
+          <button className="mb-4 mr-2">Upload CSV</button>
+          <button>Generate Report</button>
         </div>
       </div>
       <section className="flex mt-4 mb-4">
@@ -80,9 +77,7 @@ const Students = () => {
                 <TableCell>{student.status}</TableCell>
                 <TableCell>{student.score}</TableCell>
                 <TableCell>
-                  <button className="px-3 py-1 bg-brown-600 text-white rounded hover:bg-brown-700 transition">
-                    {student.action}
-                  </button>
+                  <button>{student.action}</button>
                 </TableCell>
               </TableRow>
             ))}
