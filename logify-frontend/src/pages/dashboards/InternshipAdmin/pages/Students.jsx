@@ -6,60 +6,67 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../../../../components/ui/table";
-
+import StatusBadge from "../../../../components/ui/StatusBadge";
 import { students } from "./students-data";
 
 const Students = () => {
   return (
-    <div className="min-h-screen w-full ml-4">
-      <nav></nav>
-      <div className="flex mt-3">
-        <div className="w-1/2">
-          <h1 className="text-3xl mb-3 ">Student Management</h1>
-          <p className="text-xl">
-            Overview of student performance and engagement
-          </p>
+    <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
+      <header className="mb-8">
+        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+          Student Management
+        </h1>
+        <p className="text-lg text-text-secondary">
+          Overview of student performance and engagement
+        </p>
+      </header>
+      <section className="grid grid-cols-4 gap-6 mb-8">
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Students
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">5</span>
         </div>
-        <div className="w-1/2 ">
-          <button className="mb-4 mr-2">Upload CSV</button>
-          <button>Generate Report</button>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Active Internships
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">3</span>
         </div>
-      </div>
-      <section className="flex mt-4 mb-4">
-        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
-          <h1>Total Students</h1>
-          <span>5</span>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Pending Placements
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">2</span>
         </div>
-        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
-          <h1>Active Internships</h1>
-          <span>3</span>
-        </div>
-        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
-          <h1>Pending Placements</h1>
-          <span>2</span>
-        </div>
-        <div className="border w-1/4 rounded-e-md bg-zinc-300 border-gray-300 p-3 mr-3">
-          <h1>Average Score</h1>
-          <span>84.2%</span>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Average Score
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">
+            84.2%
+          </span>
         </div>
       </section>
       <section>
-        <div className="flex mb-5">
-          <div className="w-1/2">
-            <h1>All Students</h1>
-            <p>Complete student registry</p>
+        <div className="flex mb-6 items-end justify-between">
+          <div>
+            <h2 className="text-2xl font-bold text-maroon mb-1">
+              All Students
+            </h2>
+            <p className="text-text-secondary">Complete student registry</p>
           </div>
-          <div className="flex">
+          <div>
             <input
               type="text"
               placeholder="Search students..."
-              className="border border-gray-300 rounded px-4 py-2"
+              className="border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gold bg-background text-text-primary"
             />
           </div>
         </div>
         <Table>
           <TableHead>
-            <TableRow>
+            <TableRow index={0}>
               <TableHeaderCell>Student ID</TableHeaderCell>
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Program</TableHeaderCell>
@@ -70,14 +77,18 @@ const Students = () => {
           </TableHead>
           <TableBody>
             {students.map((student, idx) => (
-              <TableRow key={idx}>
+              <TableRow key={idx} index={idx}>
                 <TableCell>{student.id}</TableCell>
                 <TableCell>{student.name}</TableCell>
                 <TableCell>{student.program}</TableCell>
-                <TableCell>{student.status}</TableCell>
+                <TableCell>
+                  <StatusBadge status={student.status} />
+                </TableCell>
                 <TableCell>{student.score}</TableCell>
                 <TableCell>
-                  <button>{student.action}</button>
+                  <button className="bg-maroon text-white px-3 py-1 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+                    {student.action}
+                  </button>
                 </TableCell>
               </TableRow>
             ))}
