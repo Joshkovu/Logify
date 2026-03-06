@@ -1,3 +1,13 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { students } from "./students-data";
+
 const Students = () => {
   return (
     <div className="min-h-screen w-full ml-4">
@@ -11,11 +21,9 @@ const Students = () => {
         </div>
         <div className="w-1/2 ">
           <button className="flex bg-gray-500  mb-4 text-white px-4 py-2 rounded">
-            {/* Placeholder for an icon */}
             Upload CSV
           </button>
           <button className="bg-blue-500 flex text-white px-4 py-2 rounded">
-            {/* Placeholder for an icon */}
             Generate Report
           </button>
         </div>
@@ -45,7 +53,6 @@ const Students = () => {
             <p>Complete student registry</p>
           </div>
           <div className="flex">
-            {/* Placeholder for a search icon */}
             <input
               type="text"
               placeholder="Search students..."
@@ -53,26 +60,34 @@ const Students = () => {
             />
           </div>
         </div>
-        <div className="grid grid-cols-6">
-          <div className="border border-gray-300 p-2">
-            <h1>Student ID</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Name</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Program</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Status</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Score</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Action</h1>
-          </div>
-        </div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Student ID</TableHeaderCell>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Program</TableHeaderCell>
+              <TableHeaderCell>Status</TableHeaderCell>
+              <TableHeaderCell>Score</TableHeaderCell>
+              <TableHeaderCell>Action</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {students.map((student, idx) => (
+              <TableRow key={idx}>
+                <TableCell>{student.id}</TableCell>
+                <TableCell>{student.name}</TableCell>
+                <TableCell>{student.program}</TableCell>
+                <TableCell>{student.status}</TableCell>
+                <TableCell>{student.score}</TableCell>
+                <TableCell>
+                  <button className="px-3 py-1 bg-brown-600 text-white rounded hover:bg-brown-700 transition">
+                    {student.action}
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </div>
   );
