@@ -1,3 +1,13 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { evaluations } from "./evaluations-data";
+
 const Evaluations = () => {
   return (
     <div className="w-full min-h-screen ml-5">
@@ -24,28 +34,28 @@ const Evaluations = () => {
       <section>
         <h1 className="text-2xl mb-3">Recent Evaluations</h1>
         <p className="text-xl mb-3 ">Latest completed evaluations</p>
-        <div className="grid grid-cols-5">
-          <div>
-            <h1>Student</h1>
-            {/* Placeholder for student names */}
-          </div>
-          <div>
-            <h1>Type</h1>
-            {/* Placeholder for evaluation types */}
-          </div>
-          <div>
-            <h1>Evaluator</h1>
-            {/* Placeholder for evaluator names */}
-          </div>
-          <div>
-            <h1>Score</h1>
-            {/* Placeholder for scores */}
-          </div>
-          <div>
-            <h1>Date</h1>
-            {/* Placeholder for evaluation dates */}
-          </div>
-        </div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Student</TableHeaderCell>
+              <TableHeaderCell>Type</TableHeaderCell>
+              <TableHeaderCell>Evaluator</TableHeaderCell>
+              <TableHeaderCell>Score</TableHeaderCell>
+              <TableHeaderCell>Date</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {evaluations.map((evaln, idx) => (
+              <TableRow key={idx}>
+                <TableCell>{evaln.student}</TableCell>
+                <TableCell>{evaln.type}</TableCell>
+                <TableCell>{evaln.evaluator}</TableCell>
+                <TableCell>{evaln.score}</TableCell>
+                <TableCell>{evaln.date}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </div>
   );

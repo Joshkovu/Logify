@@ -1,3 +1,13 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { supervisors } from "./supervisors-data";
+
 const Supervisors = () => {
   return (
     <div className="p-4 min-h-screen w-full">
@@ -7,10 +17,7 @@ const Supervisors = () => {
           <p>Manage all supervisors and their assigned interns</p>
         </div>
         <div className="w-1/2 flex justify-end">
-          <button className="flex">
-            {/* Placeholder for an icon */}
-            Add Supervisor
-          </button>
+          <button className="flex">Add Supervisor</button>
         </div>
       </section>
       <section className=" flex mt-4 gap-4">
@@ -34,26 +41,34 @@ const Supervisors = () => {
       <section className="mt-4">
         <h1>All Supervisors</h1>
         <p>Complete list of all supervisors</p>
-        <div className="grid grid-cols-6">
-          <div className="border border-gray-300 p-2">
-            <h1>Name </h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Type</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Affiliation</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Assigned Interns</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Contact Email</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Actions</h1>
-          </div>
-        </div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Type</TableHeaderCell>
+              <TableHeaderCell>Affiliation</TableHeaderCell>
+              <TableHeaderCell>Assigned Interns</TableHeaderCell>
+              <TableHeaderCell>Contact Email</TableHeaderCell>
+              <TableHeaderCell>Actions</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {supervisors.map((sup, idx) => (
+              <TableRow key={idx}>
+                <TableCell>{sup.name}</TableCell>
+                <TableCell>{sup.type}</TableCell>
+                <TableCell>{sup.affiliation}</TableCell>
+                <TableCell>{sup.interns}</TableCell>
+                <TableCell>{sup.email}</TableCell>
+                <TableCell>
+                  <button className="px-3 py-1 bg-brown-600 text-white rounded hover:bg-brown-700 transition">
+                    {sup.action}
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </div>
   );
