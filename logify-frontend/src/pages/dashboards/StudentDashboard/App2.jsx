@@ -10,7 +10,7 @@ const App2 = () => {
     <Router>
       <div className="flex min-h-screen">
         <Sidebar />
-        <main className="flex-1 bg-gray-50 overflow-y-auto">
+        <main className="ml-56 flex-1 bg-gray-50 overflow-y-auto">
           <Routes>
             <Route path="/dashboard" element={<Dashboard />} />
             <Route

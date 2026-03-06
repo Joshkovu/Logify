@@ -12,7 +12,7 @@ const Dashboard = () => {
         Welcome back, {person.firstName}! Here&apos;s your internship overview.
       </p>
       <section className="flex mt-4 gap-6">
-        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Internship Status</h3>
@@ -26,7 +26,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Weekly Logs</h3>
@@ -40,7 +40,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Pending Tasks</h3>
@@ -54,7 +54,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className="text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
+        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
           <div className="flex">
             <div className="text-sm">
               <h3 className="text-lg">Final Score</h3>
@@ -70,7 +70,7 @@ const Dashboard = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Current Internship</p>
             <p className="text-gray-600">Your active placement details</p>
@@ -96,7 +96,7 @@ const Dashboard = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Recent Activity</p>
             <p className="text-gray-600">Your latest updates and actions</p>
