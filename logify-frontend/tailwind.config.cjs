@@ -5,18 +5,33 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        brown: {
-          50: "#f9f6f2",
-          100: "#f3ece4",
-          200: "#e6d6c3",
-          300: "#d9bfa2",
-          400: "#c08f61",
-          500: "#a76f3a",
-          600: "#8c5527",
-          700: "#6b401d",
-          800: "#4a2b13",
-          900: "#2a160a",
+        maroon: {
+          DEFAULT: "#7A1F2B",
+          dark: "#3B0F16",
         },
+        gold: {
+          DEFAULT: "#C9A227",
+        },
+        background: "#F7F4ED",
+        surface: "#FFFFFF",
+        border: "#E6E1DA",
+        text: {
+          primary: "#1E1E1E",
+          secondary: "#5F5F5F",
+        },
+        success: "#2E7D32",
+        warning: "#F9A825",
+        error: "#C62828",
+        badge: {
+          draft: "#BDBDBD",
+          submitted: "#1976D2",
+          approved: "#2E7D32",
+          rejected: "#C62828",
+          pending: "#F9A825",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "ui-sans-serif", "system-ui"],
       },
     },
   },
