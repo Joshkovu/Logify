@@ -1,3 +1,13 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { institutions } from "./institutions-data";
+
 const Institutions = () => {
   return (
     <div className="min-h-screen w-full ml-4">
@@ -11,7 +21,6 @@ const Institutions = () => {
         </div>
         <div className="w-1/2">
           <button className="flex border mt-4 border-gray-300  bg-blue-500 rounded px-4 py-2">
-            {/* Placeholder for an icon */}
             Add Institution
           </button>
         </div>
@@ -33,20 +42,24 @@ const Institutions = () => {
       <main>
         <h2 className="text-xl font-bold mb-4">Organization List</h2>
         <p className="mb-3">Complete list of partner organizations</p>
-        <div className="grid grid-cols-3">
-          <div className="w-1/3">
-            <h1>Organization Name </h1>
-            {/* Placeholder for organization details */}
-          </div>
-          <div className="w-1/3">
-            <h1>Industry Type</h1>
-            {/* Placeholder for industry type */}
-          </div>
-          <div className="w-1/3">
-            <h1>Contact Email</h1>
-            {/* Placeholder for contact email */}
-          </div>
-        </div>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableHeaderCell>Organization Name</TableHeaderCell>
+              <TableHeaderCell>Industry Type</TableHeaderCell>
+              <TableHeaderCell>Contact Email</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {institutions.map((org, idx) => (
+              <TableRow key={idx}>
+                <TableCell>{org.name}</TableCell>
+                <TableCell>{org.industry}</TableCell>
+                <TableCell>{org.email}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </main>
     </div>
   );
