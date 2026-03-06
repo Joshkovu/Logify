@@ -13,9 +13,9 @@ import Sidebar from "./Sidebar.jsx";
 const App1 = () => {
   return (
     <Router>
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 bg-gray-50 overflow-y-auto">
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar aria-label="Main Navigation" />
+        <main className="flex-1 bg-gray-50 overflow-y-auto w-full">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/supervisors" element={<Supervisors />} />

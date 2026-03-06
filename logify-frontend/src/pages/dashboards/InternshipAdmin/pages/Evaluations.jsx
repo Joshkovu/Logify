@@ -10,7 +10,7 @@ import { evaluations } from "./evaluations-data";
 
 const Evaluations = () => {
   return (
-    <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
       <header className="mb-8">
         <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
           Evaluation Overview
