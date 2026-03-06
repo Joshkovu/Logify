@@ -1,37 +1,43 @@
 import PropTypes from "prop-types";
 
+// Alternating row backgrounds, sticky headers, institutional palette
 function Table({ children, className = "" }) {
   return (
     <div
-      className={`overflow-x-auto rounded-lg border border-brown-200 bg-white shadow ${className}`}
+      className={`overflow-x-auto rounded-xl border border-border bg-surface shadow-md ${className}`}
     >
-      <table className="min-w-full divide-y divide-brown-200">{children}</table>
+      <table className="min-w-full divide-y divide-border text-text-primary font-sans">
+        {children}
+      </table>
     </div>
   );
 }
 
 function TableHead({ children }) {
-  return <thead className="bg-brown-100">{children}</thead>;
+  return <thead className="bg-background sticky top-0 z-10">{children}</thead>;
 }
 
 function TableBody({ children }) {
-  return <tbody className="divide-y divide-brown-100">{children}</tbody>;
+  return <tbody className="divide-y divide-border">{children}</tbody>;
 }
 
-function TableRow({ children }) {
-  return <tr className="hover:bg-brown-50">{children}</tr>;
+function TableRow({ children, index }) {
+  // Alternating backgrounds
+  const bgClass = index % 2 === 0 ? "bg-background" : "bg-surface";
+  return <tr className={`hover:bg-gold/10 ${bgClass}`}>{children}</tr>;
 }
 
 function TableCell({ children, className = "" }) {
   return (
-    <td className={`px-4 py-2 text-brown-900 ${className}`}>{children}</td>
+    <td className={`px-4 py-3 text-text-primary ${className}`}>{children}</td>
   );
 }
 
 function TableHeaderCell({ children, className = "" }) {
   return (
     <th
-      className={`px-4 py-2 text-left font-semibold text-brown-800 ${className}`}
+      className={`px-4 py-3 text-left font-bold text-maroon uppercase tracking-wider sticky top-0 bg-background border-b border-border ${className}`}
+      scope="col"
     >
       {children}
     </th>
@@ -52,6 +58,7 @@ TableBody.propTypes = {
 };
 TableRow.propTypes = {
   children: PropTypes.node,
+  index: PropTypes.number,
 };
 TableCell.propTypes = {
   children: PropTypes.node,

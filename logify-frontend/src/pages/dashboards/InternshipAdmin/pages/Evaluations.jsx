@@ -10,33 +10,55 @@ import { evaluations } from "./evaluations-data";
 
 const Evaluations = () => {
   return (
-    <div className="w-full min-h-screen ml-5">
-      <h1 className="text-2xl text-black pb-3">Evaluation Overview</h1>
-      <p className="pb-3">Monitor all student evaluations across the system </p>
-      <section className="flex mb-5">
-        <div className="w-1/4 border  p-3 mr-3 rounded-lg shadow-md border-gray-300">
-          <h1>Total Evaluations</h1>
-          <span>156</span>
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
+      <header className="mb-8">
+        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+          Evaluation Overview
+        </h1>
+        <p className="text-lg text-text-secondary">
+          Monitor all student evaluations across the system
+        </p>
+      </header>
+      <section className="grid grid-cols-4 gap-6 mb-8">
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Evaluations
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">156</span>
         </div>
-        <div className="w-1/4 border p-3 mr-3 rounded-lg shadow-md border-gray-300">
-          <h1>Completed </h1>
-          <span>142</span>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Completed
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">142</span>
         </div>
-        <div className="w-1/4 border  p-3 mr-3 rounded-lg shadow-md border-gray-300">
-          <h1>Pending</h1>
-          <span>14</span>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Pending
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">14</span>
         </div>
-        <div className="w-1/4 border p-3 mr-3 rounded-lg shadow-md border-gray-300">
-          <h1>Average Score</h1>
-          <span>84.2%</span>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Average Score
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">
+            84.2%
+          </span>
         </div>
       </section>
-      <section>
-        <h1 className="text-2xl mb-3">Recent Evaluations</h1>
-        <p className="text-xl mb-3 ">Latest completed evaluations</p>
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-maroon mb-1">
+              Recent Evaluations
+            </h2>
+            <p className="text-text-secondary">Latest completed evaluations</p>
+          </div>
+        </div>
         <Table>
           <TableHead>
-            <TableRow>
+            <TableRow index={0}>
               <TableHeaderCell>Student</TableHeaderCell>
               <TableHeaderCell>Type</TableHeaderCell>
               <TableHeaderCell>Evaluator</TableHeaderCell>
@@ -46,7 +68,7 @@ const Evaluations = () => {
           </TableHead>
           <TableBody>
             {evaluations.map((evaln, idx) => (
-              <TableRow key={idx}>
+              <TableRow key={idx} index={idx}>
                 <TableCell>{evaln.student}</TableCell>
                 <TableCell>{evaln.type}</TableCell>
                 <TableCell>{evaln.evaluator}</TableCell>
