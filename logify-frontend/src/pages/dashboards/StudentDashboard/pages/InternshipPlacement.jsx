@@ -13,7 +13,7 @@ const InternshipPlacement = () => {
           </button>
         </div>
       </div>
-      <section className="mt-8 p-6 border border-gray-200 rounded-xl w-full">
+      <section className="bg-white mt-8 p-6 border border-gray-200 rounded-xl w-full">
         <div className="flex ">
           <div>
             <p className="font-semibold">Placement Status</p>
@@ -39,7 +39,7 @@ const InternshipPlacement = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Organization Information</p>
             <p className="text-gray-600">
@@ -61,7 +61,7 @@ const InternshipPlacement = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Workplace Supervisor</p>
             <p className="text-gray-600">
@@ -81,7 +81,7 @@ const InternshipPlacement = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Academic Supervisor</p>
             <p className="text-gray-600">Your university supervisor</p>
@@ -99,7 +99,7 @@ const InternshipPlacement = () => {
         </div>
       </section>
       <section className="flex mt-4">
-        <div className="p-6 border border-gray-200 rounded-xl w-full">
+        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
           <div className="mb-6">
             <p className="font-semibold">Status Timeline</p>
             <p className="text-gray-600">
