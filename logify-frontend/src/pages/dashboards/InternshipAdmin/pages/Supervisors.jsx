@@ -1,59 +1,92 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { supervisors } from "./supervisors-data";
+
 const Supervisors = () => {
   return (
-    <div className="p-4 min-h-screen w-full">
-      <section className="flex">
-        <div className="w-1/2">
-          <h1>Supervisor Management</h1>
-          <p>Manage all supervisors and their assigned interns</p>
+    <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
+      <header className="mb-8">
+        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+          Supervisor Management
+        </h1>
+        <p className="text-lg text-text-secondary">
+          Manage all supervisors and their assigned interns
+        </p>
+      </header>
+      <section className="grid grid-cols-4 gap-6 mb-8">
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Supervisors
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">10</span>
         </div>
-        <div className="w-1/2 flex justify-end">
-          <button className="flex">
-            {/* Placeholder for an icon */}
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Academic Supervisors
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">8</span>
+        </div>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Interns Supervised
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">20</span>
+        </div>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Workplace Supervisors
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">18</span>
+        </div>
+      </section>
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-maroon mb-1">
+              All Supervisors
+            </h2>
+            <p className="text-text-secondary">
+              Complete list of all supervisors
+            </p>
+          </div>
+          <button className="bg-maroon text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
             Add Supervisor
           </button>
         </div>
-      </section>
-      <section className=" flex mt-4 gap-4">
-        <div className="w-1/4 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h1>Total Supervisors</h1>
-          <span>10</span>
-        </div>
-        <div className="w-1/4 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h1>Academic Supervisors</h1>
-          <span>8</span>
-        </div>
-        <div className="w-1/4 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h1>Total Interns Supervised</h1>
-          <span>20</span>
-        </div>
-        <div className="w-1/4 p-4 bg-gray-100 rounded-lg shadow-md">
-          <h1>Workplace Supervisors</h1>
-          <span>18</span>
-        </div>
-      </section>
-      <section className="mt-4">
-        <h1>All Supervisors</h1>
-        <p>Complete list of all supervisors</p>
-        <div className="grid grid-cols-6">
-          <div className="border border-gray-300 p-2">
-            <h1>Name </h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Type</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Affiliation</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Assigned Interns</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Contact Email</h1>
-          </div>
-          <div className="border border-gray-300 p-2">
-            <h1>Actions</h1>
-          </div>
-        </div>
+        <Table>
+          <TableHead>
+            <TableRow index={0}>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Type</TableHeaderCell>
+              <TableHeaderCell>Affiliation</TableHeaderCell>
+              <TableHeaderCell>Assigned Interns</TableHeaderCell>
+              <TableHeaderCell>Contact Email</TableHeaderCell>
+              <TableHeaderCell>Actions</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {supervisors.map((sup, idx) => (
+              <TableRow key={idx} index={idx}>
+                <TableCell>{sup.name}</TableCell>
+                <TableCell>{sup.type}</TableCell>
+                <TableCell>{sup.affiliation}</TableCell>
+                <TableCell>{sup.interns}</TableCell>
+                <TableCell>{sup.email}</TableCell>
+                <TableCell>
+                  <button className="bg-maroon text-white px-3 py-1 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+                    {sup.action}
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
     </div>
   );

@@ -1,53 +1,77 @@
+import {
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHeaderCell,
+} from "../../../../components/ui/table";
+import { institutions } from "./institutions-data";
+
 const Institutions = () => {
   return (
-    <div className="min-h-screen w-full ml-4">
-      <nav></nav>
-      <section className="flex">
-        <div className="w-1/2">
-          <h1 className="text-2xl mb-2">Partner Institutions</h1>
-          <p className="text-xl mb-3">
-            Manage organizations offering internship placements
-          </p>
+    <div className="min-h-screen w-full bg-background px-10 py-8 font-sans">
+      <header className="mb-8">
+        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+          Partner Institutions
+        </h1>
+        <p className="text-lg text-text-secondary">
+          Manage organizations offering internship placements
+        </p>
+      </header>
+      <section className="grid grid-cols-3 gap-6 mb-8">
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Organizations
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">5</span>
         </div>
-        <div className="w-1/2">
-          <button className="flex border mt-4 border-gray-300  bg-blue-500 rounded px-4 py-2">
-            {/* Placeholder for an icon */}
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Active Organizations
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">3</span>
+        </div>
+        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            Total Interns
+          </span>
+          <span className="text-3xl font-extrabold text-text-primary">2</span>
+        </div>
+      </section>
+      <section className="mb-8">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h2 className="text-2xl font-bold text-maroon mb-1">
+              Organization List
+            </h2>
+            <p className="text-text-secondary">
+              Complete list of partner organizations
+            </p>
+          </div>
+          <button className="bg-maroon text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
             Add Institution
           </button>
         </div>
+        <Table>
+          <TableHead>
+            <TableRow index={0}>
+              <TableHeaderCell>Organization Name</TableHeaderCell>
+              <TableHeaderCell>Industry Type</TableHeaderCell>
+              <TableHeaderCell>Contact Email</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {institutions.map((org, idx) => (
+              <TableRow key={idx} index={idx}>
+                <TableCell>{org.name}</TableCell>
+                <TableCell>{org.industry}</TableCell>
+                <TableCell>{org.email}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
       </section>
-      <section className="flex mt-2 mb-3">
-        <div className=" p-4 mr-3 bg-gray-100 rounded-lg shadow-md">
-          <h1>Total Organizations</h1>
-          <span>5</span>
-        </div>
-        <div className=" p-4 mr-3 bg-gray-100 rounded-lg shadow-md">
-          <h1>Active Organizations</h1>
-          <span>3</span>
-        </div>
-        <div className=" p-4  bg-gray-100 rounded-lg shadow-md">
-          <h1>Total Interns</h1>
-          <span>2</span>
-        </div>
-      </section>
-      <main>
-        <h2 className="text-xl font-bold mb-4">Organization List</h2>
-        <p className="mb-3">Complete list of partner organizations</p>
-        <div className="grid grid-cols-3">
-          <div className="w-1/3">
-            <h1>Organization Name </h1>
-            {/* Placeholder for organization details */}
-          </div>
-          <div className="w-1/3">
-            <h1>Industry Type</h1>
-            {/* Placeholder for industry type */}
-          </div>
-          <div className="w-1/3">
-            <h1>Contact Email</h1>
-            {/* Placeholder for contact email */}
-          </div>
-        </div>
-      </main>
     </div>
   );
 };

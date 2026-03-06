@@ -7,14 +7,15 @@ import Placements from "./pages/Placements.jsx";
 import Evaluations from "./pages/Evaluations.jsx";
 import Reports from "./pages/Reports.jsx";
 import Settings from "./pages/Settings.jsx";
+import NotFound from "../../../components/NotFound.jsx";
 import Sidebar from "./Sidebar.jsx";
 
 const App1 = () => {
   return (
     <Router>
-      <div className="flex min-h-screen">
-        <Sidebar />
-        <main className="flex-1 bg-gray-50 overflow-y-auto">
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar aria-label="Main Navigation" />
+        <main className="flex-1 bg-gray-50 overflow-y-auto w-full">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/supervisors" element={<Supervisors />} />
@@ -24,6 +25,7 @@ const App1 = () => {
             <Route path="/evaluations" element={<Evaluations />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/notfound" element={<NotFound />} />
           </Routes>
         </main>
       </div>
