@@ -2,6 +2,26 @@ import PropTypes from "prop-types";
 import { cn } from "../../lib/utils";
 
 const statusConfig = {
+  Ongoing: {
+    bg: "bg-blue-100 dark:bg-blue-900/30",
+    text: "text-blue-700 dark:text-blue-400",
+    dot: "bg-blue-500",
+  },
+  ongoing: {
+    bg: "bg-blue-100 dark:bg-blue-900/30",
+    text: "text-blue-700 dark:text-blue-400",
+    dot: "bg-blue-500",
+  },
+  Completed: {
+    bg: "bg-green-100 dark:bg-green-900/30",
+    text: "text-green-700 dark:text-green-400",
+    dot: "bg-green-500",
+  },
+  completed: {
+    bg: "bg-green-100 dark:bg-green-900/30",
+    text: "text-green-700 dark:text-green-400",
+    dot: "bg-green-500",
+  },
   Draft: {
     bg: "bg-slate-100 dark:bg-slate-800",
     text: "text-slate-600 dark:text-slate-400",
