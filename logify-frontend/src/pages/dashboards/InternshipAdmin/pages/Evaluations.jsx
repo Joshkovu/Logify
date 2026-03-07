@@ -20,25 +20,25 @@ const Evaluations = () => {
         </p>
       </header>
       <section className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Evaluations
           </span>
           <span className="text-3xl font-extrabold text-green-500">156</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Completed
           </span>
           <span className="text-3xl font-extrabold text-blue-600">142</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Pending
           </span>
           <span className="text-3xl font-extrabold text-amber-500">14</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Average Score
           </span>

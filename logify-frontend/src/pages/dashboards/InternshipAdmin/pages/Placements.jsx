@@ -20,17 +20,17 @@ const stats = [
 const Placements = () => {
   return (
     <div className="min-h-screen w-full p-4 bg-[#FCFBF8]">
-      <h1 className="text-2xl font-bold text-brown-800">
+      <h1 className="text-3xl mb-2 font-bold text-brown-800">
         Placement Management
       </h1>
       <p className="text-brown-700">
         Oversee all internship placements and their statuses
       </p>
-      <section className="flex mt-4 gap-4">
+      <section className="flex mt-4 gap-4 ">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="w-1/4 p-4 bg-brown-100 rounded-lg shadow border border-brown-200"
+            className="w-1/4  bg-brown-100  shadow  border-brown-200 bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border"
           >
             <h2 className="text-brown-700 text-lg font-semibold">
               {stat.label}
