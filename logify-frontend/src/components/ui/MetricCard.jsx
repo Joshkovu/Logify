@@ -10,14 +10,14 @@ const icons = {
 
 const MetricCard = ({ title, value, iconType }) => (
   <div className="bg-surface shadow-sm hover:shadow-md transition-shadow duration-300 rounded-2xl p-6 flex items-center gap-5 border border-border/50">
-    <div className="shrink-0 p-3 bg-gold/5 rounded-xl border border-gold/10">
+    <div className="shrink-0  p-3 bg-gold/5 rounded-xl border border-gold/10">
       {icons[iconType]}
     </div>
     <div>
-      <div className="text-[11px] font-bold uppercase text-text-secondary tracking-[0.1em] mb-1 opacity-80">
+      <div className="text-[11px] font-bold uppercase text-text-secondary tracking-widest mb-1 opacity-80">
         {title}
       </div>
-      <div className="text-3xl font-black text-maroon-dark tracking-tight">
+      <div className="text-3xl font-black text-lime-600 tracking-tight">
         {value}
       </div>
     </div>
