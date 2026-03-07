@@ -1,3 +1,7 @@
+import { Button } from "../../../../components/ui/Button";
+import { Switch } from "../../../../components/ui/Switch";
+import { Input } from "../../../../components/ui/Input";
+
 const Settings = () => {
   return (
     <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
@@ -22,13 +26,16 @@ const Settings = () => {
             <h3 className="text-base font-semibold text-text-secondary mb-2">
               System Name
             </h3>
-            {/* Placeholder for system name input */}
+            <Input id="systemName" value="Logify ILES" />
           </div>
           <div>
             <h3 className="text-base font-semibold text-text-secondary mb-2">
               Admin Contact
             </h3>
-            {/* Placeholder for admin contact input */}
+            <Input
+              id="adminContact"
+              placeholder="Enter admin contact information"
+            />
           </div>
         </div>
       </section>
@@ -41,7 +48,7 @@ const Settings = () => {
           Configure email and system notifications
         </p>
         {/* Placeholder for notification settings */}
-        <div className="flex gap-8 mb-6">
+        <div className="flex justify-between gap-8 mb-6">
           <div>
             <h3 className="text-base font-semibold text-text-secondary mb-2">
               Email Notifications
@@ -50,9 +57,12 @@ const Settings = () => {
               Send email notifications for important events
             </p>
           </div>
-          <div>{/* Placeholder for email notification settings */}</div>
+          <div>
+            {" "}
+            <Switch defaultChecked />
+          </div>
         </div>
-        <div className="flex gap-8">
+        <div className="flex justify-between gap-8">
           <div>
             <h3 className="text-base font-semibold text-text-secondary mb-2">
               Supervisor Reminders
@@ -61,7 +71,10 @@ const Settings = () => {
               Remind supervisors about pending reviews
             </p>
           </div>
-          <div>{/* Placeholder for supervisor reminder settings */}</div>
+          <div>
+            {" "}
+            <Switch defaultChecked />
+          </div>
         </div>
       </section>
 
@@ -82,8 +95,8 @@ const Settings = () => {
             className="w-40 border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
           />
         </div>
-        <div className="flex gap-8">
-          <div>
+        <div className="flex justify-between gap-8">
+          <div className="">
             <h3 className="text-base font-semibold text-text-secondary mb-2">
               Evaluation Types
             </h3>
@@ -91,9 +104,16 @@ const Settings = () => {
               Define types of evaluations used in the system
             </p>
           </div>
-          <div>{/* Placeholder for evaluation type settings */}</div>
+          <div className="">
+            {" "}
+            <Switch />
+          </div>
         </div>
       </section>
+      <div className="flex justify-end gap-3">
+        <Button variant="outline">Reset to Defaults</Button>
+        <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+      </div>
     </div>
   );
 };
