@@ -85,7 +85,7 @@ const Reports = () => {
             <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
               {card.title}
             </span>
-            <span className="text-3xl font-extrabold text-text-primary mb-2">
+            <span className="text-3xl font-extrabold text-green-600 mb-2">
               {card.value}
             </span>
             <span className="text-sm text-text-secondary">
