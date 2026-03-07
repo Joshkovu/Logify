@@ -68,7 +68,7 @@ const Placements = () => {
                   <StatusBadge status={placement.status} />
                 </TableCell>
                 <TableCell>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex  gap-2">
                     <Button variant="ghost" size="sm">
                       View
                     </Button>
