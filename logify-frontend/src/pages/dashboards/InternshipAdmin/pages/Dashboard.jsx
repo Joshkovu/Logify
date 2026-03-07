@@ -58,17 +58,17 @@ const Dashboard = () => {
       </section>
 
       <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <div className="bg-surface rounded-3xl shadow-sm p-10 border border-border/40 hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-102 transition-all">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Score Distribution
               </h2>
-              <p className="text-text-secondary text-sm mt-1">
+              <p className="text-text-secondary  text-md mt-1">
                 Final evaluation scores breakdown for current batch
               </p>
             </div>
-            <div className="px-3 py-1 bg-gold/10 text-gold text-[10px] font-bold rounded-full uppercase tracking-widest">
+            <div className="px-3 py-1 bg-gold/10 text-gold text-md font-bold rounded-full uppercase tracking-widest">
               Live
             </div>
           </div>
@@ -97,17 +97,17 @@ const Dashboard = () => {
             />
           </div>
         </div>
-        <div className="bg-surface rounded-3xl shadow-sm p-10 border border-border/40 hover:shadow-md transition-shadow">
+        <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-102 transition-all">
           <div className="flex justify-between items-start mb-6">
             <div>
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Placement Trends
               </h2>
-              <p className="text-text-secondary text-sm mt-1">
+              <p className="text-text-secondary text-md mt-1">
                 Monthly growth in internship applications
               </p>
             </div>
-            <div className="px-3 py-1 bg-maroon/5 text-maroon text-[10px] font-bold rounded-full uppercase tracking-widest">
+            <div className="px-3 py-1 bg-maroon/5 text-maroon text-md font-bold rounded-full uppercase tracking-widest">
               Monthly
             </div>
           </div>
@@ -154,7 +154,7 @@ const Dashboard = () => {
       </section>
 
       <section>
-        <div className="w-full bg-surface rounded-3xl shadow-sm p-10 border border-border/40 hover:shadow-md transition-shadow">
+        <div className="w-full bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Recent System Activity
@@ -174,15 +174,15 @@ const Dashboard = () => {
                   <Clock size={24} />
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-sm font-bold text-maroon-dark">
+                  <h3 className="text-md font-bold text-maroon-dark">
                     New student registration processed
                   </h3>
-                  <p className="text-xs text-text-secondary mt-0.5">
+                  <p className="text-sm text-text-secondary mt-0.5">
                     Student ID #STR-2024-00{i} was successfully added to the
                     registry
                   </p>
                 </div>
-                <div className="text-[10px] font-bold text-text-secondary/50 uppercase tracking-tighter">
+                <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
                   {i * 2} mins ago
                 </div>
               </div>
