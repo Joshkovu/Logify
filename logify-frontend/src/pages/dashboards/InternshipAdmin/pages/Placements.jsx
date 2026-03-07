@@ -7,6 +7,8 @@ import {
   TableHeaderCell,
 } from "../../../../components/ui/table";
 import { placements } from "./placements-data";
+import StatusBadge from "../../../../components/ui/StatusBadge";
+import { Button } from "../../../../components/ui/Button";
 
 const stats = [
   { label: "Total Placements", value: 200 },
@@ -17,7 +19,7 @@ const stats = [
 
 const Placements = () => {
   return (
-    <div className="min-h-screen w-full p-4 bg-brown-50">
+    <div className="min-h-screen w-full p-4 bg-[#FCFBF8]">
       <h1 className="text-2xl font-bold text-brown-800">
         Placement Management
       </h1>
@@ -33,7 +35,7 @@ const Placements = () => {
             <h2 className="text-brown-700 text-lg font-semibold">
               {stat.label}
             </h2>
-            <span className="text-2xl font-bold text-brown-900">
+            <span className="text-2xl font-bold text-green-600">
               {stat.value}
             </span>
           </div>
@@ -63,16 +65,18 @@ const Placements = () => {
                 <TableCell>{placement.organization}</TableCell>
                 <TableCell>{placement.position}</TableCell>
                 <TableCell>
-                  <span
-                    className={`px-2 py-1 rounded text-xs font-medium ${placement.status === "Completed" ? "bg-brown-200 text-brown-800" : "bg-brown-400 text-white"}`}
-                  >
-                    {placement.status}
-                  </span>
+                  <StatusBadge status={placement.status} />
                 </TableCell>
                 <TableCell>
-                  <button className="px-3 py-1 bg-brown-600 text-white rounded hover:bg-brown-700 transition">
-                    View
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <Button variant="ghost" size="sm">
+                      View
+                    </Button>
+
+                    <Button variant="ghost" size="sm" className="text-red-600">
+                      Override
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
