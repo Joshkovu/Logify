@@ -23,25 +23,25 @@ const Supervisors = () => {
         </p>
       </header>
       <section className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Supervisors
           </span>
           <span className="text-3xl font-extrabold text-blue-700">10</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Academic Supervisors
           </span>
           <span className="text-3xl font-extrabold text-green-700">8</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Interns Supervised
           </span>
           <span className="text-3xl font-extrabold text-blue-700">20</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Workplace Supervisors
           </span>

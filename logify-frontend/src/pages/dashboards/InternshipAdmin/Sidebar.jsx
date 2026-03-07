@@ -9,6 +9,7 @@ import {
   FileText,
   Settings,
   LogOut,
+  ShieldCheck,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/Button";
@@ -32,8 +33,12 @@ const navLinks = [
 const Sidebar = () => {
   const location = useLocation();
   return (
-    <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gold/10">
+    <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
       <div className="mb-12 px-4">
+        <div>
+          {" "}
+          <ShieldCheck className="text-white h-6 w-6" />
+        </div>
         <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
           LOGIFY
         </div>
@@ -52,7 +57,7 @@ const Sidebar = () => {
               className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold transition-all duration-200 group
                 ${
                   isActive
-                    ? "bg-yellow-700 text-black shadow-lg shadow-gold/20 scale-[1.02]"
+                    ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 scale-[1.02]"
                     : "hover:bg-white/5 text-black/70 hover:text-black"
                 }
               `}
