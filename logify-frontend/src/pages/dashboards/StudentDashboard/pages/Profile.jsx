@@ -1,119 +1,232 @@
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  GraduationCap,
+  School,
+  Calendar,
+  Shield,
+  Lock,
+  Bell,
+} from "lucide-react";
+
 const Profile = () => {
   return (
-    <div className="min-h-screen m-15">
-      <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-4">Profile</h1>
-        <p>Manage your personal information and settings</p>
-      </div>
-      <section>
-        <div className="mb-4 flex w-full rounded-xl p-6 bg-white border border-gray-200">
-          <div className="h-25 w-25 bg-blue-600 rounded-l-full rounded-r-full p-6 text-2xl text-white">
-            {/*Placeholder for a profile picture*/}
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      <header className="mb-12">
+        <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+          My <span className="text-gold">Profile</span>
+        </h1>
+        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          Manage your personal information, academic records, and security
+          settings.
+        </p>
+      </header>
+
+      <section className="mb-12">
+        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
+          <div className="h-32 w-32 bg-maroonCustom rounded-3xl flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20">
+            SJ
           </div>
-          <div className="ml-4">
-            <p className="font-bold text-2xl">Sarah Johnson</p>
-            <p className="text-gray-600">Software Engineering Student</p>
-            <p className="text-sm text-gray-600"> Student ID: 123467890</p>
-            <div className="mt-4 flex gap-2">
-              <button className="text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-1">
+          <div className="flex-1">
+            <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
+              Sarah Johnson
+            </h2>
+            <p className="text-lg font-bold text-gold uppercase tracking-widest text-sm mb-4">
+              Software Engineering Student
+            </p>
+            <div className="flex gap-4">
+              <button className="text-xs font-bold text-white px-6 py-2.5 bg-maroonCustom hover:bg-maroon-dark transition-all rounded-xl shadow-md">
                 Edit Profile
               </button>
-              <button className="text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-1">
+              <button className="text-xs font-bold text-gold px-6 py-2.5 bg-gold/5 hover:bg-gold/10 transition-all rounded-xl border border-gold/20">
                 Change Password
               </button>
             </div>
           </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-4">
-            <p className="font-semibold">Personal Information</p>
-            <p className="text-gray-600">
-              Your basic information and contact details
+          <div className="text-right hidden md:block">
+            <p className="text-[10px] uppercase font-bold text-text-secondary/40 tracking-widest mb-1">
+              Student ID
+            </p>
+            <p className="text-xl font-black text-maroon-dark">
+              #STR-2024-0427
             </p>
           </div>
-          <div className="flex gap-10">
-            <div className="flex-1">
-              <p className="mt-4 font-semibold">First Name</p>
-              <p className="text-gray-600 text-sm">Sarah</p>
-              <p className="mt-4 font-semibold">Email Adress</p>
-              <p className="text-gray-600 text-sm">
-                sarah.johnson@university.edu
-              </p>
-              <p className="mt-4 font-semibold">Date of Birth</p>
-              <p className="text-gray-600 text-sm">March 15, 2002</p>
-            </div>
-            <div className="flex-1">
-              <p className="mt-4 font-semibold">Last Name</p>
-              <p className="text-gray-600 text-sm">Johnson</p>
-              <p className="mt-4 font-semibold">Phone Number</p>
-              <p className="text-gray-600 text-sm">+1 (555) 234-5678</p>
-              <p className="mt-4 font-semibold">Address</p>
-              <p className="text-gray-600 text-sm">
-                123 Student Lane, Campus City
-              </p>
-            </div>
-          </div>
         </div>
       </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-4">
-            <p className="font-semibold">Academic Information</p>
-            <p className="text-gray-600">Your university and program details</p>
-          </div>
-          <div className="flex gap-10">
-            <div className="flex-1">
-              <p className="mt-4 font-semibold">University</p>
-              <p className="text-gray-600 text-sm">University of Technology</p>
-              <p className="mt-4 font-semibold">Program</p>
-              <p className="text-gray-600 text-sm">
-                Bachelor of Science in Software Engineering
-              </p>
-              <p className="mt-4 font-semibold">Expected Graduation</p>
-              <p className="text-gray-600 text-sm">June 2026</p>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
+              <User size={20} />
             </div>
-            <div className="flex-1">
-              <p className="mt-4 font-semibold">Student Number</p>
-              <p className="text-gray-600 text-sm">1234567890</p>
-              <p className="mt-4 font-semibold">Year Level</p>
-              <p className="text-gray-600 text-sm">4th Year</p>
-              <p className="mt-4 font-semibold">Current GPA</p>
-              <p className="text-gray-600 text-sm">3.85 / 4.00</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="mt-4">
-        <div className="flex-col gap-4 bg-white flex flex-col-auto border-gray-200 border p-6 rounded-xl w-full">
-          <p className="font-semibold -mb-4">Account Settings</p>
-          <p className="text-gray-600">Manage your account preferences</p>
-          <div className="flex w-full text-gray-600 text-sm border-gray-200 border rounded-xl p-6">
             <div>
-              <p className="font-semibold text-lg text-black">
-                Email Notifications
+              <h3 className="text-xl font-black text-maroon-dark tracking-tight">
+                Personal Information
+              </h3>
+              <p className="text-xs text-text-secondary font-medium">
+                Basic identity and contact details
               </p>
-              <p className="">Receive updates about your internship</p>
-            </div>
-            <div className="ml-auto mt-2">
-              <button className="text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-1">
-                Enabled
-              </button>
             </div>
           </div>
-          <div className="flex w-full text-gray-600 text-sm border-gray-200 border rounded-xl p-6">
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+            {[
+              { label: "First Name", value: "Sarah", icon: User },
+              { label: "Last Name", value: "Johnson", icon: User },
+              {
+                label: "Email Address",
+                value: "sarah.j@university.edu",
+                icon: Mail,
+              },
+              {
+                label: "Phone Number",
+                value: "+1 (555) 234-5678",
+                icon: Phone,
+              },
+              {
+                label: "Date of Birth",
+                value: "March 15, 2002",
+                icon: Calendar,
+              },
+              {
+                label: "Address",
+                value: "123 Student Lane, Campus City",
+                icon: MapPin,
+              },
+            ].map((item, i) => (
+              <div key={i}>
+                <p className="text-[10px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
+                  {item.label}
+                </p>
+                <p className="text-md font-bold text-maroon-dark">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="p-2 bg-gold/10 rounded-lg text-gold">
+              <GraduationCap size={20} />
+            </div>
             <div>
-              <p className="font-semibold text-lg text-black">
-                Two-Factor Authentication
+              <h3 className="text-xl font-black text-maroon-dark tracking-tight">
+                Academic Details
+              </h3>
+              <p className="text-xs text-text-secondary font-medium">
+                University and program records
               </p>
-              <p className="">Add an extra layer of security</p>
             </div>
-            <div className="ml-auto mt-2">
-              <button className="text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-1">
-                Enable
-              </button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
+            {[
+              {
+                label: "University",
+                value: "University of Technology",
+                icon: School,
+              },
+              { label: "Faculty", value: "Engineering & Tech", icon: School },
+              {
+                label: "Program",
+                value: "B.Sc. Software Engineering",
+                icon: GraduationCap,
+              },
+              {
+                label: "Year Level",
+                value: "4th Year (Finalist)",
+                icon: Calendar,
+              },
+              {
+                label: "Academic Guard",
+                value: "Dr. Emily Roberts",
+                icon: User,
+              },
+              {
+                label: "Graduation",
+                value: "June 2026 (Expected)",
+                icon: Calendar,
+              },
+            ].map((item, i) => (
+              <div key={i}>
+                <p className="text-[10px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
+                  {item.label}
+                </p>
+                <p className="text-md font-bold text-maroon-dark">
+                  {item.value}
+                </p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <section>
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="p-2 bg-emerald-100 rounded-lg text-emerald-700">
+              <Shield size={20} />
             </div>
+            <div>
+              <h3 className="text-xl font-black text-maroon-dark tracking-tight">
+                Security & Preferences
+              </h3>
+              <p className="text-xs text-text-secondary font-medium">
+                Protect your account and manage notification settings
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                title: "Email Notifications",
+                desc: "Receive real-time updates about log approvals and evaluations.",
+                status: "Enabled",
+                icon: Bell,
+                active: true,
+              },
+              {
+                title: "Two-Factor Authentication",
+                desc: "Add an extra layer of security to your student portal access.",
+                status: "Disabled",
+                icon: Lock,
+                active: false,
+              },
+            ].map((setting, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
+                  <setting.icon size={24} />
+                </div>
+                <div className="flex-1">
+                  <h4 className="text-md font-bold text-maroon-dark">
+                    {setting.title}
+                  </h4>
+                  <p className="text-sm text-text-secondary mt-0.5">
+                    {setting.desc}
+                  </p>
+                </div>
+                <div>
+                  <button
+                    className={`px-4 py-2 rounded-lg text-xs font-bold border transition-all ${
+                      setting.active
+                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                        : "bg-white border-border text-text-secondary hover:bg-gray-50"
+                    }`}
+                  >
+                    {setting.status}
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>

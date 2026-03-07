@@ -1,25 +1,22 @@
+import MetricCard from "../../../../components/ui/MetricCard";
+import { User, Clock, CheckCircle2, ChevronRight } from "lucide-react";
+
 const Dashboard = () => {
   const summaryCards = [
     {
       title: "Interns Supervised",
       value: "5",
-      subtitle: "Currently assigned",
-      icon: "👥",
-      color: "text-black",
+      iconType: "interns",
     },
     {
-      title: "Pending Placement Approvals",
+      title: "Pending Approvals",
       value: "2",
-      subtitle: "Awaiting review",
-      icon: "📄",
-      color: "text-orange-500",
+      iconType: "placements",
     },
     {
       title: "Pending Evaluations",
       value: "1",
-      subtitle: "To be completed",
-      icon: "🏅",
-      color: "text-blue-500",
+      iconType: "evaluations",
     },
   ];
 
@@ -28,155 +25,211 @@ const Dashboard = () => {
       name: "Sarah Johnson",
       company: "TechCorp Solutions Inc.",
       course: "Software Engineering",
+      progress: 65,
       week: "Week 8/12",
     },
     {
       name: "Robert Kim",
       company: "DataTech Analytics",
       course: "Computer Science",
+      progress: 80,
       week: "Week 10/12",
     },
     {
       name: "Lisa Wang",
       company: "CloudNet Systems",
       course: "Information Technology",
+      progress: 45,
       week: "Week 6/12",
     },
   ];
 
   const approvals = [
     {
-      name: "David Chen - FinTech Corp",
+      student: "David Chen",
+      org: "FinTech Corp",
       role: "Software Development Position",
-      date: "Submitted on Feb 23, 2026",
+      date: "Feb 23, 2026",
     },
     {
-      name: "Maria Garcia - InnovateTech",
+      student: "Maria Garcia",
+      org: "InnovateTech",
       role: "UI/UX Design Position",
-      date: "Submitted on Feb 22, 2026",
+      date: "Feb 22, 2026",
     },
   ];
 
   const activities = [
     {
-      title: "Completed Mid-Term Evaluation for Sarah Johnson",
-      subtitle: "Score: 85% - Excellent performance",
+      title: "Completed Mid-Term Evaluation",
+      user: "Sarah Johnson",
+      desc: "Score: 85% - Excellent performance",
       time: "3 days ago",
+      type: "evaluation",
     },
     {
-      title: "Approved Placement for Robert Kim",
-      subtitle: "DataTech Analytics - Data Science Position",
+      title: "Approved Placement",
+      user: "Robert Kim",
+      desc: "DataTech Analytics - Data Science Position",
       time: "5 days ago",
-    },
-    {
-      title: "Approved Placement for Lisa Wang",
-      subtitle: "CloudNet Systems - Cloud Engineering Position",
-      time: "1 week ago",
+      type: "placement",
     },
   ];
 
   return (
-    <div className="min-h-screen w-full px-6 py-6 bg-[#f7f5f2]">
-      <nav className="mb-8 flex items-center justify-between border-b pb-4">
-        <div className="text-2xl">☰</div>
-        <div className="flex items-center gap-4">
-          <span>🔔</span>
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-pink-100 font-bold text-[#8d1726]">
-            ER
-          </div>
-          <span>⌄</span>
-        </div>
-      </nav>
+    <div className="min-h-screen w-full bg-gray-50 px-12 py-10 font-sans">
+      <header className="mb-12">
+        <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+          Academic <span className="text-gold">Dashboard</span>
+        </h1>
+        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          Welcome back, Dr. Roberts! Monitor student progress and manage
+          academic approvals with real-time statistics.
+        </p>
+      </header>
 
-      <h1 className="text-4xl font-bold mb-3">Dashboard</h1>
-      <p className="mb-6 text-gray-600 text-xl">
-        Welcome back, Dr. Roberts! Here&apos;s your supervision overview.
-      </p>
-
-      <div className="flex flex-col gap-4 mt-4">
+      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
         {summaryCards.map((card) => (
-          <div
+          <MetricCard
             key={card.title}
-            className="w-full p-6 bg-white rounded-2xl shadow-sm border"
-          >
-            <div className="flex justify-between items-end">
-              <div>
-                <h3 className="text-gray-500 text-xl">{card.title}</h3>
-                <div className={`text-5xl font-bold mt-8 ${card.color}`}>
-                  {card.value}
-                </div>
-                <p className="text-gray-600 mt-2 text-lg">{card.subtitle}</p>
-              </div>
-              <div className="text-3xl">{card.icon}</div>
+            title={card.title}
+            value={card.value}
+            iconType={card.iconType}
+          />
+        ))}
+      </section>
+
+      <section className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                Supervised Interns
+              </h2>
+              <p className="text-text-secondary text-md mt-1">
+                Students currently under your mentorship
+              </p>
             </div>
           </div>
-        ))}
-      </div>
 
-      <section className="w-full p-6 bg-white rounded-2xl shadow-sm border mt-6">
-        <h3 className="text-2xl font-bold mb-2">Supervised Interns</h3>
-        <p className="text-gray-500 mb-4">
-          Overview of students under your supervision
-        </p>
-
-        <div className="flex flex-col gap-4">
-          {supervisedInterns.map((intern) => (
-            <div key={intern.name} className="p-5 border rounded-2xl bg-white">
-              <div className="flex justify-between items-start">
-                <div>
-                  <h4 className="text-2xl font-semibold">{intern.name}</h4>
-                  <p className="text-gray-600">{intern.company}</p>
-                  <p className="text-gray-600">{intern.course}</p>
+          <div className="space-y-6">
+            {supervisedInterns.map((intern) => (
+              <div
+                key={intern.name}
+                className="p-6 bg-background/50 rounded-2xl border border-border/30 hover:scale-101 transition-transform"
+              >
+                <div className="flex justify-between items-start mb-4">
+                  <div className="flex items-center gap-4">
+                    <div className="h-10 w-10 rounded-full bg-maroonCustom/10 text-maroonCustom flex items-center justify-center font-bold">
+                      {intern.name.charAt(0)}
+                    </div>
+                    <div>
+                      <h4 className="text-lg font-bold text-maroon-dark">
+                        {intern.name}
+                      </h4>
+                      <p className="text-xs text-text-secondary font-medium">
+                        {intern.company}
+                      </p>
+                    </div>
+                  </div>
+                  <span className="text-xs font-black text-gold uppercase tracking-widest">
+                    {intern.week}
+                  </span>
                 </div>
-                <div className="text-right">
-                  <p className="text-gray-600">{intern.week}</p>
-                  <div className="w-40 h-3 bg-pink-100 rounded-full mt-3">
-                    <div className="w-24 h-3 bg-[#8d1726] rounded-full"></div>
+                <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-maroonCustom transition-all duration-1000"
+                    style={{ width: `${intern.progress}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="flex justify-between items-start mb-8">
+            <div>
+              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                Pending Approvals
+              </h2>
+              <p className="text-text-secondary text-md mt-1">
+                Review and authorize new internship site requests
+              </p>
+            </div>
+          </div>
+
+          <div className="space-y-4">
+            {approvals.map((approval) => (
+              <div
+                key={approval.student}
+                className="p-6 border border-gold/20 bg-gold/5 rounded-2xl flex items-center justify-between group cursor-pointer hover:bg-gold/10 transition-colors"
+              >
+                <div className="flex items-center gap-5">
+                  <div className="p-3 bg-white rounded-xl text-gold shadow-sm">
+                    <Clock size={24} />
+                  </div>
+                  <div>
+                    <h4 className="text-md font-bold text-maroon-dark">
+                      {approval.student} &bull;{" "}
+                      <span className="text-sm font-medium text-text-secondary">
+                        {approval.org}
+                      </span>
+                    </h4>
+                    <p className="text-xs text-text-secondary mt-1 font-medium italic">
+                      {approval.role}
+                    </p>
                   </div>
                 </div>
+                <ChevronRight className="text-gold group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </section>
 
-      <section className="w-full p-6 bg-white rounded-2xl shadow-sm border mt-6">
-        <h3 className="text-2xl font-bold mb-2">Pending Placement Approvals</h3>
-        <p className="text-gray-500 mb-4">
-          Internship placements awaiting your approval
-        </p>
+      <section className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="mb-8">
+          <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+            Recent Supervision Activity
+          </h2>
+          <p className="text-text-secondary text-md mt-1">
+            Chronological log of your recent interactions and approvals
+          </p>
+        </div>
 
-        <div className="flex flex-col gap-4">
-          {approvals.map((approval) => (
+        <div className="space-y-4">
+          {activities.map((activity, i) => (
             <div
-              key={approval.name}
-              className="p-5 border rounded-2xl bg-yellow-50 border-yellow-200"
+              key={i}
+              className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
             >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="text-2xl font-semibold">{approval.name}</h4>
-                  <p className="text-gray-600">{approval.role}</p>
-                  <p className="text-gray-500 mt-2">{approval.date}</p>
-                </div>
-                <div className="text-2xl text-orange-500">🕒</div>
+              <div
+                className={`h-12 w-12 rounded-xl flex items-center justify-center ${
+                  activity.type === "evaluation"
+                    ? "bg-emerald-100 text-emerald-700"
+                    : "bg-blue-100 text-blue-700"
+                }`}
+              >
+                {activity.type === "evaluation" ? (
+                  <CheckCircle2 size={24} />
+                ) : (
+                  <User size={24} />
+                )}
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      <section className="w-full p-6 bg-white rounded-2xl shadow-sm border mt-6">
-        <h3 className="text-2xl font-bold mb-2">Recent Activity</h3>
-        <p className="text-gray-500 mb-4">Your latest actions and updates</p>
-
-        <div className="flex flex-col gap-4">
-          {activities.map((activity) => (
-            <div key={activity.title} className="flex gap-4 border-b pb-4">
-              <div className="mt-2 h-3 w-3 rounded-full bg-green-500"></div>
-              <div>
-                <h4 className="text-2xl font-medium">{activity.title}</h4>
-                <p className="text-gray-600">{activity.subtitle}</p>
-                <p className="text-gray-500">{activity.time}</p>
+              <div className="flex-1">
+                <h3 className="text-md font-bold text-maroon-dark">
+                  {activity.title} &bull;{" "}
+                  <span className="text-text-secondary font-medium">
+                    {activity.user}
+                  </span>
+                </h3>
+                <p className="text-sm text-text-secondary mt-0.5">
+                  {activity.desc}
+                </p>
+              </div>
+              <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
+                {activity.time}
               </div>
             </div>
           ))}

@@ -1,134 +1,156 @@
+import { Clock } from "lucide-react";
+import MetricCard from "../../../../components/ui/MetricCard";
+
 const Dashboard = () => {
   const person = {
     firstName: "Sarah",
     lastName: "Johnson",
   };
 
+  const metrics = [
+    { title: "Internship Status", value: "Active", iconType: "placements" },
+    { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
+    { title: "Pending Tasks", value: "3", iconType: "reviews" },
+    { title: "Final Score", value: "Pending", iconType: "evaluations" },
+  ];
+
   return (
-    <div className=" min-h-screen m-15">
-      <nav></nav>
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <p>
-        Welcome back, {person.firstName}! Here&apos;s your internship overview.
-      </p>
-      <section className="flex mt-4 gap-6">
-        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
-          <div className="flex">
-            <div className="text-sm">
-              <h3 className="text-lg">Internship Status</h3>
-              <div className="flex mt-8 mb-5">
-                <span className="text-xs text-green-700 bg-green-200 shadow p-0.5 pl-3 pr-3 rounded-2xl">
-                  ACTIVE
-                </span>
-                <p className="ml-auto">{/*Placeholder for an icon*/}</p>
-              </div>
-              <p>Your internship is currently in progress</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
-          <div className="flex">
-            <div className="text-sm">
-              <h3 className="text-lg">Weekly Logs</h3>
-              <div className="flex mt-8 mb-5">
-                <span className="text-xs text-green-700 bg-green-200 shadow p-0.5 pl-3 pr-3 rounded-2xl">
-                  ACTIVE
-                </span>
-                <p className="ml-auto">{/*Placeholder for an icon*/}</p>
-              </div>
-              <p>Your internship is currently in progress</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
-          <div className="flex">
-            <div className="text-sm">
-              <h3 className="text-lg">Pending Tasks</h3>
-              <div className="flex mt-8 mb-5">
-                <span className="text-xs text-green-700 bg-green-200 shadow p-0.5 pl-3 pr-3 rounded-2xl">
-                  ACTIVE
-                </span>
-                <p className="ml-auto">{/*Placeholder for an icon*/}</p>
-              </div>
-              <p>Your internship is currently in progress</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white text-gray-600 w-100 p-6 border border-gray-200 rounded-xl mt-4">
-          <div className="flex">
-            <div className="text-sm">
-              <h3 className="text-lg">Final Score</h3>
-              <div className="flex mt-8 mb-5">
-                <span className="text-xs text-green-700 bg-green-200 shadow p-0.5 pl-3 pr-3 rounded-2xl">
-                  ACTIVE
-                </span>
-                <p className="ml-auto">{/*Placeholder for an icon*/}</p>
-              </div>
-              <p>Your internship is currently in progress</p>
-            </div>
-          </div>
-        </div>
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      <header className="mb-12">
+        <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+          Student <span className="text-gold">Dashboard</span>
+        </h1>
+        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          Welcome back, {person.firstName}! Here&apos;s your internship
+          overview.
+        </p>
+      </header>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        {metrics.map((m) => (
+          <MetricCard
+            key={m.title}
+            title={m.title}
+            value={m.value}
+            iconType={m.iconType}
+          />
+        ))}
       </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Current Internship</p>
-            <p className="text-gray-600">Your active placement details</p>
-          </div>
-          <div className="flex gap-10">
-            <div className="flex-1">
-              <p className="text-gray-600 text-sm">Organization</p>
-              <p className="mb-4 font-semibold">TechCorp Solutions Inc.</p>
-              <p className="text-gray-600 text-sm">Workplace Supervisor</p>
-              <p className="mb-4 font-semibold">Michael Chen</p>
-              <p className="text-gray-600 text-sm">Start Date</p>
-              <p className="mb-4 font-semibold">January 15, 2026</p>
-            </div>
-            <div className="flex-1">
-              <p className="text-gray-600 text-sm">Position</p>
-              <p className="mb-4 font-semibold">Software Engineering Intern</p>
-              <p className="text-gray-600 text-sm">Academic Supervisor</p>
-              <p className="mb-4 font-semibold">Dr. Emily Roberts</p>
-              <p className="text-gray-600 text-sm">End Date</p>
-              <p className="mb-4 font-semibold">April 10, 2026</p>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Recent Activity</p>
-            <p className="text-gray-600">Your latest updates and actions</p>
-          </div>
-          <div className="text-sm">
-            <div>
-              <p className="font-semibold">Week 8 Log Approved</p>
-              <p className="text-gray-600">
-                Your weekly log has been reviewed and approved by Michael Chen
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <section>
+          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-102 transition-all h-full">
+            <div className="mb-8">
+              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                Current Internship
+              </h2>
+              <p className="text-text-secondary text-md mt-1">
+                Your active placement details
               </p>
-              <p className="text-gray-600 text-xs mt-1.5">2 days ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
             </div>
-            <div>
-              <p className="font-semibold">Week 8 Log Submitted</p>
-              <p className="text-gray-600">
-                Successfully submitted your weekly log for review
-              </p>
-              <p className="text-gray-600 text-xs mt-1.5">4 days ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
-            </div>
-            <div>
-              <p className="font-semibold">Week 7 Log Approved</p>
-              <p className="text-gray-600">
-                Your weekly log has been reviewed and approved
-              </p>
-              <p className="text-gray-600 text-xs mt-1.5">1 week ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  Organization
+                </p>
+                <p className="text-lg font-bold text-maroon-dark mb-4">
+                  TechCorp Solutions Inc.
+                </p>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  Workplace Supervisor
+                </p>
+                <p className="text-lg font-bold text-maroon-dark mb-4">
+                  Michael Chen
+                </p>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  Start Date
+                </p>
+                <p className="text-lg font-bold text-maroon-dark">
+                  Jan 15, 2026
+                </p>
+              </div>
+              <div>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  Position
+                </p>
+                <p className="text-lg font-bold text-maroon-dark mb-4">
+                  Software Engineering Intern
+                </p>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  Academic Supervisor
+                </p>
+                <p className="text-lg font-bold text-maroon-dark mb-4">
+                  Dr. Emily Roberts
+                </p>
+                <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
+                  End Date
+                </p>
+                <p className="text-lg font-bold text-maroon-dark">
+                  Apr 10, 2026
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+
+        <section>
+          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform h-full">
+            <div className="flex items-center justify-between mb-8">
+              <div>
+                <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                  Recent Activity
+                </h2>
+                <p className="text-text-secondary text-md mt-1">
+                  Your latest updates and actions
+                </p>
+              </div>
+              <button className="text-xs font-bold text-gold hover:text-maroon transition-colors px-4 py-2 bg-gold/5 rounded-lg border border-gold/10">
+                View All
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {[
+                {
+                  title: "Week 8 Log Approved",
+                  desc: "Your weekly log has been reviewed and approved by Michael Chen",
+                  time: "2 days ago",
+                },
+                {
+                  title: "Week 8 Log Submitted",
+                  desc: "Successfully submitted your weekly log for review",
+                  time: "4 days ago",
+                },
+                {
+                  title: "Week 7 Log Approved",
+                  desc: "Your weekly log has been reviewed and approved",
+                  time: "1 week ago",
+                },
+              ].map((activity, i) => (
+                <div
+                  key={i}
+                  className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+                >
+                  <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
+                    <Clock size={24} />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-md font-bold text-maroon-dark">
+                      {activity.title}
+                    </h3>
+                    <p className="text-sm text-text-secondary mt-0.5">
+                      {activity.desc}
+                    </p>
+                  </div>
+                  <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
+                    {activity.time}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 };
