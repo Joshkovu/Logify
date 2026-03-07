@@ -90,7 +90,7 @@ const Dashboard = () => {
 
       <h1 className="text-4xl font-bold mb-3">Dashboard</h1>
       <p className="mb-6 text-gray-600 text-xl">
-        Welcome back, Dr. Roberts! Here's your supervision overview.
+        Welcome back, Dr. Roberts! Here&apos;s your supervision overview.
       </p>
 
       <div className="flex flex-col gap-4 mt-4">
