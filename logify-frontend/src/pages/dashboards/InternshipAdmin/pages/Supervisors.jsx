@@ -7,10 +7,13 @@ import {
   TableHeaderCell,
 } from "../../../../components/ui/table";
 import { supervisors } from "./supervisors-data";
+import { Button } from "../../../../components/ui/Button";
+import { Badge } from "../../../../components/ui/Badge";
+import { UserPlus } from "lucide-react";
 
 const Supervisors = () => {
   return (
-    <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
       <header className="mb-8">
         <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
           Supervisor Management
@@ -24,25 +27,25 @@ const Supervisors = () => {
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">10</span>
+          <span className="text-3xl font-extrabold text-blue-700">10</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Academic Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">8</span>
+          <span className="text-3xl font-extrabold text-green-700">8</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Interns Supervised
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">20</span>
+          <span className="text-3xl font-extrabold text-blue-700">20</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Workplace Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">18</span>
+          <span className="text-3xl font-extrabold text-green-700">18</span>
         </div>
       </section>
       <section className="mb-8">
@@ -55,7 +58,8 @@ const Supervisors = () => {
               Complete list of all supervisors
             </p>
           </div>
-          <button className="bg-maroon text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+          <button className="bg-blue-500 flex text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+            <UserPlus className="h-6 w-4 mr-2" />
             Add Supervisor
           </button>
         </div>
@@ -74,14 +78,21 @@ const Supervisors = () => {
             {supervisors.map((sup, idx) => (
               <TableRow key={idx} index={idx}>
                 <TableCell>{sup.name}</TableCell>
-                <TableCell>{sup.type}</TableCell>
+                <TableCell>
+                  {" "}
+                  <Badge
+                    variant={sup.type === "Academic" ? "default" : "outline"}
+                  >
+                    {sup.type}
+                  </Badge>
+                </TableCell>
                 <TableCell>{sup.affiliation}</TableCell>
                 <TableCell>{sup.interns}</TableCell>
                 <TableCell>{sup.email}</TableCell>
                 <TableCell>
-                  <button className="bg-maroon text-white px-3 py-1 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+                  <Button variant="ghost" size="sm">
                     {sup.action}
-                  </button>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
