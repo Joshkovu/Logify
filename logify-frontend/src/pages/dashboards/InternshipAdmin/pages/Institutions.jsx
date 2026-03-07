@@ -6,18 +6,29 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../../../../components/ui/table";
+import { Plus, Edit, Trash2 } from "lucide-react";
+import { Button } from "../../../../components/ui/Button";
 import { institutions } from "./institutions-data";
 
 const Institutions = () => {
   return (
-    <div className="min-h-screen w-full bg-background px-10 py-8 font-sans">
-      <header className="mb-8">
-        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
-          Partner Institutions
-        </h1>
-        <p className="text-lg text-text-secondary">
-          Manage organizations offering internship placements
-        </p>
+    <div className="min-h-screen w-full bg-[#FCFBF8]  px-10 py-8 font-sans">
+      <header className="mb-8 flex justify-between">
+        <div>
+          <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+            Partner Institutions
+          </h1>
+          <p className="text-lg text-text-secondary">
+            Manage organizations offering internship placements
+          </p>
+        </div>
+        <div>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            {" "}
+            <Plus className="h-4 w-4 mr-2" />
+            Add Institution
+          </Button>
+        </div>
       </header>
       <section className="grid grid-cols-3 gap-6 mb-8">
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
@@ -49,9 +60,6 @@ const Institutions = () => {
               Complete list of partner organizations
             </p>
           </div>
-          <button className="bg-maroon text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
-            Add Institution
-          </button>
         </div>
         <Table>
           <TableHead>
@@ -59,6 +67,7 @@ const Institutions = () => {
               <TableHeaderCell>Organization Name</TableHeaderCell>
               <TableHeaderCell>Industry Type</TableHeaderCell>
               <TableHeaderCell>Contact Email</TableHeaderCell>
+              <TableHeaderCell>Action</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -67,6 +76,18 @@ const Institutions = () => {
                 <TableCell>{org.name}</TableCell>
                 <TableCell>{org.industry}</TableCell>
                 <TableCell>{org.email}</TableCell>
+                <div className="flex">
+                  <TableCell>
+                    <Button variant="ghost" size="sm">
+                      <Edit className="h-4 w-4 text-green-500" />
+                    </Button>
+                  </TableCell>
+                  <TableCell>
+                    <Button variant="ghost" size="sm">
+                      <Trash2 className="h-4 w-4 text-red-600" />
+                    </Button>
+                  </TableCell>
+                </div>
               </TableRow>
             ))}
           </TableBody>
