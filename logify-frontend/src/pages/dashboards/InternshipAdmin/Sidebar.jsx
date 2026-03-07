@@ -8,7 +8,11 @@ import {
   ClipboardList,
   FileText,
   Settings,
+  LogOut,
 } from "lucide-react";
+
+import { Button } from "../../../components/ui/Button";
+import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 
 const navLinks = [
   { name: "Dashboard", path: "/", icon: Home },
@@ -48,8 +52,8 @@ const Sidebar = () => {
               className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold transition-all duration-200 group
                 ${
                   isActive
-                    ? "bg-gold text-black shadow-lg shadow-gold/20 scale-[1.02]"
-                    : "hover:bg-white/5 text-black/70 text-black hover:text-black"
+                    ? "bg-yellow-700 text-black shadow-lg shadow-gold/20 scale-[1.02]"
+                    : "hover:bg-white/5 text-black/70 hover:text-black"
                 }
               `}
               tabIndex={0}
@@ -69,13 +73,29 @@ const Sidebar = () => {
           );
         })}
       </nav>
-      <div className="mt-auto px-4 pb-2">
-        <div className="p-4 bg-white/5 rounded-2xl border border-white/10">
-          <div className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2">
-            Logged in as
+      <div className="p-6  mt-60 border-t border-border bg-muted/30">
+        <div className="flex items-center gap-3 mb-4">
+          <Avatar className="h-10 w-10 border-2 border-primary/10">
+            <AvatarFallback className="bg-amber-500 text-white font-bold">
+              JK
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-xs font-bold text-foreground truncate max-w-30">
+              Joash Kuteesa
+            </span>
+            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
+              Department of Computer Science
+            </span>
           </div>
-          <div className="text-sm font-bold text-gold">Internship Admin</div>
         </div>
+        <Button
+          variant="outline"
+          className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          Sign Out
+        </Button>
       </div>
     </aside>
   );
