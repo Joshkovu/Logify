@@ -8,10 +8,11 @@ import {
 } from "../../../../components/ui/table";
 import StatusBadge from "../../../../components/ui/StatusBadge";
 import { students } from "./students-data";
+import { Button } from "../../../../components/ui/Button";
 
 const Students = () => {
   return (
-    <div className="min-h-screen w-full bg-background px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
       <header className="mb-8">
         <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
           Student Management
@@ -25,27 +26,25 @@ const Students = () => {
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Students
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">5</span>
+          <span className="text-3xl font-extrabold text-blue-700">5</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Active Internships
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">3</span>
+          <span className="text-3xl font-extrabold text-green-500">3</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Pending Placements
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">2</span>
+          <span className="text-3xl font-extrabold text-orange-300">2</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Average Score
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">
-            84.2%
-          </span>
+          <span className="text-3xl font-extrabold text-blue-700">84.2%</span>
         </div>
       </section>
       <section>
@@ -84,11 +83,23 @@ const Students = () => {
                 <TableCell>
                   <StatusBadge status={student.status} />
                 </TableCell>
-                <TableCell>{student.score}</TableCell>
                 <TableCell>
-                  <button className="bg-maroon text-white px-3 py-1 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+                  {student.score ? (
+                    <span className="font-medium text-blue-600">
+                      {student.score}%
+                    </span>
+                  ) : (
+                    <span className="text-gray-400">--</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    className="hover:text-red-700"
+                    variant="ghost"
+                    size="sm"
+                  >
                     {student.action}
-                  </button>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
