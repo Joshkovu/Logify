@@ -1,29 +1,24 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Sidebar from "./pages/dashboards/AcademicSupervisorDashboard/Sidebar";
-import Dashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Dashboard";
-import InternshipApprovals from "./pages/dashboards/AcademicSupervisorDashboard/Pages/InternshipApprovals";
-import Evaluation from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Evaluation";
-import Reports from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Reports";
-import Profile from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Profile";
+import LandingPage from "./pages/LandingPage";
+import StudentDashboard from "./pages/dashboards/StudentDashboard/StudentDashboard";
+import AdminDashboard from "./pages/dashboards/InternshipAdmin/AdminDashboard";
+import SupervisorDashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/SupervisorDashboard";
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen bg-[#f7f5f2]">
-        <Sidebar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route
-              path="/internship-approvals"
-              element={<InternshipApprovals />}
-            />
-            <Route path="/evaluation" element={<Evaluation />} />
-            <Route path="/reports" element={<Reports />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
-        </main>
-      </div>
+      <Routes>
+        {/* Main Landing Page */}
+        <Route path="/" element={<LandingPage />} />
+
+        {/* Dashboards with nested routing */}
+        <Route path="/student/*" element={<StudentDashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/supervisor/*" element={<SupervisorDashboard />} />
+
+        {/* Fallback to landing page for now */}
+        <Route path="*" element={<LandingPage />} />
+      </Routes>
     </BrowserRouter>
   );
 }

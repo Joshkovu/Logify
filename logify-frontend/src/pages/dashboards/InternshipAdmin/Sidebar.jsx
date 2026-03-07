@@ -16,18 +16,18 @@ import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 
 const navLinks = [
-  { name: "Dashboard", path: "/", icon: Home },
-  { name: "Institutions", path: "/institutions", icon: Building2 },
-  { name: "Student Registry", path: "/students", icon: Users },
-  { name: "Supervisors", path: "/supervisors", icon: User },
+  { name: "Dashboard", path: "/admin", icon: Home },
+  { name: "Institutions", path: "/admin/institutions", icon: Building2 },
+  { name: "Student Registry", path: "/admin/students", icon: Users },
+  { name: "Supervisors", path: "/admin/supervisors", icon: User },
   {
     name: "Internship Placements",
-    path: "/placements",
+    path: "/admin/placements",
     icon: Briefcase,
   },
-  { name: "Evaluations", path: "/evaluations", icon: ClipboardList },
-  { name: "Reports", path: "/reports", icon: FileText },
-  { name: "System Settings", path: "/settings", icon: Settings },
+  { name: "Evaluations", path: "/admin/evaluations", icon: ClipboardList },
+  { name: "Reports", path: "/admin/reports", icon: FileText },
+  { name: "System Settings", path: "/admin/settings", icon: Settings },
 ];
 
 const Sidebar = () => {

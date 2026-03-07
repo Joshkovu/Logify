@@ -1,139 +1,245 @@
+import { Clock, MapPin, Building2, User, Phone, Mail } from "lucide-react";
+import MetricCard from "../../../../components/ui/MetricCard";
+
 const InternshipPlacement = () => {
+  const metrics = [
+    { title: "Placement Status", value: "Active", iconType: "placements" },
+    { title: "Total Duration", value: "12 Weeks", iconType: "reviews" },
+    { title: "Current Week", value: "Week 8", iconType: "reviews" },
+    { title: "Days Remaining", value: "24 Days", iconType: "reviews" },
+  ];
+
   return (
-    <div className=" min-h-screen m-15">
-      <nav></nav>
-      <div className="flex">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      <header className="mb-12 flex justify-between items-start">
         <div>
-          <h1 className="text-2xl font-bold mb-4">Internship Placement</h1>
-          <p>View and manage your internship placement details</p>
+          <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+            Internship <span className="text-gold">Placement</span>
+          </h1>
+          <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+            View and manage your internship placement details and organization
+            contact info.
+          </p>
         </div>
-        <div className="ml-auto mt-2.5">
-          <button className="font-semibold text-gray-400 border border-gray-200 rounded-md p-1.5">
-            Edit Details
-          </button>
-        </div>
+        <button className="text-sm font-bold text-gold hover:text-maroon transition-colors px-6 py-3 bg-gold/5 rounded-xl border border-gold/20 shadow-sm">
+          Edit Details
+        </button>
+      </header>
+
+      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+        {metrics.map((m) => (
+          <MetricCard
+            key={m.title}
+            title={m.title}
+            value={m.value}
+            iconType={m.iconType}
+          />
+        ))}
+      </section>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <section className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              Organization Details
+            </h2>
+            <p className="text-text-secondary text-md mt-1">
+              Host organization information and contact
+            </p>
+          </div>
+
+          <div className="space-y-6">
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-gold/10 rounded-xl text-gold">
+                <Building2 size={24} />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest font-bold text-text-secondary/60 mb-1">
+                  Organization Name
+                </p>
+                <p className="text-lg font-bold text-maroon-dark">
+                  TechCorp Solutions Inc.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-start gap-4">
+              <div className="p-3 bg-gold/10 rounded-xl text-gold">
+                <MapPin size={24} />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-widest font-bold text-text-secondary/60 mb-1">
+                  Physical Address
+                </p>
+                <p className="text-lg font-bold text-maroon-dark leading-snug">
+                  456 Innovation Drive, Tech Park,
+                  <br />
+                  Silicon Valley, CA 94025
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-gold/5 rounded-lg text-gold">
+                  <Phone size={18} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-text-secondary/40">
+                    Contact
+                  </p>
+                  <p className="text-sm font-bold text-maroon-dark">
+                    +1 (555) 123-4567
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="p-2 bg-gold/5 rounded-lg text-gold">
+                  <Mail size={18} />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-text-secondary/40">
+                    Email
+                  </p>
+                  <p className="text-sm font-bold text-maroon-dark">
+                    contact@techcorp.com
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              Supervisor Records
+            </h2>
+            <p className="text-text-secondary text-md mt-1">
+              Assigned workplace and academic mentors
+            </p>
+          </div>
+
+          <div className="space-y-8">
+            <div className="p-6 bg-background/50 rounded-2xl border border-border/30">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-12 w-12 rounded-full bg-maroon-dark flex items-center justify-center text-white">
+                  <User size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-maroon-dark">
+                    Michael Chen
+                  </h3>
+                  <p className="text-[10px] uppercase font-bold text-gold tracking-widest">
+                    Workplace Supervisor
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm font-semibold text-text-secondary">
+                <div>
+                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
+                    Position
+                  </p>
+                  <p className="text-maroon-dark">Senior SE</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
+                    Email
+                  </p>
+                  <p className="text-maroon-dark truncate">
+                    m.chen@techcorp.com
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="p-6 bg-gold/5 rounded-2xl border border-gold/20">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="h-12 w-12 rounded-full bg-gold flex items-center justify-center text-maroon-dark">
+                  <User size={24} />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-maroon-dark">
+                    Dr. Emily Roberts
+                  </h3>
+                  <p className="text-[10px] uppercase font-bold text-maroonCustom tracking-widest">
+                    Academic Supervisor
+                  </p>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 text-sm font-semibold text-text-secondary">
+                <div>
+                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
+                    Department
+                  </p>
+                  <p className="text-maroon-dark">Comp Sci</p>
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
+                    Email
+                  </p>
+                  <p className="text-maroon-dark truncate">
+                    e.roberts@university.edu
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
       </div>
-      <section className="bg-white mt-8 p-6 border border-gray-200 rounded-xl w-full">
-        <div className="flex ">
-          <div>
-            <p className="font-semibold">Placement Status</p>
-            <p className="text-gray-600">
-              Current status of your internship placement
-            </p>
-          </div>
-          <div className="mt-3 ml-auto">
-            <span className="text-xs text-green-700 bg-green-200 shadow p-0.5 pl-3 pr-3 rounded-2xl">
-              ACTIVE
-            </span>
-          </div>
-        </div>
-        <div className="mt-10 flex gap-10">
-          <div className="flex-1">
-            <p className="text-gray-600 text-sm">Start Date</p>
-            <p className="mb-4 font-semibold">January 15, 2026</p>
-          </div>
-          <div className="flex-1">
-            <p className="text-gray-600 text-sm">End Date</p>
-            <p className="mb-4 font-semibold">April 10, 2026</p>
-          </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Organization Information</p>
-            <p className="text-gray-600">
-              Details about your host organization
-            </p>
-          </div>
-          <div className="flex-1">
-            <p className="text-gray-600 text-sm">Organization Name</p>
-            <p className="mb-4 font-semibold">TechCorp Solutions Inc.</p>
-            <p className="text-gray-600 text-sm">Address</p>
-            <p className="mb-4 font-semibold">
-              456 Innovation Drive, Tech Park, Silicon Valley, CA 94025
-            </p>
-            <p className="text-gray-600 text-sm">Contact Number</p>
-            <p className="mb-4 font-semibold">+1 (555) 123-4567</p>
-            <p className="text-gray-600 text-sm">Email</p>
-            <p className="mb-4 font-semibold">contact@techcorp.com</p>
-          </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Workplace Supervisor</p>
-            <p className="text-gray-600">
-              Your supervisor at the host organization
-            </p>
-          </div>
-          <div className="flex-1">
-            <p className="text-gray-600 text-sm">Name</p>
-            <p className="mb-4 font-semibold">Michael Chen</p>
-            <p className="text-gray-600 text-sm">Position</p>
-            <p className="mb-4 font-semibold">Senior Software Engineer</p>
-            <p className="text-gray-600 text-sm">Contact Number</p>
-            <p className="mb-4 font-semibold">+1 (555) 123-4568</p>
-            <p className="text-gray-600 text-sm">Email</p>
-            <p className="mb-4 font-semibold">email.michaelchen@techcorp.com</p>
-          </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Academic Supervisor</p>
-            <p className="text-gray-600">Your university supervisor</p>
-          </div>
-          <div className="flex-1">
-            <p className="text-gray-600 text-sm">Name</p>
-            <p className="mb-4 font-semibold">Dr. Emily Roberts</p>
-            <p className="text-gray-600 text-sm">Department</p>
-            <p className="mb-4 font-semibold">Computer Science</p>
-            <p className="text-gray-600 text-sm">Contact Number</p>
-            <p className="mb-4 font-semibold">+1 (555) 987-6543</p>
-            <p className="text-gray-600 text-sm">Email</p>
-            <p className="mb-4 font-semibold">contact@techcorp.com</p>
-          </div>
-        </div>
-      </section>
-      <section className="flex mt-4">
-        <div className="bg-white p-6 border border-gray-200 rounded-xl w-full">
-          <div className="mb-6">
-            <p className="font-semibold">Status Timeline</p>
-            <p className="text-gray-600">
+
+      <section>
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              Status Timeline
+            </h2>
+            <p className="text-text-secondary text-md mt-1">
               History of your placement status changes
             </p>
           </div>
-          <div className="text-sm">
-            <div>
-              <p className="font-semibold">Internship Started</p>
-              <p className="text-gray-600">
-                Your internsip has officially begun
-              </p>
-              <p className="text-gray-600 text-xs mt-1.5">2 days ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
-            </div>
-            <div>
-              <p className="font-semibold">Placement Approved</p>
-              <p className="text-gray-600">
-                Dr. Emily Roberts approved your internship placement
-              </p>
-              <p className="text-gray-600 text-xs mt-1.5">4 days ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
-            </div>
-            <div>
-              <p className="font-semibold">Placement Submitted</p>
-              <p className="text-gray-600">
-                You submitted your placement details for review
-              </p>
-              <p className="text-gray-600 text-xs mt-1.5">1 week ago</p>
-              <hr className="mt-5 mb-4 border-gray-100" />
-            </div>
+
+          <div className="space-y-4">
+            {[
+              {
+                title: "Internship Started",
+                desc: "Your internship has officially begun at TechCorp Solutions Inc.",
+                time: "2 days ago",
+              },
+              {
+                title: "Placement Approved",
+                desc: "Dr. Emily Roberts approved your internship placement",
+                time: "4 days ago",
+              },
+              {
+                title: "Placement Submitted",
+                desc: "You submitted your placement details for review",
+                time: "1 week ago",
+              },
+            ].map((activity, i) => (
+              <div
+                key={i}
+                className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+              >
+                <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
+                  <Clock size={24} />
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-md font-bold text-maroon-dark">
+                    {activity.title}
+                  </h3>
+                  <p className="text-sm text-text-secondary mt-0.5">
+                    {activity.desc}
+                  </p>
+                </div>
+                <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
+                  {activity.time}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
-      </section>{" "}
+      </section>
     </div>
   );
 };
