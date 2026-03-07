@@ -18,7 +18,7 @@ const navLinks = [
   { name: "Dashboard", path: "/", icon: Home },
   { name: "Institutions", path: "/institutions", icon: Building2 },
   { name: "Student Registry", path: "/students", icon: Users },
-  { name: "Users", path: "/supervisors", icon: User },
+  { name: "Supervisors", path: "/supervisors", icon: User },
   {
     name: "Internship Placements",
     path: "/placements",
