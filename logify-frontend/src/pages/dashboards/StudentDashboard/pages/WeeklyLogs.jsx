@@ -1,4 +1,7 @@
+import { useState } from "react";
+import CreateWeeklyLog from "../CreateWeeklyLog";
 const WeeklyLogs = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <div className="min-h-screen m-15">
       <div className="flex">
@@ -7,9 +10,16 @@ const WeeklyLogs = () => {
           <p>Track your internship progress week by week</p>
         </div>
         <div className="ml-auto mt-2.5">
-          <button className="hover:bg-blue-700 transition-colors p-2 font-semibold text-white bg-blue-600 rounded-md text-sm">
+          <button
+            className="hover:bg-blue-700 transition-colors p-2 font-semibold text-white bg-blue-600 rounded-md text-sm"
+            onClick={() => setIsModalOpen(true)}
+          >
             Create New Log
           </button>
+          <CreateWeeklyLog
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+          />
         </div>
       </div>
 
