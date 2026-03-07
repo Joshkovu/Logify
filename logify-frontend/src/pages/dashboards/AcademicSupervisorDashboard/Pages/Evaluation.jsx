@@ -1,10 +1,19 @@
+import {
+  Clock,
+  Star,
+  Award,
+  MessageSquare,
+  ChevronRight,
+  Send,
+} from "lucide-react";
+
 const Evaluation = () => {
   const pendingEvaluation = {
     name: "Sarah Johnson",
     type: "Mid-Term Evaluation",
     company: "TechCorp Solutions Inc.",
     status: "In Progress",
-    program: "Computer Science",
+    program: "Software Engineering",
     week: "Week 8 of 12",
     score: 86,
   };
@@ -52,184 +61,212 @@ const Evaluation = () => {
       name: "Robert Kim",
       type: "Mid-Term Evaluation",
       company: "DataTech Analytics",
-      date: "Completed Feb 18, 2026",
-      score: "88%",
+      date: "Feb 18, 2026",
+      score: "88",
     },
     {
       name: "Lisa Wang",
       type: "Mid-Term Evaluation",
       company: "CloudNet Systems",
-      date: "Completed Feb 12, 2026",
-      score: "92%",
+      date: "Feb 12, 2026",
+      score: "92",
     },
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#f7f5f2] px-6 py-6">
-      <h1 className="mb-3 text-4xl font-bold">Student Evaluations</h1>
-      <p className="mb-8 max-w-2xl text-xl text-gray-600">
-        Evaluate intern performance and submit scores
-      </p>
+    <div className="min-h-screen w-full bg-gray-50 px-12 py-10 font-sans">
+      <header className="mb-12">
+        <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+          Student <span className="text-gold">Evaluations</span>
+        </h1>
+        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          Assess intern performance across key academic and professional
+          competencies.
+        </p>
+      </header>
 
-      <div className="rounded-2xl border bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">Pending Evaluations</h2>
-        <p className="mt-2 text-gray-500">Students requiring evaluation</p>
-
-        <div className="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-6">
-          <div className="flex items-start justify-between gap-4">
+      <section className="mb-12">
+        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-gold/10 rounded-lg text-gold">
+              <Clock size={20} />
+            </div>
             <div>
-              <h3 className="text-2xl font-semibold">
-                {pendingEvaluation.name} - {pendingEvaluation.type}
-              </h3>
-              <p className="mt-2 text-xl text-gray-600">
-                {pendingEvaluation.company}
+              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                Pending Evaluations
+              </h2>
+              <p className="text-xs text-text-secondary font-medium">
+                Students requiring your assessment
+              </p>
+            </div>
+          </div>
+
+          <div className="p-8 bg-gold/5 border border-gold/20 rounded-[20px] flex items-center justify-between group cursor-pointer hover:bg-gold/10 transition-colors">
+            <div className="flex items-center gap-6">
+              <div className="h-16 w-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-gold">
+                <Star size={32} />
+              </div>
+              <div>
+                <h3 className="text-xl font-black text-maroon-dark tracking-tight">
+                  {pendingEvaluation.name} &bull;{" "}
+                  <span className="text-text-secondary font-medium">
+                    {pendingEvaluation.type}
+                  </span>
+                </h3>
+                <p className="text-md text-text-secondary mt-1 font-semibold">
+                  {pendingEvaluation.company}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="px-4 py-1.5 rounded-full bg-white border border-gold/20 text-[10px] font-black uppercase tracking-widest text-gold shadow-sm">
+                {pendingEvaluation.status}
+              </span>
+              <ChevronRight className="text-gold group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mb-12">
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="flex flex-col md:flex-row justify-between items-start gap-8 mb-12 pb-8 border-b border-border/50">
+            <div>
+              <div className="text-[10px] uppercase font-bold text-gold tracking-[0.2em] mb-2">
+                Active Assessment
+              </div>
+              <h2 className="text-3xl font-black text-maroon-dark tracking-tight">
+                {pendingEvaluation.type} &mdash; {pendingEvaluation.name}
+              </h2>
+              <p className="text-text-secondary text-md mt-1 font-medium">
+                {pendingEvaluation.program} &bull; {pendingEvaluation.week}
               </p>
             </div>
 
-            <span className="text-2xl font-medium text-blue-600">
-              {pendingEvaluation.status}
-            </span>
+            <div className="bg-maroon-dark rounded-2xl p-6 text-center min-w-[200px] shadow-xl shadow-maroon-dark/10">
+              <div className="text-5xl font-black text-gold leading-none mb-1">
+                {pendingEvaluation.score}%
+              </div>
+              <p className="text-[10px] uppercase font-bold text-gold/40 tracking-widest">
+                Calculated Score
+              </p>
+            </div>
+          </div>
+
+          <div className="mb-12">
+            <h3 className="text-xl font-black text-maroon-dark tracking-tight mb-8">
+              Performance Criteria
+            </h3>
+            <div className="grid grid-cols-1 gap-10">
+              {criteria.map((item) => (
+                <div key={item.title}>
+                  <div className="flex items-start justify-between gap-4 mb-4">
+                    <div className="max-w-2xl">
+                      <h4 className="text-lg font-bold text-maroon-dark">
+                        {item.title}{" "}
+                        <span className="text-sm font-medium text-text-secondary/60">
+                          ({item.weight} Weight)
+                        </span>
+                      </h4>
+                      <p className="text-sm text-text-secondary font-medium mt-1">
+                        {item.note}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-black text-maroon-dark">
+                        {item.score}
+                        <span className="text-sm opacity-30">/100</span>
+                      </div>
+                      <p className="text-[10px] font-bold text-gold uppercase tracking-widest">
+                        Contrib: {item.contribution}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="w-full h-3 bg-background rounded-full overflow-hidden border border-border/30">
+                    <div
+                      className="h-full bg-maroonCustom rounded-full transition-all duration-1000"
+                      style={{ width: `${item.score}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="p-10 bg-background rounded-[24px] border border-border/50 mb-12">
+            <div className="flex items-start gap-4 mb-6">
+              <div className="p-3 bg-white rounded-xl text-maroonCustom shadow-sm">
+                <MessageSquare size={24} />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-xl font-black text-maroon-dark tracking-tight mb-4">
+                  Overall Feedback
+                </h3>
+                <textarea
+                  className="w-full min-h-[150px] bg-white border border-border rounded-2xl p-6 text-text-secondary font-medium focus:ring-2 focus:ring-gold/20 focus:border-gold outline-none transition-all"
+                  placeholder="Provide qualitative feedback on the student's overall growth, technical agility, and professional conduct..."
+                />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <button className="flex items-center gap-2 px-8 py-4 bg-maroon-dark text-white rounded-xl font-bold shadow-lg shadow-maroon-dark/20 hover:scale-[1.02] transition-transform">
+                <Send size={20} className="text-gold" />
+                Submit Final Evaluation
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-semibold">
-              {pendingEvaluation.type} - {pendingEvaluation.name}
+      <section>
+        <div className="bg-white rounded-[12px] p-10 border border-border">
+          <div className="mb-8">
+            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              Evaluation History
             </h2>
-            <p className="mt-2 text-xl text-gray-500">
-              {pendingEvaluation.program} • {pendingEvaluation.week}
+            <p className="text-text-secondary text-md mt-1">
+              Archive of previously authorized assessments
             </p>
           </div>
 
-          <div className="text-right">
-            <div className="text-5xl font-bold text-blue-600">
-              {pendingEvaluation.score}%
-            </div>
-            <p className="mt-2 text-gray-500">Auto-calculated score</p>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <h3 className="mb-6 text-2xl font-semibold">Evaluation Criteria</h3>
-
-          <div className="space-y-8">
-            {criteria.map((item) => (
-              <div key={item.title}>
-                <div className="flex items-start justify-between gap-4">
-                  <div className="max-w-[55%]">
-                    <h4 className="text-2xl font-semibold">
-                      {item.title}{" "}
-                      <span className="font-normal text-gray-500">
-                        ({item.weight} weight)
-                      </span>
-                    </h4>
-                    <p className="mt-2 text-xl text-gray-600">{item.note}</p>
+          <div className="space-y-4">
+            {completedEvaluations.map((item) => (
+              <div
+                key={item.name}
+                className="p-6 bg-background/50 border border-border/30 rounded-2xl flex items-center justify-between group"
+              >
+                <div className="flex items-center gap-6">
+                  <div className="h-12 w-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center">
+                    <Award size={24} />
                   </div>
-
+                  <div>
+                    <h3 className="text-md font-bold text-maroon-dark">
+                      {item.name} &bull;{" "}
+                      <span className="font-medium">{item.type}</span>
+                    </h3>
+                    <p className="text-xs text-text-secondary font-medium mt-0.5">
+                      {item.company} &bull; Submitted on {item.date}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-8">
                   <div className="text-right">
-                    <p className="text-3xl">{item.score} / 100</p>
+                    <div className="text-2xl font-black text-emerald-600 leading-none">
+                      {item.score}%
+                    </div>
+                    <p className="text-[10px] font-bold text-text-secondary/40 uppercase tracking-widest mt-1">
+                      Final Grade
+                    </p>
                   </div>
+                  <button className="p-2 text-text-secondary/40 hover:text-maroon transition-colors">
+                    <ChevronRight size={24} />
+                  </button>
                 </div>
-
-                <div className="mt-4 h-4 w-full rounded-full bg-[#ead7da]">
-                  <div
-                    className="h-4 rounded-full bg-[#8d1726]"
-                    style={{ width: `${item.score}%` }}
-                  />
-                </div>
-
-                <p className="mt-2 text-lg text-gray-500">
-                  Weighted contribution: {item.contribution}
-                </p>
               </div>
             ))}
           </div>
         </div>
-
-        <div className="mt-8 rounded-2xl border border-blue-200 bg-blue-50 p-6">
-          <div className="flex items-start justify-between gap-4">
-            <h3 className="text-3xl font-semibold">Final Weighted Score</h3>
-            <div className="text-5xl font-bold text-blue-600">
-              {pendingEvaluation.score}%
-            </div>
-          </div>
-
-          <div className="mt-5 h-5 w-full rounded-full bg-[#ead7da]">
-            <div className="h-5 w-[86%] rounded-full bg-[#8d1726]" />
-          </div>
-
-          <div className="mt-4 grid grid-cols-5 gap-2 text-center text-sm text-gray-600">
-            <div>
-              <p>Techni...</p>
-              <p className="text-2xl font-medium text-black">26%</p>
-            </div>
-            <div>
-              <p>Comm...</p>
-              <p className="text-2xl font-medium text-black">17%</p>
-            </div>
-            <div>
-              <p>Profes...</p>
-              <p className="text-2xl font-medium text-black">18%</p>
-            </div>
-            <div>
-              <p>Initiative</p>
-              <p className="text-2xl font-medium text-black">12%</p>
-            </div>
-            <div>
-              <p>Proble...</p>
-              <p className="text-2xl font-medium text-black">13%</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-8">
-          <h3 className="text-2xl font-semibold">Overall Comments & Feedback</h3>
-
-          <textarea
-            placeholder="Provide detailed feedback on the student's performance..."
-            className="mt-4 min-h-45 w-full resize-none border-0 bg-transparent text-2xl text-gray-500 outline-none"
-          />
-        </div>
-
-        <div className="mt-8 border-t pt-6">
-          <div className="flex justify-end">
-            <button className="rounded-xl bg-blue-600 px-8 py-4 text-2xl font-medium text-white">
-              Submit Evaluation
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="mt-6 rounded-2xl border bg-white p-6 shadow-sm">
-        <h2 className="text-2xl font-semibold">Completed Evaluations</h2>
-        <p className="mt-2 max-w-xl text-xl text-gray-500">
-          Previously submitted evaluations this semester
-        </p>
-
-        <div className="mt-6 space-y-4">
-          {completedEvaluations.map((item) => (
-            <div key={item.name} className="rounded-2xl border bg-white p-6">
-              <div className="flex items-start justify-between gap-4">
-                <div>
-                  <h3 className="text-2xl font-semibold">
-                    {item.name} - {item.type}
-                  </h3>
-                  <p className="mt-2 text-xl text-gray-600">
-                    {item.company} • {item.date}
-                  </p>
-                </div>
-
-                <div className="text-4xl font-bold text-green-500">
-                  {item.score}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      </section>
     </div>
   );
 };
