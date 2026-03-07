@@ -7,6 +7,28 @@ import {
   TableHeaderCell,
 } from "../../../../components/ui/table";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
 const reportCards = [
   {
     title: "Internship Placements",
@@ -96,9 +118,57 @@ const Reports = () => {
           <p className="text-text-secondary mb-2">
             Student enrollment and average scores by month
           </p>
-          {/* Placeholder for chart/graph */}
-          <div className="h-32 flex items-center justify-center text-text-secondary">
-            [Chart Placeholder]
+          <div className="h-64 flex items-center justify-center">
+            <Line
+              data={{
+                labels: [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ],
+                datasets: [
+                  {
+                    label: "Enrollments",
+                    data: [30, 45, 60, 50, 70, 80, 90, 100, 85, 75, 65, 55],
+                    borderColor: "#800000",
+                    backgroundColor: "rgba(128,0,0,0.1)",
+                    tension: 0.4,
+                  },
+                  {
+                    label: "Avg Score",
+                    data: [70, 72, 75, 78, 80, 82, 85, 87, 86, 84, 83, 82],
+                    borderColor: "#FFD700",
+                    backgroundColor: "rgba(255,215,0,0.1)",
+                    tension: 0.4,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: {
+                    position: "top",
+                  },
+                  title: {
+                    display: false,
+                  },
+                },
+                scales: {
+                  y: {
+                    beginAtZero: true,
+                  },
+                },
+              }}
+            />
           </div>
         </div>
       </section>
