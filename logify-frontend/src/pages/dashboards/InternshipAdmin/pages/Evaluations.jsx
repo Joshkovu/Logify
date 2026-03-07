@@ -24,27 +24,25 @@ const Evaluations = () => {
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Evaluations
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">156</span>
+          <span className="text-3xl font-extrabold text-green-500">156</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Completed
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">142</span>
+          <span className="text-3xl font-extrabold text-blue-600">142</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Pending
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">14</span>
+          <span className="text-3xl font-extrabold text-amber-500">14</span>
         </div>
         <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Average Score
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">
-            84.2%
-          </span>
+          <span className="text-3xl font-extrabold text-blue-700">84.2%</span>
         </div>
       </section>
       <section className="mb-8">
@@ -72,7 +70,7 @@ const Evaluations = () => {
                 <TableCell>{evaln.student}</TableCell>
                 <TableCell>{evaln.type}</TableCell>
                 <TableCell>{evaln.evaluator}</TableCell>
-                <TableCell>{evaln.score}</TableCell>
+                <TableCell className="text-blue-600">{evaln.score}</TableCell>
                 <TableCell>{evaln.date}</TableCell>
               </TableRow>
             ))}
