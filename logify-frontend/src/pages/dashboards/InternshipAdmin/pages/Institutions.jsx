@@ -31,19 +31,19 @@ const Institutions = () => {
         </div>
       </header>
       <section className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Organizations
           </span>
           <span className="text-3xl font-extrabold text-text-primary">5</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Active Organizations
           </span>
           <span className="text-3xl font-extrabold text-text-primary">3</span>
         </div>
-        <div className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Interns
           </span>

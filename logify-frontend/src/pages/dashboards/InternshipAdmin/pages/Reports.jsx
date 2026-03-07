@@ -80,7 +80,7 @@ const Reports = () => {
         {reportCards.map((card) => (
           <div
             key={card.title}
-            className="bg-surface shadow-md rounded-xl p-6 flex flex-col items-center border border-border"
+            className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border"
           >
             <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
               {card.title}
@@ -114,8 +114,8 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="bg-surface rounded-xl shadow-md p-6 border border-border">
-          <p className="text-text-secondary mb-2">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  border border-border">
+          <p className="text-md mb-2">
             Student enrollment and average scores by month
           </p>
           <div className="h-64 flex items-center justify-center">
@@ -192,7 +192,7 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="bg-surface rounded-xl shadow-md p-6 border border-border">
+        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
           {tableData.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-text-secondary">
               <span className="text-lg font-semibold mb-2">
