@@ -1,10 +1,10 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Sidebar from "./pages/dashboards/AcademicSupervisorDashboard/Sidebar";
-import Dashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Dashboard";
-import InternshipApprovals from "./pages/dashboards/AcademicSupervisorDashboard/Pages/InternshipApprovals";
-import Evaluation from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Evaluation";
-import Reports from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Reports";
-import Profile from "./pages/dashboards/AcademicSupervisorDashboard/Pages/Profile";
+import Sidebar from "./Sidebar";
+import Dashboard from "./pages/Dashboard";
+import InternshipApprovals from "./pages/InternshipApprovals";
+import Evaluation from "./pages/Evaluation";
+import Reports from "./pages/Reports";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
