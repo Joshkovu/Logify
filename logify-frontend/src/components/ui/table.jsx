@@ -23,7 +23,7 @@ function TableBody({ children }) {
 
 function TableRow({ children, index }) {
   // Alternating backgrounds
-  const bgClass = index % 2 === 0 ? "bg-background" : "bg-surface";
+  const bgClass = index % 2 === 0 ? "bg-background" : "bg-background";
   return <tr className={`hover:bg-gold/10 ${bgClass}`}>{children}</tr>;
 }
 
