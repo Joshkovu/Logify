@@ -1,6 +1,30 @@
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+import { Bar, Line } from "react-chartjs-2";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend,
+);
+
 const metrics = [
   { title: "Total Interns", value: 427, iconType: "interns" },
   { title: "Active Placements", value: 15, iconType: "placements" },
@@ -48,8 +72,29 @@ const Dashboard = () => {
               Live
             </div>
           </div>
-          <div className="h-48 bg-gray-50/50 rounded-2xl border border-dashed border-border/60 flex items-center justify-center text-text-secondary/40 text-sm font-medium italic">
-            Chart Visualization Area
+          <div className="h-48 bg-gray-50/50 rounded-2xl border border-dashed border-border/60 flex items-center justify-center">
+            <Bar
+              data={{
+                labels: ["0-49", "50-59", "60-69", "70-79", "80-89", "90-100"],
+                datasets: [
+                  {
+                    label: "Students",
+                    data: [5, 12, 25, 40, 30, 8],
+                    backgroundColor: "#800000",
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { display: false },
+                  title: { display: false },
+                },
+                scales: {
+                  y: { beginAtZero: true },
+                },
+              }}
+            />
           </div>
         </div>
         <div className="bg-surface rounded-3xl shadow-sm p-10 border border-border/40 hover:shadow-md transition-shadow">
@@ -66,8 +111,44 @@ const Dashboard = () => {
               Monthly
             </div>
           </div>
-          <div className="h-48 bg-gray-50/50 rounded-2xl border border-dashed border-border/60 flex items-center justify-center text-text-secondary/40 text-sm font-medium italic">
-            Trend Analysis Area
+          <div className="h-48 bg-gray-50/50 rounded-2xl border border-dashed border-border/60 flex items-center justify-center">
+            <Line
+              data={{
+                labels: [
+                  "Jan",
+                  "Feb",
+                  "Mar",
+                  "Apr",
+                  "May",
+                  "Jun",
+                  "Jul",
+                  "Aug",
+                  "Sep",
+                  "Oct",
+                  "Nov",
+                  "Dec",
+                ],
+                datasets: [
+                  {
+                    label: "Placements",
+                    data: [2, 3, 4, 5, 6, 7, 8, 7, 6, 5, 4, 3],
+                    borderColor: "#FFD700",
+                    backgroundColor: "rgba(255,215,0,0.1)",
+                    tension: 0.4,
+                  },
+                ],
+              }}
+              options={{
+                responsive: true,
+                plugins: {
+                  legend: { display: false },
+                  title: { display: false },
+                },
+                scales: {
+                  y: { beginAtZero: true },
+                },
+              }}
+            />
           </div>
         </div>
       </section>
