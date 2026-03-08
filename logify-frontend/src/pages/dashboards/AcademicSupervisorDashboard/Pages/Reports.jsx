@@ -1,87 +1,218 @@
 import MetricCard from "../../../../components/ui/MetricCard";
-import { BarChart3, PieChart, FileDown, TrendingUp } from "lucide-react";
+import { TrendingUp, FileDown } from "lucide-react";
+import { Bar, Doughnut } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend,
+);
+
+const stats = [
+  {
+    title: "Total Interns",
+    value: "15",
+    iconType: "interns",
+  },
+  {
+    title: "Average Score",
+    value: "86.6%",
+    iconType: "reviews",
+  },
+  {
+    title: "Completion Rate",
+    value: "95%",
+    iconType: "evaluations",
+  },
+  {
+    title: "Active Placements",
+    value: "5",
+    iconType: "placements",
+  },
+];
+
+const students = [
+  {
+    name: "Sarah Johnson",
+    organization: "TechCorp Solutions",
+    progress: "Week 8/12",
+    status: "Active",
+    score: 85,
+  },
+  {
+    name: "Robert Kim",
+    organization: "DataTech Analytics",
+    progress: "Week 10/12",
+    status: "Active",
+    score: 88,
+  },
+  {
+    name: "Lisa Wang",
+    organization: "CloudNet Systems",
+    progress: "Week 6/12",
+    status: "Active",
+    score: 92,
+  },
+  {
+    name: "David Chen",
+    organization: "FinTech Corp",
+    progress: "Not Started",
+    status: "Pending",
+    score: 0,
+  },
+  {
+    name: "Maria Garcia",
+    organization: "InnovateTech",
+    progress: "Not Started",
+    status: "Pending",
+    score: 0,
+  },
+];
 
 const Reports = () => {
-  const stats = [
-    {
-      title: "Total Interns",
-      value: "15",
-      iconType: "interns",
-    },
-    {
-      title: "Average Score",
-      value: "86.6%",
-      iconType: "reviews",
-    },
-    {
-      title: "Completion Rate",
-      value: "95%",
-      iconType: "evaluations",
-    },
-    {
-      title: "Active Placements",
-      value: "5",
-      iconType: "placements",
-    },
-  ];
+  const activeCount = students.filter(
+    (student) => student.status === "Active",
+  ).length;
+  const pendingCount = students.filter(
+    (student) => student.status === "Pending",
+  ).length;
 
-  const students = [
-    {
-      name: "Sarah Johnson",
-      organization: "TechCorp Solutions",
-      progress: "Week 8/12",
-      status: "Active",
-      score: 85,
+  const performanceChartData = {
+    labels: students.map((student) => student.name),
+    datasets: [
+      {
+        label: "Score",
+        data: students.map((student) => student.score),
+        backgroundColor: [
+          "#7A1C1C",
+          "#8B2323",
+          "#9C2A2A",
+          "#D6D3D1",
+          "#E7E5E4",
+        ],
+        borderRadius: 10,
+        barThickness: 36,
+      },
+    ],
+  };
+
+  const performanceChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        backgroundColor: "#1f1f1f",
+        titleColor: "#ffffff",
+        bodyColor: "#ffffff",
+      },
     },
-    {
-      name: "Robert Kim",
-      organization: "DataTech Analytics",
-      progress: "Week 10/12",
-      status: "Active",
-      score: 88,
+    scales: {
+      x: {
+        grid: {
+          display: false,
+        },
+        ticks: {
+          color: "#6B7280",
+          font: {
+            size: 11,
+            weight: "600",
+          },
+        },
+      },
+      y: {
+        beginAtZero: true,
+        max: 100,
+        ticks: {
+          color: "#6B7280",
+          stepSize: 20,
+          callback: function (value) {
+            return `${value}%`;
+          },
+          font: {
+            size: 11,
+            weight: "600",
+          },
+        },
+        grid: {
+          color: "rgba(0,0,0,0.06)",
+          drawBorder: false,
+        },
+      },
     },
-    {
-      name: "Lisa Wang",
-      organization: "CloudNet Systems",
-      progress: "Week 6/12",
-      status: "Active",
-      score: 92,
+  };
+
+  const statusChartData = {
+    labels: ["Active", "Pending"],
+    datasets: [
+      {
+        data: [activeCount, pendingCount],
+        backgroundColor: ["#7A1C1C", "#D4AF37"],
+        borderColor: ["#ffffff", "#ffffff"],
+        borderWidth: 4,
+        hoverOffset: 8,
+      },
+    ],
+  };
+
+  const statusChartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "68%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: {
+          color: "#6B7280",
+          usePointStyle: true,
+          pointStyle: "circle",
+          padding: 20,
+          font: {
+            size: 12,
+            weight: "700",
+          },
+        },
+      },
+      tooltip: {
+        backgroundColor: "#1f1f1f",
+        titleColor: "#ffffff",
+        bodyColor: "#ffffff",
+      },
     },
-    {
-      name: "David Chen",
-      organization: "FinTech Corp",
-      progress: "Not Started",
-      status: "Pending",
-      score: 0,
-    },
-    {
-      name: "Maria Garcia",
-      organization: "InnovateTech",
-      progress: "Not Started",
-      status: "Pending",
-      score: 0,
-    },
-  ];
+  };
 
   return (
     <div className="min-h-screen w-full bg-gray-50 px-12 py-10 font-sans">
-      <header className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+      <header className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div>
-          <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
+          <h1 className="mb-3 text-5xl font-black tracking-tighter text-maroon-dark">
             Reports & <span className="text-gold">Analytics</span>
           </h1>
-          <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          <p className="max-w-2xl text-lg leading-relaxed text-text-secondary/80">
             Gain deep insights into intern performance, placement trends, and
             academic milestones.
           </p>
         </div>
-        <button className="flex items-center gap-3 px-8 py-4 bg-maroon-dark text-white rounded-xl font-bold shadow-lg shadow-maroon-dark/20 hover:scale-[1.02] transition-transform">
-          <FileDown size={20} className="text-gold" />
+
+        <button className="flex items-center gap-3 rounded-xl border border-[#b88a44] bg-gradient-to-r from-[#b07a2a] to-[#c99645] px-8 py-4 font-bold text-white shadow-lg shadow-[#b07a2a]/25 transition-all hover:scale-[1.02] hover:shadow-xl hover:from-[#9a6821] hover:to-[#b88638]">
+          <FileDown size={20} className="text-white" />
           Export Semester Report
         </button>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <section className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <MetricCard
             key={stat.title}
@@ -92,49 +223,48 @@ const Reports = () => {
         ))}
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
-        <div className="lg:col-span-2 bg-white rounded-[12px] p-10 border border-border">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
+      <section className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="rounded-[12px] border border-border bg-white p-10 lg:col-span-2">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom">
               <TrendingUp size={20} />
             </div>
-            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+            <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
               Performance Overview
             </h2>
           </div>
-          <div className="h-64 bg-background/50 rounded-3xl border border-dashed border-border/50 flex flex-col items-center justify-center text-text-secondary/40">
-            <BarChart3 size={48} className="mb-4 opacity-20" />
-            <p className="text-xs font-black uppercase tracking-widest">
-              Aggregate Scores Distribution
-            </p>
+
+          <div className="h-64 rounded-3xl border border-border/50 bg-background/50 p-4">
+            <Bar
+              data={performanceChartData}
+              options={performanceChartOptions}
+            />
           </div>
         </div>
 
-        <div className="bg-white rounded-[12px] p-10 border border-border">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-gold/10 rounded-lg text-gold">
-              <PieChart size={20} />
+        <div className="rounded-[12px] border border-border bg-white p-10">
+          <div className="mb-8 flex items-center gap-3">
+            <div className="rounded-lg bg-gold/10 p-2 text-gold">
+              <TrendingUp size={20} />
             </div>
-            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+            <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
               Status Distribution
             </h2>
           </div>
-          <div className="h-64 bg-background/50 rounded-3xl border border-dashed border-border/50 flex flex-col items-center justify-center text-text-secondary/40">
-            <PieChart size={48} className="mb-4 opacity-20" />
-            <p className="text-xs font-black uppercase tracking-widest">
-              Active vs Pending Placements
-            </p>
+
+          <div className="h-64 rounded-3xl border border-border/50 bg-background/50 p-4">
+            <Doughnut data={statusChartData} options={statusChartOptions} />
           </div>
         </div>
       </section>
 
-      <section className="bg-white rounded-[12px] p-10 border border-border">
-        <div className="flex justify-between items-start mb-10">
+      <section className="rounded-[12px] border border-border bg-white p-10">
+        <div className="mb-10 flex items-start justify-between">
           <div>
-            <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+            <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
               Detailed Performance Breakdown
             </h2>
-            <p className="text-text-secondary text-md mt-1 font-medium italic opacity-60">
+            <p className="mt-1 text-md font-medium italic text-text-secondary opacity-60">
               Full list of supervised interns and their current academic
               standing
             </p>
@@ -144,7 +274,7 @@ const Reports = () => {
         <div className="overflow-hidden rounded-2xl border border-border/50">
           <table className="w-full text-left">
             <thead>
-              <tr className="bg-background/80 border-b border-border/50">
+              <tr className="border-b border-border/50 bg-background/80">
                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60">
                   Student
                 </th>
@@ -162,15 +292,16 @@ const Reports = () => {
                 </th>
               </tr>
             </thead>
+
             <tbody className="divide-y divide-border/30">
               {students.map((student) => (
                 <tr
                   key={student.name}
-                  className="hover:bg-background/30 transition-colors group"
+                  className="group transition-colors hover:bg-background/30"
                 >
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="h-10 w-10 rounded-full bg-maroonCustom/5 text-maroonCustom flex items-center justify-center font-bold text-sm">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-maroonCustom/5 text-sm font-bold text-maroonCustom">
                         {student.name.charAt(0)}
                       </div>
                       <span className="text-md font-bold text-maroon-dark">
@@ -178,27 +309,35 @@ const Reports = () => {
                       </span>
                     </div>
                   </td>
+
                   <td className="px-8 py-6 text-sm font-medium text-text-secondary">
                     {student.organization}
                   </td>
-                  <td className="px-8 py-6 text-sm font-bold text-gold tracking-tight">
+
+                  <td className="px-8 py-6 text-sm font-bold tracking-tight text-gold">
                     {student.progress}
                   </td>
+
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-2">
                       <span
-                        className={`text-md font-black ${student.score >= 90 ? "text-emerald-600" : "text-maroon-dark"}`}
+                        className={`text-md font-black ${
+                          student.score >= 90
+                            ? "text-emerald-600"
+                            : "text-maroon-dark"
+                        }`}
                       >
                         {student.score > 0 ? `${student.score}%` : "—"}
                       </span>
                     </div>
                   </td>
+
                   <td className="px-8 py-6">
                     <span
-                      className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border transition-all ${
+                      className={`rounded-full border px-4 py-1.5 text-[10px] font-black uppercase tracking-widest transition-all ${
                         student.status === "Active"
-                          ? "bg-emerald-50 text-emerald-600 border-emerald-100 group-hover:bg-emerald-100"
-                          : "bg-gold/5 text-gold border-gold/10 group-hover:bg-gold/10"
+                          ? "border-emerald-100 bg-emerald-50 text-emerald-600 group-hover:bg-emerald-100"
+                          : "border-gold/10 bg-gold/5 text-gold group-hover:bg-gold/10"
                       }`}
                     >
                       {student.status}
