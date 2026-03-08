@@ -1,6 +1,6 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
+import PropTypes from 'prop-types';
 
-import React from "react";
 
 const parameters = [
   {
@@ -26,23 +26,6 @@ const parameters = [
   },
 ];
 
-const InternAnalytics = () => {
-  const paraItems = parameters.map((parameter) => (
-    <Card
-      key={parameter.title}
-      title={parameter.title}
-      value={parameter.value}
-      icon={parameter.icon}
-      description={parameter.description}
-      color={parameter.color}
-    />
-  ));
-
-  return <>{paraItems}</>;
-};
-
-export default InternAnalytics;
-
 const Card = ({ title, value, icon, description, color }) => {
   return (
     <div className=" p-4 rounded-lg border border-stone-300 col-span-4 hover:-translate-y-1 hover:shadow-lg transition-shadow duration-300">
@@ -65,3 +48,28 @@ const Card = ({ title, value, icon, description, color }) => {
     </div>
   );
 };
+
+Card.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+  icon: PropTypes.node,
+  description: PropTypes.string,
+  color: PropTypes.string,
+};
+
+const InternAnalytics = () => {
+  const paraItems = parameters.map((parameter) => (
+    <Card
+      key={parameter.title}
+      title={parameter.title}
+      value={parameter.value}
+      icon={parameter.icon}
+      description={parameter.description}
+      color={parameter.color}
+    />
+  ));
+
+  return <>{paraItems}</>;
+};
+
+export default InternAnalytics;

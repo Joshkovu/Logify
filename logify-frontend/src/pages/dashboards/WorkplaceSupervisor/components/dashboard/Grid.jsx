@@ -1,4 +1,3 @@
-import React from 'react'
 import InternAnalytics from './InternAnalytics'
 
 const Grid = () => {
