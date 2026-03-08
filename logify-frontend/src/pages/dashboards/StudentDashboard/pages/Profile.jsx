@@ -30,8 +30,8 @@ const Profile = () => {
       </header>
 
       <section className="mb-12">
-        <div className="bg-white rounded-2xl p-10 border border-border shadow-sm flex items-center gap-10">
-          <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-2xl sm:rounded-2xl lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
+        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
+          <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
             SJ
           </div>
           <div className="flex-1">
@@ -76,7 +76,7 @@ const Profile = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-2xl p-10 border border-border h-full">
+        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <User size={20} />
@@ -126,7 +126,7 @@ const Profile = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-10 border border-border h-full">
+        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <GraduationCap size={20} />
@@ -182,7 +182,7 @@ const Profile = () => {
       </div>
 
       <section>
-        <div className="bg-white rounded-2xl p-10 border border-border">
+        <div className="bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <Shield size={20} />
@@ -216,7 +216,7 @@ const Profile = () => {
             ].map((setting, i) => (
               <div
                 key={i}
-                className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+                className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
               >
                 <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
                   <setting.icon size={24} />

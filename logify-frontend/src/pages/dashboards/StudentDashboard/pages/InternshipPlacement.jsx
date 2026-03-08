@@ -38,7 +38,7 @@ const InternshipPlacement = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-2xl p-10 border border-border transition-transform">
+        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Organization Details
@@ -110,7 +110,7 @@ const InternshipPlacement = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-2xl p-10 border border-border transition-transform">
+        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Supervisor Records
@@ -121,7 +121,7 @@ const InternshipPlacement = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="p-6 bg-background/50 rounded-2xl border border-gray-200">
+            <div className="p-6 bg-background/50 rounded-[12px] border border-gray-200">
               <div className="flex mb-4">
                 <div className="h-12 w-12 rounded-full bg-maroon-dark flex items-center ">
                   <User size={24} />
@@ -153,7 +153,7 @@ const InternshipPlacement = () => {
               </div>
             </div>
 
-            <div className="p-6 bg-gold/5 rounded-2xl border border-gray-200">
+            <div className="p-6 bg-gold/5 rounded-[12px] border border-gray-200">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-full bg-gold flex items-center justify-center text-maroon-dark">
                   <User size={24} />
@@ -187,7 +187,7 @@ const InternshipPlacement = () => {
       </div>
 
       <section>
-        <div className="bg-white rounded-2xl p-10 border border-border">
+        <div className="bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Status Timeline
@@ -217,7 +217,7 @@ const InternshipPlacement = () => {
             ].map((activity, i) => (
               <div
                 key={i}
-                className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+                className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
               >
                 <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
                   <Clock size={24} />
