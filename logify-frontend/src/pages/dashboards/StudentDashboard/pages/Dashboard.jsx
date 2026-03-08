@@ -8,7 +8,7 @@ const Dashboard = () => {
   };
 
   const metrics = [
-    { title: "Internship Status", value: "Active", iconType: "placements" },
+    { title: "Status", value: "Active", iconType: "placements" },
     { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
     { title: "Pending Tasks", value: "3", iconType: "reviews" },
     { title: "Final Score", value: "Pending", iconType: "evaluations" },
@@ -18,15 +18,15 @@ const Dashboard = () => {
     <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
-          Student <span className="text-gold">Dashboard</span>
+          Student Dashboard
         </h1>
-        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+        <p className="text-lg max-w-lg text-text-secondary/80 leading-relaxed">
           Welcome back, {person.firstName}! Here&apos;s your internship
           overview.
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+      <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
             key={m.title}
@@ -37,9 +37,9 @@ const Dashboard = () => {
         ))}
       </section>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-102 transition-all h-full">
+          <div className="bg-white rounded-2xl p-10 border border-border transition-all h-full">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Current Internship
@@ -94,7 +94,7 @@ const Dashboard = () => {
         </section>
 
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform h-full">
+          <div className="bg-white rounded-2xl p-10 border border-border transition-transform h-full">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
@@ -104,7 +104,7 @@ const Dashboard = () => {
                   Your latest updates and actions
                 </p>
               </div>
-              <button className="text-xs font-bold text-gold hover:text-maroon transition-colors px-4 py-2 bg-gold/5 rounded-lg border border-gold/10">
+              <button className="-mt-6 text-xs text-white font-bold hover:bg-red-800 transition-colors px-4 py-3 bg-maroonCustom rounded-lg border">
                 View All
               </button>
             </div>

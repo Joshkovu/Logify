@@ -1,11 +1,10 @@
 import { useState } from "react";
 import CreateWeeklyLog from "../CreateWeeklyLog";
-const WeeklyLogs = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 
 const WeeklyLogs = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const metrics = [
     { title: "Total Logs", value: "8", iconType: "reviews" },
     { title: "Approved", value: "8", iconType: "evaluations" },
@@ -68,33 +67,29 @@ const WeeklyLogs = () => {
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
-            Weekly <span className="text-gold">Logs</span>
+            Weekly Logs
           </h1>
-          <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          <p className="text-lg text-text-secondary/80 max-w-lg leading-relaxed">
             Track your internship progress, document daily activities, and
             monitor supervisor approvals.
           </p>
         </div>
         <div className="ml-auto mt-2.5">
           <button
-            className="hover:bg-blue-700 transition-colors p-2 font-semibold text-white bg-blue-600 rounded-md text-sm"
+            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl shadow-lg shadow-maroonCustom/20"
             onClick={() => setIsModalOpen(true)}
           >
-            Create New Log
+            <FilePlus size={18} />
+            New Log
           </button>
           <CreateWeeklyLog
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
           />
         </div>
-      </div>
-        <button className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-maroon-dark transition-all rounded-xl shadow-lg shadow-maroonCustom/20">
-          <FilePlus size={18} />
-          Create New Log
-        </button>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <section className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
             key={m.title}
