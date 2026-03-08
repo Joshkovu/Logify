@@ -4,13 +4,13 @@ import { PiSignOut } from "react-icons/pi";
 import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
 import { useLocation } from "react-router-dom";
 import Search from "./Search";
+import PropTypes from 'prop-types';
 
 
 const SidebarContext = React.createContext();
 
 const Side_bar = ({children}) => {
   const [expanded, setExpanded] = React.useState(true);
-  const location = useLocation();
   return (
     <aside className="h-screen flex">
       <nav className="h-screen flex flex-col bg-white border-none shadow-sm rounded-r-lg">
@@ -64,10 +64,16 @@ const Side_bar = ({children}) => {
   );
 };
 
+Side_bar.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
 export default Side_bar;
 
 export const SidebarItem = ({icon, text, href}) => {
   const {expanded} = React.useContext(SidebarContext);
+    const location = useLocation();
+
   return(
     <li  className={`
       ${location.pathname === href ? "bg-maroonCustom text-white shadow-lg " : "hover:bg-red-50 text-gray-600"}
@@ -88,3 +94,9 @@ export const SidebarItem = ({icon, text, href}) => {
     </li>
   )
 }
+
+SidebarItem.propTypes = {
+  icon: PropTypes.node.isRequired,
+  text: PropTypes.string.isRequired,
+  href: PropTypes.string.isRequired,
+};

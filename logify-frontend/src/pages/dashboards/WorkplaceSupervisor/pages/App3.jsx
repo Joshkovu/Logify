@@ -1,4 +1,3 @@
-import React from "react";
 import Side_bar, { SidebarItem } from "../components/dashboard/Side_bar";
 import { LayoutDashboard, Users, User, FileCheck } from "lucide-react";
 import Dashboard from "../components/dashboard/Dashboard";
@@ -32,7 +31,6 @@ const navParameters = [
 ];
 
 const App3 = () => {
-  const [isActive, setIsActive] = React.useState(true);
   const navItems = navParameters.map((parameter) => (
     <SidebarItem
       key={parameter.text}
