@@ -13,7 +13,7 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
 
   return (
     <div
-      className="fixed flex inset-0 items-center justify-center z-[100] bg-black/50 bg-op px-4 w-full h-full"
+      className="fixed flex inset-0 items-center justify-center z-100 bg-black/50 bg-op px-4 w-full h-full"
       onClick={onClose}
     >
       <div
@@ -31,21 +31,21 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
             Activities & Tasks Completed
           </p>
           <textarea
-            className=" w-full border border-gray-200 rounded-lg h-15 p-1.5"
+            className="w-full border border-gray-200 rounded-lg h-15 p-1.5"
             placeholder="Describe the activities and tasks you completed this week..."
           ></textarea>
         </section>
         <section className="mt-4">
           <p className="text-black font-semibold">Key Learnings</p>
           <textarea
-            className=" w-full border border-gray-200 rounded-lg h-15 p-1.5"
+            className="w-full border border-gray-200 rounded-lg h-15 p-1.5"
             placeholder="What did you learn this week?..."
           ></textarea>
         </section>
         <section className="mt-4">
           <p className="text-black font-semibold">Challenges & Solutions</p>
           <textarea
-            className=" w-full border border-gray-200 rounded-lg h-15 p-1.5"
+            className="w-full border border-gray-200 rounded-lg h-15 p-1.5"
             placeholder="Describe any challenges you faced and how you addressed them..."
           ></textarea>
         </section>
@@ -57,7 +57,7 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
             Cancel
           </button>
           <button
-            className="bg-blue-600 text-white text-sm font-semibold hover:bg-blue-800 transition-colors rounded-md p-2"
+            className="bg-maroonCustom text-white text-sm font-semibold hover:bg-red-800 transition-colors rounded-md p-2"
             onClick={onClose}
           >
             Submit Log

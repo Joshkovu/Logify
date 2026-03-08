@@ -10,46 +10,65 @@ import {
   Lock,
   Bell,
 } from "lucide-react";
+import ChangePassword from "../ChangePassword";
+import EditProfile from "../EditProfile";
+import { useState } from "react";
 
 const Profile = () => {
+  const [isModal1Open, setIsModal1Open] = useState(false);
+  const [isModal2Open, setIsModal2Open] = useState(false);
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Profile</span>
         </h1>
-        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+        <p className="text-lg text-text-secondary/80 max-w-lg leading-relaxed">
           Manage your personal information, academic records, and security
           settings.
         </p>
       </header>
 
       <section className="mb-12">
-        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
-          <div className="h-32 w-32 bg-maroonCustom rounded-3xl flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20">
+        <div className="bg-white rounded-2xl p-10 border border-border shadow-sm flex items-center gap-10">
+          <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-2xl sm:rounded-2xl lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
             SJ
           </div>
           <div className="flex-1">
             <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
               Sarah Johnson
             </h2>
-            <p className="text-lg font-bold text-gold uppercase tracking-widest text-sm mb-4">
+            <p className="text-sm font-bold text-gold uppercase tracking-widest mb-4">
               Software Engineering Student
             </p>
-            <div className="flex gap-4">
-              <button className="text-xs font-bold text-white px-6 py-2.5 bg-maroonCustom hover:bg-maroon-dark transition-all rounded-xl shadow-md">
+            <div className="flex gap-2">
+              <button
+                className="text-xs font-bold text-white px-5 py-2.5 bg-maroonCustom hover:bg-red-800 transition-all rounded-lg shadow-md"
+                onClick={() => setIsModal1Open(true)}
+              >
                 Edit Profile
               </button>
-              <button className="text-xs font-bold text-gold px-6 py-2.5 bg-gold/5 hover:bg-gold/10 transition-all rounded-xl border border-gold/20">
+              <EditProfile
+                isOpen={isModal1Open}
+                onClose={() => setIsModal1Open(false)}
+              />
+              <button
+                className="hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
+                onClick={() => setIsModal2Open(true)}
+              >
                 Change Password
               </button>
+              <ChangePassword
+                isOpen={isModal2Open}
+                onClose={() => setIsModal2Open(false)}
+              />
             </div>
           </div>
           <div className="text-right hidden md:block">
             <p className="text-[10px] uppercase font-bold text-text-secondary/40 tracking-widest mb-1">
               Student ID
             </p>
-            <p className="text-xl font-black text-maroon-dark">
+            <p className="lg:text-lg md:text-sm sm:text-sm font-bold">
               #STR-2024-0427
             </p>
           </div>
@@ -57,7 +76,7 @@ const Profile = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+        <section className="bg-white rounded-2xl p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <User size={20} />
@@ -98,20 +117,18 @@ const Profile = () => {
               },
             ].map((item, i) => (
               <div key={i}>
-                <p className="text-[10px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
+                <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-bold text-maroon-dark">
-                  {item.value}
-                </p>
+                <p className="text-md font-semibold">{item.value}</p>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+        <section className="bg-white rounded-2xl p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
-            <div className="p-2 bg-gold/10 rounded-lg text-gold">
+            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <GraduationCap size={20} />
             </div>
             <div>
@@ -154,12 +171,10 @@ const Profile = () => {
               },
             ].map((item, i) => (
               <div key={i}>
-                <p className="text-[10px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
+                <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-bold text-maroon-dark">
-                  {item.value}
-                </p>
+                <p className="text-md font-semibold">{item.value}</p>
               </div>
             ))}
           </div>
@@ -167,9 +182,9 @@ const Profile = () => {
       </div>
 
       <section>
-        <div className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="bg-white rounded-2xl p-10 border border-border">
           <div className="mb-8 flex items-center gap-3">
-            <div className="p-2 bg-emerald-100 rounded-lg text-emerald-700">
+            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <Shield size={20} />
             </div>
             <div>
@@ -216,9 +231,9 @@ const Profile = () => {
                 </div>
                 <div>
                   <button
-                    className={`px-4 py-2 rounded-lg text-xs font-bold border transition-all ${
+                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                       setting.active
-                        ? "bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100"
+                        ? "bg-maroonCustom text-white hover:bg-red-800"
                         : "bg-white border-border text-text-secondary hover:bg-gray-50"
                     }`}
                   >

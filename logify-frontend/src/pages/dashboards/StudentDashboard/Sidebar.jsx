@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   Briefcase,
@@ -11,7 +11,6 @@ import {
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
-
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },
   {
@@ -26,6 +25,8 @@ const navLinks = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+
   return (
     <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
       <div className="mb-12 px-4">
@@ -72,7 +73,7 @@ const Sidebar = () => {
           );
         })}
       </nav>
-      <div className="p-6  mt-60 border-t border-border bg-muted/30">
+      <div className="p-6 mt-auto border-t border-border bg-muted/30">
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 text-white font-bold">
@@ -91,6 +92,7 @@ const Sidebar = () => {
         <Button
           variant="outline"
           className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+          onClick={() => navigate("/")}
         >
           <LogOut className="h-3.5 w-3.5" />
           Sign Out

@@ -13,13 +13,13 @@ const Evaluations = () => {
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Evaluations</span>
         </h1>
-        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+        <p className="text-lg text-text-secondary/80 max-w-lg leading-relaxed">
           View your internship evaluations and performance scores across
           different criteria.
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <section className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
             key={m.title}
@@ -32,7 +32,7 @@ const Evaluations = () => {
 
       <div className="space-y-8">
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+          <div className="bg-white rounded-2xl p-10 border border-border transition-transform">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Evaluation History
@@ -90,7 +90,7 @@ const Evaluations = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <section>
-            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
+            <div className="bg-white rounded-2xl p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Score Breakdown
@@ -142,7 +142,7 @@ const Evaluations = () => {
           </section>
 
           <section>
-            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
+            <div className="bg-white rounded-2xl p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Supervisor Feedback
