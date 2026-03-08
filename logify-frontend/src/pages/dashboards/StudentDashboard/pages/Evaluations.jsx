@@ -13,13 +13,13 @@ const Evaluations = () => {
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Evaluations</span>
         </h1>
-        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+        <p className="text-lg text-text-secondary/80 max-w-lg leading-relaxed">
           View your internship evaluations and performance scores across
           different criteria.
         </p>
       </header>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+      <section className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
             key={m.title}
@@ -32,7 +32,7 @@ const Evaluations = () => {
 
       <div className="space-y-8">
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+          <div className="bg-white rounded-[12px] p-10 border border-border transition-transform">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Evaluation History
@@ -43,7 +43,7 @@ const Evaluations = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors">
+              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-maroon-dark">
                     Mid-Term Evaluation
@@ -63,7 +63,7 @@ const Evaluations = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors">
+              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-maroon-dark">
                     Final Evaluation
@@ -152,7 +152,7 @@ const Evaluations = () => {
                 </p>
               </div>
 
-              <div className="p-8 bg-background/50 rounded-2xl border border-border/30 italic text-text-secondary leading-relaxed relative">
+              <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 italic text-text-secondary leading-relaxed relative">
                 <span className="absolute top-4 left-4 text-4xl text-gold/20 font-serif">
                   &quot;
                 </span>
