@@ -194,7 +194,7 @@ const Reports = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50 px-12 py-10 font-sans">
+    <div className="min-h-screen w-full bg-[#FCFCFA] px-12 py-10 font-sans">
       <header className="mb-12 flex flex-col items-start justify-between gap-6 md:flex-row md:items-center">
         <div>
           <h1 className="mb-3 text-5xl font-black tracking-tighter text-maroon-dark">
@@ -206,7 +206,7 @@ const Reports = () => {
           </p>
         </div>
 
-        <button className="flex items-center gap-3 rounded-xl border border-[#b88a44] bg-gradient-to-r from-[#b07a2a] to-[#c99645] px-8 py-4 font-bold text-white shadow-lg shadow-[#b07a2a]/25 transition-all hover:scale-[1.02] hover:shadow-xl hover:from-[#9a6821] hover:to-[#b88638]">
+        <button className="flex items-center gap-3 rounded-xl border border-[#7A1C1C] bg-gradient-to-r from-[#7A1C1C] to-[#8B2323] px-8 py-4 font-bold text-white shadow-lg shadow-[#7A1C1C]/25 transition-all hover:scale-[1.02] hover:shadow-xl hover:from-[#6B1818] hover:to-[#7A1C1C]">
           <FileDown size={20} className="text-white" />
           Export Semester Report
         </button>
@@ -224,7 +224,7 @@ const Reports = () => {
       </section>
 
       <section className="mb-12 grid grid-cols-1 gap-8 lg:grid-cols-3">
-        <div className="rounded-[12px] border border-border bg-white p-10 lg:col-span-2">
+        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10 lg:col-span-2">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom">
               <TrendingUp size={20} />
@@ -234,7 +234,7 @@ const Reports = () => {
             </h2>
           </div>
 
-          <div className="h-64 rounded-3xl border border-border/50 bg-background/50 p-4">
+          <div className="h-64 rounded-3xl border border-border/50 bg-[#FBFBF8] p-4">
             <Bar
               data={performanceChartData}
               options={performanceChartOptions}
@@ -242,7 +242,7 @@ const Reports = () => {
           </div>
         </div>
 
-        <div className="rounded-[12px] border border-border bg-white p-10">
+        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-lg bg-gold/10 p-2 text-gold">
               <TrendingUp size={20} />
@@ -252,13 +252,13 @@ const Reports = () => {
             </h2>
           </div>
 
-          <div className="h-64 rounded-3xl border border-border/50 bg-background/50 p-4">
+          <div className="h-64 rounded-3xl border border-border/50 bg-[#FBFBF8] p-4">
             <Doughnut data={statusChartData} options={statusChartOptions} />
           </div>
         </div>
       </section>
 
-      <section className="rounded-[12px] border border-border bg-white p-10">
+      <section className="rounded-[12px] border border-border bg-[#FEFEFC] p-10">
         <div className="mb-10 flex items-start justify-between">
           <div>
             <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
@@ -274,7 +274,7 @@ const Reports = () => {
         <div className="overflow-hidden rounded-2xl border border-border/50">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-border/50 bg-background/80">
+              <tr className="border-b border-border/50 bg-[#FAFAF7]">
                 <th className="px-8 py-5 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60">
                   Student
                 </th>
@@ -297,7 +297,7 @@ const Reports = () => {
               {students.map((student) => (
                 <tr
                   key={student.name}
-                  className="group transition-colors hover:bg-background/30"
+                  className="group transition-colors hover:bg-[#FBFBF8]"
                 >
                   <td className="px-8 py-6">
                     <div className="flex items-center gap-4">
