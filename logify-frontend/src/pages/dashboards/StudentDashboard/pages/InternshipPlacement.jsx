@@ -14,14 +14,14 @@ const InternshipPlacement = () => {
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
-            Internship <span className="text-gold">Placement</span>
+            Internship Placement
           </h1>
-          <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
+          <p className="text-lg text-text-secondary/80 max-w-lg leading-relaxed">
             View and manage your internship placement details and organization
             contact info.
           </p>
         </div>
-        <button className="text-sm font-bold text-gold hover:text-maroon transition-colors px-6 py-3 bg-gold/5 rounded-xl border border-gold/20 shadow-sm">
+        <button className="text-sm text-white font-bold hover:bg-red-800 transition-colors px-6 py-3 bg-maroonCustom rounded-xl shadow-sm">
           Edit Details
         </button>
       </header>
@@ -38,7 +38,7 @@ const InternshipPlacement = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Organization Details
@@ -79,13 +79,13 @@ const InternshipPlacement = () => {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-border/50">
-              <div className="flex items-center gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 p-2">
+              <div className="flex items-center gap-4 mb-10">
                 <div className="p-2 bg-gold/5 rounded-lg text-gold">
                   <Phone size={18} />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-text-secondary/40">
+                  <p className="text-xs uppercase tracking-widest font-bold text-text-secondary/60 mb-1">
                     Contact
                   </p>
                   <p className="text-sm font-bold text-maroon-dark">
@@ -94,14 +94,14 @@ const InternshipPlacement = () => {
                 </div>
               </div>
               <div className="flex items-center gap-4">
-                <div className="p-2 bg-gold/5 rounded-lg text-gold">
+                <div className="p-2 rounded-lg">
                   <Mail size={18} />
                 </div>
                 <div>
-                  <p className="text-[10px] uppercase font-bold text-text-secondary/40">
+                  <p className="text-xs uppercase tracking-widest font-bold text-text-secondary/60 mb-1">
                     Email
                   </p>
-                  <p className="text-sm font-bold text-maroon-dark">
+                  <p className="text-sm font-bold text-maroon-dark truncate">
                     contact@techcorp.com
                   </p>
                 </div>
@@ -110,7 +110,7 @@ const InternshipPlacement = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-[12px] p-10 border border-border hover:scale-101 transition-transform">
+        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Supervisor Records
@@ -121,22 +121,22 @@ const InternshipPlacement = () => {
           </div>
 
           <div className="space-y-8">
-            <div className="p-6 bg-background/50 rounded-2xl border border-border/30">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="h-12 w-12 rounded-full bg-maroon-dark flex items-center justify-center text-white">
+            <div className="p-6 bg-background/50 rounded-[12px] border border-gray-200">
+              <div className="flex mb-4">
+                <div className="h-12 w-12 rounded-full bg-maroon-dark flex items-center ">
                   <User size={24} />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-maroon-dark">
                     Michael Chen
                   </h3>
-                  <p className="text-[10px] uppercase font-bold text-gold tracking-widest">
+                  <p className="text-[10px] uppercase font-bold text-maroonCustom tracking-widest">
                     Workplace Supervisor
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 text-sm font-semibold text-text-secondary">
-                <div>
+              <div className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 text-sm font-semibold text-text-secondary">
+                <div className="mb-4">
                   <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
                     Position
                   </p>
@@ -153,22 +153,20 @@ const InternshipPlacement = () => {
               </div>
             </div>
 
-            <div className="p-6 bg-gold/5 rounded-2xl border border-gold/20">
+            <div className="p-6 bg-gold/5 rounded-[12px] border border-gray-200">
               <div className="flex items-center gap-4 mb-4">
                 <div className="h-12 w-12 rounded-full bg-gold flex items-center justify-center text-maroon-dark">
                   <User size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-maroon-dark">
-                    Dr. Emily Roberts
-                  </h3>
+                  <h3 className="text-lg font-bold">Dr. Emily Roberts</h3>
                   <p className="text-[10px] uppercase font-bold text-maroonCustom tracking-widest">
                     Academic Supervisor
                   </p>
                 </div>
               </div>
-              <div className="grid grid-cols-2 gap-4 text-sm font-semibold text-text-secondary">
-                <div>
+              <div className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 text-sm font-semibold text-text-secondary">
+                <div className="mb-4">
                   <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
                     Department
                   </p>
@@ -219,7 +217,7 @@ const InternshipPlacement = () => {
             ].map((activity, i) => (
               <div
                 key={i}
-                className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+                className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
               >
                 <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
                   <Clock size={24} />
