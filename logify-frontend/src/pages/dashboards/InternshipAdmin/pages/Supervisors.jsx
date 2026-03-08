@@ -58,8 +58,8 @@ const Supervisors = () => {
               Complete list of all supervisors
             </p>
           </div>
-          <button className="bg-blue-500 flex text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
-            <UserPlus className="h-6 w-4 mr-2" />
+          <button className="bg-maroonCustom flex text-white items-center gap-2 px-5 py-2  rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+            <UserPlus className="h-4 w-4 mr-2" />
             Add Supervisor
           </button>
         </div>
