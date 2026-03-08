@@ -11,17 +11,19 @@ import {
   InputGroupTextarea,
 } from "@/components/ui/input-group";
 import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
+import { useLocation } from "react-router-dom";
 
 
 const SidebarContext = React.createContext();
 
 const Side_bar = ({children}) => {
   const [expanded, setExpanded] = React.useState(true);
+  const location = useLocation();
   return (
     <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-r shadow-sm">
+      <nav className="h-full flex flex-col bg-white border-none shadow-sm rounded-r-lg">
         <div className="p-4 pb-2 flex justify-between items-center">
-          <div className={`mr-1 overflow-hidden transition-all
+          <div className={`mr-1 overflow-hidden duration-300 transition-all
             ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
             <InputGroup>
               <InputGroupInput placeholder="Search..." />
@@ -30,11 +32,11 @@ const Side_bar = ({children}) => {
               </InputGroupAddon>
             </InputGroup>
           </div>
-          <button onClick={() => setExpanded(curr => !curr )} className="p-1.5  rounded-full bg-gray-50 hover:bg-gray-100 ml-0.5 transition-all shadow">
+          <button onClick={() => setExpanded(curr => !curr )} className="p-1.5  rounded-full bg-gray-50 hover:bg-gray-100 ml-0.5 duration-300 transition-all shadow">
             {expanded ? <ArrowLeftToLine size={20} className=" text-gray-700"/> : < ArrowRightToLine size={20} className=" text-gray-700"/>}
           </button>
         </div>
-        <p className={`flex text-sm justify-start ml-6 font-medium text-gray-500 py-2 overflow-hidden transition-all
+        <p className={`flex text-sm justify-start ml-6 font-medium text-gray-500 py-2 overflow-hidden duration-300 transition-all
             ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
           MAIN NAVIGATION
         </p>
@@ -46,13 +48,13 @@ const Side_bar = ({children}) => {
         </ul>
        </SidebarContext.Provider> 
 
-        <div className=" border-t border-b flex p-3 bg-stone-50">
+        <div className=" border-t border-b flex p-3 bg-stone-50 border-stone-300">
           <img src={reacti} alt="" className="w-10 h-10 rounded-full" />
 
           <div
             className={`
             flex justify-between items-center
-            overflow-hidden transition-all
+            overflow-hidden duration-300 transition-all
             ${expanded ? "w-52 ml-3" : "w-0 ml-0"}
             `}
           >
@@ -63,7 +65,7 @@ const Side_bar = ({children}) => {
           </div>
         </div>
 
-        <button className={`flex rounded-lg h-10 w-62 shadow my-6 mx-2 bg-gray-50 justify-center hover:bg-gray-200 pt-0.5 overflow-hidden transition-all
+        <button className={`flex rounded-lg h-10 w-62 shadow my-6 mx-2 bg-gray-50 justify-center hover:bg-gray-200 pt-0.5 overflow-hidden duration-300 transition-all
             ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
           <div className={"flex justify-start p-1.5 "}>
             <PiSignOut className=" pt-0.5" />
@@ -77,25 +79,25 @@ const Side_bar = ({children}) => {
 
 export default Side_bar;
 
-export const SidebarItem = ({icon, text, active, alert}) => {
+export const SidebarItem = ({icon, text, href}) => {
   const {expanded} = React.useContext(SidebarContext);
   return(
     <li  className={`
+      ${location.pathname === href ? "bg-maroonCustom text-white shadow-lg " : "hover:bg-red-50 text-gray-600"}
     relative flex items-center 
-    font-medium rounded-md cursor-pointer  transition-all
+    font-medium rounded-md cursor-pointer  duration-300 transition-all
      ${expanded ? "py-2 px-3 my-3" : "p-3 my-5"}
-    ${
-      active
-        ? " bg-maroon-800 text-white shadow-lg "
-        : "hover:bg-maroon-50 text-gray-600"
-    }
+   
     `}>
+      <a href={href} className="flex">
+
       {icon}
       <span className={`
             
-            transition-all 
+            duration-300 transition-all 
             ${expanded ? "overflow-hidden w-52 ml-3" : "w-0 ml-0 hidden"}
             `} >{text}</span>
+      </a>
     </li>
   )
 }
