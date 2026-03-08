@@ -14,7 +14,7 @@ const Settings = () => {
         </p>
       </header>
 
-      <section className="mb-8 bg-surface rounded-xl shadow-md p-8 border border-border">
+      <section className="mb-8 bg-white rounded-[12px] border border-border hover:scale-102 transition-all p-8">
         <h2 className="text-2xl font-bold text-maroon mb-2">
           General Settings
         </h2>
@@ -40,7 +40,7 @@ const Settings = () => {
         </div>
       </section>
 
-      <section className="mb-8 bg-surface rounded-xl shadow-md p-8 border border-border">
+      <section className="mb-8 bg-white rounded-[12px] border border-border hover:scale-102 transition-all p-8">
         <h2 className="text-2xl font-bold text-maroon mb-2">
           Notification Settings
         </h2>
@@ -78,7 +78,7 @@ const Settings = () => {
         </div>
       </section>
 
-      <section className="mb-8 bg-surface rounded-xl shadow-md p-8 border border-border">
+      <section className="mb-8 bg-white rounded-[12px] border border-border hover:scale-102 transition-all p-8">
         <h2 className="text-2xl font-bold text-maroon mb-2">
           Evaluation Settings
         </h2>
@@ -112,7 +112,9 @@ const Settings = () => {
       </section>
       <div className="flex justify-end gap-3">
         <Button variant="outline">Reset to Defaults</Button>
-        <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+        <Button className="bg-maroonCustom hover:bg-maroon-dark text-white">
+          Save Changes
+        </Button>
       </div>
     </div>
   );

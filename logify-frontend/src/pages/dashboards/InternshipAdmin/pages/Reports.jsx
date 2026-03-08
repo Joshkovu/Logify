@@ -18,7 +18,7 @@ import {
   Legend,
 } from "chart.js";
 import { Line } from "react-chartjs-2";
-
+import { Download } from "lucide-react";
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -67,11 +67,9 @@ const Reports = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-maroon text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
-            Export PDF
-          </button>
-          <button className="bg-gold text-maroon-dark px-5 py-2 rounded-lg font-semibold shadow hover:bg-gold/80 focus:outline-none focus:ring-2 focus:ring-maroon">
-            Export Excel
+          <button className="bg-maroonCustom flex text-white items-center gap-2 px-5 py-2  rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+            <Download className="h-4 w-4 mr-2" />
+            Export Report
           </button>
         </div>
       </header>
