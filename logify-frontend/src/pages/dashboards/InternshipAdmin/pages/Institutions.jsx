@@ -96,7 +96,7 @@ const Institutions = () => {
         <div className="flex gap-2 items-center">
           <Button
             onClick={handleExport}
-            className="bg-gold text-maroon font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow hover:bg-yellow-400 focus:outline-none focus:ring-2 focus:ring-gold"
+            className="bg-maroonCustom text-white font-semibold flex items-center gap-2 px-4 py-2 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-gold"
           >
             <Download className="h-4 w-4 mr-1" /> Export
           </Button>
