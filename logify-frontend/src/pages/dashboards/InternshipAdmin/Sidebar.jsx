@@ -78,7 +78,7 @@ const Sidebar = () => {
           );
         })}
       </nav>
-      <div className="p-6  mt-60 border-t border-border bg-muted/30">
+      <div className="p-6  mt-auto border-t border-border bg-muted/30">
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 text-white font-bold">

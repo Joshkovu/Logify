@@ -9,8 +9,8 @@ const LandingPage = () => {
         "Submit weekly logs, view evaluations, and track your internship progress.",
       icon: <GraduationCap size={48} />,
       path: "/student",
-      color: "bg-maroon-dark",
-      accent: "text-gold",
+      color: "bg-maroonCustom",
+      accent: "text-white",
     },
     {
       title: "Internship Admin",
@@ -18,8 +18,8 @@ const LandingPage = () => {
         "Manage institutions, supervisors, and student placements across the university.",
       icon: <UserCog size={48} />,
       path: "/admin",
-      color: "bg-[#1a1a1a]",
-      accent: "text-gold",
+      color: "bg-maroonCustom",
+      accent: "text-white",
     },
     {
       title: "Academic Supervisor",
