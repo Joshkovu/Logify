@@ -64,8 +64,7 @@ const approvals = [
 const pageCard =
   "rounded-[12px] border border-border bg-white p-10 shadow-sm transition-all hover:shadow-md";
 
-const infoCard =
-  "rounded-2xl border border-border/30 bg-[#FCFBF8] p-6";
+const infoCard = "rounded-2xl border border-border/30 bg-[#FCFBF8] p-6";
 
 const sectionLabel =
   "text-[10px] font-black uppercase tracking-widest text-text-secondary/50";
@@ -187,7 +186,9 @@ const InternshipApprovals = () => {
                 <div className="mt-4 space-y-3">
                   <div className="flex items-center gap-3 text-text-secondary">
                     <Mail size={16} className="shrink-0" />
-                    <p className="text-sm font-medium break-all">{item.email}</p>
+                    <p className="text-sm font-medium break-all">
+                      {item.email}
+                    </p>
                   </div>
 
                   <div className="flex items-center gap-3 text-text-secondary">

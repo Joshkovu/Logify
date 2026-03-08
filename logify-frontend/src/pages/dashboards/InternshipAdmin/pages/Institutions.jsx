@@ -23,7 +23,7 @@ const Institutions = () => {
           </p>
         </div>
         <div>
-          <Button className="bg-blue-600 hover:bg-blue-700">
+          <Button className="bg-maroonCustom flex text-white items-center gap-2 px-5 py-2  rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
             {" "}
             <Plus className="h-4 w-4 mr-2" />
             Add Institution
