@@ -206,10 +206,10 @@ const Reports = () => {
           </p>
         </div>
 
-       <button className="flex items-center gap-3 rounded-xl border border-[#b88a44] bg-gradient-to-r from-[#b07a2a] to-[#c99645] px-8 py-4 font-bold text-white shadow-lg shadow-[#b07a2a]/25 transition-all hover:scale-[1.02] hover:shadow-xl hover:from-[#9a6821] hover:to-[#b88638]">
-         <FileDown size={20} className="text-white" />
-         Export Semester Report
-</button>
+        <button className="flex items-center gap-3 rounded-xl border border-[#b88a44] bg-gradient-to-r from-[#b07a2a] to-[#c99645] px-8 py-4 font-bold text-white shadow-lg shadow-[#b07a2a]/25 transition-all hover:scale-[1.02] hover:shadow-xl hover:from-[#9a6821] hover:to-[#b88638]">
+          <FileDown size={20} className="text-white" />
+          Export Semester Report
+        </button>
       </header>
 
       <section className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-4">
