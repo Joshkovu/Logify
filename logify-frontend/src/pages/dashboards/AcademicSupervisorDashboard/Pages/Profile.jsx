@@ -14,17 +14,17 @@ import {
 
 const Profile = () => {
   const personalInfo = [
-    { label: "First Name", value: "Emily", icon: <User size={18} /> },
-    { label: "Last Name", value: "Roberts", icon: <User size={18} /> },
+    { label: "First Name", value: "Emily", icon: <User size={16} /> },
+    { label: "Last Name", value: "Roberts", icon: <User size={16} /> },
     {
       label: "Email Address",
       value: "e.roberts@university.edu",
-      icon: <Mail size={18} />,
+      icon: <Mail size={16} />,
     },
     {
       label: "Office Phone",
       value: "+1 (555) 987-6543",
-      icon: <Phone size={18} />,
+      icon: <Phone size={16} />,
     },
   ];
 
@@ -32,112 +32,141 @@ const Profile = () => {
     {
       label: "University",
       value: "University of Technology",
-      icon: <GraduationCap size={18} />,
+      icon: <GraduationCap size={16} />,
     },
     {
       label: "Department",
       value: "Computer Science",
-      icon: <Building2 size={18} />,
+      icon: <Building2 size={16} />,
     },
     {
       label: "Position",
       value: "Associate Professor",
-      icon: <Award size={18} />,
+      icon: <Award size={16} />,
     },
     {
       label: "Office Location",
       value: "Building A, Room 305",
-      icon: <MapPin size={18} />,
+      icon: <MapPin size={16} />,
     },
     {
       label: "Specialization",
       value: "Software Engineering & AI",
-      icon: <ShieldCheck size={18} />,
+      icon: <ShieldCheck size={16} />,
     },
     {
       label: "Years at University",
       value: "12 years",
-      icon: <Calendar size={18} />,
+      icon: <Calendar size={16} />,
     },
   ];
 
   const stats = [
-    { value: "5", label: "Current Interns", iconType: "interns" },
-    { value: "15", label: "Total Students", iconType: "evaluations" },
-    { value: "86.6%", label: "Average Score", iconType: "reviews" },
-    { value: "95%", label: "Completion Rate", iconType: "placements" },
+    { value: "5", label: "Current Interns" },
+    { value: "15", label: "Total Students" },
+    { value: "86.6%", label: "Average Score" },
+    { value: "95%", label: "Completion Rate" },
   ];
 
-  return (
-    <div className="min-h-screen w-full bg-gray-50 px-12 py-10 font-sans">
-      <header className="mb-12">
-        <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
-          My <span className="text-gold">Profile</span>
-        </h1>
-        <p className="text-lg text-text-secondary/80 max-w-2xl leading-relaxed">
-          Manage your professional identity and academic credentials within the
-          Logify ecosystem.
-        </p>
-      </header>
+  const sectionCardClassName =
+    "rounded-[14px] border border-border bg-white p-6 shadow-sm";
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-        {/* Profile Card */}
-        <div className="lg:col-span-1">
-          <div className="bg-white rounded-[12px] p-10 border border-border text-center shadow-sm sticky top-10">
-            <div className="relative inline-block mb-8">
-              <div className="h-40 w-40 rounded-full bg-maroon-dark border-4 border-gold/20 flex items-center justify-center text-5xl font-black text-gold shadow-2xl">
-                ER
+  return (
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans md:px-10">
+      <div className="mx-auto max-w-4xl">
+        <header className="mb-8">
+          <h1 className="mb-2 text-4xl font-black tracking-tighter text-maroon-dark md:text-5xl">
+            My <span className="text-gold">Profile</span>
+          </h1>
+          <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 md:text-lg">
+            Manage your professional identity and academic credentials within
+            the Logify ecosystem.
+          </p>
+        </header>
+
+        <div className="space-y-6">
+          <div className="rounded-[14px] border border-border bg-white p-6 shadow-sm">
+            <div className="flex flex-col items-center text-center">
+              <div className="relative mb-4">
+                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-maroon-dark to-[#7a2e2e] text-xl font-black text-gold shadow-lg">
+                  ER
+                </div>
+
+                <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark shadow-sm transition-colors hover:text-gold">
+                  <Settings size={14} />
+                </button>
               </div>
-              <div className="absolute bottom-2 right-2 p-3 bg-white rounded-full border border-border shadow-lg text-maroon-dark cursor-pointer hover:text-gold transition-colors">
-                <Settings size={20} />
+
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark md:text-2xl">
+                Dr. Emily Roberts
+              </h2>
+
+              <p className="mt-2 rounded-full bg-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-gold">
+                Academic Supervisor
+              </p>
+
+              <p className="mt-2 text-sm font-medium text-text-secondary">
+                Department of Computer Science
+              </p>
+            </div>
+
+            <div className="my-5 border-t border-border/50" />
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border/40 bg-[#FCFBF8] p-3 text-center">
+                <p className="text-xl font-black text-maroon-dark">5</p>
+                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
+                  Current Interns
+                </p>
+              </div>
+
+              <div className="rounded-xl border border-border/40 bg-[#FCFBF8] p-3 text-center">
+                <p className="text-xl font-black text-maroon-dark">15</p>
+                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
+                  Total Students
+                </p>
               </div>
             </div>
 
-            <h2 className="text-3xl font-black text-maroon-dark tracking-tight">
-              Dr. Emily Roberts
-            </h2>
-            <p className="text-md font-bold text-gold uppercase tracking-widest mt-2">
-              Academic Supervisor
-            </p>
-            <p className="text-sm text-text-secondary mt-1 font-medium">
-              Department of Computer Science
-            </p>
-
-            <div className="mt-10 space-y-3">
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-maroon-dark text-white rounded-xl font-bold shadow-lg shadow-maroon-dark/10 hover:scale-[1.02] transition-transform">
-                <Settings size={18} className="text-gold" />
+            <div className="mt-5 space-y-2">
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-dark px-4 py-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.01]">
+                <Settings size={16} className="text-gold" />
                 Edit Account Details
               </button>
-              <button className="w-full flex items-center justify-center gap-2 px-6 py-4 bg-white border border-border text-maroon-dark rounded-xl font-bold hover:bg-background transition-colors">
-                <Key size={18} className="text-gold" />
+
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FCFBF8] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background">
+                <Key size={16} className="text-gold" />
                 Security & Password
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Content Area */}
-        <div className="lg:col-span-2 space-y-10">
-          <div className="bg-white rounded-[12px] p-10 border border-border">
-            <div className="flex items-center gap-3 mb-10 border-b border-border/50 pb-6">
-              <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
-                <User size={20} />
+          <div className={sectionCardClassName}>
+            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4">
+              <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom">
+                <User size={18} />
               </div>
-              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark">
                 Personal Information
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            <div className="divide-y divide-border/40">
               {personalInfo.map((item) => (
-                <div key={item.label} className="group">
-                  <div className="flex items-center gap-2 mb-2 text-text-secondary/40 group-hover:text-gold transition-colors">
-                    {item.icon}
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">
+                <div
+                  key={item.label}
+                  className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold">
+                      {item.icon}
+                    </div>
+                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60">
                       {item.label}
                     </p>
                   </div>
-                  <p className="text-lg font-bold text-maroon-dark group-hover:pl-1 transition-all">
+
+                  <p className="text-sm font-bold text-maroon-dark md:text-right md:text-base">
                     {item.value}
                   </p>
                 </div>
@@ -145,26 +174,32 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="bg-white rounded-[12px] p-10 border border-border">
-            <div className="flex items-center gap-3 mb-10 border-b border-border/50 pb-6">
-              <div className="p-2 bg-gold/10 rounded-lg text-gold">
-                <GraduationCap size={20} />
+          <div className={sectionCardClassName}>
+            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4">
+              <div className="rounded-lg bg-gold/10 p-2 text-gold">
+                <GraduationCap size={18} />
               </div>
-              <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark">
                 Academic Credentials
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+            <div className="divide-y divide-border/40">
               {academicInfo.map((item) => (
-                <div key={item.label} className="group">
-                  <div className="flex items-center gap-2 mb-2 text-text-secondary/40 group-hover:text-gold transition-colors">
-                    {item.icon}
-                    <p className="text-[10px] font-black uppercase tracking-[0.2em]">
+                <div
+                  key={item.label}
+                  className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold">
+                      {item.icon}
+                    </div>
+                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60">
                       {item.label}
                     </p>
                   </div>
-                  <p className="text-lg font-bold text-maroon-dark group-hover:pl-1 transition-all">
+
+                  <p className="text-sm font-bold text-maroon-dark md:max-w-[55%] md:text-right md:text-base">
                     {item.value}
                   </p>
                 </div>
@@ -172,16 +207,16 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {stats.map((item) => (
               <div
                 key={item.label}
-                className="bg-white rounded-2xl p-6 border border-border shadow-sm flex flex-col items-center text-center transition-all hover:border-gold/30 hover:shadow-lg"
+                className="rounded-xl border border-border bg-white p-4 text-center shadow-sm transition-all hover:border-gold/30"
               >
-                <div className="text-3xl font-black text-maroon-dark mb-1 tracking-tight">
+                <div className="mb-1 text-2xl font-black tracking-tight text-maroon-dark">
                   {item.value}
                 </div>
-                <div className="text-[8px] font-black text-text-secondary/40 uppercase tracking-widest">
+                <div className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
                   {item.label}
                 </div>
               </div>
