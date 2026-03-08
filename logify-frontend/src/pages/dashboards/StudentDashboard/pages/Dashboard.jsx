@@ -39,7 +39,7 @@ const Dashboard = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         <section>
-          <div className="bg-white rounded-2xl p-10 border border-border transition-all h-full">
+          <div className="bg-white rounded-[12px] p-10 border border-border transition-all h-full">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Current Internship
@@ -94,7 +94,7 @@ const Dashboard = () => {
         </section>
 
         <section>
-          <div className="bg-white rounded-2xl p-10 border border-border transition-transform h-full">
+          <div className="bg-white rounded-[12px] p-10 border border-border transition-transform h-full">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
@@ -129,7 +129,7 @@ const Dashboard = () => {
               ].map((activity, i) => (
                 <div
                   key={i}
-                  className="flex items-center gap-6 p-5 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors"
+                  className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
                 >
                   <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
                     <Clock size={24} />

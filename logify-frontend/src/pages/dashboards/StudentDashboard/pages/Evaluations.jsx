@@ -32,7 +32,7 @@ const Evaluations = () => {
 
       <div className="space-y-8">
         <section>
-          <div className="bg-white rounded-2xl p-10 border border-border transition-transform">
+          <div className="bg-white rounded-[12px] p-10 border border-border transition-transform">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Evaluation History
@@ -43,7 +43,7 @@ const Evaluations = () => {
             </div>
 
             <div className="grid grid-cols-1 gap-4">
-              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors">
+              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-maroon-dark">
                     Mid-Term Evaluation
@@ -63,7 +63,7 @@ const Evaluations = () => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-2xl border border-border/30 hover:bg-background transition-colors">
+              <div className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors">
                 <div className="flex-1">
                   <h3 className="text-lg font-bold text-maroon-dark">
                     Final Evaluation
@@ -90,7 +90,7 @@ const Evaluations = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <section>
-            <div className="bg-white rounded-2xl p-10 border border-border h-full">
+            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Score Breakdown
@@ -142,7 +142,7 @@ const Evaluations = () => {
           </section>
 
           <section>
-            <div className="bg-white rounded-2xl p-10 border border-border h-full">
+            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Supervisor Feedback
@@ -152,7 +152,7 @@ const Evaluations = () => {
                 </p>
               </div>
 
-              <div className="p-8 bg-background/50 rounded-2xl border border-border/30 italic text-text-secondary leading-relaxed relative">
+              <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 italic text-text-secondary leading-relaxed relative">
                 <span className="absolute top-4 left-4 text-4xl text-gold/20 font-serif">
                   &quot;
                 </span>
