@@ -85,10 +85,10 @@ const Profile = () => {
         </header>
 
         <div className="space-y-6">
-          <div className="rounded-[14px] border border-border bg-white p-6 shadow-sm">
+          <div className="rounded-[14px] border border-border bg-[#FEFEFC] p-6 shadow-sm">
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-maroon-dark to-[#7a2e2e] text-xl font-black text-gold shadow-lg">
+                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-black shadow-lg">
                   ER
                 </div>
 
@@ -110,17 +110,15 @@ const Profile = () => {
               </p>
             </div>
 
-            <div className="my-5 border-t border-border/50" />
-
             <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border/40 bg-[#FCFBF8] p-3 text-center">
+              <div className="rounded-xl border border-border/40 bg-white p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark">5</p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
                   Current Interns
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border/40 bg-[#FCFBF8] p-3 text-center">
+              <div className="rounded-xl border border-border/40 bg-white p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark">15</p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
                   Total Students
@@ -128,14 +126,14 @@ const Profile = () => {
               </div>
             </div>
 
-            <div className="mt-5 space-y-2">
+            <div className="mt-3 space-y-2">
               <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-dark px-4 py-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.01]">
-                <Settings size={16} className="text-gold" />
-                Edit Account Details
+                <Settings size={16} className="text-black" />
+                <span className="text-black">Edit Profile</span>
               </button>
 
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FCFBF8] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background">
-                <Key size={16} className="text-gold" />
+              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background">
+                <Key size={16} className="text-black" />
                 Security & Password
               </button>
             </div>
