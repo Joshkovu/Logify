@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 import reacti from "../../assets/avatar.jpg";
 import { PiSignOut } from "react-icons/pi";
 import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
@@ -70,7 +71,11 @@ Side_bar.propTypes = {
 
 export default Side_bar;
 
-export const SidebarItem = ({icon, text, href}) => {
+Side_bar.propTypes = {
+  children: PropTypes.node.isRequired,
+};
+
+export const SidebarItem = ({ icon, text, href }) => {
   const {expanded} = React.useContext(SidebarContext);
     const location = useLocation();
 
