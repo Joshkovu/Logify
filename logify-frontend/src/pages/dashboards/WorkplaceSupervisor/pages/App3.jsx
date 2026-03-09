@@ -55,7 +55,7 @@ const App3 = () => {
           </div>
         </div> */}
 
-        <div className="mt-1 flex gap-2  flex-col-[auto,] ">
+        <div className="mt-1 flex  flex-col-[auto,] ">
           <Side_bar>
             {navItems}
           </Side_bar>
