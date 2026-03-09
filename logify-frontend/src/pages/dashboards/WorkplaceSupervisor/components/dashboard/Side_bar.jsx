@@ -5,7 +5,7 @@ import { PiSignOut } from "react-icons/pi";
 import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
 import { useLocation } from "react-router-dom";
 import Search from "./Search";
-import PropTypes from 'prop-types';
+
 
 
 const SidebarContext = React.createContext();

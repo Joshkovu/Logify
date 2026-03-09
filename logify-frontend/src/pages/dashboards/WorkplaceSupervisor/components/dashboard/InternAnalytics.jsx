@@ -1,4 +1,6 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
+import PropTypes from "prop-types";
+
 
 
 const parameters = [
@@ -46,4 +48,13 @@ const Card = ({ title, value, icon, description, color }) => {
       </div>
     </div>
   );
+
 };
+
+Card.propTypes = {
+  title: PropTypes.string.isRequired,
+  value: PropTypes.number.isRequired,
+  icon: PropTypes.element.isRequired,
+  description: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+};  
