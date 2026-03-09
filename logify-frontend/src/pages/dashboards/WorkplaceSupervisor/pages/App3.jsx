@@ -43,7 +43,7 @@ const App3 = () => {
     <Router>
       <main className=" bg-stone-100">
         
-        <div className=" relative flex bg-stone-100 h-15">
+        {/* <div className=" relative flex bg-stone-100 h-15">
           <div className=" absolute h-15 w-72 bg-maroon-50 border-gray-900 rounded-lg mx-1 shadow"></div>
           <div className=" ml-74 bg-white rounded-b-lg w-full  p-1 shadow">
             <h1 className="text-xl text-gray-700 font-medium pl-4">
@@ -53,7 +53,7 @@ const App3 = () => {
               Academic Year 2025/2026-Session 1
             </h2>
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-1 flex gap-2  flex-col-[auto,] ">
           <Side_bar>

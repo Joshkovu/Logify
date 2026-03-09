@@ -1,5 +1,4 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
-import PropTypes from 'prop-types';
 
 
 const parameters = [
@@ -21,14 +20,14 @@ const parameters = [
     title: "Approved rate",
     value: 85,
     icon: <TrendingUp />,
-    description: "Of reviewd logs",
+    description: "Of reviewed logs",
     color: "green",
   },
 ];
 
 const Card = ({ title, value, icon, description, color }) => {
   return (
-    <div className=" p-4 rounded-lg border border-stone-300 col-span-4 hover:-translate-y-1 hover:shadow-lg transition-shadow duration-300">
+    <div className=" p-6 rounded-lg border bg-white border-stone-300 col-span-4 hover:-translate-y-1 hover:shadow-lg transition-shadow duration-300">
       <div className="flex mb-2 items-start justify-between flex-col">
         <div>
           <h3 className="font-medium text-sm text-gray-500">{title}</h3>
@@ -48,28 +47,3 @@ const Card = ({ title, value, icon, description, color }) => {
     </div>
   );
 };
-
-Card.propTypes = {
-  title: PropTypes.string.isRequired,
-  value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  icon: PropTypes.node,
-  description: PropTypes.string,
-  color: PropTypes.string,
-};
-
-const InternAnalytics = () => {
-  const paraItems = parameters.map((parameter) => (
-    <Card
-      key={parameter.title}
-      title={parameter.title}
-      value={parameter.value}
-      icon={parameter.icon}
-      description={parameter.description}
-      color={parameter.color}
-    />
-  ));
-
-  return <>{paraItems}</>;
-};
-
-export default InternAnalytics;
