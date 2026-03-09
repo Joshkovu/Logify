@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import reacti from "../../assets/avatar.jpg";
+// import reacti from "../../assets/avatar.jpg";
 import { PiSignOut } from "react-icons/pi";
 import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
 import { useLocation } from "react-router-dom";
@@ -37,7 +37,7 @@ const Side_bar = ({children}) => {
        </SidebarContext.Provider> 
 
         <div className=" border-t border-b flex p-3 bg-stone-50 border-stone-300">
-          <img src={reacti} alt="" className="w-10 h-10 rounded-full" />
+          <img src="https://api.dicebear.com/9.x/micah/svg?seed=Liam" alt="" className="size-15 rounded-full bg-maroonCustom" />
 
           <div
             className={`
