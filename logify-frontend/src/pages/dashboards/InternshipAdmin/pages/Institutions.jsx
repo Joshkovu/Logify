@@ -69,6 +69,8 @@ const Institutions = () => {
     e.preventDefault();
     setShowForm(false);
     setInstitutions([...institutions, form]);
+    setForm({ name: "", industry: "", email: "" });
+    setNotification("Institution added successfully!");
   };
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8]  px-10 py-8 font-sans">
