@@ -41,7 +41,6 @@ const App3 = () => {
   return (
     <Router>
       <main className=" bg-stone-100">
-        
         {/* <div className=" relative flex bg-stone-100 h-15">
           <div className=" absolute h-15 w-72 bg-maroon-50 border-gray-900 rounded-lg mx-1 shadow"></div>
           <div className=" ml-74 bg-white rounded-b-lg w-full  p-1 shadow">
@@ -55,9 +54,7 @@ const App3 = () => {
         </div> */}
 
         <div className="mt-1 flex  flex-col-[auto,] ">
-          <Side_bar>
-            {navItems}
-          </Side_bar>
+          <Side_bar>{navItems}</Side_bar>
           {/* <div className="w-70 rounded-r-lg">
         </div> */}
           <Routes>
