@@ -1,19 +1,25 @@
 import os
 
-import pytest
 from testcontainers.postgres import PostgresContainer
 
+_postgres_container = None
 
-@pytest.fixture(scope="session", autouse=True)
-def postgres_container():
-    """
-    Starts a PostgreSQL container for the test session and sets environment variables for Django.
-    """
-    with PostgresContainer("postgres:15.3") as postgres:
-        os.environ["POSTGRES_DB"] = postgres.dbname
-        os.environ["POSTGRES_USER"] = postgres.username
-        os.environ["POSTGRES_PASSWORD"] = postgres.password
-        os.environ["POSTGRES_HOST"] = postgres.get_container_host_ip()
-        os.environ["POSTGRES_PORT"] = str(postgres.get_exposed_port(5432))
+
+def pytest_configure():
+    global _postgres_container
+    if _postgres_container is None:
+        _postgres_container = PostgresContainer("postgres:15.3")
+        _postgres_container.start()
+        os.environ["POSTGRES_DB"] = _postgres_container.dbname
+        os.environ["POSTGRES_USER"] = _postgres_container.username
+        os.environ["POSTGRES_PASSWORD"] = _postgres_container.password
+        os.environ["POSTGRES_HOST"] = _postgres_container.get_container_host_ip()
+        os.environ["POSTGRES_PORT"] = str(_postgres_container.get_exposed_port(5432))
         os.environ["POSTGRES_SSLMODE"] = "disable"
-        yield
+
+
+def pytest_unconfigure():
+    global _postgres_container
+    if _postgres_container is not None:
+        _postgres_container.stop()
+        _postgres_container = None
