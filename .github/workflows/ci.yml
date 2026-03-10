@@ -47,6 +47,7 @@ jobs:
         if: runner.os != 'Windows'
         env:
           DJANGO_SETTINGS_MODULE: config.settings
+          TESTCONTAINERS_RYUK_DISABLED: true
         run: |
           pytest -q || true
 
