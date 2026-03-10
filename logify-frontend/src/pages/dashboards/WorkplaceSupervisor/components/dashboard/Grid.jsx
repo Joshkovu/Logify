@@ -1,6 +1,5 @@
 import InternAnalytics from "./InternAnalytics";
-import InternAnalytics from './InternAnalytics'
-import AssignedInternSection from './AssignedInternSection'
+import AssignedInternSection from "./AssignedInternSection";
 
 const Grid = () => {
   return (
