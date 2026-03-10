@@ -47,8 +47,14 @@ jobs:
         if: runner.os != 'Windows'
         env:
           DJANGO_SETTINGS_MODULE: config.settings
+          # Disable testcontainers' Ryuk resource-reaper container; GitHub
+          # Actions runners do not allow the privileged Docker socket access
+          # that Ryuk requires, and the container is cleaned up by the job
+          # itself when it finishes.
+          TESTCONTAINERS_RYUK_DISABLED: "true"
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
-          pytest -q || true
+          pytest -q
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'

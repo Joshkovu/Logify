@@ -241,6 +241,18 @@ To run Django backend tests in isolation (without using a live database), the pr
    ```
    This will automatically start a PostgreSQL Docker container for the test database. No live or production database will be touched.
 
+## How it works
+`logify-backend/conftest.py` provides two session-scoped pytest fixtures:
+
+- **`postgres_container`** – starts a `PostgresContainer("postgres:15.3")` once for the entire
+  test session and stops it when all tests have finished. If Docker is unavailable (e.g., on
+  Windows CI runners without Docker), it calls `pytest.skip()` so database tests are skipped
+  gracefully instead of erroring out.
+- **`django_db_modify_db_settings`** – overrides the pytest-django hook of the same name to
+  update `settings.DATABASES["default"]` with the container's host, port, credentials, and
+  `sslmode: disable` before pytest-django creates the test database. This replaces the previous
+  approach of setting environment variables in `pytest_configure`, which was order-fragile.
+
 ## What the team needs to add for tests to pass:
 - The following must be present in `logify-backend/requirements-dev.txt`:
   - `pytest`
@@ -248,7 +260,8 @@ To run Django backend tests in isolation (without using a live database), the pr
   - `testcontainers`
   - `djangorestframework`
   - `psycopg2-binary` (install separately if not present)
-- The file `logify-backend/conftest.py` must contain the testcontainers setup (see codebase for example).
+- `logify-backend/conftest.py` must define the `postgres_container` and
+  `django_db_modify_db_settings` fixtures (already present in the repository).
 - Docker must be running locally.
 
 ## Troubleshooting
@@ -287,7 +300,8 @@ This method uses [testcontainers](https://testcontainers-python.readthedocs.io/e
 - Docker running locally
 - The following in `logify-backend/requirements-dev.txt`:
   - `pytest`, `pytest-django`, `testcontainers`, `djangorestframework`, `psycopg2-binary`
-- `logify-backend/conftest.py` must contain the testcontainers setup
+- `logify-backend/conftest.py` provides the `postgres_container` and `django_db_modify_db_settings`
+  fixtures that reliably configure Django to use the container before any DB setup occurs
 
 **Troubleshooting:**
 - If you see import errors for `testcontainers.postgres`, ensure you have installed `testcontainers` and `psycopg2-binary` in your virtual environment.
