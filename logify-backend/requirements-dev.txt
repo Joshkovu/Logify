@@ -6,3 +6,4 @@ pytest
 pytest-django
 djangorestframework
 testcontainers[postgresql]
+psycopg2-binary
