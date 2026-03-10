@@ -1,5 +1,6 @@
 name: CI
 
+
 on:
   push:
     branches: ["main", "dev"]
@@ -48,6 +49,7 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: config.settings
           TESTCONTAINERS_RYUK_DISABLED: true
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
           pytest -q || true
 
