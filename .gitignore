@@ -5,3 +5,11 @@
 .venv
 .DS_Store
 venv
+
+# Python cache
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+**/.pytest_cache/
