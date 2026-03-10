@@ -1,6 +1,5 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
-import PropTypes from 'prop-types';
-
+import PropTypes from "prop-types";
 
 const parameters = [
   {
