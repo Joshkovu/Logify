@@ -51,7 +51,7 @@ jobs:
           TESTCONTAINERS_RYUK_DISABLED: true
           DOCKER_HOST: unix:///var/run/docker.sock
         run: |
-          pytest -q || true
+          pytest -q
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
