@@ -26,7 +26,7 @@ from django.db import models
 
 
 class InternshipPlacements(models.Model):
-    intern = models.ForeignKey(User, on_delete=models.CASCADE)
+    intern = models.ForeignKey(User, on_delete=models.CASCADE, related_name="internship_placements")
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
     programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organizations, on_delete=models.CASCADE)

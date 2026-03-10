@@ -1,57 +1,65 @@
 import React from "react";
-import PropTypes from "prop-types";
-// import reacti from "../../assets/avatar.jpg";
 import { PiSignOut } from "react-icons/pi";
-import { ArrowLeftToLine,  ArrowRightToLine} from 'lucide-react';
+import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { useLocation } from "react-router-dom";
 import Search from "./Search";
 import { ShieldCheck } from "lucide-react";
 
-
+import PropTypes from "prop-types";
 
 const SidebarContext = React.createContext();
 
-const Side_bar = ({children}) => {
+const Side_bar = ({ children }) => {
   const [expanded, setExpanded] = React.useState(true);
   return (
     <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-none shadow-sm">
-      <div className={`mb-12 px-4 ${expanded ? "" : "w-0 ml-0 hidden"} transition-all duration-200`}>
-        <div>
-          {" "}
-          <ShieldCheck className="text-white h-6 w-6" />
+      <nav className="h-screen flex flex-col bg-white border-none shadow-sm rounded-r-lg">
+        <div className="mb-12 px-4 transition-all duration-200">
+          <div>
+            <ShieldCheck className="text-white h-6 w-6" />
+          </div>
+          <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
+            LOGIFY
+          </div>
+          <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
+            Student Portal
+          </div>
         </div>
-        <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
-          LOGIFY
-        </div>
-        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
-          Student Portal
-        </div>
-      </div>
-        <div className={`p-4 pb-4 flex justify-between items-center ${expanded ? "" : "pt-37"} `}>
-          <div className={`mr-1 overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
+        <div className="p-4 pb-2 flex justify-between items-center">
+          <div
+            className={`mr-1 overflow-hidden duration-300 transition-all
+            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
+          >
             <Search />
           </div>
-          <button onClick={() => setExpanded(curr => !curr )} className="p-2  rounded-full bg-[#FCFBF2]  hover:bg-gray-100 ml-0.5 duration-200 transition-all shadow-lg">
-            {expanded ? <ArrowLeftToLine size={20} className=" text-gray-700"/> : < ArrowRightToLine size={20} className=" text-gray-700"/>}
+          <button
+            onClick={() => setExpanded((curr) => !curr)}
+            className="p-1.5  rounded-full bg-gray-50 hover:bg-gray-100 ml-0.5 duration-300 transition-all shadow"
+          >
+            {expanded ? (
+              <ArrowLeftToLine size={20} className=" text-gray-700" />
+            ) : (
+              <ArrowRightToLine size={20} className=" text-gray-700" />
+            )}
           </button>
         </div>
-        <p className={`flex text-sm justify-start ml-6 font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
+        <p
+          className={`flex text-sm justify-start ml-6 font-medium text-gray-500 py-2 overflow-hidden duration-300 transition-all
+            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
+        >
           MAIN NAVIGATION
         </p>
-
-       <SidebarContext.Provider value={{expanded}}>
-        
-        <ul className={`flex-1 px-3 ${expanded ? "" : "mt-5"}`}>
-          {children}
-        </ul>
-       </SidebarContext.Provider> 
-
+        <SidebarContext.Provider value={{ expanded }}>
+          <ul className={`flex-1 px-3 ${expanded ? "" : "mt-5"}`}>
+            {children}
+          </ul>
+        </SidebarContext.Provider>
         <div className=" border-t border-b flex p-3 bg-stone-50 border-stone-300">
-          <img src="https://api.dicebear.com/9.x/micah/svg?seed=Liam" alt="" className="size-15 rounded-full bg-maroonCustom" />
-
+          <img
+            src="https://api.dicebear.com/9.x/micah/svg?seed=Liam"
+            alt=""
+            className="size-15 rounded-full bg-maroonCustom"
+          />
           <div
             className={`
             flex justify-between items-center
@@ -65,9 +73,10 @@ const Side_bar = ({children}) => {
             </div>
           </div>
         </div>
-
-        <button className={`flex rounded-lg h-10 w-62 shadow my-6 mx-2 bg-gray-50 justify-center hover:bg-gray-200 pt-0.5 overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}>
+        <button
+          className={`flex rounded-lg h-10 w-62 shadow my-6 mx-2 bg-gray-50 justify-center hover:bg-gray-200 pt-0.5 overflow-hidden duration-200 transition-all
+            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
+        >
           <div className={"flex justify-start p-1.5 "}>
             <PiSignOut className=" pt-0.5" />
             <span>SignOut</span>
@@ -84,37 +93,41 @@ Side_bar.propTypes = {
 
 export default Side_bar;
 
-Side_bar.propTypes = {
-  children: PropTypes.node.isRequired,
-};
+const SidebarItem = ({ icon, text, href }) => {
+  const { expanded } = React.useContext(SidebarContext);
+  const location = useLocation();
 
-export const SidebarItem = ({ icon, text, href }) => {
-  const {expanded} = React.useContext(SidebarContext);
-    const location = useLocation();
-
-  return(
-    <li  className={`
-      ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-sm " : "hover:bg-red-50 text-gray-600"}
-    relative flex items-center hover:-translate-y-0.5 hover:shadow-sm
-    font-medium rounded-md cursor-pointer  duration-200 transition-colors
-     ${expanded ? "py-2 px-3 my-3" : "p-3 my-5"}
-   
-    `}>
-      <a href={href} className={`flex items-center w-full ${expanded ? "justify-start" : "justify-center"} transition-all duration-200  `}>
-
-      {icon}
-      <span className={`
-            
-            duration-200 transition-all 
+  return (
+    <li
+      className={`
+        ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-sm " : "hover:bg-red-50 text-gray-600"}
+        relative flex items-center hover:-translate-y-0.5 hover:shadow-sm
+        font-medium rounded-md cursor-pointer  duration-200 transition-colors
+        ${expanded ? "py-2 px-3 my-3" : "p-3 my-5"}
+      `}
+    >
+      <a
+        href={href}
+        className={`flex items-center w-full ${expanded ? "justify-start" : "justify-center"} transition-all duration-200`}
+      >
+        {icon}
+        <span
+          className={`
+            duration-200 transition-all
             ${expanded ? "overflow-hidden w-52 ml-3" : "w-0 ml-0 hidden"}
-            `} >{text}</span>
+          `}
+        >
+          {text}
+        </span>
       </a>
     </li>
-  )
-}
+  );
+};
 
 SidebarItem.propTypes = {
   icon: PropTypes.node.isRequired,
   text: PropTypes.string.isRequired,
   href: PropTypes.string.isRequired,
 };
+
+export { SidebarItem };
