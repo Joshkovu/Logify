@@ -8,6 +8,10 @@ const Dashboard = () => {
         Welcome back, John! Here your supervision overview
       </h2>
 
+    <div className='bg-[#FCFBF8]  pb-4 shadow h-screen w-screen p-16 transition-all'>
+      <h1 className=' font-bold text-2xl '>Dashboard</h1>
+      <h2 className='font-light text-lg text-gray-600'>Welcome back, John! Here your supervision overview</h2>
+      
       <Grid />
     </div>
   );
