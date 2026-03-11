@@ -1,0 +1,27 @@
+.unauthorised-container{
+    font-family: Arial;
+    text-align: center;
+
+}
+            
+.unathorised-container h1{
+            font-size: 60px;
+            color: black;
+        }
+.unathorised-container h3{
+    
+            font-size: 30px;
+            color: black;
+        }
+.unathorised-container p{
+            font-size: 18px;
+        }
+.unathorised-container button{
+            background-color: marooncustom;
+            color: maroon;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+    
