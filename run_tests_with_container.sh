@@ -20,6 +20,7 @@ export POSTGRES_PASSWORD=test
 export POSTGRES_HOST=localhost
 export POSTGRES_PORT=$FREE_PORT
 export POSTGRES_SSLMODE=disable
+export DJANGO_SETTINGS_MODULE=config.settings
 
 pytest logify-backend
 

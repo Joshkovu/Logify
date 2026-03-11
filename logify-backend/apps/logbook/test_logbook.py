@@ -64,6 +64,7 @@ class TestLogbook(TestCase):
             department_at_company="Engineering",
             status="active",
         )
+        placement_id = placement.id  # type: ignore
         # Use placement in an assertion
         self.assertEqual(placement.status, "active")
         # Log in the user
@@ -78,6 +79,8 @@ class TestLogbook(TestCase):
                 "activities": "Worked on project X",
                 "challenges": "Faced issue Y",
                 "learnings": "Learned about Z",
+                "placement": placement_id,
+                "status": "draft",
             },
         )
         print(log_response.status_code)

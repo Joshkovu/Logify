@@ -1,39 +1,37 @@
-from functools import wraps
-
 from apps.accounts.models import User
-from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from rest_framework import status
+from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
-from .serializer import WeeklyLogsForm
+from .serializer import WeeklyLogsSerializer
+
+
+class IsStudent(BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and getattr(request.user, "role", None) == User.STUDENT
 
 
 # Create your views here.
-def role_required(allowed_roles):
-    def decorator(view_func):
-        @wraps(view_func)
-        def _wrapped_view(request, *args, **kwargs):
-            if request.user.role not in allowed_roles:
-                return JsonResponse({"error": "Unauthorized"}, status=403)
-            return view_func(request, *args, **kwargs)
-
-        return _wrapped_view
-
-    return decorator
 
 
-@login_required(login_url="/accounts/login/")
-@role_required([User.STUDENT])
-def create_weekly_log(request):
-    # Logic to create a weekly log
-    if request.method == "POST":
-        form = WeeklyLogsForm(request.POST)
-        if form.is_valid():
-            weekly_log = form.save(commit=False)
-            weekly_log.placement = request.user.internship_placements.first()
-            weekly_log.status = "draft"
-            weekly_log.save()
-            return JsonResponse({"success": "Weekly log created successfully"})
-        else:
-            return JsonResponse({"error": "Invalid data", "details": form.errors}, status=400)
-    else:
-        return JsonResponse({"error": "Method not allowed"}, status=405)
+class CreateWeeklyLogAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def post(self, request):
+        serializer = WeeklyLogsSerializer(data=request.data)
+        if serializer.is_valid():
+            weekly_log = serializer.save(
+                placement=request.user.internship_placements.first(), status="draft"
+            )
+            return Response(
+                {
+                    "success": "Weekly log created successfully",
+                    "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(
+            {"error": "Invalid data", "details": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
