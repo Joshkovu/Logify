@@ -1,5 +1,6 @@
 name: CI
 
+
 on:
   push:
     branches: ["main", "dev"]
@@ -47,8 +48,10 @@ jobs:
         if: runner.os != 'Windows'
         env:
           DJANGO_SETTINGS_MODULE: config.settings
+          TESTCONTAINERS_RYUK_DISABLED: true
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
-          pytest -q || true
+          pytest -q
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
