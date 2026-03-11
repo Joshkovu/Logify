@@ -236,8 +236,9 @@ To run Django backend tests in isolation (without using a live database), the pr
 2. **Ensure Docker is running.**
 
 3. **Run tests:**
+# Make sure your python environment is activated then run the command below
    ```bash
-   pytest logify-backend
+   ./run_tests_with_container.sh
    ```
    This will automatically start a PostgreSQL Docker container for the test database. No live or production database will be touched.
 
