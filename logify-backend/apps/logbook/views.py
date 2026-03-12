@@ -5,13 +5,21 @@ from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import WeeklyLogs
+from .models import SupervisorReviews, WeeklyLogs
 from .serializer import WeeklyLogsSerializer
 
 
 class IsStudent(BasePermission):
     def has_permission(self, request, view):
         return request.user.is_authenticated and getattr(request.user, "role", None) == User.STUDENT
+
+
+class IsWorkplaceSupervisor(BasePermission):
+    def has_permission(self, request, view):
+        return (
+            request.user.is_authenticated
+            and getattr(request.user, "role", None) == User.WORKPLACE_SUPERVISOR
+        )
 
 
 # Create your views here.
@@ -87,6 +95,70 @@ class SubmitWeeklyLogsAPIView(APIView):
         return Response(
             {
                 "success": "Weekly log submitted successfully",
+                "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class ApproveWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
+
+    def post(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "submitted":
+            return Response(
+                {"error": "Only submitted logs can be approved"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.status = "approved"
+        weekly_log.save()
+
+        comment = request.data.get("comment", "Good work!")
+        SupervisorReviews.objects.create(
+            weekly_log=weekly_log, supervisor=request.user, decision="approved", comment=comment
+        )
+
+        return Response(
+            {
+                "success": "Weekly log approved successfully",
+                "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class RejectWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
+
+    def post(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "submitted":
+            return Response(
+                {"error": "Only submitted logs can be rejected"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.status = "rejected"
+        weekly_log.save()
+
+        comment = request.data.get("comment", "Needs improvement.")
+        SupervisorReviews.objects.create(
+            weekly_log=weekly_log, supervisor=request.user, decision="rejected", comment=comment
+        )
+
+        return Response(
+            {
+                "success": "Weekly log rejected successfully",
                 "weekly_log": WeeklyLogsSerializer(weekly_log).data,
             },
             status=status.HTTP_200_OK,
