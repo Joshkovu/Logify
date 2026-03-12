@@ -1,4 +1,5 @@
 from apps.accounts.models import User
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
@@ -57,7 +58,36 @@ class UpdateWeeklyLogAPIView(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+
         return Response(
             {"error": "Invalid data", "details": serializer.errors},
             status=status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class SubmitWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def post(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id, placement__intern=request.user)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "draft":
+            return Response(
+                {"error": "Only draft logs can be submitted"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.status = "submitted"
+        weekly_log.submitted_at = timezone.now()
+        weekly_log.save()
+
+        return Response(
+            {
+                "success": "Weekly log submitted successfully",
+                "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
         )
