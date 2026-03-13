@@ -37,28 +37,28 @@ const Intern_details = () => {
         </div>
         <div className="flex col-span-12 justify-evenly items-start mt-6">
           <div className="flex w-full items-center">
-            <Mail className="size-4 text-gray-500"/>
+            <Mail className="size-4 text-gray-500" />
             <p className="text-gray-500 text-sm font-medium ml-1.5">
               sarah.johnson@university.edu
             </p>
           </div>
           <div className="flex w-full items-center">
-            <Phone className="size-4 text-gray-500"/>
+            <Phone className="size-4 text-gray-500" />
             <p className="text-gray-500 text-sm font-medium ml-1.5">
               +1 (555) 234-5678
             </p>
           </div>
         </div>
         <div className="flex col-span-12 justify-between mt-6 ">
-            <p className="text-sm text-gray-500 ">Internship Progress</p>
-            <p className="text-sm text-gray-700 font-medium">Week 8 of 12</p>
+          <p className="text-sm text-gray-500 ">Internship Progress</p>
+          <p className="text-sm text-gray-700 font-medium">Week 8 of 12</p>
         </div>
         <div className="col-span-12 my-3 h-2 bg-red-50 w-full rounded-full">
-            <div className="h-full bg-maroonCustom rounded-l-full w-8/12" ></div>
+          <div className="h-full bg-maroonCustom rounded-l-full w-8/12"></div>
         </div>
         <div className="flex col-span-12 justify-between ">
-            <p className="text-xs text-gray-500 ">8 logs approved</p>
-            <p className="text-xs text-gray-700 ">4 weeks remaining</p>
+          <p className="text-xs text-gray-500 ">8 logs approved</p>
+          <p className="text-xs text-gray-700 ">4 weeks remaining</p>
         </div>
       </div>
     </div>
