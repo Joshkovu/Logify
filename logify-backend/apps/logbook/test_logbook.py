@@ -177,6 +177,7 @@ class TestLogbook(TestCase):
         )
         print(update_response.status_code)
         print(update_response.content)
+        self.assertEqual(update_response.status_code, 200)
         # Check if the log was updated successfully
         self.assertIn("success", update_response.json())
         self.assertEqual(update_response.json()["success"], "Weekly log updated successfully")
@@ -275,7 +276,7 @@ class TestLogbook(TestCase):
         self.assertIn("success", approve_response.json())
         self.assertEqual(approve_response.json()["success"], "Weekly log approved successfully")
         # this code  updates state in memory such that we can reject it
-        weekly_log.refresh_from_db()
+        weekly_log.refresh_from_db()  # type: ignore
         weekly_log.status = "submitted"
         weekly_log.save()
         # Now reject the same log to check if rejection works but make sure the workplace supervisor is logged in for this to pass

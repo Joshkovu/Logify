@@ -57,23 +57,27 @@ class UpdateWeeklyLogAPIView(APIView):
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = WeeklyLogsSerializer(weekly_log, data=request.data, partial=True)
-        if serializer.is_valid() and weekly_log.status == "draft":
-            updated_weekly_log = serializer.save()
+        if not serializer.is_valid():
             return Response(
-                {
-                    "success": "Weekly log updated successfully",
-                    "weekly_log": WeeklyLogsSerializer(updated_weekly_log).data,
-                },
-                status=status.HTTP_200_OK,
+                {"error": "Invalid data", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-
+        if weekly_log.status not in ["draft", "changes_requested"]:
+            return Response(
+                {"error": "Only draft and changes_requested logs can be updated"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        updated_weekly_log = serializer.save()
         return Response(
-            {"error": "Invalid data", "details": serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST,
+            {
+                "success": "Weekly log updated successfully",
+                "weekly_log": WeeklyLogsSerializer(updated_weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
         )
 
 
-class SubmitWeeklyLogsAPIView(APIView):
+class SubmitWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsStudent]
 
     def post(self, request, log_id):
@@ -82,9 +86,9 @@ class SubmitWeeklyLogsAPIView(APIView):
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if weekly_log.status != "draft":
+        if weekly_log.status not in ["draft", "changes_requested"]:
             return Response(
-                {"error": "Only draft logs can be submitted"},
+                {"error": "Only draft and changes_requested logs can be submitted"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -101,12 +105,14 @@ class SubmitWeeklyLogsAPIView(APIView):
         )
 
 
-class ApproveWeeklyLogsAPIView(APIView):
+class ApproveWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
 
     def post(self, request, log_id):
         try:
-            weekly_log = WeeklyLogs.objects.get(id=log_id)
+            weekly_log = WeeklyLogs.objects.get(
+                placement__workplace_supervisor=request.user, id=log_id
+            )
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -133,12 +139,14 @@ class ApproveWeeklyLogsAPIView(APIView):
         )
 
 
-class RejectWeeklyLogsAPIView(APIView):
+class RejectWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
 
     def post(self, request, log_id):
         try:
-            weekly_log = WeeklyLogs.objects.get(id=log_id)
+            weekly_log = WeeklyLogs.objects.get(
+                placement__workplace_supervisor=request.user, id=log_id
+            )
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -160,6 +168,146 @@ class RejectWeeklyLogsAPIView(APIView):
             {
                 "success": "Weekly log rejected successfully",
                 "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class RequestChangesWeeklyLogAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
+
+    def post(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(
+                placement__workplace_supervisor=request.user, id=log_id
+            )
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "submitted":
+            return Response(
+                {"error": "Only submitted logs can be marked for changes"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.status = "changes_requested"
+        weekly_log.save()
+
+        comment = request.data.get("comment", "Please make the necessary changes.")
+        SupervisorReviews.objects.create(
+            weekly_log=weekly_log,
+            supervisor=request.user,
+            decision="changes_requested",
+            comment=comment,
+        )
+
+        return Response(
+            {
+                "success": "Changes requested for the weekly log successfully",
+                "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class GetWeeklyLogAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, log_id):
+        querySet = WeeklyLogs.objects.all()
+        if getattr(request.user, "role", None) == User.STUDENT:
+            querySet = querySet.filter(placement__intern=request.user)
+        elif getattr(request.user, "role", None) == User.WORKPLACE_SUPERVISOR:
+            querySet = querySet.filter(placement__workplace_supervisor=request.user)
+        elif getattr(request.user, "role", None) == User.ACADEMIC_SUPERVISOR:
+            querySet = querySet.filter(placement__academic_supervisor=request.user)
+        else:
+            return Response(
+                {"error": "You do not have permission to view this log"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        try:
+            weekly_log = querySet.get(id=log_id)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user.role == User.STUDENT and weekly_log.placement.intern != request.user:
+            return Response(
+                {"error": "You do not have permission to view this log"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        return Response(
+            {
+                "success": "Weekly log retrieved successfully",
+                "weekly_log": WeeklyLogsSerializer(weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
+        )
+
+
+class GetWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role == User.STUDENT:
+            weekly_logs = WeeklyLogs.objects.filter(placement__intern=request.user)
+        elif request.user.role == User.WORKPLACE_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__workplace_supervisor=request.user)
+        elif request.user.role == User.ACADEMIC_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__academic_supervisor=request.user)
+        else:
+            return Response(
+                {"error": "You do not have permission to view these logs"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = WeeklyLogsSerializer(weekly_logs, many=True)
+        return Response(
+            {"success": "Weekly logs retrieved successfully", "weekly_logs": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+
+class DeleteWeeklyLogAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def delete(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id, placement__intern=request.user)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "draft":
+            return Response(
+                {"error": "Only draft logs can be deleted"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.delete()
+        return Response({"success": "Weekly log deleted successfully"}, status=status.HTTP_200_OK)
+
+
+class GetHistoryOfWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role == User.STUDENT:
+            weekly_logs = WeeklyLogs.objects.filter(placement__intern=request.user)
+        elif request.user.role == User.WORKPLACE_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__workplace_supervisor=request.user)
+        elif request.user.role == User.ACADEMIC_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__academic_supervisor=request.user)
+        else:
+            return Response(
+                {"error": "You do not have permission to view these logs"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = WeeklyLogsSerializer(weekly_logs, many=True)
+        return Response(
+            {
+                "success": "Weekly logs history retrieved successfully",
+                "weekly_logs": serializer.data,
             },
             status=status.HTTP_200_OK,
         )
