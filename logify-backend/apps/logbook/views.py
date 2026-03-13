@@ -62,9 +62,9 @@ class UpdateWeeklyLogAPIView(APIView):
                 {"error": "Invalid data", "details": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        if weekly_log.status != "draft":
+        if weekly_log.status not in ["draft", "changes_requested"]:
             return Response(
-                {"error": "Only draft logs can be updated"},
+                {"error": "Only draft and changes_requested logs can be updated"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
         updated_weekly_log = serializer.save()
@@ -86,9 +86,9 @@ class SubmitWeeklyLogAPIView(APIView):
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        if weekly_log.status != "draft":
+        if weekly_log.status not in ["draft", "changes_requested"]:
             return Response(
-                {"error": "Only draft logs can be submitted"},
+                {"error": "Only draft and changes_requested logs can be submitted"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -214,8 +214,17 @@ class GetWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request, log_id):
+        querySet = WeeklyLogs.objects.all()
+        if getattr(request.user, "role", None) == User.STUDENT:
+            querySet = querySet.filter(placement__intern=request.user)
+        elif getattr(request.user, "role", None) == User.WORKPLACE_SUPERVISOR:
+            querySet = querySet.filter(placement__workplace_supervisor=request.user)
+        elif getattr(request.user, "role", None) == User.ACADEMIC_SUPERVISOR:
+            querySet = querySet.filter(placement__academic_supervisor=request.user)
+        else:
+            querySet = querySet.none()
         try:
-            weekly_log = WeeklyLogs.objects.get(id=log_id)
+            weekly_log = querySet.get(id=log_id)
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -224,25 +233,6 @@ class GetWeeklyLogAPIView(APIView):
                 {"error": "You do not have permission to view this log"},
                 status=status.HTTP_403_FORBIDDEN,
             )
-
-        if (
-            request.user.role == User.WORKPLACE_SUPERVISOR
-            and weekly_log.placement.workplace_supervisor != request.user
-        ):
-            return Response(
-                {"error": "You do not have permission to view this log"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
-        if (
-            request.user.role == User.ACADEMIC_SUPERVISOR
-            and weekly_log.placement.academic_supervisor != request.user
-        ):
-            return Response(
-                {"error": "You do not have permission to view this log"},
-                status=status.HTTP_403_FORBIDDEN,
-            )
-
         return Response(
             {
                 "success": "Weekly log retrieved successfully",
