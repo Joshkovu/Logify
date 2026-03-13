@@ -12,5 +12,5 @@ urlpatterns = [
     path("weekly_log_status/<int:log_id>/", views.GetWeeklyLogAPIView.as_view(), name="weekly_log_status"),  # type: ignore
     path("weekly_logs/", views.GetWeeklyLogsAPIView.as_view(), name="weekly_logs_for_placement"),  # type: ignore
     path("delete_weekly_log/<int:log_id>/", views.DeleteWeeklyLogAPIView.as_view(), name="delete_weekly_log"),  # type: ignore
-    path("history/<int:log_id>/", views.GetHistoryOfWeeklyLogsAPIView.as_view(), name="weekly_log_history"),  # type: ignore
+    path("history/", views.GetHistoryOfWeeklyLogsAPIView.as_view(), name="weekly_log_history"),  # type: ignore
 ]
