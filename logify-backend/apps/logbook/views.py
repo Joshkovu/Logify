@@ -222,7 +222,10 @@ class GetWeeklyLogAPIView(APIView):
         elif getattr(request.user, "role", None) == User.ACADEMIC_SUPERVISOR:
             querySet = querySet.filter(placement__academic_supervisor=request.user)
         else:
-            querySet = querySet.none()
+            return Response(
+                {"error": "You do not have permission to view this log"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         try:
             weekly_log = querySet.get(id=log_id)
         except WeeklyLogs.DoesNotExist:
