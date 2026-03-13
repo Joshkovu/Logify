@@ -250,3 +250,45 @@ class GetWeeklyLogAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+
+
+class GetWeeklyLogsAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        if request.user.role == User.STUDENT:
+            weekly_logs = WeeklyLogs.objects.filter(placement__intern=request.user)
+        elif request.user.role == User.WORKPLACE_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__workplace_supervisor=request.user)
+        elif request.user.role == User.ACADEMIC_SUPERVISOR:
+            weekly_logs = WeeklyLogs.objects.filter(placement__academic_supervisor=request.user)
+        else:
+            return Response(
+                {"error": "You do not have permission to view these logs"},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = WeeklyLogsSerializer(weekly_logs, many=True)
+        return Response(
+            {"success": "Weekly logs retrieved successfully", "weekly_logs": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+
+class DeleteWeeklyLogAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudent]
+
+    def delete(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id, placement__intern=request.user)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if weekly_log.status != "draft":
+            return Response(
+                {"error": "Only draft logs can be deleted"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        weekly_log.delete()
+        return Response({"success": "Weekly log deleted successfully"}, status=status.HTTP_200_OK)
