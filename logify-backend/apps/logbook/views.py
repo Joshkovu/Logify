@@ -57,23 +57,27 @@ class UpdateWeeklyLogAPIView(APIView):
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
         serializer = WeeklyLogsSerializer(weekly_log, data=request.data, partial=True)
-        if serializer.is_valid() and weekly_log.status == "draft":
-            updated_weekly_log = serializer.save()
+        if not serializer.is_valid():
             return Response(
-                {
-                    "success": "Weekly log updated successfully",
-                    "weekly_log": WeeklyLogsSerializer(updated_weekly_log).data,
-                },
-                status=status.HTTP_200_OK,
+                {"error": "Invalid data", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-
+        if weekly_log.status != "draft":
+            return Response(
+                {"error": "Only draft logs can be updated"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        updated_weekly_log = serializer.save()
         return Response(
-            {"error": "Invalid data", "details": serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST,
+            {
+                "success": "Weekly log updated successfully",
+                "weekly_log": WeeklyLogsSerializer(updated_weekly_log).data,
+            },
+            status=status.HTTP_200_OK,
         )
 
 
-class SubmitWeeklyLogsAPIView(APIView):
+class SubmitWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsStudent]
 
     def post(self, request, log_id):
@@ -101,12 +105,14 @@ class SubmitWeeklyLogsAPIView(APIView):
         )
 
 
-class ApproveWeeklyLogsAPIView(APIView):
+class ApproveWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
 
     def post(self, request, log_id):
         try:
-            weekly_log = WeeklyLogs.objects.get(id=log_id)
+            weekly_log = WeeklyLogs.objects.get(
+                placement__workplace_supervisor=request.user, id=log_id
+            )
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -133,12 +139,14 @@ class ApproveWeeklyLogsAPIView(APIView):
         )
 
 
-class RejectWeeklyLogsAPIView(APIView):
+class RejectWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsWorkplaceSupervisor]
 
     def post(self, request, log_id):
         try:
-            weekly_log = WeeklyLogs.objects.get(id=log_id)
+            weekly_log = WeeklyLogs.objects.get(
+                placement__workplace_supervisor=request.user, id=log_id
+            )
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
