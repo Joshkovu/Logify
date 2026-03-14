@@ -1,6 +1,7 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
 import PropTypes from "prop-types";
 
+
 const parameters = [
   {
     title: "Assigned Interns",
@@ -68,5 +69,8 @@ Card.propTypes = {
   icon: PropTypes.element.isRequired,
   description: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
-};
+};  
 export default InternAnalytics;
+
+
+
