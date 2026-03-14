@@ -35,6 +35,8 @@ const Supervisors = () => {
     e.preventDefault();
     setShowForm(false);
     setSupervisors([...supervisors, form]);
+    setForm({ name: "", type: "", affiliation: "", interns: "", email: "" });
+    alert("Supervisor added successfully!");
   };
   const handleCancel = () => {
     setShowForm(false);

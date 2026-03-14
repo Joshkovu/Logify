@@ -10,6 +10,9 @@ const srcPath = path.resolve(
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    port: 3000,
+  },
   resolve: {
     alias: {
       "@": srcPath,

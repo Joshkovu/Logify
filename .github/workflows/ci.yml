@@ -1,5 +1,6 @@
 name: CI
 
+
 on:
   push:
     branches: ["main", "dev"]
@@ -34,15 +35,23 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements-dev.txt
 
+
       - name: Django system check
         run: python manage.py check
+
+      - name: Ensure Docker is running
+        if: runner.os != 'Windows'
+        run: |
+          docker info
 
       - name: Run tests (Ubuntu)
         if: runner.os != 'Windows'
         env:
           DJANGO_SETTINGS_MODULE: config.settings
+          TESTCONTAINERS_RYUK_DISABLED: true
+          DOCKER_HOST: unix:///var/run/docker.sock
         run: |
-          pytest -q || true
+          pytest -q
 
       - name: Run tests (Windows)
         if: runner.os == 'Windows'
