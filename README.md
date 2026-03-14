@@ -217,7 +217,112 @@ Checks performed:
 
 All PRs must pass CI before merging.
 
+# Running Backend Tests with Docker Testcontainers
+
+To run Django backend tests in isolation (without using a live database), the project uses [testcontainers](https://testcontainers-python.readthedocs.io/en/latest/) to spin up a temporary PostgreSQL Docker container for each test session.
+
+## Requirements
+- Docker must be installed and running on your machine.
+- Python 3.12+ and virtualenv recommended.
+
+## Setup Steps
+1. **Install dependencies:**
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   pip install -r logify-backend/requirements-dev.txt
+   pip install psycopg2-binary
+   ```
+2. **Ensure Docker is running.**
+
+3. **Run tests:**
+# Make sure your python environment is activated then run the command below
+   ```bash
+   ./run_tests_with_container.sh
+   ```
+   This will automatically start a PostgreSQL Docker container for the test database. No live or production database will be touched.
+
+## What the team needs to add for tests to pass:
+- The following must be present in `logify-backend/requirements-dev.txt`:
+  - `pytest`
+  - `pytest-django`
+  - `testcontainers`
+  - `djangorestframework`
+  - `psycopg2-binary` (install separately if not present)
+- The file `logify-backend/conftest.py` must contain the testcontainers setup (see codebase for example).
+- Docker must be running locally.
+
+## Troubleshooting
+- If you see import errors for `testcontainers.postgres`, ensure you have installed `testcontainers` and `psycopg2-binary` in your virtual environment.
+- If tests fail with database errors, ensure Docker is running and no other process is using the test database port.
+- If you see errors about the Python interpreter, make sure VS Code or your terminal is using the correct virtual environment.
+
 # Contribution Guidelines
+# Test Procedures
+
+There are two main ways to run backend tests for Logify:
+
+## 1. Using Docker Testcontainers (Recommended)
+
+This method uses [testcontainers](https://testcontainers-python.readthedocs.io/en/latest/) to automatically spin up a temporary PostgreSQL Docker container for each test session.
+
+**Steps:**
+1. Ensure Docker is installed and running.
+2. Create and activate a Python virtual environment:
+   ```bash
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+3. Install dependencies:
+   ```bash
+   pip install -r logify-backend/requirements-dev.txt
+   pip install psycopg2-binary
+   ```
+4. Run tests:
+   ```bash
+   pytest logify-backend
+   ```
+   This will start a PostgreSQL Docker container for the test database. No live or production database will be touched.
+
+**Requirements:**
+- Docker running locally
+- The following in `logify-backend/requirements-dev.txt`:
+  - `pytest`, `pytest-django`, `testcontainers`, `djangorestframework`, `psycopg2-binary`
+- `logify-backend/conftest.py` must contain the testcontainers setup
+
+**Troubleshooting:**
+- If you see import errors for `testcontainers.postgres`, ensure you have installed `testcontainers` and `psycopg2-binary` in your virtual environment.
+- If tests fail with database errors, ensure Docker is running and no other process is using the test database port.
+- If you see errors about the Python interpreter, make sure your terminal or VS Code is using the correct virtual environment.
+
+## 2. Using the Provided Shell Script
+
+You can also run tests using the helper script:
+
+```bash
+./run_tests_with_container.sh
+```
+
+This script will:
+- Find a free port
+- Start a temporary PostgreSQL Docker container
+- Export the necessary environment variables
+- Run `pytest logify-backend`
+- Clean up the container after tests finish
+
+## 3. Pytest Configuration
+
+The `pytest.ini` file configures pytest for the Django backend:
+
+```
+[pytest]
+DJANGO_SETTINGS_MODULE = config.settings
+python_files = test_*.py
+addopts = --maxfail=1 --disable-warnings
+pythonpath = logify-backend
+```
+
+This ensures tests are discovered and run correctly in the backend directory.
 
 Branching Strategy
 ```bash
