@@ -1,3 +1,4 @@
+
 const Profile = () => {
   return (
     <div className="bg-white rounded-lg pb-4 shadow h-screen w-screen p-16 transition-all">
@@ -5,6 +6,7 @@ const Profile = () => {
       <h2 className="font-light text-lg text-gray-600">
         Welcome back, John! Here your supervision overview
       </h2>
+
     </div>
   );
 };
