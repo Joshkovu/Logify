@@ -15,7 +15,7 @@ const Side_bar = ({children}) => {
   const [expanded, setExpanded] = React.useState(true);
   return (
     <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-none shadow-sm">
+      <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm">
       <div className={`mb-12 px-4 ${expanded ? "" : "w-0 ml-0 hidden"} transition-all duration-200`}>
         <div>
           {" "}
@@ -98,7 +98,6 @@ export const SidebarItem = ({ icon, text, href }) => {
     relative flex items-center hover:-translate-y-0.5 hover:shadow-sm
     font-medium rounded-md cursor-pointer  duration-200 transition-colors
      ${expanded ? "py-2 px-3 my-3" : "p-3 my-5"}
-   
     `}>
       <a href={href} className={`flex items-center w-full ${expanded ? "justify-start" : "justify-center"} transition-all duration-200  `}>
 
