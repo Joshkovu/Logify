@@ -53,16 +53,21 @@ const App3 = () => {
           </div>
         </div> */}
 
-        <div className="mt-1 flex  flex-col-[auto,] ">
+        <div className="mt-1 flex h-screen overflow-hidden">
           <Side_bar>{navItems}</Side_bar>
           {/* <div className="w-70 rounded-r-lg">
         </div> */}
-          <Routes>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/assigned-interns" element={<AssignedInterns />} />
-            <Route path="/pending-log-review" element={<PendingLogReview />} />
-            <Route path="/profile" element={<Profile />} />
-          </Routes>
+          <div className="flex-1  overflow-y-auto w-full">
+            <Routes>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/assigned-interns" element={<AssignedInterns />} />
+              <Route
+                path="/pending-log-review"
+                element={<PendingLogReview />}
+              />
+              <Route path="/profile" element={<Profile />} />
+            </Routes>
+          </div>
         </div>
       </main>
     </Router>
