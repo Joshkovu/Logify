@@ -22,7 +22,6 @@ User = get_user_model()
 class PlacementWorkflowTests(APITestCase):
 
     def setUp(self):
-        # 1. Create Users with your specific fields (email is USERNAME_FIELD)
         self.intern = User.objects.create_user(
             email=f"intern@{TEST_EMAIL_DOMAIN}",
             password=f"{TEST_PASSWORD}",
@@ -47,7 +46,6 @@ class PlacementWorkflowTests(APITestCase):
             role=User.WORKPLACE_SUPERVISOR,
         )
 
-        # 2. Create the Organization (matches your model fields)
         self.organization = Organizations.objects.create(
             name="TechCorp Solutions",
             industry="Software",
@@ -74,7 +72,6 @@ class PlacementWorkflowTests(APITestCase):
             duration_years=3,
         )
 
-        # 3. Create the Placement
         self.placement = InternshipPlacements.objects.create(
             intern=self.intern,
             institution=self.institution,
@@ -92,14 +89,13 @@ class PlacementWorkflowTests(APITestCase):
             approved_at=timezone.now(),
         )
 
-        # 4. URLs
         self.detail_url = reverse("placement-detail", kwargs={"pk": self.placement.pk})
         self.submit_url = reverse("placement-submit", kwargs={"pk": self.placement.pk})
         self.approve_url = reverse("placement-approve", kwargs={"pk": self.placement.pk})
 
     def test_submit_placement_success(self):
         """Test that a student can submit a draft."""
-        self.client.login(email="student@logify.com", password="password")
+        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
 
         response = self.client.post(self.submit_url, {"comment": "Submitting for review"})
 
@@ -108,12 +104,12 @@ class PlacementWorkflowTests(APITestCase):
         self.assertEqual(self.placement.status, "submitted")
         self.assertTrue(PlacementStatusHistory.objects.filter(to_status="submitted").exists())
 
-    def test_student_cannot_approve_own_placement(self):
+    def test_intern_cannot_approve_own_placement(self):
         """Test security: Students cannot approve placements."""
         self.placement.status = "submitted"
         self.placement.save()
 
-        self.client.login(email="student@logify.com", password="password")
+        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
         response = self.client.post(self.approve_url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -123,11 +119,10 @@ class PlacementWorkflowTests(APITestCase):
         self.placement.status = "approved"
         self.placement.save()
 
-        self.client.login(email="student@logify.com", password="password")
+        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
 
         data = {"internship_title": "New Title"}
         response = self.client.patch(self.detail_url, data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        # Note: 'error' key depends on how you named it in views.py perform_update
         self.assertIn("error", response.data)
