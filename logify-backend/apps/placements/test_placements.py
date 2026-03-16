@@ -32,7 +32,7 @@ class PlacementWorkflowTests(APITestCase):
         )
 
         self.academic_supervisor = User.objects.create_user(
-            email=f"supervisor@{TEST_EMAIL_DOMAIN}",
+            email=f"asupervisor@{TEST_EMAIL_DOMAIN}",
             password=f"{TEST_PASSWORD}",
             first_name="Emily",
             last_name="Roberts",
@@ -40,7 +40,7 @@ class PlacementWorkflowTests(APITestCase):
         )
 
         self.workplace_supervisor = User.objects.create_user(
-            email=f"supervisor@{TEST_EMAIL_DOMAIN}",
+            email=f"wsupervisor@{TEST_EMAIL_DOMAIN}",
             password=f"{TEST_PASSWORD}",
             first_name="John",
             last_name="Doe",
