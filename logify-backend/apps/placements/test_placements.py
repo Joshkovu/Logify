@@ -13,7 +13,8 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
-from tests.constants import TEST_EMAIL_DOMAIN, TEST_PASSWORD, TEST_PHONE
+
+from .constants import TEST_EMAIL_DOMAIN, TEST_PASSWORD, TEST_PHONE
 
 User = get_user_model()
 
