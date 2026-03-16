@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     "apps.organizations",
     "apps.placements",
     "apps.logbook",
+    "apps.reports",
     "rest_framework",
 ]
 
