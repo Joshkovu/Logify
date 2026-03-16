@@ -1,112 +1,224 @@
-# from django.shortcuts import render
-from django.contrib.auth import get_user_model
+from django.db import transaction
 from django.utils import timezone
-from rest_framework import generics, status
+from rest_framework import permissions, status, viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
-from rest_framework.views import APIView
 
 from .models import InternshipPlacements, PlacementStatusHistory
 from .serializer import InternshipPlacementsSerializer
 
-# Create your views here.
-User = get_user_model()
 
-VALID_TRANSITIONS = {
-    "draft": ["submitted", "cancelled"],
-    "submitted": ["approved", "rejected", "cancelled"],
-    "approved": ["active", "cancelled"],
-    "active": ["completed", "cancelled"],
-}
-
-
-def transition_placement(placement, new_status, user, comment=None):
-    if new_status not in VALID_TRANSITIONS.get(placement.status, []):
-        raise ValidationError(f"Cannot transition from {placement.status} to {new_status}")
-    old_status = placement.status
-    placement.status = new_status
-    if new_status == "submitted":
-        placement.submitted_at = timezone.now()
-    elif new_status == "approved":
-        placement.approved_at = timezone.now()
-
-    placement.save()
-
-    PlacementStatusHistory.objects.create(
-        placement=placement,
-        from_status=old_status,
-        to_status=new_status,
-        changed_by=user,
-        comment=comment,
-    )
-    return placement
-
-
-class InternshipPlacementListCreateView(generics.ListCreateAPIView):
+class InternshipPlacementsViewSet(viewsets.ModelViewSet):
     queryset = InternshipPlacements.objects.all()
     serializer_class = InternshipPlacementsSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-
-class PlacementRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = InternshipPlacements.objects.all()
-    serializer_class = InternshipPlacementsSerializer
-
-    def update(self, request, *args, **kwargs):
+    @action(detail=True, methods=["post"])
+    def submit(self, request, pk=None):
         placement = self.get_object()
-        if placement.status in ["approved", "active", "completed"]:
-            raise ValidationError("Cannot edit placement in its current status.")
-        return super().update(request, *args, **kwargs)
 
+        if placement.status != "draft":
+            return Response(
+                {"error": f"Cannot submit a placement in {placement.status} status"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
-class PlacementWorkflowView(APIView):
-    def post(self, request, pk, action_name):
-        placement = InternshipPlacements.objects.get(pk=pk)
-        comment = request.data.get("comment", "")
+        with transaction.atomic():
+            old_status = placement.status
 
-        action_map = {
-            "submit": "submitted",
-            "approve": "approved",
-            "reject": "rejected",
-            "activate": "active",
-            "complete": "completed",
-            "cancel": "cancelled",
-        }
-        if action_name not in action_map:
-            return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
+            placement.status = "submitted"
+            placement.submitted_at = timezone.now()
+            placement.save()
 
-        try:
-            transition_placement(placement, action_map[action_name], request.user, comment)
-        except ValidationError as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="submitted",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement submitted."),
+            )
+        serializer = self.get_serializer(placement)
+        return Response(serializer.data)
 
-        return Response({"status": placement.status})
+    @action(detail=True, methods=["post"])
+    def approve(self, request, pk=None):
+        placement = self.get_object()
 
+        if request.user != placement.academic_supervisor:
+            return Response(
+                {"error": "Only an assigned Academic Supervisor can approve this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        if placement.status != "submitted":
+            return Response(
+                {"error": "Placement must be submitted before it can be approved."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "approved"
+            placement.approved_at = timezone.now()
+            placement.save()
 
-class AssignWorkplaceSupervisor(APIView):
-    def post(self, request, pk):
-        placement = InternshipPlacements.objects.get(pk=pk)
-        supervisor_id = request.data.get("supervisor_id")
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="approved",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement approved."),
+            )
+        return Response(self.get_serializer(placement).data)
 
-        try:
-            supervisor = User.objects.get(id=supervisor_id)
-        except User.DoesNotExist:
-            return Response({"error": "Supervisor not found"}, status=status.HTTP_404_NOT_FOUND)
+    @action(detail=True, methods=["post"])
+    def reject(self, request, pk=None):
+        placement = self.get_object()
 
-        placement.workplace_supervisor = supervisor
+        if request.user != placement.academic_supervisor:
+            return Response(
+                {"error": "Only an assigned Academic Supervisor can reject this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status != "submitted":
+            return Response(
+                {"error": "Placement must be submitted before it can be rejected."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "rejected"
+            placement.save()
+
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="rejected",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement rejected."),
+            )
+        return Response(self.get_serializer(placement).data)
+
+    @action(detail=True, methods=["post"])
+    def activate(self, request, pk=None):
+        placement = self.get_object()
+
+        if request.user != placement.academic_supervisor:
+            return Response(
+                {"error": "Only an assigned Academic Supervisor can activate this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status != "approved":
+            return Response(
+                {"error": "Placement must be approved before it can be activated."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "active"
+            placement.save()
+
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="active",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement activated."),
+            )
+        return Response(self.get_serializer(placement).data)
+
+    @action(detail=True, methods=["post"])
+    def complete(self, request, pk=None):
+        placement = self.get_object()
+
+        if request.user != placement.academic_supervisor:
+            return Response(
+                {
+                    "error": "Only an assigned Academic Supervisor can mark this placement as completed."
+                },
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status != "active":
+            return Response(
+                {"error": "Only active placements can be marked as completed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "completed"
+            placement.save()
+
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="completed",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Internship completed."),
+            )
+        return Response(self.get_serializer(placement).data)
+
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        placement = self.get_object()
+
+        if request.user != placement.academic_supervisor:
+            return Response(
+                {"error": "Only an assigned Academic Supervisor can cancel this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status == "completed":
+            return Response(
+                {"error": "Cannot cancel a placement that is already completed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "cancelled"
+            placement.save()
+
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="cancelled",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement cancelled."),
+            )
+        return Response(self.get_serializer(placement).data)
+
+    def perform_update(self, serializer):
+        instance = self.get_object()
+
+        locked_statuses = ["approved", "active", "completed", "cancelled"]
+
+        if instance.status in locked_statuses:
+            raise ValidationError(
+                {"error": f"Cannot modify placement once it is {instance.status}."}
+            )
+        serializer.save()
+
+    @action(detail=True, methods=["post"], url_path="assign-academic-supervisor")
+    def assign_academic_supervisor(self, request, pk=None):
+        placement = self.get_object()
+        user_id = request.data.get("user_id")
+
+        if not user_id:
+            return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+        placement.academic_supervisor_id = user_id
         placement.save()
-        return Response({"success": True, "workplace_supervisor": supervisor.id})
 
+        return Response({"message": "Academic supervisor assigned successfully."})
 
-class AssignAcademicSupervisor(APIView):
-    def post(self, request, pk):
-        placement = InternshipPlacements.objects.get(pk=pk)
-        supervisor_id = request.data.get("supervisor_id")
+    @action(detail=True, methods=["post"], url_path="assign-workplace-supervisor")
+    def assign_workplace_supervisor(self, request, pk=None):
+        placement = self.get_object()
+        user_id = request.data.get("user_id")
 
-        try:
-            supervisor = User.objects.get(id=supervisor_id)
-        except User.DoesNotExist:
-            return Response({"error": "Supervisor not found"}, status=status.HTTP_404_NOT_FOUND)
-
-        placement.academic_supervisor = supervisor
+        if not user_id:
+            return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
+        placement.workplace_supervisor_id = user_id
         placement.save()
-        return Response({"success": True, "academic_supervisor": supervisor.id})
+
+        return Response({"message": "Workplace supervisor assigned successfully."})
