@@ -13,6 +13,7 @@ from django.urls import reverse
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
+from tests.constants import TEST_EMAIL_DOMAIN, TEST_PASSWORD, TEST_PHONE
 
 User = get_user_model()
 
@@ -22,24 +23,24 @@ class PlacementWorkflowTests(APITestCase):
     def setUp(self):
         # 1. Create Users with your specific fields (email is USERNAME_FIELD)
         self.intern = User.objects.create_user(
-            email="student@logify.com",
-            password="password",
+            email=f"intern@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
             first_name="Sarah",
             last_name="Johnson",
             role=User.STUDENT,
         )
 
         self.academic_supervisor = User.objects.create_user(
-            email="asupervisor@logify.com",
-            password="password",
+            email=f"supervisor@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
             first_name="Emily",
             last_name="Roberts",
             role=User.ACADEMIC_SUPERVISOR,
         )
 
         self.workplace_supervisor = User.objects.create_user(
-            email="wsupervisor@logify.com",
-            password="password",
+            email=f"supervisor@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
             first_name="John",
             last_name="Doe",
             role=User.WORKPLACE_SUPERVISOR,
@@ -51,13 +52,13 @@ class PlacementWorkflowTests(APITestCase):
             industry="Software",
             city="Kampala",
             address="123 Innovation Way",
-            contact_email="hr@techcorp.com",
-            contact_phone="+256700000000",
+            contact_email=f"hr@{TEST_EMAIL_DOMAIN}",
+            contact_phone=f"{TEST_PHONE}",
         )
 
         self.institution = Institutions.objects.create(
             name="Muk",
-            email_domain="s@muk.com",
+            email_domain=f"s@{TEST_EMAIL_DOMAIN}",
         )
 
         self.department = Departments.objects.create(
