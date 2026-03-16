@@ -114,8 +114,8 @@ export const SidebarItem = ({ icon, text, href }) => {
     <li
       className={`
       ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-sm " : "hover:bg-red-50 text-gray-600"}
-    relative flex items-center hover:-translate-y-0.5 hover:shadow-sm 
-    font-medium rounded-md cursor-pointer  duration-200 transition-transform group 
+    relative flex items-center hover:-translate-y-0.5 hover:shadow-sm
+    font-medium rounded-md cursor-pointer  duration-200 transition-transform group
      ${expanded ? "py-2 px-3 my-3" : "p-3 my-5 hover:p-3.5 transition-all duration-200"}
     `}
     >
@@ -126,8 +126,8 @@ export const SidebarItem = ({ icon, text, href }) => {
         {icon}
         <span
           className={`
-            
-          transition-all  duration-200 
+
+          transition-all  duration-200
             ${expanded ? "overflow-hidden w-52 ml-3" : "w-0 ml-0 hidden"}
             `}
         >
