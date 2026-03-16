@@ -8,9 +8,10 @@ from .models import InternshipReport
 
 class WeeklyLogsReportAPIView(APIView):
     def generate_internship_report(self, student):
-        logs = WeeklyLogs.objects.filter(placement__student=student).order_by("week_number")
+        logs = WeeklyLogs.objects.filter(placement__intern_id=student).order_by("week_number")
+
         report = InternshipReport.objects.create(
-            student=student,
+            student_id=student,
             internship_start=logs.first().week_start_date if logs.exists() else None,  # type: ignore
             internship_end=logs.last().week_end_date if logs.exists() else None,  # type: ignore
             logs="\n\n".join(
@@ -22,8 +23,9 @@ class WeeklyLogsReportAPIView(APIView):
         )
         return report
 
-    def get(self, student_id):
+    def get(self, request, student_id):
         report = self.generate_internship_report(student_id)
+
         return Response(
             {
                 "report_id": report.id,  # type: ignore
