@@ -1,17 +1,10 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from .views import (
-    AssignAcademicSupervisor,
-    AssignWorkplaceSupervisor,
-    InternshipPlacementListCreateView,
-    PlacementRetrieveUpdateDestroyView,
-    PlacementWorkflowView,
-)
+from .views import InternshipPlacementsViewSet
 
-urlpatterns = [
-    path("placements/", InternshipPlacementListCreateView.as_view()),
-    path("placements/<int:pk>/", PlacementRetrieveUpdateDestroyView.as_view()),
-    path("placements/<int:pk>/<str:action_name>/", PlacementWorkflowView.as_view()),
-    path("placements/<int:pk>/assign-workplace-supervisor/", AssignWorkplaceSupervisor.as_view()),
-    path("placements/<int:pk>/assign-academic-supervisor/", AssignAcademicSupervisor.as_view()),
-]
+router = DefaultRouter()
+
+router.register(r"placements", InternshipPlacementsViewSet, basename="placement")
+
+urlpatterns = [path("", include(router.urls))]
