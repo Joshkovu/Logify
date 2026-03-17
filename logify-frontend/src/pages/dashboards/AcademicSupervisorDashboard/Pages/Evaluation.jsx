@@ -220,10 +220,13 @@ const Evaluation = () => {
   ];
 
   const [pendingEvaluations, setPendingEvaluations] = useState(
-    initialPendingEvaluations
+    initialPendingEvaluations,
   );
   const [completedEvaluations, setCompletedEvaluations] = useState(
-    initialCompletedEvaluations
+    initialCompletedEvaluations,
+  );
+  const [selectedRecord, setSelectedRecord] = useState(
+    initialPendingEvaluations[0],
   );
   const [selectedRecord, setSelectedRecord] = useState({
     id: initialPendingEvaluations[0].id,
@@ -238,7 +241,8 @@ const Evaluation = () => {
     return (
       allEvaluations.find(
         (item) =>
-          item.id === selectedRecord?.id && item.category === selectedRecord?.category
+          item.id === selectedRecord?.id &&
+          item.category === selectedRecord?.category,
       ) || null
     );
   }, [allEvaluations, selectedRecord]);
@@ -252,8 +256,8 @@ const Evaluation = () => {
 
     setPendingEvaluations((prev) =>
       prev.map((item) =>
-        item.id === activeEvaluation.id ? { ...item, feedback: value } : item
-      )
+        item.id === activeEvaluation.id ? { ...item, feedback: value } : item,
+      ),
     );
   };
 
@@ -279,7 +283,7 @@ const Evaluation = () => {
     setCompletedEvaluations((prev) => [authorizedStudent, ...prev]);
 
     const remainingPending = pendingEvaluations.filter(
-      (item) => item.id !== activeEvaluation.id
+      (item) => item.id !== activeEvaluation.id,
     );
     setPendingEvaluations(remainingPending);
 
@@ -369,7 +373,9 @@ const Evaluation = () => {
                       </span>
                       <ChevronRight
                         className={`text-gold transition-transform ${
-                          isActive ? "translate-x-1" : "group-hover:translate-x-1"
+                          isActive
+                            ? "translate-x-1"
+                            : "group-hover:translate-x-1"
                         }`}
                       />
                     </div>
@@ -406,11 +412,12 @@ const Evaluation = () => {
                 <p className="mt-2 text-sm font-semibold text-text-secondary">
                   {activeEvaluation.company}
                 </p>
-                {activeEvaluation.category === "history" && activeEvaluation.date && (
-                  <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600">
-                    Authorized on {activeEvaluation.date}
-                  </p>
-                )}
+                {activeEvaluation.category === "history" &&
+                  activeEvaluation.date && (
+                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600">
+                      Authorized on {activeEvaluation.date}
+                    </p>
+                  )}
               </div>
 
               <div
