@@ -1,23 +1,75 @@
 from django.db import transaction
 from django.utils import timezone
-from rest_framework import permissions, status, viewsets
-from rest_framework.decorators import action
-from rest_framework.exceptions import ValidationError
+from rest_framework import permissions, status
+from rest_framework.exceptions import NotFound, ValidationError
 from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import InternshipPlacements, PlacementStatusHistory
 from .serializer import InternshipPlacementsSerializer
 
 
-class InternshipPlacementsViewSet(viewsets.ModelViewSet):
-    queryset = InternshipPlacements.objects.all()
-    serializer_class = InternshipPlacementsSerializer
+class InternshipPlacementListCreateView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=["post"])
-    def submit(self, request, pk=None):
-        placement = self.get_object()
+    def get(self, request):
+        placements = InternshipPlacements.objects.all()
+        serializer = InternshipPlacementsSerializer(placements, many=True)
+        return Response(serializer.data)
 
+    def post(self, request):
+        serializer = InternshipPlacementsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+class InternshipPlacementDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found.")
+
+    def get(self, request, pk):
+        placement = self.get_object(pk)
+        serializer = InternshipPlacementsSerializer(placement)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        placement = self.get_object(pk)
+        self._check_locked(placement)
+        serializer = InternshipPlacementsSerializer(placement, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def patch(self, request, pk):
+        placement = self.get_object(pk)
+        self._check_locked(placement)
+        serializer = InternshipPlacementsSerializer(placement, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        placement = self.get_object(pk)
+        placement.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def _check_locked(self, placement):
+        locked_statuses = ["approved", "active", "completed", "cancelled"]
+        if placement.status in locked_statuses:
+            raise ValidationError(
+                {"error": f"Cannot modify placement once it is {placement.status}."}
+            )
+
+
+class PlacementSubmitView(APIView):
+    def post(self, request, pk):
+        placement = self.get_object(pk)
         if placement.status != "draft":
             return Response(
                 {"error": f"Cannot submit a placement in {placement.status} status"},
@@ -26,7 +78,6 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
 
         with transaction.atomic():
             old_status = placement.status
-
             placement.status = "submitted"
             placement.submitted_at = timezone.now()
             placement.save()
@@ -38,12 +89,20 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement submitted."),
             )
-        serializer = self.get_serializer(placement)
-        return Response(serializer.data)
+        return Response(InternshipPlacementsSerializer(placement).data)
 
-    @action(detail=True, methods=["post"])
-    def approve(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementApproveView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
 
         if request.user != placement.academic_supervisor:
             return Response(
@@ -70,9 +129,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
             )
         return Response(self.get_serializer(placement).data)
 
-    @action(detail=True, methods=["post"])
-    def reject(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementRejectView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
 
         if request.user != placement.academic_supervisor:
             return Response(
@@ -99,9 +167,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
             )
         return Response(self.get_serializer(placement).data)
 
-    @action(detail=True, methods=["post"])
-    def activate(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementActivateView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
 
         if request.user != placement.academic_supervisor:
             return Response(
@@ -128,9 +205,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
             )
         return Response(self.get_serializer(placement).data)
 
-    @action(detail=True, methods=["post"])
-    def complete(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementCompleteView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
 
         if request.user != placement.academic_supervisor:
             return Response(
@@ -159,9 +245,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
             )
         return Response(self.get_serializer(placement).data)
 
-    @action(detail=True, methods=["post"])
-    def cancel(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementCancelView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
 
         if request.user != placement.academic_supervisor:
             return Response(
@@ -188,20 +283,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
             )
         return Response(self.get_serializer(placement).data)
 
-    def perform_update(self, serializer):
-        instance = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
 
-        locked_statuses = ["approved", "active", "completed", "cancelled"]
 
-        if instance.status in locked_statuses:
-            raise ValidationError(
-                {"error": f"Cannot modify placement once it is {instance.status}."}
-            )
-        serializer.save()
+class PlacementAssignAcademicSupervisorView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
-    @action(detail=True, methods=["post"], url_path="assign-academic-supervisor")
-    def assign_academic_supervisor(self, request, pk=None):
-        placement = self.get_object()
+    def post(self, request, pk):
+        placement = self.get_object(pk)
         user_id = request.data.get("user_id")
 
         if not user_id:
@@ -211,9 +304,18 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
 
         return Response({"message": "Academic supervisor assigned successfully."})
 
-    @action(detail=True, methods=["post"], url_path="assign-workplace-supervisor")
-    def assign_workplace_supervisor(self, request, pk=None):
-        placement = self.get_object()
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class PlacementAssignWorkplaceSupervisorView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
         user_id = request.data.get("user_id")
 
         if not user_id:
@@ -222,3 +324,9 @@ class InternshipPlacementsViewSet(viewsets.ModelViewSet):
         placement.save()
 
         return Response({"message": "Workplace supervisor assigned successfully."})
+
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
