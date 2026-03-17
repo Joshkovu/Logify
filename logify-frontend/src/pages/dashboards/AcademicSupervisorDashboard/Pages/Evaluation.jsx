@@ -225,7 +225,7 @@ const Evaluation = () => {
   const [completedEvaluations, setCompletedEvaluations] = useState(
     initialCompletedEvaluations
   );
-  const [selectedRecord, setSelectedRecord] = useState({
+  const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
     id: initialPendingEvaluations[0].id,
     category: initialPendingEvaluations[0].category,
   });
@@ -237,14 +237,15 @@ const Evaluation = () => {
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
-        (item) =>
-          item.id === selectedRecord?.id && item.category === selectedRecord?.category
+        (entry) =>
+          entry.id === selectedEvaluationRef?.id &&
+          entry.category === selectedEvaluationRef?.category
       ) || null
     );
-  }, [allEvaluations, selectedRecord]);
+  }, [allEvaluations, selectedEvaluationRef]);
 
   const handleSelectRecord = (item) => {
-    setSelectedRecord({ id: item.id, category: item.category });
+    setSelectedEvaluationRef({ id: item.id, category: item.category });
   };
 
   const handleFeedbackChange = (value) => {
@@ -283,7 +284,7 @@ const Evaluation = () => {
     );
     setPendingEvaluations(remainingPending);
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: authorizedStudent.id,
       category: "history",
     });
@@ -292,7 +293,7 @@ const Evaluation = () => {
   const handleViewAuthorizedRecord = () => {
     if (!activeEvaluation || activeEvaluation.category !== "history") return;
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: activeEvaluation.id,
       category: activeEvaluation.category,
     });
