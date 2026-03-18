@@ -1,19 +1,18 @@
-from rest_framework import permissions, viewsets
-
-from .models import (
+from apps.evaluations.models import (
     EvaluationCriteria,
     EvaluationRubrics,
     Evaluations,
     EvaluationScores,
     FinalResults,
 )
-from .serializer import (
+from apps.evaluations.serializer import (
     EvaluationCriteriaSerializer,
     EvaluationRubricsSerializer,
     EvaluationScoresSerializer,
     EvaluationsSerializer,
     FinalResultsSerializer,
 )
+from rest_framework import permissions, viewsets
 
 
 class IsAdminOrSupervisor(permissions.BasePermission):
