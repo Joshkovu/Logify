@@ -9,6 +9,9 @@ class EvaluationRubrics(models.Model):
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
     programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    version = models.CharField(max_length=32, default="1.0")
+    is_current = models.BooleanField(default=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -30,12 +33,27 @@ class EvaluationRubrics(models.Model):
 
 class EvaluationCriteria(models.Model):
     rubric = models.ForeignKey(EvaluationRubrics, on_delete=models.CASCADE)
+    group = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
     description = models.TextField()
+    order = models.PositiveIntegerField(default=0)
     max_score = models.IntegerField()
     weight_percent = models.FloatField()
-    evaluator_type = models.CharField(max_length=255)
+    evaluator_type = models.CharField(
+        max_length=255,
+        choices=[
+            ("student", "Student"),
+            ("workplace_supervisor", "Workplace Supervisor"),
+            ("academic_supervisor", "Academic Supervisor"),
+            ("internship_admin", "Internship Administrator"),
+        ],
+        default="academic_supervisor",
+    )
     created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("rubric", "name")
+        ordering = ["order"]
 
     def __str__(self):
         return self.name
@@ -58,9 +76,27 @@ class Evaluations(models.Model):
     placement = models.ForeignKey(InternshipPlacements, on_delete=models.CASCADE)
     rubric = models.ForeignKey(EvaluationRubrics, on_delete=models.CASCADE)
     evaluator = models.ForeignKey(User, on_delete=models.CASCADE)
-    evaluator_type = models.CharField(max_length=255)
-    status = models.CharField(max_length=255)
+    evaluator_type = models.CharField(
+        max_length=255,
+        choices=[
+            ("student", "Student"),
+            ("workplace_supervisor", "Workplace Supervisor"),
+            ("academic_supervisor", "Academic Supervisor"),
+            ("internship_admin", "Internship Administrator"),
+        ],
+        default="academic_supervisor",
+    )
+    status = models.CharField(
+        max_length=32,
+        choices=[
+            ("draft", "Draft"),
+            ("submitted", "Submitted"),
+            ("reviewed", "Reviewed"),
+        ],
+        default="draft",
+    )
     submitted_at = models.DateTimeField(null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
     total_score = models.FloatField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -80,6 +116,10 @@ class EvaluationScores(models.Model):
     criterion = models.ForeignKey(EvaluationCriteria, on_delete=models.CASCADE)
     score = models.FloatField()
     comment = models.TextField(null=True, blank=True)
+    is_finalized = models.BooleanField(default=False)
+
+    class Meta:
+        unique_together = ("evaluation", "criterion")
 
     def __str__(self):
         return f"Score for {self.criterion.name} in {self.evaluation}"
@@ -89,7 +129,7 @@ class EvaluationScores(models.Model):
 #     text id
 #     text placement_id
 #     float logbook_score
-#     float workplace_score
+#     float workplace_feedback
 #     float academic_score
 #     float final_score
 #     text final_grade
@@ -99,11 +139,13 @@ class EvaluationScores(models.Model):
 
 class FinalResults(models.Model):
     placement = models.ForeignKey(InternshipPlacements, on_delete=models.CASCADE)
+    rubric = models.ForeignKey(EvaluationRubrics, on_delete=models.SET_NULL, null=True, blank=True)
     logbook_score = models.FloatField()
-    workplace_score = models.FloatField()
+    workplace_feedback = models.TextField(null=True, blank=True)
     academic_score = models.FloatField()
     final_score = models.FloatField()
     final_grade = models.CharField(max_length=255)
+    remarks = models.TextField(blank=True, null=True)
     computed_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
