@@ -31,17 +31,26 @@ class InternshipPlacements(models.Model):
     programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
     organization = models.ForeignKey(Organizations, on_delete=models.CASCADE)
     workplace_supervisor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="workplace_supervisor"
+        User, null=True, blank=True, on_delete=models.CASCADE, related_name="workplace_supervisor"
     )
     academic_supervisor = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="academic_supervisor"
+        User, null=True, blank=True, on_delete=models.CASCADE, related_name="academic_supervisor"
     )
     start_date = models.DateField()
     end_date = models.DateField()
     work_mode = models.CharField(max_length=255)
     internship_title = models.CharField(max_length=255)
     department_at_company = models.CharField(max_length=255)
-    status = models.CharField(max_length=255)
+    STATUS_CHOICES = [
+        ("draft", "Draft"),
+        ("submitted", "Submitted"),
+        ("approved", "Approved"),
+        ("active", "Active"),
+        ("completed", "Completed"),
+        ("rejected", "Rejected"),
+        ("cancelled", "Cancelled"),
+    ]
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="draft")
     submitted_at = models.DateTimeField(null=True, blank=True)
     approved_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -63,7 +72,9 @@ class InternshipPlacements(models.Model):
 
 
 class PlacementStatusHistory(models.Model):
-    placement = models.ForeignKey(InternshipPlacements, on_delete=models.CASCADE)
+    placement = models.ForeignKey(
+        InternshipPlacements, on_delete=models.CASCADE, related_name="status_history"
+    )
     from_status = models.CharField(max_length=255)
     to_status = models.CharField(max_length=255)
     changed_by = models.ForeignKey(User, on_delete=models.CASCADE)
