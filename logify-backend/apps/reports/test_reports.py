@@ -109,13 +109,13 @@ class InternshipReportAPITest(APITestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["student_id"], self.user.id)
+        self.assertEqual(response.data["student_id"], self.user.id)  # type: ignore
         self.assertEqual(
             (
-                response.data["internship_start"].strftime("%Y-%m-%d")
-                if hasattr(response.data["internship_start"], "strftime")
-                else response.data["internship_start"]
+                response.data["internship_start"].strftime("%Y-%m-%d")  # type: ignore
+                if hasattr(response.data["internship_start"], "strftime")  # type: ignore
+                else response.data["internship_start"]  # type: ignore
             ),
             "2024-01-01",
         )
-        self.assertIn("Week 1:", response.data["logs"])
+        self.assertIn("Week 1:", response.data["logs"])  # type: ignore
