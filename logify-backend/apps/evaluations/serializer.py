@@ -1,13 +1,12 @@
-from django.db import models
-from rest_framework import serializers
-
-from .models import (
+from apps.evaluations.models import (
     EvaluationCriteria,
     EvaluationRubrics,
     Evaluations,
     EvaluationScores,
     FinalResults,
 )
+from django.db import models
+from rest_framework import serializers
 
 
 class EvaluationRubricsSerializer(serializers.ModelSerializer):
