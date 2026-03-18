@@ -225,9 +225,7 @@ const Evaluation = () => {
   const [completedEvaluations, setCompletedEvaluations] = useState(
     initialCompletedEvaluations,
   );
-  const [selectedRecord, setSelectedRecord] = useState(
-    initialPendingEvaluations[0],
-  );
+  const [selectedRecord] = useState(initialPendingEvaluations[0]);
   const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
     id: initialPendingEvaluations[0].id,
     category: initialPendingEvaluations[0].category,
@@ -237,13 +235,16 @@ const Evaluation = () => {
     return [...pendingEvaluations, ...completedEvaluations];
   }, [pendingEvaluations, completedEvaluations]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
         (item) =>
-          item.id === selectedRecord?.id && item.category === selectedRecord?.category
+          item.id === selectedRecord?.id &&
+          item.category === selectedRecord?.category,
       ) || null
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allEvaluations, selectedEvaluationRef]);
 
   const handleSelectRecord = (item) => {
