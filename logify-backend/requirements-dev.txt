@@ -7,3 +7,4 @@ pytest-django
 djangorestframework
 testcontainers[postgresql]
 psycopg2-binary
+django-cors-headers
