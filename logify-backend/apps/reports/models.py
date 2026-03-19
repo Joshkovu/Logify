@@ -1,4 +1,5 @@
 from apps.accounts.models import User
+from django.core.validators import MinValueValidator
 from django.db import models
 
 # Create your models here.
@@ -17,7 +18,6 @@ class InternshipReport(models.Model):
         ("evaluation", "Evaluation"),
     ]
     report_type = models.CharField(max_length=20, choices=REPORT_TYPE_CHOICES, default="summary")
-    from django.core.validators import MinValueValidator
 
     evaluation_score = models.DecimalField(
         max_digits=5, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)]
