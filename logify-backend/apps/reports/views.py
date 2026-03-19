@@ -2,8 +2,10 @@ import csv
 
 from apps.logbook.models import WeeklyLogs
 from django.http import HttpResponse
-from rest_framework.exceptions import NotFound
-from rest_framework.views import APIView, Response
+from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.views import APIView
 
 from .models import InternshipReport
 
@@ -11,6 +13,8 @@ from .models import InternshipReport
 
 
 class WeeklyLogsReportAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def generate_internship_report(self, student, report_type="summary"):
         logs = WeeklyLogs.objects.filter(placement__intern_id=student).order_by("week_number")
         if not logs.exists():
@@ -40,7 +44,18 @@ class WeeklyLogsReportAPIView(APIView):
         return report
 
     def get(self, request, student_id):
+        user = request.user
+        if not (
+            getattr(user, "is_staff", False)
+            or getattr(user, "is_superuser", False)
+            or user.id == student_id
+        ):
+            raise PermissionDenied("You do not have permission to view this report.")
         report_type = request.query_params.get("report_type")
+        if report_type is not None:
+            valid_types = [choice[0] for choice in InternshipReport.REPORT_TYPE_CHOICES]
+            if report_type not in valid_types:
+                raise NotFound("Invalid report type.")
         export = request.query_params.get("export")
         query = InternshipReport.objects.filter(student_id=student_id)
         if report_type:
