@@ -14,7 +14,7 @@ from rest_framework.test import APITestCase
 # Create your tests here.
 
 
-class InternshipReportModelsTest(TestCase):
+class TestInternshipReportModels(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             email="teststudent@example.com",
@@ -68,7 +68,7 @@ class InternshipReportModelsTest(TestCase):
         self.assertEqual(self.report.supervisor_comments, "Good progress")
 
 
-class InternshipReportAPITest(APITestCase):
+class TestInternshipReportAPI(APITestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             email="teststudent2@example.com",
