@@ -17,7 +17,11 @@ class InternshipReport(models.Model):
         ("evaluation", "Evaluation"),
     ]
     report_type = models.CharField(max_length=20, choices=REPORT_TYPE_CHOICES, default="summary")
-    evaluation_score = models.DecimalField(max_digits=5, decimal_places=2, blank=True, null=True)
+    from django.core.validators import MinValueValidator
+
+    evaluation_score = models.DecimalField(
+        max_digits=5, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)]
+    )
     placement_info = models.TextField(blank=True, null=True)
     summary_stats = models.JSONField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
