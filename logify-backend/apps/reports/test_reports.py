@@ -29,7 +29,36 @@ class TestInternshipReportModels(TestCase):
             internship_end=date(2024, 3, 31),
             logs="Sample logs",
             supervisor_comments="Good progress",
+            report_type="final",
+            evaluation_score=85.5,
+            placement_info="Placed at TestOrg",
+            summary_stats={"total_weeks": 12, "first_week": 1, "last_week": 12},
         )
+
+    def test_invalid_report_type(self):
+        report = InternshipReport(
+            student=self.user,
+            internship_start=date(2024, 1, 1),
+            internship_end=date(2024, 3, 31),
+            logs="Sample logs",
+            supervisor_comments="Good progress",
+            report_type="invalid_type",
+        )
+        with self.assertRaises(Exception):
+            report.full_clean()
+
+    def test_negative_evaluation_score(self):
+
+        report = InternshipReport(
+            student=self.user,
+            internship_start=date(2024, 1, 1),
+            internship_end=date(2024, 3, 31),
+            logs="Sample logs",
+            supervisor_comments="Good progress",
+            evaluation_score=-10,
+        )
+        with self.assertRaises(Exception):
+            report.full_clean()
 
     def test_internship_report_creation(self):
         self.assertEqual(self.report.student, self.user)
@@ -48,7 +77,6 @@ class TestInternshipReportAPI(APITestCase):
             first_name="Test",
             last_name="Student",
         )
-        # academic supervisor
         self.academic_supervisor = User.objects.create_user(
             email="academic@test.edu",
             password="password",
@@ -56,7 +84,6 @@ class TestInternshipReportAPI(APITestCase):
             first_name="Academic",
             last_name="Supervisor",
         )
-        # workplace supervisor
         self.workplace_supervisor = User.objects.create_user(
             email="workplace@test.edu",
             password="password",
@@ -64,7 +91,6 @@ class TestInternshipReportAPI(APITestCase):
             first_name="Workplace",
             last_name="Supervisor",
         )
-
         institution = Institutions.objects.create(name="Test University", email_domain="test.edu")
         department = Departments.objects.create(institution=institution, name="Engineering")
         programme = Programmes.objects.create(
@@ -102,6 +128,38 @@ class TestInternshipReportAPI(APITestCase):
             learnings="Learned about Z",
             status="submitted",
         )
+
+    def test_report_type_filtering(self):
+
+        InternshipReport.objects.create(
+            student=self.user,
+            internship_start=date(2024, 1, 1),
+            internship_end=date(2024, 3, 31),
+            logs="Sample logs",
+            supervisor_comments="Good progress",
+            report_type="mid-term",
+        )
+        InternshipReport.objects.create(
+            student=self.user,
+            internship_start=date(2024, 4, 1),
+            internship_end=date(2024, 6, 30),
+            logs="Sample logs",
+            supervisor_comments="Excellent",
+            report_type="final",
+        )
+        url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
+        self.client.force_login(user=self.user)
+        response = self.client.get(url + "?report_type=final")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["report_type"], "final")  # type: ignore
+
+    def test_csv_export(self):
+        url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
+        self.client.force_login(user=self.user)
+        response = self.client.get(url + "?export=csv")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.get("Content-Type"), "text/csv")
+        self.assertIn("report_id", response.content.decode())
 
     def testCreateReport(self):
         url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
