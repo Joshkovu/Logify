@@ -56,29 +56,29 @@ const tableData = [];
 
 const Reports = () => {
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
-      <header className="mb-8 flex items-center justify-between">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+      <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
             System Reports
           </h1>
-          <p className="text-lg text-text-secondary">
+          <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
             Comprehensive analytics and reporting
           </p>
         </div>
         <div className="flex gap-3">
-          <button className="bg-maroonCustom flex text-white items-center gap-2 px-5 py-2  rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold">
+          <button className="flex w-full items-center justify-center gap-2 rounded-lg bg-maroonCustom px-5 py-2 font-semibold text-white shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold sm:w-auto">
             <Download className="h-4 w-4 mr-2" />
             Export Report
           </button>
         </div>
       </header>
 
-      <section className="grid grid-cols-4 gap-6 mb-10">
+      <section className="mb-10 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
         {reportCards.map((card) => (
           <div
             key={card.title}
-            className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border"
+            className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8"
           >
             <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
               {card.title}
@@ -94,17 +94,17 @@ const Reports = () => {
       </section>
 
       <section className="mb-10">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-2xl font-bold text-maroon">
             Monthly Performance Trend
           </h2>
-          <div className="flex gap-2">
-            <select className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
               <option>2026</option>
               <option>2025</option>
               <option>2024</option>
             </select>
-            <select className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
               <option>All Programs</option>
               <option>BSc Computer Science</option>
               <option>BSc IT</option>
@@ -112,11 +112,11 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  border border-border">
-          <p className="text-md mb-2">
+        <div className="rounded-[12px] border border-border bg-white p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10">
+          <p className="mb-2 text-sm sm:text-base">
             Student enrollment and average scores by month
           </p>
-          <div className="h-64 flex items-center justify-center">
+          <div className="flex h-64 items-center justify-center sm:h-72">
             <Line
               data={{
                 labels: [
@@ -152,6 +152,7 @@ const Reports = () => {
               }}
               options={{
                 responsive: true,
+                maintainAspectRatio: false,
                 plugins: {
                   legend: {
                     position: "top",
@@ -172,17 +173,17 @@ const Reports = () => {
       </section>
 
       <section>
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <h2 className="text-2xl font-bold text-maroon">
             Detailed Report Table
           </h2>
-          <div className="flex gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row">
             <input
               type="text"
               placeholder="Search reports..."
-              className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+              className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
             />
-            <select className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
               <option>Status: All</option>
               <option>Completed</option>
               <option>Pending</option>
@@ -190,7 +191,7 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8 lg:p-10">
           {tableData.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-32 text-text-secondary">
               <span className="text-lg font-semibold mb-2">
