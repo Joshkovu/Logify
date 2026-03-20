@@ -19,18 +19,18 @@ const stats = [
 
 const Placements = () => {
   return (
-    <div className="min-h-screen w-full px-10 py-8 bg-[#FCFBF8]">
-      <h1 className=" mb-2 text-4xl font-extrabold  text-brown-800">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+      <h1 className="mb-2 text-3xl font-extrabold text-brown-800 sm:text-4xl">
         Placement Management
       </h1>
-      <p className="text-brown-700">
+      <p className="text-sm text-brown-700 sm:text-base lg:text-lg">
         Oversee all internship placements and their statuses
       </p>
-      <section className="flex mt-4 gap-4 ">
+      <section className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {stats.map((stat) => (
           <div
             key={stat.label}
-            className="w-1/4  bg-brown-100  shadow  border-brown-200 bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border"
+            className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 shadow transition-all hover:scale-102 sm:p-8"
           >
             <h2 className="text-brown-700 text-lg font-semibold">
               {stat.label}
