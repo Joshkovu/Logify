@@ -21,7 +21,7 @@ def make_user(email, role, **kwargs):
 
 
 def make_placement(
-    intern, institution, programme, workplace_supervisor=None, academic_supervisor=None, **kwargs
+    intern, institution, programme, workplace_supervisor, academic_supervisor, **kwargs
 ):
     organization = make_organization()
     return InternshipPlacements.objects.create(
@@ -302,10 +302,14 @@ class TestInstitutionDepartmentsListView(APITestCase):
         )
         self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN)
         self.student = make_user("student@test.com", User.STUDENT)
+        self.workplace_supervisor = make_user("ws_default@test.com", User.WORKPLACE_SUPERVISOR)
+        self.academic_supervisor = make_user("as_default@test.com", User.ACADEMIC_SUPERVISOR)
         self.placement = make_placement(
             intern=self.student,
             institution=self.institution,
             programme=self.programme,
+            workplace_supervisor=self.workplace_supervisor,
+            academic_supervisor=self.academic_supervisor,
         )
 
     def test_admin_can_list_institution_departments(self):
@@ -331,12 +335,12 @@ class TestInstitutionDepartmentsListView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_workplace_supervisor_can_list_assigned_institution_departments(self):
-        self.workplace_supervisor = make_user("ws@test.com", User.WORKPLACE_SUPERVISOR)
         make_placement(
             intern=self.student,
             institution=self.institution,
             programme=self.programme,
             workplace_supervisor=self.workplace_supervisor,
+            academic_supervisor=self.academic_supervisor,
         )
         self.client.force_authenticate(user=self.workplace_supervisor)
         response = self.client.get(
@@ -354,11 +358,13 @@ class TestInstitutionDepartmentsListView(APITestCase):
 
     def test_academic_supervisor_can_list_assigned_institution_departments(self):
         self.academic_supervisor = make_user("as@test.com", User.ACADEMIC_SUPERVISOR)
+        self.workplace_supervisor = make_user("ws@test.com", User.WORKPLACE_SUPERVISOR)
         make_placement(
             intern=self.student,
             institution=self.institution,
             programme=self.programme,
             academic_supervisor=self.academic_supervisor,
+            workplace_supervisor=self.workplace_supervisor,
         )
         self.client.force_authenticate(user=self.academic_supervisor)
         response = self.client.get(
@@ -524,10 +530,14 @@ class TestDepartmentProgrammesListView(APITestCase):
         )
         self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN)
         self.student = make_user("student@test.com", User.STUDENT)
+        self.academic_supervisor = make_user("as@test.com", User.ACADEMIC_SUPERVISOR)
+        self.workplace_supervisor = make_user("ws@test.com", User.WORKPLACE_SUPERVISOR)
         self.placement = make_placement(
             intern=self.student,
             institution=self.institution,
             programme=self.programme_a,
+            academic_supervisor=self.academic_supervisor,
+            workplace_supervisor=self.workplace_supervisor,
         )
 
     def test_admin_can_list_department_programmes(self):
@@ -549,19 +559,18 @@ class TestDepartmentProgrammesListView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_academic_supervisor_can_list_assigned_department_programmes(self):
-        self.academic_supervisor = make_user("as@test.com", User.ACADEMIC_SUPERVISOR)
         make_placement(
             intern=self.student,
             institution=self.institution,
             programme=self.programme_a,
             academic_supervisor=self.academic_supervisor,
+            workplace_supervisor=self.workplace_supervisor,
         )
         self.client.force_authenticate(user=self.academic_supervisor)
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     def test_academic_supervisor_cannot_list_unassigned_department_programmes(self):
-        self.academic_supervisor = make_user("as@test.com", User.ACADEMIC_SUPERVISOR)
         self.client.force_authenticate(user=self.academic_supervisor)
         response = self.client.get(
             reverse("department-programmes-list", args=[self.other_department.pk])
