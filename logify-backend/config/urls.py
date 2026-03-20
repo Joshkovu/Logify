@@ -23,7 +23,11 @@ urlpatterns = [
     path("api/v1/logbook/", include("apps.logbook.urls")),
     path("api/v1/", include("apps.placements.urls")),
     path("api/v1/reports/", include("apps.reports.urls")),
+    path("api/v1/logbook/", include("apps.logbook.urls")),
+    path("api/v1/placements/", include("apps.placements.urls")),
+    path("api/v1/reports/", include("apps.reports.urls")),
     path("api/v1/evaluations/", include("apps.evaluations.urls")),
     path("api/v1/registry/", include("apps.registry.urls")),
     path("api/v1/organizations/", include("apps.organizations.urls")),
+    path("api/v1/academics/", include("apps.academics.urls")),
 ]
