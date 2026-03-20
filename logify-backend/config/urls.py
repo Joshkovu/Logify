@@ -23,4 +23,5 @@ urlpatterns = [
     path("logbook/", include("apps.logbook.urls")),
     path("placements/", include("apps.placements.urls")),
     path("reports/", include("apps.reports.urls")),
+    path("academics/", include("apps.academics.urls")),
 ]
