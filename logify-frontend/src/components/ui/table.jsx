@@ -6,7 +6,7 @@ function Table({ children, className = "" }) {
     <div
       className={`overflow-x-auto rounded-xl border border-border bg-surface shadow-md ${className}`}
     >
-      <table className="min-w-full divide-y divide-border text-text-primary font-sans">
+      <table className="min-w-[720px] w-full divide-y divide-border font-sans text-text-primary">
         {children}
       </table>
     </div>
