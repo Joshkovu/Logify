@@ -90,7 +90,7 @@ def get_accessible_programme_ids(user):
 
 
 class InstitutionsListView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         institutions = Institutions.objects.all()
@@ -116,7 +116,7 @@ class InstitutionsDetailView(APIView):
 
 
 class DepartmentsListView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         departments = Departments.objects.all()
@@ -154,7 +154,7 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
-    permission_classes = [IsAdmin]
+    permission_classes = [IsAuthenticated, IsAdmin]
 
     def get(self, request):
         programmes = Programmes.objects.all()
@@ -185,7 +185,7 @@ class DepartmentProgrammesListView(APIView):
     def get(self, request, department_id):
         accessible_department_ids = get_accessible_department_ids(request.user)
         if department_id not in accessible_department_ids:
-            raise PermissionDenied("You do not have accedd to this department's programmes")
+            raise PermissionDenied("You do not have access to this department's programmes")
         programmes = Programmes.objects.filter(department_id=department_id)
         serializer = ProgrammesSerializer(programmes, many=True)
         return Response(serializer.data)
