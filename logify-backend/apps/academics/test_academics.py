@@ -6,7 +6,7 @@ from rest_framework.test import APITestCase
 
 
 # Create your tests here.
-class InstitutionsListViewTest(APITestCase):
+class TestInstitutionsListView(APITestCase):
     def setUp(self):
         Institutions.objects.create(name="University A", email_domain="@unia.com")
         Institutions.objects.create(name="University B", email_domain="@unib.com")
@@ -25,7 +25,7 @@ class InstitutionsListViewTest(APITestCase):
         self.assertEqual(response.data, [])
 
 
-class InstitutionsDetailViewTest(APITestCase):
+class TestInstitutionsDetailView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -44,7 +44,7 @@ class InstitutionsDetailViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class DepartmentsListViewTest(APITestCase):
+class TestDepartmentsListView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -66,7 +66,7 @@ class DepartmentsListViewTest(APITestCase):
         self.assertEqual(response.data, [])
 
 
-class DeparmentsDetailViewTest(APITestCase):
+class TestDeparmentsDetailView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -88,7 +88,7 @@ class DeparmentsDetailViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class InstitutionDepartmentsListViewTest(APITestCase):
+class TestInstitutionDepartmentsListView(APITestCase):
     def setUp(self):
         self.institutionA = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -134,7 +134,7 @@ class InstitutionDepartmentsListViewTest(APITestCase):
         self.assertEqual(response.data, [])
 
 
-class ProgrammesListViewTest(APITestCase):
+class TestProgrammesListView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -163,7 +163,7 @@ class ProgrammesListViewTest(APITestCase):
         self.assertEqual(response.data, [])
 
 
-class ProgrammesDetailViewTest(APITestCase):
+class TestProgrammesDetailView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
@@ -188,7 +188,7 @@ class ProgrammesDetailViewTest(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
-class DepartmentProgrammesListViewTest(APITestCase):
+class TestDepartmentProgrammesListView(APITestCase):
     def setUp(self):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
