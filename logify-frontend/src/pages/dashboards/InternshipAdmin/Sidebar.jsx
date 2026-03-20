@@ -69,7 +69,7 @@ const Sidebar = () => {
               expanded ? "mt-2" : "mt-4 justify-center"
             }`}
           >
-            {expanded ? "LOGIFY" : "L"}
+            {expanded ? "LOGIFY" : ""}
           </div>
           <div
             className={`text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 transition-all duration-200 ${
@@ -88,7 +88,7 @@ const Sidebar = () => {
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center rounded-xl font-semibold transition-all duration-200 group
+              className={`relative flex items-center rounded-xl font-semibold transition-all duration-200 group
                 ${
                   isActive
                     ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 scale-[1.02]"
@@ -115,6 +115,14 @@ const Sidebar = () => {
               >
                 {link.name}
               </span>
+              {!expanded && (
+                <span
+                  className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-maroonCustom px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100"
+                  role="tooltip"
+                >
+                  {link.name}
+                </span>
+              )}
             </Link>
           );
         })}
