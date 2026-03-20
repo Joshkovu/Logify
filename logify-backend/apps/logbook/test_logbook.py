@@ -73,7 +73,7 @@ class TestLogbook(TestCase):
         self.client.force_login(self.student_user)
         # Attempt to create a weekly log
         log_response = self.client.post(
-            "/logbook/create_weekly_log/",
+            "/api/v1/logbook/create_weekly_log/",
             {
                 "week_number": 1,
                 "week_start_date": "2024-01-01",
@@ -108,7 +108,7 @@ class TestLogbook(TestCase):
         self.client.force_login(self.student_user)
         # Attempt to update the weekly log
         update_response = self.client.put(
-            f"/logbook/update_weekly_log/{log_id}/",
+            f"/api/v1/logbook/update_weekly_log/{log_id}/",
             {
                 "activities": "Updated activities",
                 "challenges": "Updated challenges",
@@ -141,11 +141,11 @@ class TestLogbook(TestCase):
         log_id = weekly_log.id  # type: ignore
         # Log in the student and submit the weekly log
         self.client.force_login(self.student_user)
-        submit_response = self.client.post(f"/logbook/submit_weekly_log/{log_id}/")
+        submit_response = self.client.post(f"/api/v1/logbook/submit_weekly_log/{log_id}/")
         # Approval from supervisor but the supervisor has to first be logged in for this to pass
         self.client.force_login(self.workplace_supervisor)
         approve_response = self.client.post(
-            f"/logbook/approve_weekly_log/{log_id}/",
+            f"/api/v1/logbook/approve_weekly_log/{log_id}/",
             {"comment": "Good work!"},
             content_type="application/json",
         )
@@ -161,7 +161,7 @@ class TestLogbook(TestCase):
         # Now reject the same log to check if rejection works but make sure the workplace supervisor is logged in for this to pass
         self.client.force_login(self.workplace_supervisor)
         reject_response = self.client.post(
-            f"/logbook/reject_weekly_log/{log_id}/",
+            f"/api/v1/logbook/reject_weekly_log/{log_id}/",
             {"comment": "Needs improvement"},
             content_type="application/json",
         )
