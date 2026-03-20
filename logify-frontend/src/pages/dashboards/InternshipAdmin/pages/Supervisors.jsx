@@ -49,35 +49,35 @@ const Supervisors = () => {
     });
   };
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
           Supervisor Management
         </h1>
-        <p className="text-lg text-text-secondary">
+        <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
           Manage all supervisors and their assigned interns
         </p>
       </header>
-      <section className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Supervisors
           </span>
           <span className="text-3xl font-extrabold text-blue-700">10</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Academic Supervisors
           </span>
           <span className="text-3xl font-extrabold text-green-700">8</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Interns Supervised
           </span>
           <span className="text-3xl font-extrabold text-blue-700">20</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Workplace Supervisors
           </span>
@@ -85,7 +85,7 @@ const Supervisors = () => {
         </div>
       </section>
       <section className="mb-8">
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-maroon mb-1">
               All Supervisors
@@ -96,14 +96,14 @@ const Supervisors = () => {
           </div>
           <button
             onClick={handleAddSupervisorClick}
-            className="bg-maroonCustom flex text-white items-center gap-2 px-5 py-2  rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-maroonCustom px-5 py-2 font-semibold text-white shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold sm:w-auto"
           >
             <UserPlus className="h-4 w-4 mr-2" />
             Add Supervisor
           </button>
           {showForm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-              <div className="p-6 bg-white rounded-lg border border-border w-full max-w-md shadow-lg">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+              <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border bg-white p-6 shadow-lg">
                 <h2 className="text-2xl font-bold text-maroon mb-4">
                   Add New Supervisor
                 </h2>
@@ -148,7 +148,7 @@ const Supervisors = () => {
                     onChange={handleChange}
                     className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
                   />
-                  <div className="flex gap-4">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                     <Button
                       type="submit"
                       className="bg-maroonCustom text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold"

@@ -10,35 +10,35 @@ import { evaluations } from "./evaluations-data";
 
 const Evaluations = () => {
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
           Evaluation Overview
         </h1>
-        <p className="text-lg text-text-secondary">
+        <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
           Monitor all student evaluations across the system
         </p>
       </header>
-      <section className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Evaluations
           </span>
           <span className="text-3xl font-extrabold text-green-500">156</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Completed
           </span>
           <span className="text-3xl font-extrabold text-blue-600">142</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Pending
           </span>
           <span className="text-3xl font-extrabold text-amber-500">14</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Average Score
           </span>
