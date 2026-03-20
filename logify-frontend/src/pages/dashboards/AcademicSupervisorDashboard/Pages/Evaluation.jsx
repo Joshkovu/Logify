@@ -225,14 +225,17 @@ const Evaluation = () => {
   const [completedEvaluations, setCompletedEvaluations] = useState(
     initialCompletedEvaluations,
   );
-  const [selectedRecord, setSelectedRecord] = useState(
-    initialPendingEvaluations[0],
-  );
+  const [selectedRecord] = useState(initialPendingEvaluations[0]);
+  const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
+    id: initialPendingEvaluations[0].id,
+    category: initialPendingEvaluations[0].category,
+  });
 
   const allEvaluations = useMemo(() => {
     return [...pendingEvaluations, ...completedEvaluations];
   }, [pendingEvaluations, completedEvaluations]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
@@ -241,10 +244,11 @@ const Evaluation = () => {
           item.category === selectedRecord?.category,
       ) || null
     );
-  }, [allEvaluations, selectedRecord]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvaluations, selectedEvaluationRef]);
 
   const handleSelectRecord = (item) => {
-    setSelectedRecord({ id: item.id, category: item.category });
+    setSelectedEvaluationRef({ id: item.id, category: item.category });
   };
 
   const handleFeedbackChange = (value) => {
@@ -283,10 +287,21 @@ const Evaluation = () => {
     );
     setPendingEvaluations(remainingPending);
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: authorizedStudent.id,
-      category: authorizedStudent.category,
+      category: "history",
     });
+  };
+
+  const handleViewAuthorizedRecord = () => {
+    if (!activeEvaluation || activeEvaluation.category !== "history") return;
+
+    setSelectedEvaluationRef({
+      id: activeEvaluation.id,
+      category: activeEvaluation.category,
+    });
+
+    alert(`Viewing authorized record for ${activeEvaluation.name}`);
   };
 
   return (
@@ -514,6 +529,7 @@ const Evaluation = () => {
                 ) : (
                   <button
                     type="button"
+                    onClick={handleViewAuthorizedRecord}
                     className="flex items-center gap-2 rounded-xl border border-emerald-700 bg-emerald-600 px-8 py-4 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] hover:bg-emerald-700"
                   >
                     <FileText size={20} />
