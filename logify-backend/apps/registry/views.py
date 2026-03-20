@@ -7,8 +7,8 @@ from apps.registry.serializer import (
     StudentRegistrySerializer,
 )
 from django.contrib.auth import get_user_model
-from requests import Response
 from rest_framework import permissions, viewsets
+from rest_framework.response import Response
 
 
 class IsInternshipAdmin(permissions.BasePermission):
@@ -28,9 +28,14 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
 
 
 class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
-    queryset = RegistrationAttempts.objects.all()
     serializer_class = RegistrationAttemptsSerializer
     permission_classes = [IsStudent]
+
+    def get_queryset(self):
+        user = self.request.user
+        if not user or not user.is_authenticated:
+            return RegistrationAttempts.objects.none()
+        return RegistrationAttempts.objects.filter(webmail=user.email)  # type: ignore
 
 
 class ImportStudentsViewSet(viewsets.ViewSet):
