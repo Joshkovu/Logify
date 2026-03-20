@@ -13,6 +13,7 @@ from django.db import models
 #     integer created_at  # Should be DateTimeField
 # }
 
+
 class Organizations(models.Model):
     name = models.CharField(max_length=255)
     industry = models.CharField(max_length=255)
@@ -20,8 +21,7 @@ class Organizations(models.Model):
     address = models.CharField(max_length=255)
     contact_email = models.EmailField()
     contact_phone = models.CharField(max_length=20)
-    created_at = models.DateTimeField(auto_now_add=True)  
-
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.name
