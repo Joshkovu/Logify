@@ -1,7 +1,12 @@
 from django.urls import path
-from .views import OrganizationListCreateView, OrganizationDetailView
+
+from .views import OrganizationDetailView, OrganizationListCreateView
 
 urlpatterns = [
-    path("", OrganizationListCreateView.as_view(), name="organization-list-create"),
-    path("<int:pk>/", OrganizationDetailView.as_view(), name="organization-detail"),
+    path(
+        "/createOrganization", OrganizationListCreateView.as_view(), name="organization-list-create"
+    ),
+    path(
+        "/getOrganization/<int:pk>/", OrganizationDetailView.as_view(), name="organization-detail"
+    ),
 ]

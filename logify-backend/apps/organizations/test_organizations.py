@@ -1,9 +1,8 @@
 # from django.urls import reverse
+from apps.organizations.models import Organizations
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-
-from apps.organizations.models import Organizations
 
 
 class TestOrganizationAPI(APITestCase):
@@ -17,14 +16,14 @@ class TestOrganizationAPI(APITestCase):
             contact_phone="+256700000000",
         )
         self.list_url = reverse("organization-list-create")
-        self.detail_url = reverse("organization-detail", args=[self.organization.id])
+        self.detail_url = reverse("organization-detail", args=[self.organization.id])  # type: ignore
 
     def test_get_organizations_list(self):
         response = self.client.get(self.list_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]["name"], "Acme Corp")
+        self.assertEqual(len(response.data), 1)  # type: ignore
+        self.assertEqual(response.data[0]["name"], "Acme Corp")  # type: ignore
 
     def test_create_organization(self):
         payload = {
@@ -45,7 +44,7 @@ class TestOrganizationAPI(APITestCase):
         response = self.client.get(self.detail_url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["id"], self.organization.id)
+        self.assertEqual(response.data["id"], self.organization.id)  # type: ignore
 
     def test_patch_organization(self):
         payload = {"city": "Jinja"}
@@ -60,4 +59,4 @@ class TestOrganizationAPI(APITestCase):
         response = self.client.delete(self.detail_url)
 
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Organizations.objects.filter(id=self.organization.id).exists())
+        self.assertFalse(Organizations.objects.filter(id=self.organization.id).exists())  # type: ignore
