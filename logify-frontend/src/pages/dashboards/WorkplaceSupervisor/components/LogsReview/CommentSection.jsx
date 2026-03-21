@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { CircleCheck, CircleAlert } from "lucide-react";
-import { interns } from "./PendingLogSection";
+import PropTypes from "prop-types";
 
-const CommentSection = ({ intern_log, selectedLog }) => {
+const CommentSection = ({ intern_log }) => {
   const [comment, setComment] = useState("");
   return (
     <div className="mt-3 rounded-lg p-6 border col-span-4 bg-white border-stone-300 shadow-inner h-auto ">
@@ -38,6 +38,17 @@ const CommentSection = ({ intern_log, selectedLog }) => {
   );
 };
 
-
+CommentSection.propTypes ={
+    intern_log: PropTypes.shape({
+        names: PropTypes.string,
+        week: PropTypes.number,
+        date: PropTypes.string,
+        log: PropTypes.shape({
+            activities: PropTypes.string,
+            learnings: PropTypes.string,
+            challenges: PropTypes.string
+        })
+    })
+};
 
 export default CommentSection;
