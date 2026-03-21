@@ -32,7 +32,7 @@ const intern_card_data = [
     institution: "State University",
     start_date: "January 20, 2026",
     performance: "Satisfactory",
-    week: 4,
+    week: 10,
     email: "emily.chen@university.edu",
     contact: "+1 (555) 123-4567",
     logs: 4,
