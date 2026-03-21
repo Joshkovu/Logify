@@ -14,7 +14,7 @@ const Students = () => {
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
           Student Management
         </h1>
         <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
@@ -58,7 +58,7 @@ const Students = () => {
       <section>
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-1">
+            <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-1">
               All Students
             </h2>
             <p className="text-text-secondary dark:text-slate-300">

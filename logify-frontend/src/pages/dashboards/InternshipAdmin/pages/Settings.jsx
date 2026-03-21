@@ -6,7 +6,7 @@ const Settings = () => {
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
           System Settings
         </h1>
         <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
@@ -15,7 +15,7 @@ const Settings = () => {
       </header>
 
       <section className="mb-8 rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-5 transition-all hover:scale-102 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-2">
+        <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-2">
           General Settings
         </h2>
         <p className="text-text-secondary dark:text-slate-300 mb-6">
@@ -26,7 +26,11 @@ const Settings = () => {
             <h3 className="text-base font-semibold text-text-secondary dark:text-slate-300 mb-2">
               System Name
             </h3>
-            <Input id="systemName" value="Logify ILES" />
+            <Input
+              className="dark:text-slate-300"
+              id="systemName"
+              value="Logify ILES"
+            />
           </div>
           <div>
             <h3 className="text-base font-semibold text-text-secondary dark:text-slate-300 mb-2">
@@ -41,7 +45,7 @@ const Settings = () => {
       </section>
 
       <section className="mb-8 rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-5 transition-all hover:scale-102 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-2">
+        <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-2">
           Notification Settings
         </h2>
         <p className="text-text-secondary dark:text-slate-300 mb-6">
@@ -79,7 +83,7 @@ const Settings = () => {
       </section>
 
       <section className="mb-8 rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-5 transition-all hover:scale-102 sm:p-6 lg:p-8">
-        <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-2">
+        <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-2">
           Evaluation Settings
         </h2>
         <p className="text-text-secondary dark:text-slate-300 mb-6">
