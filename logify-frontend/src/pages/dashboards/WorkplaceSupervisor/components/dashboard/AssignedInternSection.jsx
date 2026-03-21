@@ -6,12 +6,14 @@ const internsData = [
     names: "Sarah Johnson",
     course: "Computer Science",
     institution: "University of Technology",
+    week: 8
   },
   {
     url: "https://api.dicebear.com/9.x/micah/svg?",
     names: "James Martinez",
     course: "Software Engineering",
     institution: "Institute of Technology",
+    week: 6
   },
 
   {
@@ -19,6 +21,7 @@ const internsData = [
     names: "Emily Chen",
     course: "Information Systems",
     institution: "State University",
+    week: 10
   },
 
   // {
@@ -65,8 +68,8 @@ const AssignedInternSection = () => {
           url={intern.url}
           names={intern.names}
           course={intern.course}
-          Aneka
           institution={intern.institution}
+          week={intern.week}
         />
       ))}
     </div>
