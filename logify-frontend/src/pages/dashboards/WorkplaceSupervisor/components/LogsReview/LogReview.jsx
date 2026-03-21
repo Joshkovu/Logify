@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 
 const LogReview = ({intern}) => {
   return (
@@ -30,6 +31,17 @@ const LogReview = ({intern}) => {
   )
 };
 
-
+LogReview.propTypes = {
+  intern: PropTypes.shape({
+    names: PropTypes.string.isRequired,
+    week: PropTypes.number.isRequired,
+    date: PropTypes.string.isRequired,
+    log: PropTypes.shape({
+      activities: PropTypes.string.isRequired,
+      learnings: PropTypes.string.isRequired,
+      challenges: PropTypes.string.isRequired,
+    }).isRequired,
+  }).isRequired,
+};
 
 export default LogReview

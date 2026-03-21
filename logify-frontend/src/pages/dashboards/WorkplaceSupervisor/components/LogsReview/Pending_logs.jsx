@@ -1,3 +1,4 @@
+import PropTypes from "prop-types";
 
 const Pending_logs = ({ interns, selectedLog, onSelectLog }) => {
   return (
@@ -31,6 +32,22 @@ const Pending_logs = ({ interns, selectedLog, onSelectLog }) => {
   );
 };
 
-
+Pending_logs.propTypes = {
+  interns: PropTypes.arrayOf(
+    PropTypes.shape({
+      names: PropTypes.string.isRequired,
+      week: PropTypes.number.isRequired,
+      date: PropTypes.string.isRequired,
+      url: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  selectedLog: PropTypes.shape({
+    names: PropTypes.string.isRequired,
+    week: PropTypes.number.isRequired,
+    date: PropTypes.string.isRequired,
+    url: PropTypes.string.isRequired,
+  }),
+  onSelectLog: PropTypes.func.isRequired,
+};
 
 export default Pending_logs;
