@@ -54,7 +54,7 @@ const ThemeToggle = () => {
       <Moon
         className={`absolute h-4 w-4 transition-all duration-300 ${
           isDark
-            ? "rotate-0 scale-100 opacity-100"
+            ? "rotate-0 scale-100 dark:text-slate-300 opacity-100"
             : "-rotate-90 scale-0 opacity-0"
         }`}
         aria-hidden="true"

@@ -20,7 +20,7 @@ const stats = [
 const Placements = () => {
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 sm:px-6 sm:py-8 lg:px-10 xl:px-12">
-      <h1 className="mb-2 text-3xl font-extrabold text-brown-800 dark:text-gold sm:text-4xl">
+      <h1 className="mb-2 text-3xl font-extrabold text-brown-800 dark:text-slate-300 sm:text-4xl">
         Placement Management
       </h1>
       <p className="text-sm text-brown-700 dark:text-slate-200 sm:text-base lg:text-lg">
@@ -42,7 +42,7 @@ const Placements = () => {
         ))}
       </section>
       <section className="mt-8">
-        <h2 className="text-2xl font-bold text-brown-800 dark:text-gold mb-2">
+        <h2 className="text-2xl font-bold text-brown-800 dark:text-slate-300 mb-2">
           Recent Placements
         </h2>
         <p className="text-brown-600 dark:text-slate-300 mb-4">

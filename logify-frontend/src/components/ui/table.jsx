@@ -15,14 +15,18 @@ function Table({ children, className = "" }) {
 
 function TableHead({ children }) {
   return (
-    <thead className="sticky top-0 z-10 bg-background dark:bg-slate-800">
+    <thead className="sticky top-0 z-10 bg-background dark:bg-slate-800 dark:text-slate-300">
       {children}
     </thead>
   );
 }
 
 function TableBody({ children }) {
-  return <tbody className="divide-y divide-border">{children}</tbody>;
+  return (
+    <tbody className="divide-y divide-border dark:divide-slate-700">
+      {children}
+    </tbody>
+  );
 }
 
 function TableRow({ children, index }) {
