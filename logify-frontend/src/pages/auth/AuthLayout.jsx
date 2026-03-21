@@ -39,8 +39,8 @@ const AuthLayout = ({ title, subtitle, children, footer }) => {
               Built For Structured Internship Governance
             </h2>
             <p className="mt-4 text-sm leading-relaxed text-slate-200/90">
-              This flow separates new and returning users, keeps role boundaries explicit,
-              and prevents accidental access paths before approval.
+              This flow separates new and returning users, keeps role boundaries
+              explicit, and prevents accidental access paths before approval.
             </p>
             <div className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-5 text-xs leading-relaxed text-slate-200">
               {footer ||
