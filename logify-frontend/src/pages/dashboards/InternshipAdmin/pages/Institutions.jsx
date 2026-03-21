@@ -73,14 +73,14 @@ const Institutions = () => {
     setNotification("Institution added successfully!");
   };
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       {notification && (
-        <div className="mb-4 flex flex-col gap-2 rounded border-l-4 border-yellow-500 bg-yellow-100 px-4 py-3 text-yellow-800 sm:flex-row sm:items-center">
-          <AlertTriangle className="h-5 w-5 text-yellow-600" />
+        <div className="mb-4 flex flex-col gap-2 rounded border-l-4 border-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 px-4 py-3 text-yellow-800 dark:text-yellow-200 sm:flex-row sm:items-center">
+          <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-300" />
           <span>{notification}</span>
           <button
             onClick={() => setNotification("")}
-            className="text-left text-yellow-700 hover:underline sm:ml-auto"
+            className="text-left text-yellow-700 dark:text-yellow-300 hover:underline sm:ml-auto"
           >
             Dismiss
           </button>
@@ -88,10 +88,10 @@ const Institutions = () => {
       )}
       <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div>
-          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
             Partner Institutions
           </h1>
-          <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
+          <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
             Manage organizations offering internship placements
           </p>
         </div>
@@ -117,13 +117,13 @@ const Institutions = () => {
           placeholder="Search institutions..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold md:w-1/3"
+          className="w-full rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold md:w-1/3"
         />
       </div>
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border bg-white p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-maroon mb-4">
+          <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-lg">
+            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-4">
               Add New Institution
             </h2>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -133,7 +133,7 @@ const Institutions = () => {
                 name="name"
                 value={form.name}
                 onChange={handleChange}
-                className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
               />
               <input
                 type="text"
@@ -141,7 +141,7 @@ const Institutions = () => {
                 name="industry"
                 value={form.industry}
                 onChange={handleChange}
-                className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
               />
               <input
                 type="email"
@@ -149,7 +149,7 @@ const Institutions = () => {
                 name="email"
                 value={form.email}
                 onChange={handleChange}
-                className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
               />
               <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                 <Button
@@ -161,7 +161,7 @@ const Institutions = () => {
                 <Button
                   type="button"
                   onClick={handleCancel}
-                  className="bg-gray-300 text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                  className="bg-gray-300 dark:bg-slate-700 text-black dark:text-slate-100 px-5 py-2 rounded-lg font-semibold shadow hover:bg-gray-400 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
                 >
                   Cancel
                 </Button>
@@ -173,44 +173,46 @@ const Institutions = () => {
 
       <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3">
         <div
-          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Total Organizations" ? "ring-2 ring-gold" : ""}`}
+          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Total Organizations" ? "ring-2 ring-gold" : ""}`}
           onClick={() => handleStatClick("Total Organizations")}
         >
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Total Organizations
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">
+          <span className="text-3xl font-extrabold text-text-primary dark:text-slate-100">
             {institutions.length}
           </span>
         </div>
         <div
-          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Active Organizations" ? "ring-2 ring-gold" : ""}`}
+          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Active Organizations" ? "ring-2 ring-gold" : ""}`}
           onClick={() => handleStatClick("Active Organizations")}
         >
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Active Organizations
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">
+          <span className="text-3xl font-extrabold text-text-primary dark:text-slate-100">
             {institutions.length}
           </span>
         </div>
         <div
-          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Total Interns" ? "ring-2 ring-gold" : ""}`}
+          className={`flex cursor-pointer flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8 ${activeStat === "Total Interns" ? "ring-2 ring-gold" : ""}`}
           onClick={() => handleStatClick("Total Interns")}
         >
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Total Interns
           </span>
-          <span className="text-3xl font-extrabold text-text-primary">2</span>
+          <span className="text-3xl font-extrabold text-text-primary dark:text-slate-100">
+            2
+          </span>
         </div>
       </section>
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-maroon mb-1">
+            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-1">
               Organization List
             </h2>
-            <p className="text-text-secondary">
+            <p className="text-text-secondary dark:text-slate-300">
               Complete list of partner organizations
             </p>
           </div>
@@ -240,7 +242,7 @@ const Institutions = () => {
                       <Eye className="h-4 w-4 text-blue-500" />
                     </Button>
                     <Button variant="ghost" size="sm">
-                      <Edit className="h-4 w-4 text-green-500" />
+                      <Edit className="h-4 w-4 text-green-500 dark:text-emerald-400" />
                     </Button>
                     <Button variant="ghost" size="sm">
                       <Trash2 className="h-4 w-4 text-red-600" />
@@ -254,8 +256,8 @@ const Institutions = () => {
 
         {showProfile && selectedInstitution && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-            <div className="w-full max-w-md rounded-lg border border-border bg-white p-6 shadow-lg">
-              <h2 className="text-2xl font-bold text-maroon mb-4">
+            <div className="w-full max-w-md rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-lg">
+              <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-4">
                 Institution Profile
               </h2>
               <div className="mb-2">
