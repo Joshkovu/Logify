@@ -9,9 +9,9 @@ import Profile from "./pages/Profile";
 function App() {
   return (
     <BrowserRouter>
-      <div className="flex min-h-screen bg-[#f7f5f2]">
+      <div className="flex min-h-screen bg-[#f7f5f2] dark:bg-black">
         <Sidebar />
-        <main className="flex-1">
+        <main className="flex-1 bg-[#f7f5f2] dark:bg-black transition-colors duration-300">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route

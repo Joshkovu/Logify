@@ -17,10 +17,12 @@ const InternComponent = ({ url, names, course, institution, week }) => {
       </div>
       <div className=" flex flex-col items-end">
         <p className="text-sm text-gray-500">Week {week}/12</p>
-      <div className="h-2 w-24 rounded-full bg-red-50 ">
-          <div className={`h-full bg-maroonCustom rounded-l-full `} style={{ width: `${(week / 12) * 100}%` }}></div>
-
-      </div>
+        <div className="h-2 w-24 rounded-full bg-red-50 ">
+          <div
+            className={`h-full bg-maroonCustom rounded-l-full `}
+            style={{ width: `${(week / 12) * 100}%` }}
+          ></div>
+        </div>
       </div>
     </div>
   );
