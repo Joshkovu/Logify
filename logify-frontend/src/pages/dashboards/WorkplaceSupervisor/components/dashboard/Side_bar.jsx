@@ -13,7 +13,7 @@ const Side_bar = ({ children }) => {
   const [expanded, setExpanded] = React.useState(true);
   return (
     <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-none shadow-sm">
+      <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm">
         <div
           className={`mb-12 px-4 ${expanded ? "" : "w-0 ml-0 hidden"} transition-all duration-200`}
         >
@@ -113,11 +113,10 @@ export const SidebarItem = ({ icon, text, href }) => {
   return (
     <li
       className={`
-      ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-sm " : "hover:bg-red-50 text-gray-600"}
-    relative flex items-center hover:-translate-y-0.5 hover:shadow-sm
-    font-medium rounded-md cursor-pointer  duration-200 transition-colors
-     ${expanded ? "py-2 px-3 my-3" : "p-3 my-5"}
-
+      ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-lg " : "hover:bg-red-50 text-gray-600 border border-stone-200 "}
+    relative flex items-center  hover:shadow-lg shadow-xs
+    font-medium rounded-md cursor-pointer  duration-200 transition-transform group 
+     ${expanded ? "py-2 px-3 my-2" : "p-3 my-3 transition-all duration-200"}
     `}
     >
       <a
@@ -128,13 +127,21 @@ export const SidebarItem = ({ icon, text, href }) => {
         <span
           className={`
 
-            duration-200 transition-all
+          transition-all  duration-200
             ${expanded ? "overflow-hidden w-52 ml-3" : "w-0 ml-0 hidden"}
             `}
         >
           {text}
         </span>
       </a>
+
+      {!expanded && (
+        <div
+          className={`flex absolute left-full w-max rounded-lg bg-maroonCustom text-white text-sm px-2 py-1 ml-6 invisible -translate-x-3  opacity-20 group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 transition-all duration-200 pointer-events-none`}
+        >
+          {text}
+        </div>
+      )}
     </li>
   );
 };

@@ -225,7 +225,8 @@ const Evaluation = () => {
   const [completedEvaluations, setCompletedEvaluations] = useState(
     initialCompletedEvaluations,
   );
-  const [selectedRecord, setSelectedRecord] = useState({
+  const [selectedRecord] = useState(initialPendingEvaluations[0]);
+  const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
     id: initialPendingEvaluations[0].id,
     category: initialPendingEvaluations[0].category,
   });
@@ -234,6 +235,7 @@ const Evaluation = () => {
     return [...pendingEvaluations, ...completedEvaluations];
   }, [pendingEvaluations, completedEvaluations]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
@@ -242,10 +244,11 @@ const Evaluation = () => {
           item.category === selectedRecord?.category,
       ) || null
     );
-  }, [allEvaluations, selectedRecord]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvaluations, selectedEvaluationRef]);
 
   const handleSelectRecord = (item) => {
-    setSelectedRecord({ id: item.id, category: item.category });
+    setSelectedEvaluationRef({ id: item.id, category: item.category });
   };
 
   const handleFeedbackChange = (value) => {
@@ -284,7 +287,7 @@ const Evaluation = () => {
     );
     setPendingEvaluations(remainingPending);
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: authorizedStudent.id,
       category: "history",
     });
@@ -293,7 +296,7 @@ const Evaluation = () => {
   const handleViewAuthorizedRecord = () => {
     if (!activeEvaluation || activeEvaluation.category !== "history") return;
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: activeEvaluation.id,
       category: activeEvaluation.category,
     });

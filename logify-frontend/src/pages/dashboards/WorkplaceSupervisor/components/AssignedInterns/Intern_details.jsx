@@ -1,18 +1,30 @@
 import { Eye, Mail, Phone } from "lucide-react";
+import PropTypes from "prop-types";
 
-const Intern_details = () => {
+const Intern_details = ({
+  image,
+  name,
+  course,
+  institution,
+  start_date,
+  performance,
+  week,
+  email,
+  contact,
+  logs,
+}) => {
   return (
     <div className=" mt-3 p-6 border border-stone-300 col-span-12 rounded-lg bg-white">
       <div className=" w-full flex justify-between items-center">
         <div className=" flex ">
           <img
-            src="https://api.dicebear.com/9.x/notionists/svg"
+            src={image}
             alt="avatar"
             className="size-18 rounded-full shrink-0 bg-maroonCustom shadow"
           />
           <div className="mx-3 mt-3">
-            <h1 className="font-bold text-xl">Sarah Johnson</h1>
-            <h2 className="text-lg text-gray-500">Software Engineering</h2>
+            <h1 className="font-bold text-xl">{name}</h1>
+            <h2 className="text-lg text-gray-500">{course} Intern</h2>
           </div>
         </div>
         <button className="flex p-1.5 border border-stone-200 rounded-lg">
@@ -24,45 +36,59 @@ const Intern_details = () => {
         <div className="flex col-span-12 justify-evenly items-start">
           <div className=" w-full">
             <h1 className="text-sm font-medium text-gray-500">University</h1>
-            <h2 className="font-bold ">University Of Techonlogy</h2>
+            <h2 className="font-bold ">{institution}</h2>
           </div>
           <div className=" w-full">
             <h1 className="text-sm font-medium text-gray-500">Start Date</h1>
-            <h2 className="font-bold ">January 15, 2026</h2>
+            <h2 className="font-bold ">{start_date}</h2>
           </div>
           <div className=" w-full">
             <h1 className="text-sm font-medium text-gray-500">Performance</h1>
-            <h2 className="font-bold text-emerald-500">Excellent</h2>
+            <h2 className="font-bold text-emerald-500">{performance}</h2>
           </div>
         </div>
         <div className="flex col-span-12 justify-evenly items-start mt-6">
           <div className="flex w-full items-center">
             <Mail className="size-4 text-gray-500" />
-            <p className="text-gray-500 text-sm font-medium ml-1.5">
-              sarah.johnson@university.edu
-            </p>
+            <p className="text-gray-500 text-sm font-medium ml-1.5">{email}</p>
           </div>
           <div className="flex w-full items-center">
             <Phone className="size-4 text-gray-500" />
             <p className="text-gray-500 text-sm font-medium ml-1.5">
-              +1 (555) 234-5678
+              {contact}
             </p>
           </div>
         </div>
         <div className="flex col-span-12 justify-between mt-6 ">
           <p className="text-sm text-gray-500 ">Internship Progress</p>
-          <p className="text-sm text-gray-700 font-medium">Week 8 of 12</p>
+          <p className="text-sm text-gray-700 font-medium">Week {week} of 12</p>
         </div>
         <div className="col-span-12 my-3 h-2 bg-red-50 w-full rounded-full">
-          <div className="h-full bg-maroonCustom rounded-l-full w-8/12"></div>
+          <div
+            className={`h-full bg-maroonCustom rounded-l-full `}
+            style={{ width: `${(week / 12) * 100}%` }}
+          ></div>
         </div>
         <div className="flex col-span-12 justify-between ">
-          <p className="text-xs text-gray-500 ">8 logs approved</p>
-          <p className="text-xs text-gray-700 ">4 weeks remaining</p>
+          <p className="text-xs text-gray-500 ">{logs} logs approved</p>
+          <p className="text-xs text-gray-700 ">{12 - week} weeks remaining</p>
         </div>
       </div>
     </div>
   );
+};
+
+Intern_details.propTypes = {
+  image: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  course: PropTypes.string.isRequired,
+  institution: PropTypes.string.isRequired,
+  start_date: PropTypes.string.isRequired,
+  performance: PropTypes.string.isRequired,
+  week: PropTypes.number.isRequired,
+  email: PropTypes.string.isRequired,
+  contact: PropTypes.string.isRequired,
+  logs: PropTypes.number.isRequired,
 };
 
 export default Intern_details;
