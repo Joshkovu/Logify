@@ -1,7 +1,7 @@
-import InternAnalytics from './InternAnalytics'
-import AssignedInternSection from './AssignedInternSection'
-import PendingLogs from './PendingLogs'
-import RecentActivity from './RecentActivity'
+import InternAnalytics from "./InternAnalytics";
+import AssignedInternSection from "./AssignedInternSection";
+import PendingLogs from "./PendingLogs";
+import RecentActivity from "./RecentActivity";
 
 const Grid = () => {
   return (
