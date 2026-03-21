@@ -22,6 +22,7 @@ const ActivityTable = ({ title, comment, daysPast, Approved }) => {
 ActivityTable.propTypes = {
   title: PropTypes.string.isRequired,
   description: PropTypes.string.isRequired,
+  comment: PropTypes.string.isRequired,
   daysPast: PropTypes.number.isRequired,
   Approved: PropTypes.bool.isRequired,
 };
