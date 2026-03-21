@@ -10,7 +10,6 @@ import {
   FileText,
   Settings,
   LogOut,
-  ShieldCheck,
   ArrowLeftToLine,
   ArrowRightToLine,
   X,
@@ -49,7 +48,7 @@ const Sidebar = ({
       id="admin-sidebar"
       aria-label="Main Navigation"
       aria-hidden={!isDesktop && !isMobileOpen}
-      className={`fixed inset-y-0 left-0 z-40 flex w-72 max-w-[85vw] flex-col overflow-y-auto border-r border-gray-200 bg-[#FCFBF8] px-5 py-6 text-black shadow-2xl transition-transform duration-300 ease-in-out sm:py-8 ${
+      className={`fixed inset-y-0 left-0 z-40 flex w-72 max-w-[85vw] flex-col overflow-y-auto overflow-x-hidden border-r border-gray-200 bg-[#FCFBF8] px-5 py-6 text-black transition-colors duration-300 ease-in-out dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 sm:py-8 ${
         isMobileOpen ? "translate-x-0" : "-translate-x-full"
       } md:static md:z-auto md:max-w-none md:translate-x-0 ${
         expanded ? "md:w-72 md:px-5" : "md:w-24 md:px-3"
@@ -62,9 +61,8 @@ const Sidebar = ({
           }`}
         >
           <div className="flex items-center gap-3">
-            <ShieldCheck className="h-6 w-6 text-white" />
             {showExpandedContent && (
-              <span className="text-sm font-bold uppercase tracking-[0.2em] text-white/80 md:hidden">
+              <span className="text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 dark:text-gold/80 md:hidden">
                 Menu
               </span>
             )}
@@ -73,8 +71,8 @@ const Sidebar = ({
           <button
             type="button"
             onClick={isDesktop ? onToggleExpanded : onCloseMobile}
-            className={`rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 ${
-              !showExpandedContent && isDesktop ? "mr-9" : ""
+            className={`rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ${
+              !showExpandedContent && isDesktop ? "mr-4" : ""
             }`}
             aria-label={
               isDesktop
@@ -88,12 +86,12 @@ const Sidebar = ({
           >
             {isDesktop ? (
               expanded ? (
-                <ArrowLeftToLine className="h-4 w-4 text-gray-700" />
+                <ArrowLeftToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
               ) : (
-                <ArrowRightToLine className="h-4 w-4 text-gray-700" />
+                <ArrowRightToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
               )
             ) : (
-              <X className="h-4 w-4 text-gray-700" />
+              <X className="h-4 w-4 text-gray-700 dark:text-slate-200" />
             )}
           </button>
         </div>
@@ -133,7 +131,7 @@ const Sidebar = ({
               className={`group relative flex items-center rounded-xl font-semibold transition-all duration-200 ${
                 isActive
                   ? "scale-[1.02] bg-maroonCustom text-white shadow-lg shadow-gold/20"
-                  : "text-black/70 hover:bg-white/5 hover:text-black"
+                  : "text-black/70 hover:bg-black/5 hover:text-black dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
               } ${
                 showExpandedContent
                   ? "gap-4 px-4 py-3.5"
@@ -143,9 +141,7 @@ const Sidebar = ({
             >
               <Icon
                 className={`text-xl transition-colors ${
-                  isActive
-                    ? "text-maroon-dark"
-                    : "text-gold group-hover:text-gold"
+                  isActive ? "text-gold" : "text-gold group-hover:text-gold"
                 }`}
                 aria-hidden="true"
                 strokeWidth={2.5}
@@ -175,7 +171,7 @@ const Sidebar = ({
       </nav>
 
       <div
-        className={`mt-auto border-t border-border bg-muted/30 ${
+        className={`mt-auto border-t border-border bg-muted/30 dark:border-slate-700 dark:bg-slate-800/40 ${
           showExpandedContent ? "p-6" : "p-4"
         }`}
       >
