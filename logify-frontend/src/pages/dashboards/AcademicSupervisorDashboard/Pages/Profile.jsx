@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   User,
   Mail,
@@ -10,20 +11,57 @@ import {
   ShieldCheck,
   Settings,
   Key,
+  X,
+  Save,
+  Lock,
 } from "lucide-react";
 
 const Profile = () => {
+  const [profile, setProfile] = useState({
+    firstName: "Emily",
+    lastName: "Roberts",
+    email: "e.roberts@university.edu",
+    officePhone: "+1 (555) 987-6543",
+    university: "University of Technology",
+    department: "Computer Science",
+    position: "Associate Professor",
+    officeLocation: "Building A, Room 305",
+    specialization: "Software Engineering & AI",
+    yearsAtUniversity: "12 years",
+  });
+
+  const [stats] = useState([
+    { value: "5", label: "Current Interns" },
+    { value: "15", label: "Total Students" },
+    { value: "86.6%", label: "Average Score" },
+    { value: "95%", label: "Completion Rate" },
+  ]);
+
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showSecurityModal, setShowSecurityModal] = useState(false);
+
+  const [editForm, setEditForm] = useState(profile);
+
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const sectionCardClassName =
+    "rounded-[14px] border border-border bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900";
+
   const personalInfo = [
-    { label: "First Name", value: "Emily", icon: <User size={16} /> },
-    { label: "Last Name", value: "Roberts", icon: <User size={16} /> },
+    { label: "First Name", value: profile.firstName, icon: <User size={16} /> },
+    { label: "Last Name", value: profile.lastName, icon: <User size={16} /> },
     {
       label: "Email Address",
-      value: "e.roberts@university.edu",
+      value: profile.email,
       icon: <Mail size={16} />,
     },
     {
       label: "Office Phone",
-      value: "+1 (555) 987-6543",
+      value: profile.officePhone,
       icon: <Phone size={16} />,
     },
   ];
@@ -31,140 +69,194 @@ const Profile = () => {
   const academicInfo = [
     {
       label: "University",
-      value: "University of Technology",
+      value: profile.university,
       icon: <GraduationCap size={16} />,
     },
     {
       label: "Department",
-      value: "Computer Science",
+      value: profile.department,
       icon: <Building2 size={16} />,
     },
     {
       label: "Position",
-      value: "Associate Professor",
+      value: profile.position,
       icon: <Award size={16} />,
     },
     {
       label: "Office Location",
-      value: "Building A, Room 305",
+      value: profile.officeLocation,
       icon: <MapPin size={16} />,
     },
     {
       label: "Specialization",
-      value: "Software Engineering & AI",
+      value: profile.specialization,
       icon: <ShieldCheck size={16} />,
     },
     {
       label: "Years at University",
-      value: "12 years",
+      value: profile.yearsAtUniversity,
       icon: <Calendar size={16} />,
     },
   ];
 
-  const stats = [
-    { value: "5", label: "Current Interns" },
-    { value: "15", label: "Total Students" },
-    { value: "86.6%", label: "Average Score" },
-    { value: "95%", label: "Completion Rate" },
-  ];
+  const handleOpenEditModal = () => {
+    setEditForm(profile);
+    setShowEditModal(true);
+  };
 
-  const sectionCardClassName =
-    "rounded-[14px] border border-border bg-white p-6 shadow-sm";
+  const handleSaveProfile = () => {
+    setProfile(editForm);
+    setShowEditModal(false);
+    alert("Profile updated successfully.");
+  };
+
+  const handlePasswordChange = () => {
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
+      alert("Please fill in all password fields.");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert("New password and confirm password do not match.");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 6) {
+      alert("New password must be at least 6 characters long.");
+      return;
+    }
+
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
+    setShowSecurityModal(false);
+    alert("Password updated successfully.");
+  };
+
+  const handleEditInputChange = (field, value) => {
+    setEditForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
+  const handlePasswordInputChange = (field, value) => {
+    setPasswordForm((prev) => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans md:px-10">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans text-[#1e1e1e] dark:bg-black dark:text-white md:px-10">
       <div className="mx-auto max-w-4xl">
         <header className="mb-8">
-          <h1 className="mb-2 text-4xl font-black tracking-tighter text-maroon-dark md:text-5xl">
+          <h1 className="mb-2 text-4xl font-black tracking-tighter text-maroon-dark dark:text-white md:text-5xl">
             My <span className="text-gold">Profile</span>
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 md:text-lg">
+          <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 dark:text-slate-300 md:text-lg">
             Manage your professional identity and academic credentials within
             the Logify ecosystem.
           </p>
         </header>
 
         <div className="space-y-6">
-          <div className="rounded-[14px] border border-border bg-[#FEFEFC] p-6 shadow-sm">
+          <div className="rounded-[14px] border border-border bg-[#FEFEFC] p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-black shadow-lg">
+                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-white shadow-lg">
                   ER
                 </div>
 
-                <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark shadow-sm transition-colors hover:text-gold">
+                <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark shadow-sm transition-colors hover:text-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white">
                   <Settings size={14} />
                 </button>
               </div>
 
-              <h2 className="text-xl font-black tracking-tight text-maroon-dark md:text-2xl">
-                Dr. Emily Roberts
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white md:text-2xl">
+                Dr. {profile.firstName} {profile.lastName}
               </h2>
 
               <p className="mt-2 rounded-full bg-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-gold">
                 Academic Supervisor
               </p>
 
-              <p className="mt-2 text-sm font-medium text-text-secondary">
-                Department of Computer Science
+              <p className="mt-2 text-sm font-medium text-text-secondary dark:text-slate-300">
+                Department of {profile.department}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border/40 bg-white p-3 text-center">
-                <p className="text-xl font-black text-maroon-dark">5</p>
-                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
+            <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="rounded-xl border border-border/40 bg-white p-3 text-center dark:border-slate-700 dark:bg-slate-800">
+                <p className="text-xl font-black text-maroon-dark dark:text-white">
+                  5
+                </p>
+                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
                   Current Interns
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border/40 bg-white p-3 text-center">
-                <p className="text-xl font-black text-maroon-dark">15</p>
-                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
+              <div className="rounded-xl border border-border/40 bg-white p-3 text-center dark:border-slate-700 dark:bg-slate-800">
+                <p className="text-xl font-black text-maroon-dark dark:text-white">
+                  15
+                </p>
+                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
                   Total Students
                 </p>
               </div>
             </div>
 
             <div className="mt-3 space-y-2">
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-dark px-4 py-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.01]">
-                <Settings size={16} className="text-black" />
-                <span className="text-black">Edit Profile</span>
+              <button
+                onClick={handleOpenEditModal}
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-dark px-4 py-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.01]"
+              >
+                <Settings size={16} className="text-gold" />
+                <span>Edit Profile</span>
               </button>
 
-              <button className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background">
-                <Key size={16} className="text-black" />
+              <button
+                onClick={() => setShowSecurityModal(true)}
+                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+              >
+                <Key size={16} className="text-gold" />
                 Security & Password
               </button>
             </div>
           </div>
 
           <div className={sectionCardClassName}>
-            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4">
-              <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom">
+            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4 dark:border-slate-700">
+              <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom dark:bg-gold/10 dark:text-gold">
                 <User size={18} />
               </div>
-              <h2 className="text-xl font-black tracking-tight text-maroon-dark">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white">
                 Personal Information
               </h2>
             </div>
 
-            <div className="divide-y divide-border/40">
+            <div className="divide-y divide-border/40 dark:divide-slate-700">
               {personalInfo.map((item) => (
                 <div
                   key={item.label}
                   className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-background/70 p-2 text-gold">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800 dark:text-gold">
                       {item.icon}
                     </div>
-                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60">
+                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60 dark:text-slate-400">
                       {item.label}
                     </p>
                   </div>
 
-                  <p className="text-sm font-bold text-maroon-dark md:text-right md:text-base">
+                  <p className="text-sm font-bold text-maroon-dark dark:text-white md:text-right md:text-base">
                     {item.value}
                   </p>
                 </div>
@@ -173,31 +265,31 @@ const Profile = () => {
           </div>
 
           <div className={sectionCardClassName}>
-            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4">
+            <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4 dark:border-slate-700">
               <div className="rounded-lg bg-gold/10 p-2 text-gold">
                 <GraduationCap size={18} />
               </div>
-              <h2 className="text-xl font-black tracking-tight text-maroon-dark">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white">
                 Academic Credentials
               </h2>
             </div>
 
-            <div className="divide-y divide-border/40">
+            <div className="divide-y divide-border/40 dark:divide-slate-700">
               {academicInfo.map((item) => (
                 <div
                   key={item.label}
                   className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-background/70 p-2 text-gold">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800 dark:text-gold">
                       {item.icon}
                     </div>
-                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60">
+                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60 dark:text-slate-400">
                       {item.label}
                     </p>
                   </div>
 
-                  <p className="text-sm font-bold text-maroon-dark md:max-w-[55%] md:text-right md:text-base">
+                  <p className="text-sm font-bold text-maroon-dark dark:text-white md:max-w-[55%] md:text-right md:text-base">
                     {item.value}
                   </p>
                 </div>
@@ -209,12 +301,12 @@ const Profile = () => {
             {stats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-xl border border-border bg-white p-4 text-center shadow-sm transition-all hover:border-gold/30"
+                className="rounded-xl border border-border bg-white p-4 text-center shadow-sm transition-all hover:border-gold/30 dark:border-slate-700 dark:bg-slate-900"
               >
-                <div className="mb-1 text-2xl font-black tracking-tight text-maroon-dark">
+                <div className="mb-1 text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
                   {item.value}
                 </div>
-                <div className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50">
+                <div className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
                   {item.label}
                 </div>
               </div>
@@ -222,6 +314,226 @@ const Profile = () => {
           </div>
         </div>
       </div>
+
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-black text-maroon-dark dark:text-white">
+                Edit Profile
+              </h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X size={20} className="text-maroon-dark dark:text-white" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <input
+                type="text"
+                value={editForm.firstName}
+                onChange={(e) =>
+                  handleEditInputChange("firstName", e.target.value)
+                }
+                placeholder="First Name"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.lastName}
+                onChange={(e) =>
+                  handleEditInputChange("lastName", e.target.value)
+                }
+                placeholder="Last Name"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="email"
+                value={editForm.email}
+                onChange={(e) => handleEditInputChange("email", e.target.value)}
+                placeholder="Email Address"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.officePhone}
+                onChange={(e) =>
+                  handleEditInputChange("officePhone", e.target.value)
+                }
+                placeholder="Office Phone"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.university}
+                onChange={(e) =>
+                  handleEditInputChange("university", e.target.value)
+                }
+                placeholder="University"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.department}
+                onChange={(e) =>
+                  handleEditInputChange("department", e.target.value)
+                }
+                placeholder="Department"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.position}
+                onChange={(e) =>
+                  handleEditInputChange("position", e.target.value)
+                }
+                placeholder="Position"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.officeLocation}
+                onChange={(e) =>
+                  handleEditInputChange("officeLocation", e.target.value)
+                }
+                placeholder="Office Location"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.specialization}
+                onChange={(e) =>
+                  handleEditInputChange("specialization", e.target.value)
+                }
+                placeholder="Specialization"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white md:col-span-2"
+              />
+              <input
+                type="text"
+                value={editForm.yearsAtUniversity}
+                onChange={(e) =>
+                  handleEditInputChange("yearsAtUniversity", e.target.value)
+                }
+                placeholder="Years at University"
+                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white md:col-span-2"
+              />
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="rounded-xl border border-border px-4 py-3 font-bold text-maroon-dark dark:border-slate-700 dark:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                className="flex items-center gap-2 rounded-xl bg-maroon-dark px-5 py-3 font-bold text-white"
+              >
+                <Save size={16} className="text-gold" />
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSecurityModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-black text-maroon-dark dark:text-white">
+                Security & Password
+              </h2>
+              <button
+                onClick={() => setShowSecurityModal(false)}
+                className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+              >
+                <X size={20} className="text-maroon-dark dark:text-white" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
+                  Current Password
+                </label>
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
+                  <Lock size={16} className="text-gold" />
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) =>
+                      handlePasswordInputChange(
+                        "currentPassword",
+                        e.target.value,
+                      )
+                    }
+                    className="w-full bg-transparent py-3 outline-none dark:text-white"
+                    placeholder="Enter current password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
+                  New Password
+                </label>
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
+                  <Key size={16} className="text-gold" />
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) =>
+                      handlePasswordInputChange("newPassword", e.target.value)
+                    }
+                    className="w-full bg-transparent py-3 outline-none dark:text-white"
+                    placeholder="Enter new password"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
+                  Confirm New Password
+                </label>
+                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
+                  <Key size={16} className="text-gold" />
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) =>
+                      handlePasswordInputChange(
+                        "confirmPassword",
+                        e.target.value,
+                      )
+                    }
+                    className="w-full bg-transparent py-3 outline-none dark:text-white"
+                    placeholder="Confirm new password"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowSecurityModal(false)}
+                className="rounded-xl border border-border px-4 py-3 font-bold text-maroon-dark dark:border-slate-700 dark:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handlePasswordChange}
+                className="rounded-xl bg-maroon-dark px-5 py-3 font-bold text-white"
+              >
+                Update Password
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
