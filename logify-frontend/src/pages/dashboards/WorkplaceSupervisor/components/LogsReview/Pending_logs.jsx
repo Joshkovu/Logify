@@ -39,7 +39,7 @@ Pending_logs.propTypes = {
       week: PropTypes.number.isRequired,
       date: PropTypes.string.isRequired,
       url: PropTypes.string.isRequired,
-    })
+    }),
   ).isRequired,
   selectedLog: PropTypes.shape({
     names: PropTypes.string.isRequired,
