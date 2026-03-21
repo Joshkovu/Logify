@@ -1,2 +1,13 @@
+
 Django>=5.0
 python-dotenv
+gunicorn
+django-cors-headers
+black
+isort
+flake8
+pytest
+pytest-django
+djangorestframework
+testcontainers[postgresql]
+psycopg2-binary

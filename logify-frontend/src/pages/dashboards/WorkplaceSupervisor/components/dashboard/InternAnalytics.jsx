@@ -26,7 +26,7 @@ const parameters = [
 ];
 const Card = ({ title, value, icon, description, color }) => {
   return (
-    <div className=" p-4 bg-white rounded-lg border border-stone-300 col-span-4 hover:-translate-y-1 hover:shadow-lg transition-shadow duration-300">
+    <div className=" p-4 bg-white rounded-lg border border-stone-300 col-span-4  hover:shadow-lg transition-shadow duration-300 shadow">
       <div className="flex mb-2 items-start justify-between flex-col">
         <div>
           <h3 className="font-medium text-sm text-gray-500">{title}</h3>
