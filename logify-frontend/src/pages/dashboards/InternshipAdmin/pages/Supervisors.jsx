@@ -49,48 +49,56 @@ const Supervisors = () => {
     });
   };
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
           Supervisor Management
         </h1>
-        <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
+        <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
           Manage all supervisors and their assigned interns
         </p>
       </header>
       <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
-        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Total Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-blue-700">10</span>
+          <span className="text-3xl font-extrabold text-blue-700 dark:text-blue-400">
+            10
+          </span>
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Academic Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-green-700">8</span>
+          <span className="text-3xl font-extrabold text-green-700 dark:text-emerald-400">
+            8
+          </span>
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Total Interns Supervised
           </span>
-          <span className="text-3xl font-extrabold text-blue-700">20</span>
+          <span className="text-3xl font-extrabold text-blue-700 dark:text-blue-400">
+            20
+          </span>
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
+          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
             Workplace Supervisors
           </span>
-          <span className="text-3xl font-extrabold text-green-700">18</span>
+          <span className="text-3xl font-extrabold text-green-700 dark:text-emerald-400">
+            18
+          </span>
         </div>
       </section>
       <section className="mb-8">
         <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-maroon mb-1">
+            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-1">
               All Supervisors
             </h2>
-            <p className="text-text-secondary">
+            <p className="text-text-secondary dark:text-slate-300">
               Complete list of all supervisors
             </p>
           </div>
@@ -103,8 +111,8 @@ const Supervisors = () => {
           </button>
           {showForm && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-              <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border bg-white p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-maroon mb-4">
+              <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-lg">
+                <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-4">
                   Add New Supervisor
                 </h2>
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -114,7 +122,7 @@ const Supervisors = () => {
                     name="name"
                     value={form.name}
                     onChange={handleChange}
-                    className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                   <input
                     type="text"
@@ -122,7 +130,7 @@ const Supervisors = () => {
                     name="type"
                     value={form.type}
                     onChange={handleChange}
-                    className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                   <input
                     type="text"
@@ -130,7 +138,7 @@ const Supervisors = () => {
                     name="affiliation"
                     value={form.affiliation}
                     onChange={handleChange}
-                    className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                   <input
                     type="number"
@@ -138,7 +146,7 @@ const Supervisors = () => {
                     name="interns"
                     value={form.interns}
                     onChange={handleChange}
-                    className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                   <input
                     type="email"
@@ -146,7 +154,7 @@ const Supervisors = () => {
                     name="email"
                     value={form.email}
                     onChange={handleChange}
-                    className="border border-border rounded-lg px-4 py-2 bg-background text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
                   />
                   <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                     <Button
@@ -158,7 +166,7 @@ const Supervisors = () => {
                     <Button
                       type="button"
                       onClick={handleCancel}
-                      className="bg-gray-300 text-black px-5 py-2 rounded-lg font-semibold shadow hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400"
+                      className="bg-gray-300 dark:bg-slate-700 text-black dark:text-slate-100 px-5 py-2 rounded-lg font-semibold shadow hover:bg-gray-400 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
                     >
                       Cancel
                     </Button>
