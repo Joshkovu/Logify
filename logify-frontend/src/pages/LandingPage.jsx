@@ -51,49 +51,67 @@ const LandingPage = () => {
             documentation, tracking professional growth, and managing academic
             excellence.
           </p>
+          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:justify-center">
+            <Link
+              to="/tutorial"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl bg-maroonCustom px-8 py-4 text-lg font-black uppercase tracking-wider text-white transition-all hover:bg-maroon-dark hover:gap-5 hover:shadow-xl hover:shadow-maroon-dark/30 dark:bg-maroon dark:hover:bg-maroon-dark"
+            >
+              Get Started
+              <ArrowRight size={24} />
+            </Link>
+            <Link
+              to="/auth"
+              className="inline-flex items-center justify-center gap-3 rounded-2xl border-2 border-maroonCustom bg-transparent px-8 py-4 text-lg font-black uppercase tracking-wider text-maroon-dark transition-all hover:bg-maroonCustom hover:text-white dark:border-gold dark:text-gold dark:hover:bg-gold dark:hover:text-maroon-dark"
+            >
+              Sign In
+            </Link>
+          </div>
         </div>
       </section>
 
       {/* Dashboard Selection */}
       <section className="px-6 pb-24">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-          {dashboards.map((dash, i) => (
-            <Link
-              key={i}
-              to={dash.path}
-              className="group relative flex h-[450px] flex-col justify-end overflow-hidden rounded-[32px] border border-border bg-white p-10 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-maroon-dark/20 dark:border-slate-700 dark:bg-slate-900 dark:hover:shadow-black/30"
-            >
-              {/* Card Background Decoration */}
-              <div
-                className={`absolute top-0 right-0 h-64 w-64 -mr-20 -mt-20 rounded-full opacity-[0.03] transition-transform duration-700 group-hover:scale-150 dark:opacity-[0.08] ${dash.color}`}
-              />
-
-              <div className="absolute inset-0 bg-gradient-to-br from-transparent via-transparent to-gold/5 opacity-0 transition-opacity duration-500 group-hover:opacity-100 dark:to-gold/10" />
-
-              <div
-                className={`mb-auto inline-flex rounded-2xl p-5 shadow-xl shadow-maroon-dark/10 transition-transform duration-300 group-hover:-translate-y-1 dark:shadow-black/20 ${dash.color} ${dash.accent}`}
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-12 text-center">
+            <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-gold md:text-3xl">
+              Choose Your Portal
+            </h2>
+            <p className="mt-4 text-text-secondary dark:text-slate-300">
+              Select your role to access the appropriate dashboard
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {dashboards.map((dash, i) => (
+              <Link
+                key={i}
+                to={dash.path}
+                className="group relative overflow-hidden rounded-2xl border border-border bg-white p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 dark:border-slate-700 dark:bg-slate-900"
               >
-                {dash.icon}
-              </div>
-
-              <div className="relative z-10">
-                <h3 className="mb-4 text-3xl font-black tracking-tight text-maroon-dark transition-colors group-hover:text-maroon dark:text-gold dark:group-hover:text-gold">
-                  {dash.title}
-                </h3>
-                <p className="mb-8 font-medium leading-relaxed text-text-secondary opacity-70 dark:text-slate-300 dark:opacity-100">
-                  {dash.description}
-                </p>
-
-                <div className="flex items-center gap-3 text-sm font-black uppercase tracking-widest text-maroon-dark transition-all group-hover:gap-5 dark:text-slate-100">
-                  Access Portal
-                  <ArrowRight size={20} className="text-gold" />
+                {/* Icon */}
+                <div className="mb-6 inline-flex rounded-xl bg-maroonCustom p-4 text-white">
+                  {dash.icon}
                 </div>
-              </div>
 
-              {/* Hover Overlay */}
-              <div className="pointer-events-none absolute inset-0 rounded-[32px] border-2 border-transparent transition-colors group-hover:border-gold/30 dark:group-hover:border-gold/40" />
-            </Link>
-          ))}
+                {/* Content */}
+                <div>
+                  <h3 className="mb-3 text-xl font-black tracking-tight text-maroon-dark dark:text-gold">
+                    {dash.title}
+                  </h3>
+                  <p className="mb-6 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
+                    {dash.description}
+                  </p>
+
+                  <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-maroon-dark transition-colors group-hover:text-gold dark:text-slate-100">
+                    Access Portal
+                    <ArrowRight size={16} />
+                  </div>
+                </div>
+
+                {/* Hover overlay */}
+                <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors group-hover:border-gold/30" />
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
