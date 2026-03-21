@@ -92,11 +92,19 @@
 }
 
 @utility admin-heading {
-  @apply text-maroon dark:text-gold;
+  color: #7a1f2b;
+}
+
+.dark .admin-heading {
+  color: #c9a227;
 }
 
 @utility admin-muted {
-  @apply text-text-secondary dark:text-slate-300;
+  color: #5f5f5f;
+}
+
+.dark .admin-muted {
+  color: #cbd5e1;
 }
 
 @utility admin-input {
