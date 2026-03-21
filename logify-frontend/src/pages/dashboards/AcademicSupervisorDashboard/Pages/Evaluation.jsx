@@ -235,7 +235,6 @@ const Evaluation = () => {
     return [...pendingEvaluations, ...completedEvaluations];
   }, [pendingEvaluations, completedEvaluations]);
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
@@ -244,8 +243,7 @@ const Evaluation = () => {
           item.category === selectedRecord?.category,
       ) || null
     );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allEvaluations, selectedEvaluationRef]);
+  }, [allEvaluations, selectedRecord]);
 
   const handleSelectRecord = (item) => {
     setSelectedEvaluationRef({ id: item.id, category: item.category });
@@ -304,29 +302,36 @@ const Evaluation = () => {
     alert(`Viewing authorized record for ${activeEvaluation.name}`);
   };
 
+  const selectedEvaluation =
+    allEvaluations.find(
+      (item) =>
+        item.id === selectedEvaluationRef.id &&
+        item.category === selectedEvaluationRef.category,
+    ) || null;
+
   return (
-    <div className="min-h-screen w-full bg-[#FCFCFA] px-8 py-8 font-sans lg:px-10">
+    <div className="min-h-screen w-full bg-[#FCFCFA] px-8 py-8 font-sans text-[#1e1e1e] dark:bg-black dark:text-white lg:px-10">
       <header className="mb-10">
-        <h1 className="mb-3 text-4xl font-black tracking-tighter text-maroon-dark lg:text-5xl">
+        <h1 className="mb-3 text-4xl font-black tracking-tighter text-maroon-dark dark:text-white lg:text-5xl">
           Student <span className="text-gold">Evaluations</span>
         </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 lg:text-lg">
+        <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 dark:text-slate-300 lg:text-lg">
           Assess intern performance across key academic and professional
           competencies.
         </p>
       </header>
 
       <section className="mb-8">
-        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10">
+        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10 dark:border-slate-700 dark:bg-slate-900">
           <div className="mb-8 flex items-center gap-3">
             <div className="rounded-lg bg-gold/10 p-2 text-gold">
               <Clock size={20} />
             </div>
             <div>
-              <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
+              <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
                 Pending Evaluations
               </h2>
-              <p className="text-xs font-medium text-text-secondary">
+              <p className="text-xs font-medium text-text-secondary dark:text-slate-300">
                 Students requiring your assessment
               </p>
             </div>
@@ -336,8 +341,8 @@ const Evaluation = () => {
             {pendingEvaluations.length > 0 ? (
               pendingEvaluations.map((item) => {
                 const isActive =
-                  activeEvaluation?.id === item.id &&
-                  activeEvaluation?.category === item.category;
+                  selectedEvaluation?.id === item.id &&
+                  selectedEvaluation?.category === item.category;
 
                 return (
                   <button
@@ -346,22 +351,22 @@ const Evaluation = () => {
                     onClick={() => handleSelectRecord(item)}
                     className={`group flex w-full items-center justify-between rounded-[20px] p-8 text-left transition-all ${
                       isActive
-                        ? "border border-gold/30 bg-[#F7F6F2] shadow-sm"
-                        : "bg-[#FBFBF8] hover:bg-[#F7F6F2]"
+                        ? "border border-gold/30 bg-[#F7F6F2] shadow-sm dark:bg-slate-800"
+                        : "bg-[#FBFBF8] hover:bg-[#F7F6F2] dark:bg-slate-800 dark:hover:bg-slate-700"
                     }`}
                   >
                     <div className="flex items-center gap-6">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEFEFC] text-gold shadow-sm">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#FEFEFC] text-gold shadow-sm dark:bg-slate-700">
                         <Star size={32} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-black tracking-tight text-maroon-dark">
+                        <h3 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white">
                           {item.name}{" "}
-                          <span className="font-medium text-text-secondary">
+                          <span className="font-medium text-text-secondary dark:text-slate-300">
                             &bull; {item.type}
                           </span>
                         </h3>
-                        <p className="mt-1 text-md font-semibold text-text-secondary">
+                        <p className="mt-1 text-md font-semibold text-text-secondary dark:text-slate-300">
                           {item.company}
                         </p>
                       </div>
@@ -383,8 +388,8 @@ const Evaluation = () => {
                 );
               })
             ) : (
-              <div className="rounded-2xl bg-[#FBFBF8] p-8 text-center">
-                <p className="text-sm font-semibold text-text-secondary">
+              <div className="rounded-2xl bg-[#FBFBF8] p-8 text-center dark:bg-slate-800">
+                <p className="text-sm font-semibold text-text-secondary dark:text-slate-300">
                   No pending evaluations at the moment.
                 </p>
               </div>
@@ -393,72 +398,72 @@ const Evaluation = () => {
         </div>
       </section>
 
-      {activeEvaluation && (
+      {selectedEvaluation && (
         <section className="mb-8">
-          <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10">
-            <div className="mb-10 flex flex-col gap-6 border-b border-border/50 pb-8 lg:flex-row lg:items-start lg:justify-between">
+          <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10 dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-10 flex flex-col gap-6 border-b border-border/50 pb-8 dark:border-slate-700 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <div className="mb-2 text-[10px] font-bold uppercase tracking-[0.2em] text-gold">
-                  {activeEvaluation.category === "pending"
+                  {selectedEvaluation.category === "pending"
                     ? "Active Assessment"
                     : "Authorized Record"}
                 </div>
-                <h2 className="text-3xl font-black tracking-tight text-maroon-dark">
-                  {activeEvaluation.type} &mdash; {activeEvaluation.name}
+                <h2 className="text-3xl font-black tracking-tight text-maroon-dark dark:text-white">
+                  {selectedEvaluation.type} &mdash; {selectedEvaluation.name}
                 </h2>
-                <p className="mt-1 text-md font-medium text-text-secondary">
-                  {activeEvaluation.program} &bull; {activeEvaluation.week}
+                <p className="mt-1 text-md font-medium text-text-secondary dark:text-slate-300">
+                  {selectedEvaluation.program} &bull; {selectedEvaluation.week}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-text-secondary">
-                  {activeEvaluation.company}
+                <p className="mt-2 text-sm font-semibold text-text-secondary dark:text-slate-300">
+                  {selectedEvaluation.company}
                 </p>
-                {activeEvaluation.category === "history" &&
-                  activeEvaluation.date && (
-                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600">
-                      Authorized on {activeEvaluation.date}
+                {selectedEvaluation.category === "history" &&
+                  selectedEvaluation.date && (
+                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600 dark:text-emerald-400">
+                      Authorized on {selectedEvaluation.date}
                     </p>
                   )}
               </div>
 
               <div
                 className={`min-w-[220px] rounded-2xl p-6 text-center shadow-xl ${
-                  activeEvaluation.category === "pending"
+                  selectedEvaluation.category === "pending"
                     ? "bg-maroon-dark shadow-maroon-dark/10"
                     : "bg-emerald-700 shadow-emerald-700/10"
                 }`}
               >
                 <div className="mb-1 text-5xl font-black leading-none text-white">
-                  {activeEvaluation.score}%
+                  {selectedEvaluation.score}%
                 </div>
-                <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">
+                <p className="text-[10px] font-bold uppercase tracking-widest text-white/60">
                   Final Score
                 </p>
               </div>
             </div>
 
             <div className="mb-8">
-              <h3 className="mb-8 text-2xl font-black tracking-tight text-maroon-dark">
+              <h3 className="mb-8 text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
                 Performance Criteria
               </h3>
 
               <div className="grid grid-cols-1 gap-8">
-                {activeEvaluation.criteria.map((item) => (
+                {selectedEvaluation.criteria.map((item) => (
                   <div key={item.title}>
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div className="max-w-2xl">
-                        <h4 className="text-lg font-bold text-maroon-dark">
+                        <h4 className="text-lg font-bold text-maroon-dark dark:text-white">
                           {item.title}{" "}
-                          <span className="text-sm font-medium text-text-secondary/60">
+                          <span className="text-sm font-medium text-text-secondary/60 dark:text-slate-400">
                             ({item.weight} Weight)
                           </span>
                         </h4>
-                        <p className="mt-1 text-sm font-medium text-text-secondary">
+                        <p className="mt-1 text-sm font-medium text-text-secondary dark:text-slate-300">
                           {item.note}
                         </p>
                       </div>
 
                       <div className="text-right">
-                        <div className="text-xl font-black text-maroon-dark">
+                        <div className="text-xl font-black text-maroon-dark dark:text-white">
                           {item.score}
                           <span className="text-sm opacity-30">/100</span>
                         </div>
@@ -468,9 +473,9 @@ const Evaluation = () => {
                       </div>
                     </div>
 
-                    <div className="h-3 w-full overflow-hidden rounded-full border border-border/30 bg-[#FBFBF8]">
+                    <div className="h-3 w-full overflow-hidden rounded-full border border-border/30 bg-[#FBFBF8] dark:border-slate-700 dark:bg-slate-800">
                       <div
-                        className="h-full rounded-full bg-maroonCustom transition-all duration-1000"
+                        className="h-full rounded-full bg-maroonCustom transition-all duration-1000 dark:bg-gold"
                         style={{ width: `${item.score}%` }}
                       />
                     </div>
@@ -479,34 +484,35 @@ const Evaluation = () => {
               </div>
             </div>
 
-            <div className="rounded-[24px] border border-border/50 bg-[#FBFBF8] p-8">
+            <div className="rounded-[24px] border border-border/50 bg-[#FBFBF8] p-8 dark:border-slate-700 dark:bg-slate-800">
               <div className="mb-6 flex items-start gap-4">
-                <div className="rounded-xl bg-[#FEFEFC] p-3 text-maroonCustom shadow-sm">
+                <div className="rounded-xl bg-[#FEFEFC] p-3 text-maroonCustom shadow-sm dark:bg-slate-700 dark:text-gold">
                   <MessageSquare size={24} />
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="mb-4 text-xl font-black tracking-tight text-maroon-dark">
+                  <h3 className="mb-4 text-xl font-black tracking-tight text-maroon-dark dark:text-white">
                     Overall Feedback
                   </h3>
 
-                  {activeEvaluation.category === "pending" ? (
+                  {selectedEvaluation.category === "pending" ? (
                     <textarea
-                      value={activeEvaluation.feedback}
+                      value={selectedEvaluation.feedback}
                       onChange={(e) => handleFeedbackChange(e.target.value)}
-                      className="min-h-[150px] w-full rounded-2xl border border-border/30 bg-[#FEFEFC] p-6 font-medium text-text-secondary outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20"
+                      className="min-h-[150px] w-full rounded-2xl border border-border/30 bg-[#FEFEFC] p-6 font-medium text-text-secondary outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                       placeholder="Provide qualitative feedback on the student's overall growth, technical agility, and professional conduct..."
                     />
                   ) : (
-                    <div className="min-h-[150px] rounded-2xl border border-border/30 bg-[#FEFEFC] p-6 font-medium text-text-secondary">
-                      {activeEvaluation.feedback || "No feedback was recorded."}
+                    <div className="min-h-[150px] rounded-2xl border border-border/30 bg-[#FEFEFC] p-6 font-medium text-text-secondary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+                      {selectedEvaluation.feedback ||
+                        "No feedback was recorded."}
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="flex flex-wrap justify-end gap-4">
-                {activeEvaluation.category === "pending" ? (
+                {selectedEvaluation.category === "pending" ? (
                   <>
                     <button
                       type="button"
@@ -543,12 +549,12 @@ const Evaluation = () => {
       )}
 
       <section>
-        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10">
+        <div className="rounded-[12px] border border-border bg-[#FEFEFC] p-10 dark:border-slate-700 dark:bg-slate-900">
           <div className="mb-8">
-            <h2 className="text-2xl font-black tracking-tight text-maroon-dark">
+            <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
               Evaluation History
             </h2>
-            <p className="mt-1 text-md text-text-secondary">
+            <p className="mt-1 text-md text-text-secondary dark:text-slate-300">
               Archive of previously authorized assessments
             </p>
           </div>
@@ -556,8 +562,8 @@ const Evaluation = () => {
           <div className="space-y-4">
             {completedEvaluations.map((item) => {
               const isActive =
-                activeEvaluation?.id === item.id &&
-                activeEvaluation?.category === item.category;
+                selectedEvaluation?.id === item.id &&
+                selectedEvaluation?.category === item.category;
 
               return (
                 <button
@@ -566,21 +572,21 @@ const Evaluation = () => {
                   onClick={() => handleSelectRecord(item)}
                   className={`group flex w-full items-center justify-between rounded-2xl p-6 text-left transition-colors ${
                     isActive
-                      ? "border border-emerald-200 bg-emerald-50"
-                      : "bg-[#FBFBF8] hover:bg-[#F7F6F2]"
+                      ? "border border-emerald-200 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/20"
+                      : "bg-[#FBFBF8] hover:bg-[#F7F6F2] dark:bg-slate-800 dark:hover:bg-slate-700"
                   }`}
                 >
                   <div className="flex items-center gap-6">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300">
                       <Award size={24} />
                     </div>
 
                     <div>
-                      <h3 className="text-md font-bold text-maroon-dark">
+                      <h3 className="text-md font-bold text-maroon-dark dark:text-white">
                         {item.name} &bull;{" "}
                         <span className="font-medium">{item.type}</span>
                       </h3>
-                      <p className="mt-0.5 text-xs font-medium text-text-secondary">
+                      <p className="mt-0.5 text-xs font-medium text-text-secondary dark:text-slate-300">
                         {item.company} &bull; Submitted on {item.date}
                       </p>
                     </div>
@@ -588,10 +594,10 @@ const Evaluation = () => {
 
                   <div className="flex items-center gap-8">
                     <div className="text-right">
-                      <div className="text-2xl font-black leading-none text-emerald-600">
+                      <div className="text-2xl font-black leading-none text-emerald-600 dark:text-emerald-400">
                         {item.score}%
                       </div>
-                      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-text-secondary/40">
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-text-secondary/40 dark:text-slate-400">
                         Final Grade
                       </p>
                     </div>
@@ -600,8 +606,8 @@ const Evaluation = () => {
                       size={24}
                       className={`transition-colors ${
                         isActive
-                          ? "text-emerald-700"
-                          : "text-text-secondary/40 group-hover:text-maroon-dark"
+                          ? "text-emerald-700 dark:text-emerald-400"
+                          : "text-text-secondary/40 group-hover:text-maroon-dark dark:text-slate-400 dark:group-hover:text-white"
                       }`}
                     />
                   </div>

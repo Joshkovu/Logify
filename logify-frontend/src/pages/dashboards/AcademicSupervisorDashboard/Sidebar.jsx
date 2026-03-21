@@ -1,4 +1,5 @@
-import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   CheckSquare,
@@ -7,6 +8,9 @@ import {
   User,
   LogOut,
   ShieldCheck,
+  Menu,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/Button";
@@ -26,75 +30,180 @@ const navLinks = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
   return (
-    <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
-      <div className="mb-12 px-4">
-        <div>
-          {" "}
-          <ShieldCheck className="text-white h-6 w-6" />
-        </div>
-        <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
-          LOGIFY
-        </div>
-        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
-          Supervisor Portal
-        </div>
+    <aside
+      className={`h-screen flex flex-col py-4 px-3 shadow-2xl shrink-0 border-r transition-all duration-300 ease-in-out
+      bg-maroon-dark text-black border-gray-200
+      dark:bg-background dark:text-foreground dark:border-border
+      ${isExpanded ? "w-72" : "w-20"}`}
+    >
+      {/* 3-bar button at top */}
+      <div className="mb-4 flex justify-end">
+        <button
+          onClick={() => setIsExpanded((prev) => !prev)}
+          className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-white/5 dark:hover:bg-muted"
+          aria-label="Toggle sidebar"
+        >
+          <Menu className="h-5 w-5 text-black dark:text-white" />
+        </button>
       </div>
+
+      {/* Logo area */}
+      <div
+        className={`mb-8 flex ${
+          isExpanded ? "items-start px-2" : "items-center justify-center"
+        }`}
+      >
+        {isExpanded ? (
+          <div>
+            <ShieldCheck className="h-6 w-6 mb-1 text-white dark:text-foreground" />
+            <div className="text-3xl tracking-tighter text-gold dark:text-foreground">
+              LOGIFY
+            </div>
+            <div className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60 dark:text-muted-foreground">
+              Supervisor Portal
+            </div>
+          </div>
+        ) : (
+          <ShieldCheck className="h-6 w-6 text-white dark:text-foreground" />
+        )}
+      </div>
+
+      {/* Navigation */}
       <nav className="flex flex-col gap-2">
         {navLinks.map((link) => {
           const Icon = link.icon;
           const isActive = location.pathname === link.path;
+
           return (
             <Link
               key={link.path}
               to={link.path}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-xl font-semibold transition-all duration-200 group
-                ${
-                  isActive
-                    ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 scale-[1.02]"
-                    : "hover:bg-white/5 text-black/70 hover:text-black"
-                }
-              `}
-              tabIndex={0}
+              className={`group flex items-center rounded-xl font-semibold transition-all duration-200 ${
+                isExpanded ? "gap-4 px-4 py-3.5" : "justify-center px-0 py-3.5"
+              } ${
+                isActive
+                  ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 dark:bg-card dark:text-foreground"
+                  : "text-black/70 hover:bg-white/5 hover:text-black dark:text-muted-foreground dark:hover:bg-muted dark:hover:text-foreground"
+              }`}
               aria-current={isActive ? "page" : undefined}
+              title={!isExpanded ? link.name : ""}
             >
               <Icon
-                className={`text-xl transition-colors ${
+                className={`h-5 w-5 shrink-0 transition-colors ${
                   isActive
-                    ? "text-maroon-dark"
-                    : "text-gold group-hover:text-gold"
+                    ? "text-maroon-dark dark:text-foreground"
+                    : "text-gold group-hover:text-gold dark:text-muted-foreground dark:group-hover:text-foreground"
                 }`}
-                aria-hidden="true"
                 strokeWidth={2.5}
               />
-              <span className="tracking-tight text-sm">{link.name}</span>
+              {isExpanded && (
+                <span className="tracking-tight text-sm">{link.name}</span>
+              )}
             </Link>
           );
         })}
       </nav>
-      <div className="p-6  mt-auto border-t border-border bg-muted/30">
-        <div className="flex items-center gap-3 mb-4">
-          <Avatar className="h-10 w-10 border-2 border-primary/10">
+
+      {/* Bottom */}
+      <div
+        className={`mt-auto border-t bg-muted/30 dark:bg-card ${
+          isExpanded ? "p-6" : "p-3"
+        } border-border`}
+      >
+        {/* Dark mode toggle */}
+        <div
+          className={`mb-4 flex ${isExpanded ? "justify-between" : "justify-center"}`}
+        >
+          {isExpanded ? (
+            <Button
+              variant="outline"
+              onClick={() => setIsDark((prev) => !prev)}
+              className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 dark:border-border"
+            >
+              {isDark ? (
+                <Sun className="h-4 w-4" />
+              ) : (
+                <Moon className="h-4 w-4" />
+              )}
+              {isDark ? "Light Mode" : "Dark Mode"}
+            </Button>
+          ) : (
+            <button
+              onClick={() => setIsDark((prev) => !prev)}
+              className="flex h-10 w-10 items-center justify-center rounded-xl hover:bg-white/5 dark:hover:bg-muted"
+              aria-label="Toggle dark mode"
+              title="Toggle dark mode"
+            >
+              {isDark ? (
+                <Sun className="h-4 w-4 text-gold dark:text-foreground" />
+              ) : (
+                <Moon className="h-4 w-4 text-gold dark:text-foreground" />
+              )}
+            </button>
+          )}
+        </div>
+
+        <div
+          className={`mb-4 flex items-center ${
+            isExpanded ? "gap-3" : "justify-center"
+          }`}
+        >
+          <Avatar className="h-10 w-10 border-2 border-primary/10 dark:border-border">
             <AvatarFallback className="bg-amber-500 text-white font-bold">
               ER
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
-            <span className="text-xs font-bold text-foreground truncate max-w-30">
-              Dr. Emily Roberts
-            </span>
-            <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
-              Supervisor
-            </span>
-          </div>
+
+          {isExpanded && (
+            <div className="flex flex-col">
+              <span className="max-w-[120px] truncate text-xs font-bold text-foreground">
+                Dr. Emily Roberts
+              </span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-muted-foreground">
+                Supervisor
+              </span>
+            </div>
+          )}
         </div>
-        <Button
-          variant="outline"
-          className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-        >
-          <LogOut className="h-3.5 w-3.5" />
-          Sign Out
-        </Button>
+
+        {isExpanded ? (
+          <Button
+            variant="outline"
+            onClick={() => navigate("/dashboards")}
+            className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 dark:border-border"
+          >
+            <LogOut className="h-3.5 w-3.5" />
+            Sign Out
+          </Button>
+        ) : (
+          <button
+            onClick={() => navigate("/dashboards")}
+            className="flex w-full items-center justify-center rounded-xl py-2 hover:bg-white/5 dark:hover:bg-muted"
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <LogOut className="h-4 w-4 text-gold dark:text-foreground" />
+          </button>
+        )}
       </div>
     </aside>
   );

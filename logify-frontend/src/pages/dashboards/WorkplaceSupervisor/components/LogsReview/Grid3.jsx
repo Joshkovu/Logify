@@ -8,7 +8,7 @@ const Grid3 = () => {
       <LogAnalytics />
       <PendingLogSection />
     </div>
-  )
-}
+  );
+};
 
-export default Grid3
+export default Grid3;
