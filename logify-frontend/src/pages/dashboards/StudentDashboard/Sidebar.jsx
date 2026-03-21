@@ -6,7 +6,7 @@ import {
   ClipboardList,
   User,
   LogOut,
-  ShieldCheck,
+  ArrowLeftToLine,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/Button";
@@ -28,12 +28,11 @@ const Sidebar = () => {
   const navigate = useNavigate();
 
   return (
-    <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
+    <aside className="bg-[#FCFBF8] h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
       <div className="mb-12 px-4">
-        <div>
-          {" "}
-          <ShieldCheck className="text-white h-6 w-6" />
-        </div>
+        <button className="rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ml-45">
+          <ArrowLeftToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+        </button>
         <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
           LOGIFY
         </div>
