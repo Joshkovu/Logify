@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 const ActivityTable = ({ title, comment, daysPast, Approved }) => {
   return (
-    <tr >
+    <tr>
       <td>
         <div className="flex flex-row items-center gap-3 my-2">
           <div
