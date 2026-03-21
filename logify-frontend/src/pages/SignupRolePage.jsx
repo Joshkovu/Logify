@@ -39,7 +39,8 @@ const SignupRolePage = () => {
               Supervisor
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
-              Choose Academic Supervisor or Workplace Supervisor, then submit for approval.
+              Choose Academic Supervisor or Workplace Supervisor, then submit
+              for approval.
             </p>
           </Link>
         </div>

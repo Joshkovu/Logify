@@ -24,7 +24,8 @@ const AuthEntryPage = () => {
               Login
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
-              Returning user access with role-aware routing after successful authentication.
+              Returning user access with role-aware routing after successful
+              authentication.
             </p>
           </Link>
 
@@ -39,7 +40,8 @@ const AuthEntryPage = () => {
               Sign Up
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
-              New user onboarding with strict role selection for Supervisor or Internship Admin.
+              New user onboarding with strict role selection for Supervisor or
+              Internship Admin.
             </p>
           </Link>
         </div>

@@ -3,7 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
-import { registerSupervisor, validateCommonSignupFields } from "./auth/authStore";
+import {
+  registerSupervisor,
+  validateCommonSignupFields,
+} from "./auth/authStore";
 
 const SupervisorSignupPage = () => {
   const navigate = useNavigate();
@@ -32,7 +35,8 @@ const SupervisorSignupPage = () => {
       errors.role = "Select supervisor type.";
     }
     if (!formData.institutionOrOrganization.trim()) {
-      errors.institutionOrOrganization = "Organization or institution is required.";
+      errors.institutionOrOrganization =
+        "Organization or institution is required.";
     }
 
     setFieldErrors(errors);
@@ -73,7 +77,11 @@ const SupervisorSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="Your full name"
             />
-            {fieldErrors.fullName && <p className="mt-1 text-xs text-red-600">{fieldErrors.fullName}</p>}
+            {fieldErrors.fullName && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.fullName}
+              </p>
+            )}
           </div>
 
           <div>
@@ -88,7 +96,9 @@ const SupervisorSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="name@company.com"
             />
-            {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -105,7 +115,9 @@ const SupervisorSignupPage = () => {
               <option value="academic_supervisor">Academic Supervisor</option>
               <option value="workplace_supervisor">Workplace Supervisor</option>
             </select>
-            {fieldErrors.role && <p className="mt-1 text-xs text-red-600">{fieldErrors.role}</p>}
+            {fieldErrors.role && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.role}</p>
+            )}
           </div>
 
           <div>
@@ -120,7 +132,9 @@ const SupervisorSignupPage = () => {
               placeholder="Makerere University or company name"
             />
             {fieldErrors.institutionOrOrganization && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.institutionOrOrganization}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.institutionOrOrganization}
+              </p>
             )}
           </div>
 
@@ -136,7 +150,11 @@ const SupervisorSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="At least 8 characters"
             />
-            {fieldErrors.password && <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>}
+            {fieldErrors.password && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <div>
@@ -152,7 +170,9 @@ const SupervisorSignupPage = () => {
               placeholder="Re-enter password"
             />
             {fieldErrors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.confirmPassword}
+              </p>
             )}
           </div>
 
@@ -171,7 +191,10 @@ const SupervisorSignupPage = () => {
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
             Need admin path?{" "}
-            <Link to="/signup/admin" className="font-bold text-maroonCustom hover:text-gold">
+            <Link
+              to="/signup/admin"
+              className="font-bold text-maroonCustom hover:text-gold"
+            >
               Internship Admin signup
             </Link>
           </p>

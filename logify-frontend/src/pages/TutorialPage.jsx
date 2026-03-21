@@ -1,5 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
-import { ArrowRight, UserRound, ClipboardCheck, Shield, Building2 } from "lucide-react";
+import {
+  ArrowRight,
+  UserRound,
+  ClipboardCheck,
+  Shield,
+  Building2,
+} from "lucide-react";
 
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
@@ -56,8 +62,9 @@ const TutorialPage = () => {
               Welcome To Logify
             </h1>
             <p className="mt-4 max-w-3xl text-lg leading-relaxed text-text-secondary dark:text-slate-300">
-              Logify is an internship lifecycle workspace for universities and host organizations.
-              It centralizes placement approvals, weekly tracking, evaluations, and reporting.
+              Logify is an internship lifecycle workspace for universities and
+              host organizations. It centralizes placement approvals, weekly
+              tracking, evaluations, and reporting.
             </p>
 
             <div className="mt-10 grid gap-4 md:grid-cols-2">
@@ -82,8 +89,9 @@ const TutorialPage = () => {
                 How Tracking Works
               </h2>
               <p className="mt-2 text-sm leading-relaxed text-slate-700 dark:text-slate-200">
-                Student submits placement and weekly logs. Supervisors review and request changes
-                or approve. Academic evaluation and final reports close the loop.
+                Student submits placement and weekly logs. Supervisors review
+                and request changes or approve. Academic evaluation and final
+                reports close the loop.
               </p>
             </div>
 

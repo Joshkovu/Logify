@@ -61,7 +61,11 @@ const AdminSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="Your full name"
             />
-            {fieldErrors.fullName && <p className="mt-1 text-xs text-red-600">{fieldErrors.fullName}</p>}
+            {fieldErrors.fullName && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.fullName}
+              </p>
+            )}
           </div>
 
           <div>
@@ -76,7 +80,9 @@ const AdminSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="name@institution.ac.ug"
             />
-            {fieldErrors.email && <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>}
+            {fieldErrors.email && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+            )}
           </div>
 
           <div>
@@ -91,7 +97,11 @@ const AdminSignupPage = () => {
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="At least 8 characters"
             />
-            {fieldErrors.password && <p className="mt-1 text-xs text-red-600">{fieldErrors.password}</p>}
+            {fieldErrors.password && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.password}
+              </p>
+            )}
           </div>
 
           <div>
@@ -107,7 +117,9 @@ const AdminSignupPage = () => {
               placeholder="Re-enter password"
             />
             {fieldErrors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.confirmPassword}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.confirmPassword}
+              </p>
             )}
           </div>
 
@@ -126,7 +138,10 @@ const AdminSignupPage = () => {
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
             Looking for Supervisor signup?{" "}
-            <Link to="/signup/supervisor" className="font-bold text-maroonCustom hover:text-gold">
+            <Link
+              to="/signup/supervisor"
+              className="font-bold text-maroonCustom hover:text-gold"
+            >
               Switch role
             </Link>
           </p>
