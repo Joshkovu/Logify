@@ -59,7 +59,7 @@ const Reports = () => {
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
             System Reports
           </h1>
           <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
@@ -95,7 +95,7 @@ const Reports = () => {
 
       <section className="mb-10">
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-2xl font-bold text-maroon dark:text-gold">
+          <h2 className="text-2xl font-bold text-maroon dark:text-slate-300">
             Monthly Performance Trend
           </h2>
           <div className="flex flex-col gap-2 sm:flex-row">
@@ -113,10 +113,10 @@ const Reports = () => {
           </div>
         </div>
         <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10">
-          <p className="mb-2 text-sm sm:text-base">
+          <p className="mb-2 text-sm sm:text-base dark:text-slate-300">
             Student enrollment and average scores by month
           </p>
-          <div className="flex h-64 items-center justify-center sm:h-72">
+          <div className="flex h-64 items-center justify-center dark:text-slate-300 sm:h-72">
             <Line
               data={{
                 labels: [
@@ -174,7 +174,7 @@ const Reports = () => {
 
       <section>
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-2xl font-bold text-maroon dark:text-gold">
+          <h2 className="text-2xl font-bold text-maroon dark:text-slate-300">
             Detailed Report Table
           </h2>
           <div className="flex flex-col gap-2 sm:flex-row">

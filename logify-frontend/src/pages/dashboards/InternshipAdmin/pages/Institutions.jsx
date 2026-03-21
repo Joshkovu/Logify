@@ -88,7 +88,7 @@ const Institutions = () => {
       )}
       <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div>
-          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
             Partner Institutions
           </h1>
           <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
@@ -123,7 +123,7 @@ const Institutions = () => {
       {showForm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
           <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-lg">
-            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-4">
+            <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-4">
               Add New Institution
             </h2>
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
@@ -209,7 +209,7 @@ const Institutions = () => {
       <section className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-2xl font-bold text-maroon dark:text-gold mb-1">
+            <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-1">
               Organization List
             </h2>
             <p className="text-text-secondary dark:text-slate-300">
