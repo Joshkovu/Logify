@@ -1,7 +1,18 @@
 import { Eye, Mail, Phone } from "lucide-react";
 import PropTypes from "prop-types";
 
-const Intern_details = ({image, name, course, institution, start_date, performance, week, email, contact, logs }) => {
+const Intern_details = ({
+  image,
+  name,
+  course,
+  institution,
+  start_date,
+  performance,
+  week,
+  email,
+  contact,
+  logs,
+}) => {
   return (
     <div className=" mt-3 p-6 border border-stone-300 col-span-12 rounded-lg bg-white">
       <div className=" w-full flex justify-between items-center">
@@ -39,9 +50,7 @@ const Intern_details = ({image, name, course, institution, start_date, performan
         <div className="flex col-span-12 justify-evenly items-start mt-6">
           <div className="flex w-full items-center">
             <Mail className="size-4 text-gray-500" />
-            <p className="text-gray-500 text-sm font-medium ml-1.5">
-              {email}
-            </p>
+            <p className="text-gray-500 text-sm font-medium ml-1.5">{email}</p>
           </div>
           <div className="flex w-full items-center">
             <Phone className="size-4 text-gray-500" />
@@ -55,7 +64,10 @@ const Intern_details = ({image, name, course, institution, start_date, performan
           <p className="text-sm text-gray-700 font-medium">Week {week} of 12</p>
         </div>
         <div className="col-span-12 my-3 h-2 bg-red-50 w-full rounded-full">
-          <div className={`h-full bg-maroonCustom rounded-l-full `} style={{ width: `${(week / 12) * 100}%` }}></div>
+          <div
+            className={`h-full bg-maroonCustom rounded-l-full `}
+            style={{ width: `${(week / 12) * 100}%` }}
+          ></div>
         </div>
         <div className="flex col-span-12 justify-between ">
           <p className="text-xs text-gray-500 ">{logs} logs approved</p>
@@ -66,7 +78,7 @@ const Intern_details = ({image, name, course, institution, start_date, performan
   );
 };
 
-Intern_details.propTypes={
+Intern_details.propTypes = {
   image: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   course: PropTypes.string.isRequired,
@@ -77,6 +89,6 @@ Intern_details.propTypes={
   email: PropTypes.string.isRequired,
   contact: PropTypes.string.isRequired,
   logs: PropTypes.number.isRequired,
-}
+};
 
 export default Intern_details;

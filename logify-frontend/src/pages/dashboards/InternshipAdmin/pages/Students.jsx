@@ -12,35 +12,35 @@ import { Button } from "../../../../components/ui/Button";
 
 const Students = () => {
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-10 py-8  font-sans">
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8">
-        <h1 className="text-4xl font-extrabold text-maroon mb-2 tracking-tight">
+        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
           Student Management
         </h1>
-        <p className="text-lg text-text-secondary">
+        <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
           Overview of student performance and engagement
         </p>
       </header>
-      <section className="grid grid-cols-4 gap-6 mb-8">
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Total Students
           </span>
           <span className="text-3xl font-extrabold text-blue-700">5</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Active Internships
           </span>
           <span className="text-3xl font-extrabold text-green-500">3</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Pending Placements
           </span>
           <span className="text-3xl font-extrabold text-orange-300">2</span>
         </div>
-        <div className="bg-white rounded-[12px] p-10   hover:scale-102 transition-all  flex flex-col items-center border border-border">
+        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8">
           <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
             Average Score
           </span>
@@ -48,7 +48,7 @@ const Students = () => {
         </div>
       </section>
       <section>
-        <div className="flex mb-6 items-end justify-between">
+        <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <h2 className="text-2xl font-bold text-maroon mb-1">
               All Students
@@ -59,7 +59,7 @@ const Students = () => {
             <input
               type="text"
               placeholder="Search students..."
-              className="border border-border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gold bg-background text-text-primary"
+              className="w-full rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold sm:min-w-64"
             />
           </div>
         </div>
