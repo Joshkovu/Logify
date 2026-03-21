@@ -220,28 +220,35 @@ const Evaluation = () => {
   ];
 
   const [pendingEvaluations, setPendingEvaluations] = useState(
-    initialPendingEvaluations
+    initialPendingEvaluations,
   );
   const [completedEvaluations, setCompletedEvaluations] = useState(
-    initialCompletedEvaluations
+    initialCompletedEvaluations,
   );
-  const [selectedRecord, setSelectedRecord] = useState(initialPendingEvaluations[0]);
+  const [selectedRecord] = useState(initialPendingEvaluations[0]);
+  const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
+    id: initialPendingEvaluations[0].id,
+    category: initialPendingEvaluations[0].category,
+  });
 
   const allEvaluations = useMemo(() => {
     return [...pendingEvaluations, ...completedEvaluations];
   }, [pendingEvaluations, completedEvaluations]);
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const activeEvaluation = useMemo(() => {
     return (
       allEvaluations.find(
         (item) =>
-          item.id === selectedRecord?.id && item.category === selectedRecord?.category
+          item.id === selectedRecord?.id &&
+          item.category === selectedRecord?.category,
       ) || null
     );
-  }, [allEvaluations, selectedRecord]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allEvaluations, selectedEvaluationRef]);
 
   const handleSelectRecord = (item) => {
-    setSelectedRecord({ id: item.id, category: item.category });
+    setSelectedEvaluationRef({ id: item.id, category: item.category });
   };
 
   const handleFeedbackChange = (value) => {
@@ -249,8 +256,8 @@ const Evaluation = () => {
 
     setPendingEvaluations((prev) =>
       prev.map((item) =>
-        item.id === activeEvaluation.id ? { ...item, feedback: value } : item
-      )
+        item.id === activeEvaluation.id ? { ...item, feedback: value } : item,
+      ),
     );
   };
 
@@ -276,14 +283,25 @@ const Evaluation = () => {
     setCompletedEvaluations((prev) => [authorizedStudent, ...prev]);
 
     const remainingPending = pendingEvaluations.filter(
-      (item) => item.id !== activeEvaluation.id
+      (item) => item.id !== activeEvaluation.id,
     );
     setPendingEvaluations(remainingPending);
 
-    setSelectedRecord({
+    setSelectedEvaluationRef({
       id: authorizedStudent.id,
-      category: authorizedStudent.category,
+      category: "history",
     });
+  };
+
+  const handleViewAuthorizedRecord = () => {
+    if (!activeEvaluation || activeEvaluation.category !== "history") return;
+
+    setSelectedEvaluationRef({
+      id: activeEvaluation.id,
+      category: activeEvaluation.category,
+    });
+
+    alert(`Viewing authorized record for ${activeEvaluation.name}`);
   };
 
   return (
@@ -355,7 +373,9 @@ const Evaluation = () => {
                       </span>
                       <ChevronRight
                         className={`text-gold transition-transform ${
-                          isActive ? "translate-x-1" : "group-hover:translate-x-1"
+                          isActive
+                            ? "translate-x-1"
+                            : "group-hover:translate-x-1"
                         }`}
                       />
                     </div>
@@ -392,11 +412,12 @@ const Evaluation = () => {
                 <p className="mt-2 text-sm font-semibold text-text-secondary">
                   {activeEvaluation.company}
                 </p>
-                {activeEvaluation.category === "history" && activeEvaluation.date && (
-                  <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600">
-                    Authorized on {activeEvaluation.date}
-                  </p>
-                )}
+                {activeEvaluation.category === "history" &&
+                  activeEvaluation.date && (
+                    <p className="mt-2 text-xs font-bold uppercase tracking-widest text-emerald-600">
+                      Authorized on {activeEvaluation.date}
+                    </p>
+                  )}
               </div>
 
               <div
@@ -508,6 +529,7 @@ const Evaluation = () => {
                 ) : (
                   <button
                     type="button"
+                    onClick={handleViewAuthorizedRecord}
                     className="flex items-center gap-2 rounded-xl border border-emerald-700 bg-emerald-600 px-8 py-4 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all hover:scale-[1.02] hover:bg-emerald-700"
                   >
                     <FileText size={20} />

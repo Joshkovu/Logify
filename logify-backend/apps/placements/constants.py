@@ -1,0 +1,3 @@
+TEST_PASSWORD = "testpass123"
+TEST_PHONE = "0000000000"
+TEST_EMAIL_DOMAIN = "example.com"
