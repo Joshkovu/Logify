@@ -83,33 +83,7 @@
   --sidebar-border: oklch(0.928 0.006 264.531);
   --sidebar-ring: oklch(0.707 0.022 261.325);
 }
-@utility admin-page {
-  @apply min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans transition-colors duration-300 dark:bg-slate-950 sm:px-6 sm:py-8 lg:px-10 xl:px-12;
-}
 
-@utility admin-card {
-  @apply rounded-[12px] border border-border bg-white transition-all dark:border-slate-700 dark:bg-slate-900;
-}
-
-@utility admin-heading {
-  color: #7a1f2b;
-}
-
-.dark .admin-heading {
-  color: #c9a227;
-}
-
-@utility admin-muted {
-  color: #5f5f5f;
-}
-
-.dark .admin-muted {
-  color: #cbd5e1;
-}
-
-@utility admin-input {
-  @apply rounded-lg border border-border bg-background px-4 py-2 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100;
-}
 .dark {
   --background: oklch(0.13 0.028 261.692);
   --foreground: oklch(0.985 0.002 247.839);
