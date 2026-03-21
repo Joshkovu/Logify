@@ -56,13 +56,13 @@ const tableData = [];
 
 const Reports = () => {
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
       <header className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon sm:text-4xl">
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-gold sm:text-4xl">
             System Reports
           </h1>
-          <p className="text-sm text-text-secondary sm:text-base lg:text-lg">
+          <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
             Comprehensive analytics and reporting
           </p>
         </div>
@@ -78,15 +78,15 @@ const Reports = () => {
         {reportCards.map((card) => (
           <div
             key={card.title}
-            className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8"
+            className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8"
           >
-            <span className="text-xs font-bold uppercase text-text-secondary tracking-widest mb-1">
+            <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
               {card.title}
             </span>
-            <span className="text-3xl font-extrabold text-green-600 mb-2">
+            <span className="text-3xl font-extrabold text-green-600 dark:text-emerald-400 mb-2">
               {card.value}
             </span>
-            <span className="text-sm text-text-secondary">
+            <span className="text-sm text-text-secondary dark:text-slate-300">
               {card.description}
             </span>
           </div>
@@ -95,16 +95,16 @@ const Reports = () => {
 
       <section className="mb-10">
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-2xl font-bold text-maroon">
+          <h2 className="text-2xl font-bold text-maroon dark:text-gold">
             Monthly Performance Trend
           </h2>
           <div className="flex flex-col gap-2 sm:flex-row">
-            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+            <select className="rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold">
               <option>2026</option>
               <option>2025</option>
               <option>2024</option>
             </select>
-            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+            <select className="rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold">
               <option>All Programs</option>
               <option>BSc Computer Science</option>
               <option>BSc IT</option>
@@ -112,7 +112,7 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="rounded-[12px] border border-border bg-white p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10">
+        <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10">
           <p className="mb-2 text-sm sm:text-base">
             Student enrollment and average scores by month
           </p>
@@ -174,16 +174,16 @@ const Reports = () => {
 
       <section>
         <div className="mb-4 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <h2 className="text-2xl font-bold text-maroon">
+          <h2 className="text-2xl font-bold text-maroon dark:text-gold">
             Detailed Report Table
           </h2>
           <div className="flex flex-col gap-2 sm:flex-row">
             <input
               type="text"
               placeholder="Search reports..."
-              className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold"
+              className="rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
             />
-            <select className="rounded-lg border border-border bg-background px-4 py-2 text-text-primary focus:outline-none focus:ring-2 focus:ring-gold">
+            <select className="rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold">
               <option>Status: All</option>
               <option>Completed</option>
               <option>Pending</option>
@@ -191,9 +191,9 @@ const Reports = () => {
             </select>
           </div>
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border bg-white p-6 transition-all hover:scale-102 sm:p-8 lg:p-10">
+        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8 lg:p-10">
           {tableData.length === 0 ? (
-            <div className="flex flex-col items-center justify-center h-32 text-text-secondary">
+            <div className="flex flex-col items-center justify-center h-32 text-text-secondary dark:text-slate-300">
               <span className="text-lg font-semibold mb-2">
                 No reports found
               </span>
