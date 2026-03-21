@@ -33,7 +33,9 @@ const MetricCard = ({ title, value, iconType }) => (
       <div className="text-2xl font-black tracking-tight text-lime-600 dark:text-lime-400 sm:text-3xl">
         {value}
       </div>
-      <div className="shrink-0 p-2 sm:p-3">{icons[iconType]}</div>
+      <div className="shrink-0 dark:text-slate-300 p-2 sm:p-3">
+        {icons[iconType]}
+      </div>
     </div>
   </div>
 );

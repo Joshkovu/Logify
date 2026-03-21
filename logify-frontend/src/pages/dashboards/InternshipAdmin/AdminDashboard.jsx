@@ -102,7 +102,7 @@ const AdminDashboard = () => {
             >
               <Menu className="h-5 w-5" />
             </button>
-            <span className="truncate text-sm font-bold uppercase tracking-[0.25em] text-maroon-dark transition-colors duration-300 dark:text-gold">
+            <span className="truncate text-sm font-bold uppercase tracking-[0.25em] text-maroon-dark transition-colors duration-300 dark:text-slate-300">
               Logify Admin
             </span>
           </div>
