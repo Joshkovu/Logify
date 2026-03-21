@@ -6,14 +6,14 @@ const internsData = [
     names: "Sarah Johnson",
     course: "Computer Science",
     institution: "University of Technology",
-    week: 8
+    week: 8,
   },
   {
     url: "https://api.dicebear.com/9.x/micah/svg?",
     names: "James Martinez",
     course: "Software Engineering",
     institution: "Institute of Technology",
-    week: 6
+    week: 6,
   },
 
   {
@@ -21,7 +21,7 @@ const internsData = [
     names: "Emily Chen",
     course: "Information Systems",
     institution: "State University",
-    week: 10
+    week: 10,
   },
 
   // {
