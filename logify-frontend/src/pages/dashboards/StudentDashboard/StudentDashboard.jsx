@@ -1,4 +1,5 @@
 import { Routes, Route } from "react-router-dom";
+import { useState } from "react";
 import Dashboard from "./pages/Dashboard.jsx";
 import InternshipPlacement from "./pages/InternshipPlacement.jsx";
 import WeeklyLogs from "./pages/WeeklyLogs.jsx";
@@ -9,14 +10,18 @@ import { Menu } from "lucide-react";
 import ThemeToggle from "../../../components/ui/ThemeToggle.jsx";
 
 const StudentDashboard = () => {
+  const [showSidebar, setShowSidebar] = useState(true);
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50 transition-colors duration-300 dark:bg-slate-950">
-      <Sidebar />
+    <div className="sm:{} flex h-screen overflow-hidden bg-gray-50 transition-colors duration-300 dark:bg-slate-950">
+      {showSidebar && <Sidebar />}
       <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
         <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-[#FCFBF8]/95 px-4 py-3 backdrop-blur transition-colors duration-300 dark:bg-slate-900/95 md:px-6">
           <div className="flex min-w-0 items-center gap-3">
             <button>
-              <Menu className="h-5 w-5" />
+              <Menu
+                className="h-5 w-5 lg:hidden md:hidden "
+                onClick={() => setShowSidebar(!showSidebar)}
+              />
             </button>
             <span className="truncate text-sm font-bold uppercase tracking-[0.25em] transition-colors duration-300 dark:txt-slate-300">
               Logify Student
