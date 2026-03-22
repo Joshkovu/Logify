@@ -58,11 +58,13 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop("password")
+        role = validated_data.pop("role", None)
 
         # Create inactive user
         user = User.objects.create_user(is_active=False, **validated_data)
         user.set_password(password)
-        user.role = role
+        if role is not None:  # type: ignore
+            user.role = role  # type: ignore
         user.save()
 
         # Create SupervisorApplication
