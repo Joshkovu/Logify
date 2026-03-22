@@ -21,7 +21,7 @@ const CommentSection = ({ intern_log }) => {
         />
       </div>
       <div className="mt-4 flex justify-end gap-3">
-        <button className="p-2 flex items-center gap-3 bg-green-600 rounded-md" >
+        <button className="p-2 flex items-center gap-3 bg-green-600 rounded-md">
           <CircleCheck className="text-white " size={15} />
           <p className="text-sm font-bold text-white">Approve</p>
         </button>
@@ -38,17 +38,17 @@ const CommentSection = ({ intern_log }) => {
   );
 };
 
-CommentSection.propTypes ={
-    intern_log: PropTypes.shape({
-        names: PropTypes.string,
-        week: PropTypes.number,
-        date: PropTypes.string,
-        log: PropTypes.shape({
-            activities: PropTypes.string,
-            learnings: PropTypes.string,
-            challenges: PropTypes.string
-        })
-    })
+CommentSection.propTypes = {
+  intern_log: PropTypes.shape({
+    names: PropTypes.string,
+    week: PropTypes.number,
+    date: PropTypes.string,
+    log: PropTypes.shape({
+      activities: PropTypes.string,
+      learnings: PropTypes.string,
+      challenges: PropTypes.string,
+    }),
+  }),
 };
 
 export default CommentSection;

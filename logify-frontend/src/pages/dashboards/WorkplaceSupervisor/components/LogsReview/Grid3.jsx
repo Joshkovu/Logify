@@ -1,6 +1,5 @@
-import LogAnalytics from "./LogAnalytics"
-import PendingLogSection from "./PendingLogSection"
-
+import LogAnalytics from "./LogAnalytics";
+import PendingLogSection from "./PendingLogSection";
 
 const Grid3 = () => {
   return (
