@@ -72,43 +72,47 @@ const LandingPage = () => {
       {/* Dashboard Selection */}
       <section className="px-6 pb-24">
         <div className="max-w-7xl mx-auto">
-          <div className="mb-12 text-center">
-            <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-gold md:text-3xl">
+          <div className="mb-16 text-center">
+            <h2 className="text-3xl font-black tracking-tight text-maroon-dark dark:text-gold md:text-4xl">
               Choose Your Portal
             </h2>
-            <p className="mt-4 text-text-secondary dark:text-slate-300">
+            <p className="mt-3 text-text-secondary dark:text-slate-300">
               Select your role to access the appropriate dashboard
             </p>
           </div>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
             {dashboards.map((dash, i) => (
               <Link
                 key={i}
                 to={dash.path}
-                className="group relative overflow-hidden rounded-2xl border border-border bg-white p-8 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 dark:border-slate-700 dark:bg-slate-900"
+                className="group relative flex flex-col justify-between h-full min-h-96 overflow-hidden rounded-3xl border border-border bg-white p-10 transition-all duration-500 hover:shadow-2xl hover:shadow-maroon-dark/15 hover:scale-[1.02] dark:border-slate-700 dark:bg-slate-900 dark:hover:shadow-black/30"
               >
-                {/* Icon */}
-                <div className="mb-6 inline-flex rounded-xl bg-maroonCustom p-4 text-white">
+                {/* Decorative background circle */}
+                <div className="absolute top-0 right-0 h-80 w-80 -mr-40 -mt-40 rounded-full bg-gradient-to-br from-maroonCustom/5 to-gold/5 dark:from-maroonCustom/10 dark:to-gold/10" />
+
+                {/* Icon Container */}
+                <div className="relative z-10 mb-8 inline-flex items-center justify-center rounded-2xl bg-maroonCustom p-5 text-white shadow-lg shadow-maroonCustom/20 transition-transform duration-300 group-hover:scale-110">
                   {dash.icon}
                 </div>
 
                 {/* Content */}
-                <div>
-                  <h3 className="mb-3 text-xl font-black tracking-tight text-maroon-dark dark:text-gold">
+                <div className="relative z-10 flex-1">
+                  <h3 className="mb-4 text-2xl font-black tracking-tight text-maroon-dark transition-colors duration-300 group-hover:text-maroon dark:text-gold dark:group-hover:text-gold">
                     {dash.title}
                   </h3>
-                  <p className="mb-6 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
+                  <p className="mb-8 leading-relaxed text-text-secondary/75 dark:text-slate-300/85">
                     {dash.description}
                   </p>
-
-                  <div className="flex items-center gap-2 text-sm font-bold uppercase tracking-wider text-maroon-dark transition-colors group-hover:text-gold dark:text-slate-100">
-                    Access Portal
-                    <ArrowRight size={16} />
-                  </div>
                 </div>
 
-                {/* Hover overlay */}
-                <div className="absolute inset-0 rounded-2xl border-2 border-transparent transition-colors group-hover:border-gold/30" />
+                {/* CTA Link */}
+                <div className="relative z-10 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-maroon-dark transition-all duration-300 group-hover:gap-4 dark:text-slate-100">
+                  <span>Access Portal</span>
+                  <ArrowRight size={18} className="text-gold transition-transform duration-300 group-hover:translate-x-1" />
+                </div>
+
+                {/* Hover border effect */}
+                <div className="absolute inset-0 rounded-3xl border-2 border-transparent transition-colors duration-500 group-hover:border-gold/30 dark:group-hover:border-gold/40" />
               </Link>
             ))}
           </div>
