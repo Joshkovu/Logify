@@ -17,39 +17,45 @@ const EditProfile = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="text-sm text-gray-600 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
+        className="dark:bg-slate-900 text-sm text-gray-600 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="font-semibold text-black text-lg">Edit Profile</p>
-        <p className="mb-4 text-gray-600">Change your profile information</p>
-        <p className="text-black font-semibold">First Name</p>
+        <p className="dark:text-white font-semibold text-black text-lg">
+          Edit Profile
+        </p>
+        <p className="dark:text-white mb-4 text-gray-600">
+          Change your profile information
+        </p>
+        <p className="dark:text-white text-black font-semibold">First Name</p>
         <input
           type="text"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
-        <p className="text-black font-semibold">Last Name</p>
+        <p className="dark:text-white text-black font-semibold">Last Name</p>
         <input
           type="text"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
-        <p className="text-black font-semibold">Email Address</p>
+        <p className="dark:text-white text-black font-semibold">
+          Email Address
+        </p>
         <input
           type="email"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
-        <p className="text-black font-semibold">Phone Number</p>
+        <p className="dark:text-white text-black font-semibold">Phone Number</p>
         <input
           type="tel"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
-        <p className="text-black font-semibold">Address</p>
+        <p className="dark:text-white text-black font-semibold">Address</p>
         <input
           type="text"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
         <section className="mt-4 w-full flex gap-2 justify-end">
           <button
-            className="text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
+            className="dark:text-white dark:hover:bg-slate-700 text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
             onClick={onClose}
           >
             Cancel

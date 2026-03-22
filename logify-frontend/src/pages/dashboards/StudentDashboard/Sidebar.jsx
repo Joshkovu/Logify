@@ -38,7 +38,7 @@ const Sidebar = ({ onClose }) => {
 
   return (
     <aside
-      className={`bg-[#FCFBF8] h-screen ${collapsed ? "w-24" : "w-72"} bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200`}
+      className={`dark:bg-slate-900 dark:border-slate-700 bg-[#FCFBF8] h-screen ${collapsed ? "w-24" : "w-72"} bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200`}
     >
       <div className="mb-12 px-4">
         <button
@@ -60,17 +60,17 @@ const Sidebar = ({ onClose }) => {
           <X className="h-4 w-4 text-gray-700 dark:text-slate-200" />
         </button>
         <div
-          className={`${collapsed ? "hidden" : ""} -mt-8 mb-5 text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 dark:text-gold/80 md:hidden`}
+          className={`${collapsed ? "hidden" : ""} -mt-8 mb-5 text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 md:hidden dark:text-white`}
         >
           Menu
         </div>
         <div
-          className={`${collapsed ? "hidden" : ""} text-3xl text-black tracking-tighter text-gold flex items-center gap-2`}
+          className={`${collapsed ? "hidden" : ""} dark:text-white text-3xl text-black tracking-tighter text-gold flex items-center gap-2`}
         >
           LOGIFY
         </div>
         <div
-          className={`${collapsed ? "hidden" : ""} text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10 -mb-2`}
+          className={`${collapsed ? "hidden" : ""} dark:text-white text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10 -mb-2`}
         >
           Student Portal
         </div>
@@ -87,7 +87,7 @@ const Sidebar = ({ onClose }) => {
                 ${
                   isActive
                     ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 scale-[1.02]"
-                    : "hover:bg-gray-200 text-black/70 hover:text-black"
+                    : "hover:bg-gray-200 text-black/70 hover:text-black dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                 }
               `}
               onClick={onClose}
