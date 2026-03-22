@@ -7,7 +7,7 @@ const LandingPage = () => {
       title: "Student Portal",
       description:
         "Submit weekly logs, view evaluations, and track your internship progress.",
-      icon: <GraduationCap size={48} />,
+      icon: <GraduationCap size={56} strokeWidth={1.5} className="text-white" />,
       path: "/student",
       color: "bg-maroonCustom",
       accent: "text-white",
@@ -16,7 +16,7 @@ const LandingPage = () => {
       title: "Internship Admin",
       description:
         "Manage institutions, supervisors, and student placements across the university.",
-      icon: <UserCog size={48} />,
+      icon: <UserCog size={56} strokeWidth={1.5} className="text-white" />,
       path: "/admin",
       color: "bg-maroonCustom",
       accent: "text-white",
@@ -25,7 +25,7 @@ const LandingPage = () => {
       title: "Academic Supervisor",
       description:
         "Review student logs, complete evaluations, and monitor academic performance.",
-      icon: <ShieldCheck size={48} />,
+      icon: <ShieldCheck size={56} strokeWidth={1.5} className="text-white" />,
       path: "/supervisor",
       color: "bg-maroonCustom",
       accent: "text-white",
@@ -56,8 +56,8 @@ const LandingPage = () => {
               to="/tutorial"
               className="inline-flex items-center justify-center gap-3 rounded-2xl bg-maroonCustom px-8 py-4 text-lg font-black uppercase tracking-wider text-white transition-all hover:bg-maroon-dark hover:gap-5 hover:shadow-xl hover:shadow-maroon-dark/30 dark:bg-maroon dark:hover:bg-maroon-dark"
             >
-              Get Started
-              <ArrowRight size={24} />
+              <span className="text-white">Get Started</span>
+              <ArrowRight size={24} strokeWidth={2.5} className="text-white" />
             </Link>
             <Link
               to="/auth"
@@ -91,8 +91,10 @@ const LandingPage = () => {
                 <div className="absolute top-0 right-0 h-80 w-80 -mr-40 -mt-40 rounded-full bg-gradient-to-br from-maroonCustom/5 to-gold/5 dark:from-maroonCustom/10 dark:to-gold/10" />
 
                 {/* Icon Container */}
-                <div className="relative z-10 mb-8 inline-flex items-center justify-center rounded-2xl bg-maroonCustom p-5 text-white shadow-lg shadow-maroonCustom/20 transition-transform duration-300 group-hover:scale-110">
-                  {dash.icon}
+                <div className="relative z-10 mb-8 inline-flex items-center justify-center rounded-2xl bg-maroonCustom p-4 text-white shadow-lg shadow-maroonCustom/20 transition-transform duration-300 group-hover:scale-110">
+                  <div className="text-white flex items-center justify-center">
+                    {dash.icon}
+                  </div>
                 </div>
 
                 {/* Content */}
@@ -108,7 +110,7 @@ const LandingPage = () => {
                 {/* CTA Link */}
                 <div className="relative z-10 flex items-center gap-2 text-sm font-black uppercase tracking-widest text-maroon-dark transition-all duration-300 group-hover:gap-4 dark:text-slate-100">
                   <span>Access Portal</span>
-                  <ArrowRight size={18} className="text-gold transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight size={18} strokeWidth={2.5} className="text-gold transition-transform duration-300 group-hover:translate-x-1" />
                 </div>
 
                 {/* Hover border effect */}
