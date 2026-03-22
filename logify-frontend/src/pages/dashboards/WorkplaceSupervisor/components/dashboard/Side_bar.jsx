@@ -115,7 +115,7 @@ export const SidebarItem = ({ icon, text, href }) => {
       className={`
       ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-lg " : "hover:bg-red-50 text-gray-600 border border-stone-200 "}
     relative flex items-center  hover:shadow-lg shadow-xs
-    font-medium rounded-md cursor-pointer  duration-200 transition-transform group 
+    font-medium rounded-md cursor-pointer  duration-200 transition-transform group
      ${expanded ? "py-2 px-3 my-2" : "p-3 my-3 transition-all duration-200"}
     `}
     >

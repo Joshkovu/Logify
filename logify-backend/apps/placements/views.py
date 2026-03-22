@@ -1,3 +1,4 @@
+from apps.notifications.services import MailjetService
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
@@ -20,7 +21,19 @@ class InternshipPlacementListCreateView(APIView):
     def post(self, request):
         serializer = InternshipPlacementsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        placement = serializer.save()
+
+        # Notify supervisors if assigned
+        mail_service = MailjetService()
+        if placement.workplace_supervisor:  # type: ignore
+            mail_service.send_supervisor_assignment_notification(
+                placement.workplace_supervisor.email, placement.intern.get_full_name()  # type: ignore
+            )
+        if placement.academic_supervisor:  # type: ignore
+            mail_service.send_supervisor_assignment_notification(
+                placement.academic_supervisor.email, placement.intern.get_full_name()  # type: ignore
+            )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -127,7 +140,18 @@ class PlacementApproveView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
             )
-        return Response(self.get_serializer(placement).data)
+
+            # Notify student
+            student_email = placement.intern.email
+            supervisor_name = request.user.get_full_name()
+        transaction.on_commit(
+            lambda: MailjetService().send_student_approval_notification(
+                student_email,
+                supervisor_name,
+            )
+        )
+
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:
@@ -165,7 +189,7 @@ class PlacementRejectView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement rejected."),
             )
-        return Response(self.get_serializer(placement).data)
+        return Response(self.get_serializer(placement).data)  # type: ignore
 
     def get_object(self, pk):
         try:
@@ -203,7 +227,7 @@ class PlacementActivateView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement activated."),
             )
-        return Response(self.get_serializer(placement).data)
+        return Response(self.get_serializer(placement).data)  # type: ignore
 
     def get_object(self, pk):
         try:
@@ -243,7 +267,7 @@ class PlacementCompleteView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Internship completed."),
             )
-        return Response(self.get_serializer(placement).data)
+        return Response(self.get_serializer(placement).data)  # type: ignore
 
     def get_object(self, pk):
         try:
@@ -281,7 +305,7 @@ class PlacementCancelView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement cancelled."),
             )
-        return Response(self.get_serializer(placement).data)
+        return Response(self.get_serializer(placement).data)  # type: ignore
 
     def get_object(self, pk):
         try:
@@ -299,7 +323,7 @@ class PlacementAssignAcademicSupervisorView(APIView):
 
         if not user_id:
             return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-        placement.academic_supervisor_id = user_id
+        placement.academic_supervisor_id = user_id  # type: ignore
         placement.save()
 
         return Response({"message": "Academic supervisor assigned successfully."})
@@ -320,7 +344,7 @@ class PlacementAssignWorkplaceSupervisorView(APIView):
 
         if not user_id:
             return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-        placement.workplace_supervisor_id = user_id
+        placement.workplace_supervisor_id = user_id  # type: ignore
         placement.save()
 
         return Response({"message": "Workplace supervisor assigned successfully."})
