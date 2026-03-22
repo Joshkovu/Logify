@@ -1,3 +1,4 @@
+from apps.notifications.services import MailjetService
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
@@ -20,7 +21,19 @@ class InternshipPlacementListCreateView(APIView):
     def post(self, request):
         serializer = InternshipPlacementsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        placement = serializer.save()
+
+        # Notify supervisors if assigned
+        mail_service = MailjetService()
+        if placement.workplace_supervisor:
+            mail_service.send_supervisor_assignment_notification(
+                placement.workplace_supervisor.email, placement.intern.get_full_name()
+            )
+        if placement.academic_supervisor:
+            mail_service.send_supervisor_assignment_notification(
+                placement.academic_supervisor.email, placement.intern.get_full_name()
+            )
+
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
@@ -127,7 +140,14 @@ class PlacementApproveView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
             )
-        return Response(self.get_serializer(placement).data)
+
+            # Notify student
+            mail_service = MailjetService()
+            mail_service.send_student_approval_notification(
+                placement.intern.email, request.user.get_full_name()
+            )
+
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:
