@@ -88,7 +88,7 @@ const LandingPage = () => {
                 className="group relative flex flex-col justify-between h-full min-h-96 overflow-hidden rounded-3xl border border-border bg-white p-10 transition-all duration-500 hover:shadow-2xl hover:shadow-maroon-dark/15 hover:scale-[1.02] dark:border-slate-700 dark:bg-slate-900 dark:hover:shadow-black/30"
               >
                 {/* Decorative background circle */}
-                <div className="absolute top-0 right-0 h-80 w-80 -mr-40 -mt-40 rounded-full bg-gradient-to-br from-maroonCustom/5 to-gold/5 dark:from-maroonCustom/10 dark:to-gold/10" />
+                <div className="absolute top-0 right-0 h-80 w-80 -mr-40 -mt-40 rounded-full bg-gradient-to-br from-maroonCustom/5 to-gold/5 dark:from-maroonCustom/10 dark:to-gold/10 pointer-events-none" />
 
                 {/* Icon Container */}
                 <div className="relative z-10 mb-8 inline-flex items-center justify-center rounded-2xl bg-maroonCustom p-4 text-white shadow-lg shadow-maroonCustom/20 transition-transform duration-300 group-hover:scale-110">
@@ -114,7 +114,7 @@ const LandingPage = () => {
                 </div>
 
                 {/* Hover border effect */}
-                <div className="absolute inset-0 rounded-3xl border-2 border-transparent transition-colors duration-500 group-hover:border-gold/30 dark:group-hover:border-gold/40" />
+                <div className="absolute inset-0 rounded-3xl border-2 border-transparent transition-colors duration-500 group-hover:border-gold/30 dark:group-hover:border-gold/40 pointer-events-none" />
               </Link>
             ))}
           </div>
