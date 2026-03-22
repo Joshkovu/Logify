@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -7,10 +8,15 @@ import {
   User,
   LogOut,
   ArrowLeftToLine,
+  ArrowRightToLine,
+  X,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
+import { useWindowSize } from "./StudentDashboard";
+import PropTypes from "prop-types";
+
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },
   {
@@ -23,20 +29,49 @@ const navLinks = [
   { name: "Profile", path: "/student/profile", icon: User },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const isMobile = useWindowSize() < 768;
+  const collapsed = isMobile ? false : isCollapsed;
 
   return (
-    <aside className="bg-[#FCFBF8] h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
+    <aside
+      className={`bg-[#FCFBF8] h-screen ${collapsed ? "w-24" : "w-72"} bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200`}
+    >
       <div className="mb-12 px-4">
-        <button className="rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ml-45">
+        <button
+          className={`${collapsed || isMobile ? "hidden" : ""} rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ml-45`}
+          onClick={() => setIsCollapsed(!collapsed)}
+        >
           <ArrowLeftToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
         </button>
-        <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2">
+        <button
+          className={`${!collapsed || isMobile ? "hidden" : ""} rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 -ml-3`}
+          onClick={() => setIsCollapsed(!collapsed)}
+        >
+          <ArrowRightToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+        </button>
+        <button
+          className={`${!isMobile ? "hidden" : ""} rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ml-45`}
+          onClick={onClose}
+        >
+          <X className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+        </button>
+        <div
+          className={`${collapsed ? "hidden" : ""} -mt-8 mb-5 text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 dark:text-gold/80 md:hidden`}
+        >
+          Menu
+        </div>
+        <div
+          className={`${collapsed ? "hidden" : ""} text-3xl text-black tracking-tighter text-gold flex items-center gap-2`}
+        >
           LOGIFY
         </div>
-        <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
+        <div
+          className={`${collapsed ? "hidden" : ""} text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10 -mb-2`}
+        >
           Student Portal
         </div>
       </div>
@@ -52,9 +87,10 @@ const Sidebar = () => {
                 ${
                   isActive
                     ? "bg-maroonCustom text-white shadow-lg shadow-gold/20 scale-[1.02]"
-                    : "hover:bg-white/5 text-black/70 hover:text-black"
+                    : "hover:bg-gray-200 text-black/70 hover:text-black"
                 }
               `}
+              onClick={onClose}
               tabIndex={0}
               aria-current={isActive ? "page" : undefined}
             >
@@ -67,19 +103,23 @@ const Sidebar = () => {
                 aria-hidden="true"
                 strokeWidth={2.5}
               />
-              <span className="tracking-tight text-sm">{link.name}</span>
+              <span
+                className={`tracking-tight text-sm ${collapsed ? "hidden" : ""}`}
+              >
+                {link.name}
+              </span>
             </Link>
           );
         })}
       </nav>
-      <div className="p-6 mt-auto border-t border-border bg-muted/30">
+      <div className="p-2  mt-auto border-t border-border bg-muted/30">
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 text-white font-bold">
               SJ
             </AvatarFallback>
           </Avatar>
-          <div className="flex flex-col">
+          <div className={`${collapsed ? "hidden" : ""} flex flex-col`}>
             <span className="text-xs font-bold text-foreground truncate max-w-30">
               Sarah Johnson
             </span>
@@ -94,11 +134,14 @@ const Sidebar = () => {
           onClick={() => navigate("/")}
         >
           <LogOut className="h-3.5 w-3.5" />
-          Sign Out
+          <p className={`${collapsed ? "hidden" : ""}`}>Sign Out</p>
         </Button>
       </div>
     </aside>
   );
 };
 
+Sidebar.propTypes = {
+  onClose: PropTypes.bool.isRequired,
+};
 export default Sidebar;
