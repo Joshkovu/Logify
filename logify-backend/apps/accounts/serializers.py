@@ -42,3 +42,32 @@ class StaffProfilesSerializer(serializers.ModelSerializer):
     class Meta:
         model = StaffProfiles
         fields = "__all__"
+
+
+class SupervisorSignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "password", "first_name", "last_name", "role", "phone")
+
+    def validate_role(self, value):
+        if value not in [User.WORKPLACE_SUPERVISOR, User.ACADEMIC_SUPERVISOR]:
+            raise serializers.ValidationError("Invalid role for supervisor signup.")
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+
+        # Create inactive user
+        user = User.objects.create_user(is_active=False, **validated_data)
+        user.set_password(password)
+        user.role = role
+        user.save()
+
+        # Create SupervisorApplication
+        from .models import SupervisorApplication
+
+        SupervisorApplication.objects.create(user=user)
+
+        return user
