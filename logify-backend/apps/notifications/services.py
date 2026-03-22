@@ -1,7 +1,7 @@
 import logging
 import os
 
-from mailjet_rest import Client
+from mailjet_rest import Client  # type: ignore
 
 logger = logging.getLogger(__name__)
 
@@ -10,14 +10,25 @@ class MailjetService:
     def __init__(self):
         api_key = os.environ.get("MAILJET_API_KEY")
         api_secret = os.environ.get("MAILJET_API_SECRET")
-        self.sender_email = os.environ.get("MAILJET_SENDER_EMAIL", "[EMAIL_ADDRESS]")
+        self.sender_email = os.environ.get("MAILJET_SENDER_EMAIL")
         self.sender_name = "Logify Notifications"
 
-        if api_key and api_secret:
+        if api_key and api_secret and self.sender_email and self.sender_email != "[EMAIL_ADDRESS]":
             self.client = Client(auth=(api_key, api_secret), version="v3.1")
         else:
-            logger.warning("Mailjet API keys not found in environment. Emails will be logged to console.")
-            self.client = None
+            if (
+                api_key
+                and api_secret
+                and (not self.sender_email or self.sender_email == "[EMAIL_ADDRESS]")
+            ):
+                logger.warning(
+                    "Mailjet API keys found but MAILJET_SENDER_EMAIL is not configured or uses the placeholder "
+                    '"[EMAIL_ADDRESS]". Emails will be logged to console.'
+                )
+            elif not api_key or not api_secret:
+                logger.warning(
+                    "Mailjet API keys not found in environment. Emails will be logged to console."
+                )
 
     def send_email(self, recipient_email, subject, text_content=None, html_content=None):
         if not self.client:
@@ -43,7 +54,9 @@ class MailjetService:
                 logger.info(f"Email sent successfully to {recipient_email}")
                 return result.json()
             else:
-                logger.error(f"Failed to send email to {recipient_email}: {result.status_code} - {result.json()}")
+                logger.error(
+                    f"Failed to send email to {recipient_email}: {result.status_code} - {result.json()}"
+                )
                 return None
         except Exception as e:
             logger.exception(f"Error sending email to {recipient_email}: {str(e)}")
@@ -63,7 +76,9 @@ class MailjetService:
 
     def send_supervisor_approval_notification(self, email):
         subject = "Logify Supervisor Account Approved"
-        text_content = "Your supervisor account has been approved. You can now login to the Logify platform."
+        text_content = (
+            "Your supervisor account has been approved. You can now login to the Logify platform."
+        )
         html_content = "<h3>Account Approved</h3><p>Your supervisor account has been approved. You can now login to the Logify platform.</p>"
         return self.send_email(email, subject, text_content, html_content)
 
