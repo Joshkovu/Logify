@@ -2,11 +2,8 @@ import {
   User,
   Mail,
   Phone,
-  MapPin,
   GraduationCap,
   School,
-  Calendar,
-  Shield,
   Lock,
   Bell,
 } from "lucide-react";
@@ -23,7 +20,7 @@ const Profile = () => {
   // Memoize user initials
   const userInitials = useMemo(() => {
     if (!user?.fullName) return "U";
-    const names = user.fullName.split(" ");
+    const names = user?.fullName.split(" ");
     return names
       .map((n) => n.charAt(0).toUpperCase())
       .slice(0, 2)
@@ -251,64 +248,6 @@ const Profile = () => {
               />
             </div>
           ))}
-        </div>
-      </section>
-    </div>
-  );
-};
-
-export default Profile;
-              </p>
-            </div>
-          </div>
-
-          <div className="space-y-4">
-            {[
-              {
-                title: "Email Notifications",
-                desc: "Receive real-time updates about log approvals and evaluations.",
-                status: ["Disabled", "Enabled"],
-                icon: Bell,
-                active: true,
-              },
-              {
-                title: "Two-Factor Authentication",
-                desc: "Add an extra layer of security to your student portal access.",
-                status: ["Disabled", "Enabled"],
-                icon: Lock,
-                active: false,
-              },
-            ].map((setting, i) => (
-              <div
-                key={i}
-                className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
-              >
-                <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
-                  <setting.icon size={24} />
-                </div>
-                <div className="flex-1">
-                  <h4 className="text-md font-bold text-maroon-dark">
-                    {setting.title}
-                  </h4>
-                  <p className="text-sm text-text-secondary mt-0.5">
-                    {setting.desc}
-                  </p>
-                </div>
-                <div>
-                  <button
-                    className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
-                      setting.active
-                        ? "bg-maroonCustom text-white hover:bg-red-800"
-                        : "bg-maroonCustom text-white hover:bg-red-800"
-                    }`}
-                    onClick={() => setIdx((prev) => (prev === 0 ? 1 : 0))}
-                  >
-                    {setting.status[idx]}
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
         </div>
       </section>
     </div>
