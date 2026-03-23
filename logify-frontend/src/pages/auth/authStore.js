@@ -228,7 +228,10 @@ export function registerSupervisor({
     };
   }
 
-  if (!role || !["academic_supervisor", "workplace_supervisor"].includes(role)) {
+  if (
+    !role ||
+    !["academic_supervisor", "workplace_supervisor"].includes(role)
+  ) {
     return {
       ok: false,
       error: "Please select a valid supervisor role.",

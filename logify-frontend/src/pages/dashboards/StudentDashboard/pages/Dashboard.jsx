@@ -41,8 +41,7 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
-      {/* Header Section */}
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           Student Dashboard
@@ -68,7 +67,7 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
         {/* Current Internship Section */}
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border transition-all h-full">
+          <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border transition-all h-full">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Current Internship
@@ -124,7 +123,7 @@ const Dashboard = () => {
 
         {/* Recent Activity Section */}
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border transition-transform h-full">
+          <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border transition-transform h-full">
             <div className="flex items-center justify-between mb-8">
               <div>
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
@@ -134,7 +133,7 @@ const Dashboard = () => {
                   Your latest updates and actions
                 </p>
               </div>
-              <button className="-mt-6 text-xs text-white font-bold hover:bg-red-800 transition-colors px-4 py-3 bg-maroonCustom rounded-lg border">
+              <button className="dark:bg-slate-900 dark:hover:bg-slate-700 -mt-6 text-xs text-white font-bold hover:bg-red-800 transition-colors px-4 py-3 bg-maroonCustom rounded-lg border">
                 View All
               </button>
             </div>

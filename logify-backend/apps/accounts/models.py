@@ -75,3 +75,21 @@ class StaffProfiles(models.Model):
 
     def __str__(self):
         return self.staff_number
+
+
+class SupervisorApplication(models.Model):
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("approved", "Approved"),
+        ("rejected", "Rejected"),
+    ]
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="supervisor_application"
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.user.email} - {self.status}"

@@ -126,7 +126,10 @@ const LoginPage = () => {
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
             New to Logify?{" "}
-            <Link to="/signup" className="font-bold text-maroonCustom hover:text-gold">
+            <Link
+              to="/signup"
+              className="font-bold text-maroonCustom hover:text-gold"
+            >
               Sign up
             </Link>
           </p>

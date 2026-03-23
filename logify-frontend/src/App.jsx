@@ -12,6 +12,7 @@ import StudentSignupPage from "./pages/StudentSignupPage";
 import StudentDashboard from "./pages/dashboards/StudentDashboard/StudentDashboard";
 import AdminDashboard from "./pages/dashboards/InternshipAdmin/AdminDashboard";
 import SupervisorDashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/SupervisorDashboard";
+import WorkplaceSupervisorDashboard from "./pages/dashboards/WorkplaceSupervisor/pages/App3";
 
 function App() {
   return (
@@ -35,14 +36,8 @@ function App() {
             <Route path="/student/*" element={<StudentDashboard />} />
             <Route path="/admin/*" element={<AdminDashboard />} />
             <Route path="/supervisor/*" element={<SupervisorDashboard />} />
-
-            {/* Fallback to landing page for now */}
-            <Route path="*" element={<LandingPage />} />
-          </Routes>
-        </AppProvider>
-      </AuthProvider>
-    </BrowserRouter>
-  );
-}
-
+            <Route
+              path="/workplace-supervisor/*"
+              element={<WorkplaceSupervisorDashboard />}
+            />
 export default App;

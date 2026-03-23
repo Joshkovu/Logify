@@ -16,6 +16,7 @@ import { useState, useMemo, useCallback } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 const Profile = () => {
+<const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { user } = useAuth();
@@ -77,8 +78,7 @@ const Profile = () => {
   );
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
-      {/* Header */}
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Profile</span>
@@ -91,7 +91,7 @@ const Profile = () => {
 
       {/* User Card Section */}
       <section className="mb-12">
-        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
           <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
             {userInitials}
           </div>
@@ -114,7 +114,7 @@ const Profile = () => {
                 onClose={handleEditClose}
               />
               <button
-                className="hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
+                className="dark:bg-slate-900 dark:hover:bg-slate-700 hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
                 onClick={handlePasswordClick}
               >
                 Change Password
@@ -137,8 +137,8 @@ const Profile = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        {/* Personal Information Section */}
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+<        {/* Personal Information Section */}
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <User size={20} />
@@ -287,7 +287,7 @@ export default Profile;
           </div>
         </section>
 
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <GraduationCap size={20} />
@@ -343,7 +343,7 @@ export default Profile;
       </div>
 
       <section>
-        <div className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <Shield size={20} />
@@ -363,14 +363,14 @@ export default Profile;
               {
                 title: "Email Notifications",
                 desc: "Receive real-time updates about log approvals and evaluations.",
-                status: "Enabled",
+                status: ["Disabled", "Enabled"],
                 icon: Bell,
                 active: true,
               },
               {
                 title: "Two-Factor Authentication",
                 desc: "Add an extra layer of security to your student portal access.",
-                status: "Disabled",
+                status: ["Disabled", "Enabled"],
                 icon: Lock,
                 active: false,
               },
@@ -395,10 +395,11 @@ export default Profile;
                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                       setting.active
                         ? "bg-maroonCustom text-white hover:bg-red-800"
-                        : "bg-white border-border text-text-secondary hover:bg-gray-50"
+                        : "bg-maroonCustom text-white hover:bg-red-800"
                     }`}
+                    onClick={() => setIdx((prev) => (prev === 0 ? 1 : 0))}
                   >
-                    {setting.status}
+                    {setting.status[idx]}
                   </button>
                 </div>
               </div>
