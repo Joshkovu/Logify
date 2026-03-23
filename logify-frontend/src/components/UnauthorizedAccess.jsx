@@ -5,9 +5,9 @@ const UnauthorizedAccess= ()=>{
             <h1>403</h1>
             <h3>Forbidden</h3>
             <p> Access to the requested resource is forbidden.</p>
-            <button onclick="window.location.href='/home'">Go to Home</button>
+            <button onClick={() => (window.location.href = '/home')}>Go to Home</button>
 
         </div>
     )
 }
-export default UauthorizedAccess;
+export default UnauthorizedAccess;
