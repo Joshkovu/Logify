@@ -11,5 +11,6 @@ pytest-django
 djangorestframework
 testcontainers[postgresql]
 psycopg2-binary
+djoser
 mailjet-rest
 pyotp

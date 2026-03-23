@@ -21,17 +21,17 @@ const CommentSection = ({ intern_log }) => {
         />
       </div>
       <div className="mt-4 flex justify-end gap-3">
-        <button className="p-2 flex items-center gap-3 bg-green-600 rounded-md">
-          <CircleCheck className="text-white " size={15} />
-          <p className="text-sm font-bold text-white">Approve</p>
+        <button className="p-2 flex items-center gap-3 bg-green-600 rounded-md group hover:bg-transparent border border-green-600 transition-colors duration-200" >
+          <CircleCheck className="text-white group-hover:text-green-600 transition-colors duration-200" size={15} />
+          <p className="text-sm font-bold text-white group-hover:text-green-600 transition-colors duration-200">Approve</p>
         </button>
-        <button className="p-2 flex items-center gap-3 border border-blue-500 rounded-md">
-          <CircleAlert className="text-blue-600 " size={15} />
-          <p className="text-sm font-bold text-blue-500">Request Changes</p>
+        <button className="p-2 flex items-center gap-3 border border-blue-500 rounded-md group hover:bg-blue-500 transition-colors duration-200">
+          <CircleAlert className="text-blue-600 group-hover:text-white transition-colors duration-200" size={15} />
+          <p className="text-sm font-bold text-blue-500 group-hover:text-white transition-colors duration-200">Request Changes</p>
         </button>
-        <button className="p-2 flex items-center gap-3 border border-red-600 rounded-md">
-          <CircleAlert className="text-red-600 " size={15} />
-          <p className="text-sm font-bold text-red-600">Reject</p>
+        <button className="p-2 flex items-center gap-3 border border-red-600 rounded-md group hover:bg-red-600 transition-colors duration-200">
+          <CircleAlert className="text-red-600 group-hover:text-white transition-colors duration-200" size={15} />
+          <p className="text-sm font-bold text-red-600 group-hover:text-white transition-colors duration-200">Reject</p>
         </button>
       </div>
     </div>
