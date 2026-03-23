@@ -9,7 +9,7 @@ const Dashboard = () => {
   // Extract first name from full name
   const firstName = useMemo(() => {
     if (!user?.fullName) return "User";
-    return user.fullName.split(" ")[0];
+    return user?.fullName.split(" ")[0];
   }, [user?.fullName]);
 
   const metrics = useMemo(

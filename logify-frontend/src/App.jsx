@@ -40,4 +40,14 @@ function App() {
               path="/workplace-supervisor/*"
               element={<WorkplaceSupervisorDashboard />}
             />
+
+            {/* Fallback to landing page for now */}
+            <Route path="*" element={<LandingPage />} />
+          </Routes>
+        </AppProvider>
+      </AuthProvider>
+    </BrowserRouter>
+  );
+}
+
 export default App;

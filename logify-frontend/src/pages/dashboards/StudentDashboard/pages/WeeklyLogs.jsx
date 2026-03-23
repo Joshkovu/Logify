@@ -97,7 +97,7 @@ const WeeklyLogs = () => {
         </div>
         <div className="ml-auto mt-2.5">
           <button
-<            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl shadow-lg shadow-maroonCustom/20"
+            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl shadow-lg shadow-maroonCustom/20"
             onClick={handleOpenModal}
           >
             <FilePlus size={18} />

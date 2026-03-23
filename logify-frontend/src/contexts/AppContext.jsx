@@ -1,4 +1,5 @@
 import { createContext, useContext, useCallback, useState } from "react";
+import PropTypes from "prop-types";
 
 const AppContext = createContext();
 
@@ -28,6 +29,10 @@ export const AppProvider = ({ children }) => {
     });
   }, []);
 
+  const removeNotification = useCallback((id) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
   const addNotification = useCallback((notification) => {
     const id = Date.now();
     const newNotification = { id, ...notification };
@@ -42,11 +47,7 @@ export const AppProvider = ({ children }) => {
     }
 
     return id;
-  }, []);
-
-  const removeNotification = useCallback((id) => {
-    setNotifications((prev) => prev.filter((n) => n.id !== id));
-  }, []);
+  }, [removeNotification]);
 
   const clearNotifications = useCallback(() => {
     setNotifications([]);
@@ -66,6 +67,10 @@ export const AppProvider = ({ children }) => {
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
+};
+
+AppProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 /**

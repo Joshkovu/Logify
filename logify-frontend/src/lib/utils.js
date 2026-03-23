@@ -155,7 +155,7 @@ export const deepClone = (obj) => {
   if (obj instanceof Object) {
     const cloned = Object.create(Object.getPrototypeOf(obj));
     for (const key in obj) {
-      if (obj.hasOwnProperty(key)) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
         cloned[key] = deepClone(obj[key]);
       }
     }

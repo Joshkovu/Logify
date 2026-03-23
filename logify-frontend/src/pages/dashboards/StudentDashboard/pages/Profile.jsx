@@ -16,7 +16,6 @@ import { useState, useMemo, useCallback } from "react";
 import { useAuth } from "../../../../contexts/AuthContext";
 
 const Profile = () => {
-<const Profile = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
   const { user } = useAuth();
@@ -137,7 +136,7 @@ const Profile = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-<        {/* Personal Information Section */}
+        {/* Personal Information Section */}
         <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
@@ -259,101 +258,6 @@ const Profile = () => {
 };
 
 export default Profile;
-                icon: Mail,
-              },
-              {
-                label: "Phone Number",
-                value: "+1 (555) 234-5678",
-                icon: Phone,
-              },
-              {
-                label: "Date of Birth",
-                value: "March 15, 2002",
-                icon: Calendar,
-              },
-              {
-                label: "Address",
-                value: "123 Student Lane, Campus City",
-                icon: MapPin,
-              },
-            ].map((item, i) => (
-              <div key={i}>
-                <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
-                  {item.label}
-                </p>
-                <p className="text-md font-semibold">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
-              <GraduationCap size={20} />
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-maroon-dark tracking-tight">
-                Academic Details
-              </h3>
-              <p className="text-xs text-text-secondary font-medium">
-                University and program records
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
-            {[
-              {
-                label: "University",
-                value: "University of Technology",
-                icon: School,
-              },
-              { label: "Faculty", value: "Engineering & Tech", icon: School },
-              {
-                label: "Program",
-                value: "B.Sc. Software Engineering",
-                icon: GraduationCap,
-              },
-              {
-                label: "Year Level",
-                value: "4th Year (Finalist)",
-                icon: Calendar,
-              },
-              {
-                label: "Academic Guard",
-                value: "Dr. Emily Roberts",
-                icon: User,
-              },
-              {
-                label: "Graduation",
-                value: "June 2026 (Expected)",
-                icon: Calendar,
-              },
-            ].map((item, i) => (
-              <div key={i}>
-                <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
-                  {item.label}
-                </p>
-                <p className="text-md font-semibold">{item.value}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-      </div>
-
-      <section>
-        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border">
-          <div className="mb-8 flex items-center gap-3">
-            <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
-              <Shield size={20} />
-            </div>
-            <div>
-              <h3 className="text-xl font-black text-maroon-dark tracking-tight">
-                Security & Preferences
-              </h3>
-              <p className="text-xs text-text-secondary font-medium">
-                Protect your account and manage notification settings
               </p>
             </div>
           </div>

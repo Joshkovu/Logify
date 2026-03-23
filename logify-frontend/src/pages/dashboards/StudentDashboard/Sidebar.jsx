@@ -42,7 +42,7 @@ const Sidebar = ({ onClose }) => {
   // Get initials from user name with memoization
   const userInitials = useMemo(() => {
     if (!user?.fullName) return "U";
-    const names = user.fullName.split(" ");
+    const names = user?.fullName.split(" ");
     return names
       .map((n) => n.charAt(0).toUpperCase())
       .slice(0, 2)
