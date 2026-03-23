@@ -1,31 +1,58 @@
 import { Clock } from "lucide-react";
+import { useMemo } from "react";
 import MetricCard from "../../../../components/ui/MetricCard";
+import { useAuth } from "../../../../contexts/AuthContext";
 
 const Dashboard = () => {
-  const person = {
-    firstName: "Sarah",
-    lastName: "Johnson",
-  };
+  const { user } = useAuth();
 
-  const metrics = [
-    { title: "Status", value: "Active", iconType: "placements" },
-    { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
-    { title: "Pending Tasks", value: "3", iconType: "reviews" },
-    { title: "Final Score", value: "Pending", iconType: "evaluations" },
+  // Extract first name from full name
+  const firstName = useMemo(() => {
+    if (!user?.fullName) return "User";
+    return user.fullName.split(" ")[0];
+  }, [user?.fullName]);
+
+  const metrics = useMemo(
+    () => [
+      { title: "Status", value: "Active", iconType: "placements" },
+      { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
+      { title: "Pending Tasks", value: "3", iconType: "reviews" },
+      { title: "Final Score", value: "Pending", iconType: "evaluations" },
+    ],
+    []
+  );
+
+  const activities = [
+    {
+      title: "Week 8 Log Approved",
+      desc: "Your weekly log has been reviewed and approved by Michael Chen",
+      time: "2 days ago",
+    },
+    {
+      title: "Week 8 Log Submitted",
+      desc: "Successfully submitted your weekly log for review",
+      time: "4 days ago",
+    },
+    {
+      title: "Week 7 Log Approved",
+      desc: "Your weekly log has been reviewed and approved",
+      time: "1 week ago",
+    },
   ];
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      {/* Header Section */}
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           Student Dashboard
         </h1>
         <p className="text-lg max-w-lg text-text-secondary/80 leading-relaxed">
-          Welcome back, {person.firstName}! Here&apos;s your internship
-          overview.
+          Welcome back, {firstName}! Here&apos;s your internship overview.
         </p>
       </header>
 
+      {/* Metrics Section */}
       <section className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
@@ -37,7 +64,9 @@ const Dashboard = () => {
         ))}
       </section>
 
+      {/* Main Content Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-8">
+        {/* Current Internship Section */}
         <section>
           <div className="bg-white rounded-[12px] p-10 border border-border transition-all h-full">
             <div className="mb-8">
@@ -93,6 +122,7 @@ const Dashboard = () => {
           </div>
         </section>
 
+        {/* Recent Activity Section */}
         <section>
           <div className="bg-white rounded-[12px] p-10 border border-border transition-transform h-full">
             <div className="flex items-center justify-between mb-8">
@@ -109,24 +139,9 @@ const Dashboard = () => {
               </button>
             </div>
 
+            {/* Activities List */}
             <div className="space-y-4">
-              {[
-                {
-                  title: "Week 8 Log Approved",
-                  desc: "Your weekly log has been reviewed and approved by Michael Chen",
-                  time: "2 days ago",
-                },
-                {
-                  title: "Week 8 Log Submitted",
-                  desc: "Successfully submitted your weekly log for review",
-                  time: "4 days ago",
-                },
-                {
-                  title: "Week 7 Log Approved",
-                  desc: "Your weekly log has been reviewed and approved",
-                  time: "1 week ago",
-                },
-              ].map((activity, i) => (
+              {activities.map((activity, i) => (
                 <div
                   key={i}
                   className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"

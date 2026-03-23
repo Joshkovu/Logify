@@ -4,35 +4,54 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 import { authenticate } from "./auth/authStore";
+import { useAuth } from "../contexts/AuthContext";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const signupSuccess = location.state?.signupSuccess || "";
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
+    // Clear error when user starts typing
+    if (error) {
+      setError("");
+    }
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     setError("");
+    setIsSubmitting(true);
 
-    if (!formData.email.trim() || !formData.password) {
-      setError("Email and password are required.");
-      return;
+    try {
+      if (!formData.email.trim() || !formData.password) {
+        setError("Email and password are required.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const result = authenticate(formData);
+      if (!result.ok) {
+        setError(result.error || "Unable to log in.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Update auth context with session
+      login(result.session);
+
+      // Redirect to dashboard
+      navigate(result.redirectPath, { replace: true });
+    } catch (err) {
+      setError(err.message || "An unexpected error occurred. Please try again.");
+      setIsSubmitting(false);
     }
-
-    const result = authenticate(formData);
-    if (!result.ok) {
-      setError(result.error || "Unable to log in.");
-      return;
-    }
-
-    navigate(result.redirectPath, { replace: true });
   };
 
   return (
@@ -63,7 +82,10 @@ const LoginPage = () => {
               value={formData.email}
               onChange={onChange}
               placeholder="name@institution.ac.ug"
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none ring-0 transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              disabled={isSubmitting}
+              className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none ring-0 transition focus:border-gold disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 ${
+                error ? "border-red-400" : "border-border"
+              }`}
             />
           </div>
 
@@ -81,7 +103,10 @@ const LoginPage = () => {
               value={formData.password}
               onChange={onChange}
               placeholder="Enter your password"
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none ring-0 transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              disabled={isSubmitting}
+              className={`mt-2 w-full rounded-xl border bg-white px-4 py-3 text-sm outline-none ring-0 transition focus:border-gold disabled:bg-gray-100 dark:border-slate-700 dark:bg-slate-800 ${
+                error ? "border-red-400" : "border-border"
+              }`}
             />
           </div>
 
@@ -93,9 +118,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01]"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-all hover:scale-[1.01] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Login
+            {isSubmitting ? "Logging in..." : "Login"}
           </button>
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">

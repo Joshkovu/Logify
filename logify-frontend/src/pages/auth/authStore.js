@@ -255,3 +255,59 @@ export function registerSupervisor({
   writeUsers([...users, newUser]);
   return { ok: true };
 }
+
+export function registerStudent({
+  fullName,
+  email,
+  password,
+  matriculationNumber,
+  institution,
+  department,
+}) {
+  const users = readUsers();
+  const normalizedEmail = normalizeEmail(email);
+
+  if (users.some((user) => user.email === normalizedEmail)) {
+    return {
+      ok: false,
+      error:
+        "This email is already registered. If you are a returning user, use Login instead.",
+    };
+  }
+
+  if (!matriculationNumber.trim()) {
+    return {
+      ok: false,
+      error: "Matriculation/Student ID is required.",
+    };
+  }
+
+  if (!institution.trim()) {
+    return {
+      ok: false,
+      error: "Educational institution is required.",
+    };
+  }
+
+  if (!department.trim()) {
+    return {
+      ok: false,
+      error: "Department is required.",
+    };
+  }
+
+  const newUser = {
+    id: Date.now(),
+    fullName: fullName.trim(),
+    email: normalizedEmail,
+    password,
+    role: "student",
+    matriculationNumber: matriculationNumber.trim(),
+    institution: institution.trim(),
+    department: department.trim(),
+    status: "approved",
+  };
+
+  writeUsers([...users, newUser]);
+  return { ok: true };
+}

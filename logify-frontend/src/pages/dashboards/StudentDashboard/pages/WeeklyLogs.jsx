@@ -1,69 +1,91 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CreateWeeklyLog from "../CreateWeeklyLog";
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 
 const WeeklyLogs = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const metrics = [
-    { title: "Total Logs", value: "8", iconType: "reviews" },
-    { title: "Approved", value: "8", iconType: "evaluations" },
-    { title: "Approval Rate", value: "100%", iconType: "placements" },
-  ];
 
-  const logs = [
-    {
-      week: "Week 8",
-      range: "Feb 17 - Feb 23",
-      status: "Approved",
-      date: "Feb 23, 2026",
-    },
-    {
-      week: "Week 7",
-      range: "Feb 10 - Feb 16",
-      status: "Approved",
-      date: "Feb 16, 2026",
-    },
-    {
-      week: "Week 6",
-      range: "Feb 3 - Feb 9",
-      status: "Approved",
-      date: "Feb 9, 2026",
-    },
-    {
-      week: "Week 5",
-      range: "Jan 27 - Feb 2",
-      status: "Approved",
-      date: "Feb 2, 2026",
-    },
-    {
-      week: "Week 4",
-      range: "Jan 20 - Jan 26",
-      status: "Approved",
-      date: "Jan 26, 2026",
-    },
-    {
-      week: "Week 3",
-      range: "Jan 13 - Jan 19",
-      status: "Approved",
-      date: "Jan 19, 2026",
-    },
-    {
-      week: "Week 2",
-      range: "Jan 6 - Jan 12",
-      status: "Approved",
-      date: "Jan 12, 2026",
-    },
-    {
-      week: "Week 1",
-      range: "Dec 30 - Jan 5",
-      status: "Approved",
-      date: "Jan 5, 2026",
-    },
-  ];
+  const metrics = useMemo(
+    () => [
+      { title: "Total Logs", value: "8", iconType: "reviews" },
+      { title: "Approved", value: "8", iconType: "evaluations" },
+      { title: "Approval Rate", value: "100%", iconType: "placements" },
+    ],
+    []
+  );
+
+  const logs = useMemo(
+    () => [
+      {
+        week: "Week 8",
+        range: "Feb 17 - Feb 23",
+        status: "Approved",
+        date: "Feb 23, 2026",
+      },
+      {
+        week: "Week 7",
+        range: "Feb 10 - Feb 16",
+        status: "Approved",
+        date: "Feb 16, 2026",
+      },
+      {
+        week: "Week 6",
+        range: "Feb 3 - Feb 9",
+        status: "Approved",
+        date: "Feb 9, 2026",
+      },
+      {
+        week: "Week 5",
+        range: "Jan 27 - Feb 2",
+        status: "Approved",
+        date: "Feb 2, 2026",
+      },
+      {
+        week: "Week 4",
+        range: "Jan 20 - Jan 26",
+        status: "Approved",
+        date: "Jan 26, 2026",
+      },
+      {
+        week: "Week 3",
+        range: "Jan 13 - Jan 19",
+        status: "Approved",
+        date: "Jan 19, 2026",
+      },
+      {
+        week: "Week 2",
+        range: "Jan 6 - Jan 12",
+        status: "Approved",
+        date: "Jan 12, 2026",
+      },
+      {
+        week: "Week 1",
+        range: "Dec 30 - Jan 5",
+        status: "Approved",
+        date: "Jan 5, 2026",
+      },
+    ],
+    []
+  );
+
+  // Memoize handlers to prevent re-renders
+  const handleOpenModal = useCallback(() => {
+    setIsModalOpen(true);
+  }, []);
+
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+  }, []);
+
+  const handleViewDetails = useCallback((weekId) => {
+    // Add logic to view details
+    console.log("Viewing details for:", weekId);
+  }, []);
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      {/* Header Section */}
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
@@ -77,18 +99,19 @@ const WeeklyLogs = () => {
         <div className="ml-auto mt-2.5">
           <button
             className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl shadow-lg shadow-maroonCustom/20"
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleOpenModal}
           >
             <FilePlus size={18} />
             New Log
           </button>
           <CreateWeeklyLog
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={handleCloseModal}
           />
         </div>
       </header>
 
+      {/* Metrics Section */}
       <section className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
         {metrics.map((m) => (
           <MetricCard
@@ -100,6 +123,7 @@ const WeeklyLogs = () => {
         ))}
       </section>
 
+      {/* Logs Table Section */}
       <section>
         <div className="bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8">
@@ -155,7 +179,10 @@ const WeeklyLogs = () => {
                       {log.date}
                     </td>
                     <td className="py-5 px-4 text-right">
-                      <button className="inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gold/10">
+                      <button
+                        onClick={() => handleViewDetails(log.week)}
+                        className="inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gold/10"
+                      >
                         <Eye size={14} />
                         View Details
                       </button>
