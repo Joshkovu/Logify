@@ -63,7 +63,7 @@ const WeeklyLogs = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
@@ -76,7 +76,7 @@ const WeeklyLogs = () => {
         </div>
         <div className="ml-auto mt-2.5">
           <button
-            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl shadow-lg shadow-maroonCustom/20"
+            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl"
             onClick={() => setIsModalOpen(true)}
           >
             <FilePlus size={18} />
@@ -101,7 +101,7 @@ const WeeklyLogs = () => {
       </section>
 
       <section>
-        <div className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Log History
