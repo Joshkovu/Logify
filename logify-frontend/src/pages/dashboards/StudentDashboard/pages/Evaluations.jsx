@@ -8,7 +8,7 @@ const Evaluations = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Evaluations</span>
@@ -32,7 +32,7 @@ const Evaluations = () => {
 
       <div className="space-y-8">
         <section>
-          <div className="bg-white rounded-[12px] p-10 border border-border transition-transform">
+          <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border transition-transform">
             <div className="mb-8">
               <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                 Evaluation History
@@ -90,7 +90,7 @@ const Evaluations = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <section>
-            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
+            <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Score Breakdown
@@ -142,7 +142,7 @@ const Evaluations = () => {
           </section>
 
           <section>
-            <div className="bg-white rounded-[12px] p-10 border border-border h-full">
+            <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
               <div className="mb-8">
                 <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
                   Supervisor Feedback
