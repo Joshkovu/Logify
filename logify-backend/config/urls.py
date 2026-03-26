@@ -31,4 +31,5 @@ urlpatterns = [
     path("api/v1/organizations/", include("apps.organizations.urls")),
     path("api/v1/academics/", include("apps.academics.urls")),
     path("api/v1/accounts/", include("apps.accounts.urls")),
+    path("api/v1/auth/", include("apps.accounts.auth_urls")),
 ]
