@@ -37,9 +37,14 @@ SECRET_KEY = os.getenv(
 )
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 
-ALLOWED_HOSTS = []
+_default_allowed_hosts = "localhost,127.0.0.1,.onrender.com,.fly.dev"
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.getenv("ALLOWED_HOSTS", _default_allowed_hosts).split(",")
+    if host.strip()
+]
 
 
 # Application definition
