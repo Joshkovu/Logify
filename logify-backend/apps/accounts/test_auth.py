@@ -2,14 +2,13 @@ import hashlib
 from datetime import timedelta
 
 import pytest  # type: ignore
+from apps.academics.models import Departments, Institutions, Programmes
+from apps.accounts.models import SupervisorApplication
+from apps.registry.models import RegistrationAttempts, StudentRegistry
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from apps.academics.models import Departments, Institutions, Programmes
-from apps.accounts.models import SupervisorApplication
-from apps.registry.models import RegistrationAttempts, StudentRegistry
 
 User = get_user_model()
 
@@ -109,9 +108,12 @@ class TestSupervisorAuth:
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-        admin = User.objects.create_superuser(
+        admin = User.objects.create_user(
             email="admin@test.com",
             password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,
+            first_name="Internship",
+            last_name="Admin",
         )
         api_client.force_authenticate(user=admin)
         app = SupervisorApplication.objects.get(user=user)

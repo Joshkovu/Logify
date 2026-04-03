@@ -80,7 +80,7 @@ class TestRegistrationAPI(APITestCase):
         )
 
     def test_get_student_registry(self):
-        self.client.force_login(self.user)
+        self.client.force_authenticate(user=self.user)
         response = self.client.get("/api/v1/registry/students/")
         self.assertEqual(response.status_code, 200)
 
