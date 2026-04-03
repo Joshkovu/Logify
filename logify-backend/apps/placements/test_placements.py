@@ -95,7 +95,7 @@ class PlacementWorkflowTests(APITestCase):
 
     def test_submit_placement_success(self):
         """Test that a student can submit a draft."""
-        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
+        self.client.force_authenticate(user=self.intern)
 
         response = self.client.post(self.submit_url, {"comment": "Submitting for review"})
 
@@ -109,7 +109,7 @@ class PlacementWorkflowTests(APITestCase):
         self.placement.status = "submitted"
         self.placement.save()
 
-        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
+        self.client.force_authenticate(user=self.intern)
         response = self.client.post(self.approve_url)
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
@@ -119,7 +119,7 @@ class PlacementWorkflowTests(APITestCase):
         self.placement.status = "approved"
         self.placement.save()
 
-        self.client.login(email=f"intern@{TEST_EMAIL_DOMAIN}", password=f"{TEST_PASSWORD}")
+        self.client.force_authenticate(user=self.intern)
 
         data = {"internship_title": "New Title"}
         response = self.client.patch(self.detail_url, data)
