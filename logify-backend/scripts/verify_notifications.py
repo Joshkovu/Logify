@@ -14,7 +14,6 @@ def test_mail_service():
     print("Testing MailjetService...")
     service = MailjetService()
 
-    
     print("Testing send_otp...")
     service.send_otp("student@example.com", "123456")
 
