@@ -108,9 +108,12 @@ class TestSupervisorAuth:
         )
         assert response.status_code == status.HTTP_401_UNAUTHORIZED
 
-        admin = User.objects.create_superuser(
+        admin = User.objects.create_user(
             email="admin@test.com",
             password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,
+            first_name="Internship",
+            last_name="Admin",
         )
         api_client.force_authenticate(user=admin)
         app = SupervisorApplication.objects.get(user=user)
