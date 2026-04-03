@@ -2,14 +2,13 @@ import hashlib
 from datetime import timedelta
 
 import pytest  # type: ignore
+from apps.academics.models import Departments, Institutions, Programmes
+from apps.accounts.models import SupervisorApplication
+from apps.registry.models import RegistrationAttempts, StudentRegistry
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
-
-from apps.academics.models import Departments, Institutions, Programmes
-from apps.accounts.models import SupervisorApplication
-from apps.registry.models import RegistrationAttempts, StudentRegistry
 
 User = get_user_model()
 
