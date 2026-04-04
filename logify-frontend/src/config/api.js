@@ -1,6 +1,17 @@
-import { getSession } from "@/pages/auth/authStore";
-
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+
+const SESSION_STORAGE_KEY = "logify-auth-session";
+
+const getSession = () => {
+  const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    window.localStorage.removeItem(SESSION_STORAGE_KEY);
+    return null;
+  }
+};
 
 const getAuthHeaders = () => {
   const session = getSession();
