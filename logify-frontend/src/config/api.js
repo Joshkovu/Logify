@@ -68,6 +68,16 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
+    studentRequestOTP: (data) =>
+      apiRequest("/v1/auth/student/request-otp/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    studentVerifyOTP: (data) =>
+      apiRequest("/v1/auth/student/verify-otp/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
   },
 
   accounts: {
