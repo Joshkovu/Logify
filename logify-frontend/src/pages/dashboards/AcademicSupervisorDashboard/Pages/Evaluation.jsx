@@ -249,8 +249,9 @@ const Evaluation = () => {
   };
 
   const handleFeedbackChange = (value) => {
-    if (!selectedEvaluation || selectedEvaluation.category !== "pending")
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
       return;
+    }
 
     setPendingEvaluations((prev) =>
       prev.map((item) =>
@@ -260,14 +261,16 @@ const Evaluation = () => {
   };
 
   const handleSaveReview = () => {
-    if (!selectedEvaluation || selectedEvaluation.category !== "pending")
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
       return;
+    }
     alert(`Review saved for ${selectedEvaluation.name}`);
   };
 
   const handleAuthorizeRequest = () => {
-    if (!selectedEvaluation || selectedEvaluation.category !== "pending")
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
       return;
+    }
 
     const authorizedStudent = {
       ...selectedEvaluation,
@@ -294,8 +297,9 @@ const Evaluation = () => {
   };
 
   const handleViewAuthorizedRecord = () => {
-    if (!selectedEvaluation || selectedEvaluation.category !== "history")
+    if (!selectedEvaluation || selectedEvaluation.category !== "history") {
       return;
+    }
 
     setSelectedEvaluationRef({
       id: selectedEvaluation.id,
@@ -305,20 +309,23 @@ const Evaluation = () => {
     alert(`Viewing authorized record for ${selectedEvaluation.name}`);
   };
 
+  const sectionCardClassName =
+    "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <header className="mb-8 sm:mb-10 lg:mb-12">
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Student <span className="text-gold">Evaluations</span>
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
           Assess intern performance across key academic and professional
           competencies.
         </p>
       </header>
 
       <section className="mb-8">
-        <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10">
+        <div className={sectionCardClassName}>
           <div className="mb-6 flex items-center gap-3">
             <div className="rounded-xl bg-gold/10 p-2 text-gold dark:text-slate-300">
               <Clock size={20} />
@@ -327,7 +334,7 @@ const Evaluation = () => {
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Pending Evaluations
               </h2>
-              <p className="text-sm text-text-secondary dark:text-slate-300">
+              <p className="text-sm text-muted-foreground">
                 Students requiring your assessment
               </p>
             </div>
@@ -348,7 +355,7 @@ const Evaluation = () => {
                     className={`group flex w-full flex-col gap-4 rounded-2xl border p-4 text-left transition-all sm:flex-row sm:items-center sm:justify-between sm:p-5 ${
                       isActive
                         ? "border-gold/20 bg-gold/5 dark:border-slate-700 dark:bg-slate-800"
-                        : "border-border bg-background hover:bg-background/70 dark:border-slate-700/30 dark:bg-slate-800/50 dark:hover:bg-slate-800"
+                        : "border-border bg-muted hover:bg-muted/70"
                     }`}
                   >
                     <div className="flex items-center gap-4 sm:gap-5">
@@ -359,12 +366,12 @@ const Evaluation = () => {
                       <div>
                         <h3 className="text-sm font-bold text-maroon-dark dark:text-slate-300 sm:text-base">
                           {item.name}
-                          <span className="font-medium text-text-secondary dark:text-slate-300">
+                          <span className="font-medium text-muted-foreground">
                             {" "}
                             &bull; {item.type}
                           </span>
                         </h3>
-                        <p className="mt-0.5 text-sm text-text-secondary dark:text-slate-300">
+                        <p className="mt-0.5 text-sm text-muted-foreground">
                           {item.company}
                         </p>
                       </div>
@@ -387,8 +394,8 @@ const Evaluation = () => {
                 );
               })
             ) : (
-              <div className="rounded-2xl border border-dashed border-border bg-gray-50/50 p-6 text-center dark:border-slate-700/60 dark:bg-slate-800/50">
-                <p className="text-sm font-semibold text-text-secondary dark:text-slate-300">
+              <div className="rounded-2xl border border-dashed border-border bg-muted p-6 text-center">
+                <p className="text-sm font-semibold text-muted-foreground">
                   No pending evaluations at the moment.
                 </p>
               </div>
@@ -399,7 +406,7 @@ const Evaluation = () => {
 
       {selectedEvaluation && (
         <section className="mb-8">
-          <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10">
+          <div className={sectionCardClassName}>
             <div className="mb-8 flex flex-col gap-4 sm:mb-10 lg:flex-row lg:items-start lg:justify-between">
               <div className="min-w-0">
                 <div className="mb-2 w-fit rounded-full bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold dark:text-slate-300">
@@ -412,11 +419,11 @@ const Evaluation = () => {
                   {selectedEvaluation.type} &mdash; {selectedEvaluation.name}
                 </h2>
 
-                <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
+                <p className="mt-1 text-sm text-muted-foreground sm:text-base">
                   {selectedEvaluation.program} &bull; {selectedEvaluation.week}
                 </p>
 
-                <p className="mt-2 text-sm text-text-secondary dark:text-slate-300">
+                <p className="mt-2 text-sm text-muted-foreground">
                   {selectedEvaluation.company}
                 </p>
 
@@ -453,18 +460,18 @@ const Evaluation = () => {
                 {selectedEvaluation.criteria.map((item) => (
                   <div
                     key={item.title}
-                    className="rounded-2xl border border-border bg-background p-4 dark:border-slate-700/30 dark:bg-slate-800/50 sm:p-5"
+                    className="rounded-2xl border border-border bg-muted p-4 sm:p-5"
                   >
                     <div className="mb-4 flex items-start justify-between gap-4">
                       <div className="max-w-2xl min-w-0">
                         <h4 className="text-base font-bold text-maroon-dark dark:text-slate-300 sm:text-lg">
                           {item.title}
-                          <span className="text-sm font-medium text-text-secondary/70 dark:text-slate-400">
+                          <span className="text-sm font-medium text-muted-foreground/70">
                             {" "}
                             ({item.weight} Weight)
                           </span>
                         </h4>
-                        <p className="mt-1 text-sm text-text-secondary dark:text-slate-300">
+                        <p className="mt-1 text-sm text-muted-foreground">
                           {item.note}
                         </p>
                       </div>
@@ -480,7 +487,7 @@ const Evaluation = () => {
                       </div>
                     </div>
 
-                    <div className="h-3 w-full overflow-hidden rounded-full border border-border/30 bg-gray-50/50 dark:border-slate-700 dark:bg-slate-800">
+                    <div className="h-3 w-full overflow-hidden rounded-full border border-border/30 bg-background">
                       <div
                         className="h-full rounded-full bg-maroonCustom transition-all duration-1000 dark:bg-gold"
                         style={{ width: `${item.score}%` }}
@@ -491,8 +498,8 @@ const Evaluation = () => {
               </div>
             </div>
 
-            <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900">
-              <div className="rounded-2xl border border-border/30 bg-background p-4 dark:border-slate-700/30 dark:bg-slate-800/50 sm:p-6 lg:p-8">
+            <div className="rounded-[12px] border border-border bg-card text-card-foreground">
+              <div className="rounded-2xl border border-border/30 bg-muted p-4 sm:p-6 lg:p-8">
                 <div className="mb-6 flex items-start gap-4">
                   <div className="rounded-xl bg-gold/10 p-3 text-gold dark:text-slate-300">
                     <MessageSquare size={24} />
@@ -507,11 +514,11 @@ const Evaluation = () => {
                       <textarea
                         value={selectedEvaluation.feedback}
                         onChange={(e) => handleFeedbackChange(e.target.value)}
-                        className="min-h-[150px] w-full rounded-2xl border border-border/30 bg-white p-4 font-medium text-text-secondary outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:p-6"
+                        className="min-h-[150px] w-full rounded-2xl border border-border/30 bg-card p-4 font-medium text-muted-foreground outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-200 sm:p-6"
                         placeholder="Provide qualitative feedback on the student's overall growth, technical agility, and professional conduct..."
                       />
                     ) : (
-                      <div className="min-h-[150px] rounded-2xl border border-border/30 bg-white p-4 font-medium text-text-secondary dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 sm:p-6">
+                      <div className="min-h-[150px] rounded-2xl border border-border/30 bg-card p-4 font-medium text-muted-foreground dark:text-slate-200 sm:p-6">
                         {selectedEvaluation.feedback ||
                           "No feedback was recorded."}
                       </div>
@@ -558,12 +565,12 @@ const Evaluation = () => {
       )}
 
       <section>
-        <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-transform hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10">
+        <div className={sectionCardClassName}>
           <div className="mb-6 sm:mb-8">
             <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
               Evaluation History
             </h2>
-            <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
+            <p className="mt-1 text-sm text-muted-foreground sm:text-base">
               Archive of previously authorized assessments
             </p>
           </div>
@@ -582,7 +589,7 @@ const Evaluation = () => {
                   className={`group flex w-full flex-col gap-4 rounded-2xl border p-4 text-left transition-all sm:flex-row sm:items-center sm:justify-between sm:p-5 ${
                     isActive
                       ? "border-emerald-200 bg-emerald-50 dark:border-emerald-700 dark:bg-emerald-900/20"
-                      : "border-border bg-background hover:bg-background/70 dark:border-slate-700/30 dark:bg-slate-800/50 dark:hover:bg-slate-800"
+                      : "border-border bg-muted hover:bg-muted/70"
                   }`}
                 >
                   <div className="flex items-center gap-4 sm:gap-5">
@@ -595,7 +602,7 @@ const Evaluation = () => {
                         {item.name}
                         <span className="font-medium"> &bull; {item.type}</span>
                       </h3>
-                      <p className="mt-0.5 text-sm text-text-secondary dark:text-slate-300">
+                      <p className="mt-0.5 text-sm text-muted-foreground">
                         {item.company} &bull; Submitted on {item.date}
                       </p>
                     </div>
@@ -606,7 +613,7 @@ const Evaluation = () => {
                       <div className="text-2xl font-black leading-none text-emerald-600 dark:text-emerald-400">
                         {item.score}%
                       </div>
-                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
+                      <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60">
                         Final Grade
                       </p>
                     </div>
@@ -616,7 +623,7 @@ const Evaluation = () => {
                       className={`transition-transform ${
                         isActive
                           ? "translate-x-1 text-emerald-700 dark:text-emerald-400"
-                          : "text-text-secondary/40 group-hover:translate-x-1 group-hover:text-maroon-dark dark:text-slate-400 dark:group-hover:text-white"
+                          : "text-muted-foreground/40 group-hover:translate-x-1 group-hover:text-maroon-dark dark:group-hover:text-white"
                       }`}
                     />
                   </div>
