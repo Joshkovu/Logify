@@ -243,21 +243,20 @@ const InternshipApprovals = () => {
   };
 
   const pageCard =
-    "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+    "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
-  const infoCard =
-    "rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 sm:p-6";
+  const infoCard = "rounded-2xl border border-border bg-muted p-4 sm:p-6";
 
   const sectionLabel =
-    "text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400";
+    "text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60";
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <header className="mb-8 sm:mb-10 lg:mb-12">
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Internship <span className="text-gold">Approvals</span>
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
           Review and authorize student internship placement requests for the
           current semester.
         </p>
@@ -278,7 +277,7 @@ const InternshipApprovals = () => {
         {pendingApprovals.length > 0 ? (
           pendingApprovals.map((item) => (
             <div key={item.id} className={pageCard}>
-              <div className="mb-8 flex flex-col gap-6 border-b border-border/50 pb-8 dark:border-slate-700 lg:flex-row lg:items-start lg:justify-between">
+              <div className="mb-8 flex flex-col gap-6 border-b border-border/50 pb-8 lg:flex-row lg:items-start lg:justify-between">
                 <div className="flex items-start gap-4 sm:gap-5">
                   <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-xl font-black text-gold dark:text-slate-300 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-2xl">
                     {item.name.charAt(0)}
@@ -301,7 +300,7 @@ const InternshipApprovals = () => {
                       </div>
                     </div>
 
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary/60 dark:text-slate-400 sm:text-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                       Reg: {item.regNo} &bull; {item.program}
                     </p>
 
@@ -328,7 +327,7 @@ const InternshipApprovals = () => {
                     {item.organization}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
+                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
                     <MapPin size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm leading-relaxed">{item.address}</p>
                   </div>
@@ -346,7 +345,7 @@ const InternshipApprovals = () => {
                     {item.position}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
+                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
                     <Calendar size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm leading-relaxed">{item.duration}</p>
                   </div>
@@ -365,12 +364,12 @@ const InternshipApprovals = () => {
                   </p>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
+                    <div className="flex items-center gap-3 text-muted-foreground">
                       <Mail size={16} className="shrink-0" />
                       <p className="text-sm break-all">{item.email}</p>
                     </div>
 
-                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
+                    <div className="flex items-center gap-3 text-muted-foreground">
                       <Phone size={16} className="shrink-0" />
                       <p className="text-sm">{item.phone}</p>
                     </div>
@@ -378,7 +377,7 @@ const InternshipApprovals = () => {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 border-t border-border/50 pt-8 dark:border-slate-700 md:flex-row">
+              <div className="flex flex-col gap-4 border-t border-border/50 pt-8 md:flex-row">
                 <button
                   onClick={() => handleApprove(item)}
                   className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 active:scale-[0.98]"
@@ -398,8 +397,8 @@ const InternshipApprovals = () => {
             </div>
           ))
         ) : (
-          <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 text-center sm:p-8 lg:p-10">
-            <p className="text-base font-semibold text-text-secondary dark:text-slate-300 sm:text-lg">
+          <div className="rounded-[12px] border border-border bg-card p-6 text-center sm:p-8 lg:p-10">
+            <p className="text-base font-semibold text-muted-foreground sm:text-lg">
               No pending internship approvals at the moment.
             </p>
           </div>
