@@ -81,6 +81,10 @@ const sectionCardClassName =
   "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
+  const handleReviewApproval = (approval) => {
+    alert(`Reviewing approval for ${approval.student}`);
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <header className="mb-8 sm:mb-10 lg:mb-12">
@@ -245,7 +249,10 @@ const Dashboard = () => {
                     </td>
 
                     <td className="px-4 py-5 sm:px-6">
-                      <button className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon dark:text-slate-300">
+                      <button
+                        onClick={() => handleReviewApproval(approval)}
+                        className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
+                      >
                         Review
                         <ChevronRight size={16} />
                       </button>
