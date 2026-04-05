@@ -49,7 +49,7 @@ const Profile = () => {
   });
 
   const sectionCardClassName =
-    "rounded-[14px] border border-border bg-white p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900";
+    "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8";
 
   const personalInfo = [
     { label: "First Name", value: profile.firstName, icon: <User size={16} /> },
@@ -154,59 +154,59 @@ const Profile = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans text-[#1e1e1e] dark:bg-black dark:text-white md:px-10">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10">
       <div className="mx-auto max-w-4xl">
-        <header className="mb-8">
-          <h1 className="mb-2 text-4xl font-black tracking-tighter text-maroon-dark dark:text-white md:text-5xl">
+        <header className="mb-8 sm:mb-10 lg:mb-12">
+          <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
             My <span className="text-gold">Profile</span>
           </h1>
-          <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 dark:text-slate-300 md:text-lg">
+          <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
             Manage your professional identity and academic credentials within
             the Logify ecosystem.
           </p>
         </header>
 
         <div className="space-y-6">
-          <div className="rounded-[14px] border border-border bg-[#FEFEFC] p-6 shadow-sm dark:border-slate-700 dark:bg-slate-900">
+          <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8">
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
-                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-white shadow-lg">
+                <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-white shadow-sm">
                   ER
                 </div>
 
-                <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark shadow-sm transition-colors hover:text-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white">
+                <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark transition-colors hover:text-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
                   <Settings size={14} />
                 </button>
               </div>
 
-              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white md:text-2xl">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Dr. {profile.firstName} {profile.lastName}
               </h2>
 
-              <p className="mt-2 rounded-full bg-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-gold">
+              <p className="mt-2 rounded-full bg-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-gold dark:text-slate-300">
                 Academic Supervisor
               </p>
 
-              <p className="mt-2 text-sm font-medium text-text-secondary dark:text-slate-300">
+              <p className="mt-2 text-sm text-text-secondary dark:text-slate-300">
                 Department of {profile.department}
               </p>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
-              <div className="rounded-xl border border-border/40 bg-white p-3 text-center dark:border-slate-700 dark:bg-slate-800">
+              <div className="rounded-xl border border-border/40 bg-background dark:border-slate-700/30 dark:bg-slate-800/50 p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark dark:text-white">
                   5
                 </p>
-                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
+                <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
                   Current Interns
                 </p>
               </div>
 
-              <div className="rounded-xl border border-border/40 bg-white p-3 text-center dark:border-slate-700 dark:bg-slate-800">
+              <div className="rounded-xl border border-border/40 bg-background dark:border-slate-700/30 dark:bg-slate-800/50 p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark dark:text-white">
                   15
                 </p>
-                <p className="mt-1 text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
+                <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
                   Total Students
                 </p>
               </div>
@@ -215,17 +215,17 @@ const Profile = () => {
             <div className="mt-3 space-y-2">
               <button
                 onClick={handleOpenEditModal}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-maroon-dark px-4 py-3 font-bold text-white shadow-sm transition-transform hover:scale-[1.01]"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
-                <Settings size={16} className="text-gold" />
+                <Settings size={16} />
                 <span>Edit Profile</span>
               </button>
 
               <button
                 onClick={() => setShowSecurityModal(true)}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-4 py-3 font-bold text-maroon-dark transition-colors hover:bg-background dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:hover:bg-slate-700"
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
-                <Key size={16} className="text-gold" />
+                <Key size={16} />
                 Security & Password
               </button>
             </div>
@@ -233,7 +233,7 @@ const Profile = () => {
 
           <div className={sectionCardClassName}>
             <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4 dark:border-slate-700">
-              <div className="rounded-lg bg-maroonCustom/10 p-2 text-maroonCustom dark:bg-gold/10 dark:text-gold">
+              <div className="rounded-lg bg-gold/10 p-2 text-gold dark:text-slate-300">
                 <User size={18} />
               </div>
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white">
@@ -248,10 +248,10 @@ const Profile = () => {
                   className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800 dark:text-gold">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800/50 dark:text-slate-300">
                       {item.icon}
                     </div>
-                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60 dark:text-slate-400">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/60 dark:text-slate-400">
                       {item.label}
                     </p>
                   </div>
@@ -266,7 +266,7 @@ const Profile = () => {
 
           <div className={sectionCardClassName}>
             <div className="mb-5 flex items-center gap-3 border-b border-border/50 pb-4 dark:border-slate-700">
-              <div className="rounded-lg bg-gold/10 p-2 text-gold">
+              <div className="rounded-lg bg-gold/10 p-2 text-gold dark:text-slate-300">
                 <GraduationCap size={18} />
               </div>
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white">
@@ -281,10 +281,10 @@ const Profile = () => {
                   className="flex flex-col gap-2 py-4 md:flex-row md:items-center md:justify-between"
                 >
                   <div className="flex items-center gap-3">
-                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800 dark:text-gold">
+                    <div className="rounded-lg bg-background/70 p-2 text-gold dark:bg-slate-800/50 dark:text-slate-300">
                       {item.icon}
                     </div>
-                    <p className="text-xs font-black uppercase tracking-widest text-text-secondary/60 dark:text-slate-400">
+                    <p className="text-xs font-black uppercase tracking-[0.2em] text-text-secondary/60 dark:text-slate-400">
                       {item.label}
                     </p>
                   </div>
@@ -301,12 +301,12 @@ const Profile = () => {
             {stats.map((item) => (
               <div
                 key={item.label}
-                className="rounded-xl border border-border bg-white p-4 text-center shadow-sm transition-all hover:border-gold/30 dark:border-slate-700 dark:bg-slate-900"
+                className="rounded-xl border border-border dark:border-slate-700/30 bg-white dark:bg-slate-900 p-4 text-center transition-all hover:scale-[1.005]"
               >
                 <div className="mb-1 text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
                   {item.value}
                 </div>
-                <div className="text-[9px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400">
+                <div className="text-[9px] font-black uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
                   {item.label}
                 </div>
               </div>
@@ -317,16 +317,16 @@ const Profile = () => {
 
       {showEditModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-2xl rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div className="w-full max-w-2xl rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6 lg:p-8">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-maroon-dark dark:text-white">
+              <h2 className="text-xl font-black text-maroon-dark dark:text-white sm:text-2xl">
                 Edit Profile
               </h2>
               <button
                 onClick={() => setShowEditModal(false)}
-                className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50"
               >
-                <X size={20} className="text-maroon-dark dark:text-white" />
+                <X size={20} className="text-maroon-dark dark:text-slate-300" />
               </button>
             </div>
 
@@ -338,7 +338,7 @@ const Profile = () => {
                   handleEditInputChange("firstName", e.target.value)
                 }
                 placeholder="First Name"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -347,14 +347,14 @@ const Profile = () => {
                   handleEditInputChange("lastName", e.target.value)
                 }
                 placeholder="Last Name"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="email"
                 value={editForm.email}
                 onChange={(e) => handleEditInputChange("email", e.target.value)}
                 placeholder="Email Address"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -363,7 +363,7 @@ const Profile = () => {
                   handleEditInputChange("officePhone", e.target.value)
                 }
                 placeholder="Office Phone"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -372,7 +372,7 @@ const Profile = () => {
                   handleEditInputChange("university", e.target.value)
                 }
                 placeholder="University"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -381,7 +381,7 @@ const Profile = () => {
                   handleEditInputChange("department", e.target.value)
                 }
                 placeholder="Department"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -390,7 +390,7 @@ const Profile = () => {
                   handleEditInputChange("position", e.target.value)
                 }
                 placeholder="Position"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -399,7 +399,7 @@ const Profile = () => {
                   handleEditInputChange("officeLocation", e.target.value)
                 }
                 placeholder="Office Location"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
@@ -408,7 +408,7 @@ const Profile = () => {
                   handleEditInputChange("specialization", e.target.value)
                 }
                 placeholder="Specialization"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white md:col-span-2"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white md:col-span-2"
               />
               <input
                 type="text"
@@ -417,22 +417,22 @@ const Profile = () => {
                   handleEditInputChange("yearsAtUniversity", e.target.value)
                 }
                 placeholder="Years at University"
-                className="rounded-xl border border-border bg-[#FEFEFC] p-3 outline-none focus:border-gold dark:border-slate-700 dark:bg-slate-800 dark:text-white md:col-span-2"
+                className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white md:col-span-2"
               />
             </div>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowEditModal(false)}
-                className="rounded-xl border border-border px-4 py-3 font-bold text-maroon-dark dark:border-slate-700 dark:text-white"
+                className="rounded-lg border border-border dark:border-slate-700 px-4 py-3 text-sm font-bold text-maroon-dark dark:text-slate-300 transition-colors hover:bg-background dark:hover:bg-slate-800/50"
               >
                 Cancel
               </button>
               <button
                 onClick={handleSaveProfile}
-                className="flex items-center gap-2 rounded-xl bg-maroon-dark px-5 py-3 font-bold text-white"
+                className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
-                <Save size={16} className="text-gold" />
+                <Save size={16} />
                 Save Changes
               </button>
             </div>
@@ -442,16 +442,16 @@ const Profile = () => {
 
       {showSecurityModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-          <div className="w-full max-w-lg rounded-2xl bg-white p-6 shadow-2xl dark:bg-slate-900">
+          <div className="w-full max-w-lg rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 sm:p-6 lg:p-8">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-maroon-dark dark:text-white">
+              <h2 className="text-xl font-black text-maroon-dark dark:text-white sm:text-2xl">
                 Security & Password
               </h2>
               <button
                 onClick={() => setShowSecurityModal(false)}
-                className="rounded-lg p-2 hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50"
               >
-                <X size={20} className="text-maroon-dark dark:text-white" />
+                <X size={20} className="text-maroon-dark dark:text-slate-300" />
               </button>
             </div>
 
@@ -460,8 +460,8 @@ const Profile = () => {
                 <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
                   Current Password
                 </label>
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
-                  <Lock size={16} className="text-gold" />
+                <div className="flex items-center gap-2 rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 px-3">
+                  <Lock size={16} className="text-gold dark:text-slate-300" />
                   <input
                     type="password"
                     value={passwordForm.currentPassword}
@@ -481,8 +481,8 @@ const Profile = () => {
                 <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
                   New Password
                 </label>
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
-                  <Key size={16} className="text-gold" />
+                <div className="flex items-center gap-2 rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 px-3">
+                  <Key size={16} className="text-gold dark:text-slate-300" />
                   <input
                     type="password"
                     value={passwordForm.newPassword}
@@ -499,8 +499,8 @@ const Profile = () => {
                 <label className="mb-2 block text-sm font-bold text-maroon-dark dark:text-white">
                   Confirm New Password
                 </label>
-                <div className="flex items-center gap-2 rounded-xl border border-border bg-[#FEFEFC] px-3 dark:border-slate-700 dark:bg-slate-800">
-                  <Key size={16} className="text-gold" />
+                <div className="flex items-center gap-2 rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 px-3">
+                  <Key size={16} className="text-gold dark:text-slate-300" />
                   <input
                     type="password"
                     value={passwordForm.confirmPassword}
@@ -520,13 +520,13 @@ const Profile = () => {
             <div className="mt-6 flex justify-end gap-3">
               <button
                 onClick={() => setShowSecurityModal(false)}
-                className="rounded-xl border border-border px-4 py-3 font-bold text-maroon-dark dark:border-slate-700 dark:text-white"
+                className="rounded-lg border border-border dark:border-slate-700 px-4 py-3 text-sm font-bold text-maroon-dark dark:text-slate-300 transition-colors hover:bg-background dark:hover:bg-slate-800/50"
               >
                 Cancel
               </button>
               <button
                 onClick={handlePasswordChange}
-                className="rounded-xl bg-maroon-dark px-5 py-3 font-bold text-white"
+                className="rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
                 Update Password
               </button>
