@@ -78,22 +78,22 @@ const activities = [
 ];
 
 const sectionCardClassName =
-  "rounded-[12px] border border-border bg-white p-8 transition-all hover:scale-[1.01] dark:bg-slate-900 dark:border-slate-700";
+  "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-8 py-8 font-sans text-[#1e1e1e] dark:bg-black dark:text-white md:px-12 md:py-10">
-      <header className="mb-10">
-        <h1 className="mb-3 text-4xl font-black tracking-tighter text-maroon-dark dark:text-white md:text-5xl">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <header className="mb-8 sm:mb-10 lg:mb-12">
+        <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Academic <span className="text-gold">Dashboard</span>
         </h1>
-        <p className="max-w-2xl text-base leading-relaxed text-text-secondary/80 dark:text-slate-300 md:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
           Welcome back, Dr. Roberts! Monitor student progress and manage
           academic approvals with real-time statistics.
         </p>
       </header>
 
-      <section className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 xl:gap-8">
         {summaryCards.map(({ title, value, iconType }) => (
           <MetricCard
             key={title}
@@ -104,18 +104,19 @@ const Dashboard = () => {
         ))}
       </section>
 
-      <section className="mb-10">
+      <section className="mb-8">
         <div className={sectionCardClassName}>
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Supervised Interns
               </h2>
-              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 md:text-md">
+              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
                 Students currently under your mentorship
               </p>
             </div>
-            <div className="rounded-full bg-maroon/5 px-3 py-1 text-xs font-bold uppercase tracking-widest text-maroon dark:bg-gold/10 dark:text-gold md:text-sm">
+
+            <div className="w-fit rounded-full bg-maroon/5 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-maroon dark:text-slate-300 sm:text-sm">
               Active
             </div>
           </div>
@@ -124,19 +125,19 @@ const Dashboard = () => {
             {supervisedInterns.map((intern) => (
               <div
                 key={intern.name}
-                className="rounded-2xl border border-border/30 bg-background/50 p-5 transition-transform hover:scale-[1.01] dark:border-slate-700 dark:bg-slate-800"
+                className="rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 transition-all hover:scale-[1.005] sm:p-5"
               >
-                <div className="mb-4 flex items-start justify-between gap-4">
+                <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-maroonCustom/10 font-bold text-maroonCustom dark:bg-gold/10 dark:text-gold">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-maroonCustom/10 font-bold text-maroonCustom dark:text-slate-300">
                       {intern.name.charAt(0)}
                     </div>
 
                     <div>
-                      <h4 className="text-base font-bold text-maroon-dark dark:text-white md:text-lg">
+                      <h4 className="text-sm font-bold text-maroon-dark dark:text-white sm:text-base lg:text-lg">
                         {intern.name}
                       </h4>
-                      <p className="text-xs font-medium text-text-secondary dark:text-slate-300">
+                      <p className="text-sm text-text-secondary dark:text-slate-300">
                         {intern.company}
                       </p>
                       <p className="mt-1 text-xs text-text-secondary/80 dark:text-slate-400">
@@ -145,14 +146,14 @@ const Dashboard = () => {
                     </div>
                   </div>
 
-                  <span className="text-xs font-black uppercase tracking-widest text-gold">
+                  <span className="w-fit rounded-full bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold dark:text-slate-300">
                     {intern.week}
                   </span>
                 </div>
 
-                <div className="mb-2 h-2 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-slate-700">
+                <div className="mb-2 h-3 w-full overflow-hidden rounded-full border border-border/30 bg-gray-50/50 dark:border-slate-700 dark:bg-slate-800">
                   <div
-                    className="h-full bg-maroonCustom transition-all duration-1000 dark:bg-gold"
+                    className="h-full rounded-full bg-maroonCustom transition-all duration-1000 dark:bg-gold"
                     style={{ width: `${intern.progress}%` }}
                   />
                 </div>
@@ -166,42 +167,43 @@ const Dashboard = () => {
         </div>
       </section>
 
-      <section className="mb-10">
+      <section className="mb-8">
         <div className={sectionCardClassName}>
-          <div className="mb-6 flex items-start justify-between">
-            <div>
-              <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
+          <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Pending Approvals
               </h2>
-              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 md:text-md">
+              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
                 Review and authorize new internship site requests
               </p>
             </div>
-            <div className="rounded-full bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-gold md:text-sm">
+
+            <div className="w-fit rounded-full bg-gold/10 px-3 py-1 text-xs font-bold uppercase tracking-[0.2em] text-gold dark:text-slate-300 sm:text-sm">
               Review
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-border/40 dark:border-slate-700">
+          <div className="overflow-x-auto rounded-2xl border border-border dark:border-slate-700/60">
             <table className="min-w-full text-left">
               <thead>
-                <tr className="border-b border-border/50 bg-background/70 dark:border-slate-700 dark:bg-slate-800">
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                <tr className="border-b border-border/50 bg-background/70 dark:border-slate-700 dark:bg-slate-800/70">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Student
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Organization
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Role
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Submitted On
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Status
                   </th>
-                  <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-maroon-dark/60 dark:text-slate-300">
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Action
                   </th>
                 </tr>
@@ -213,9 +215,9 @@ const Dashboard = () => {
                     key={approval.student}
                     className="transition-colors hover:bg-background/40 dark:hover:bg-slate-800"
                   >
-                    <td className="px-6 py-5">
+                    <td className="px-4 py-5 sm:px-6">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 font-bold text-gold">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 font-bold text-gold dark:text-slate-300">
                           {approval.student.charAt(0)}
                         </div>
                         <span className="text-sm font-bold text-maroon-dark dark:text-white">
@@ -224,26 +226,26 @@ const Dashboard = () => {
                       </div>
                     </td>
 
-                    <td className="px-6 py-5 text-sm font-medium text-text-secondary dark:text-slate-300">
+                    <td className="px-4 py-5 text-sm text-text-secondary dark:text-slate-300 sm:px-6">
                       {approval.org}
                     </td>
 
-                    <td className="px-6 py-5 text-sm text-text-secondary/90 dark:text-slate-300">
+                    <td className="px-4 py-5 text-sm text-text-secondary/90 dark:text-slate-300 sm:px-6">
                       {approval.role}
                     </td>
 
-                    <td className="px-6 py-5 text-sm font-medium text-text-secondary dark:text-slate-300">
+                    <td className="px-4 py-5 text-sm text-text-secondary dark:text-slate-300 sm:px-6">
                       {approval.date}
                     </td>
 
-                    <td className="px-6 py-5">
-                      <span className="rounded-full border border-amber-200 bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-widest text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
+                    <td className="px-4 py-5 sm:px-6">
+                      <span className="rounded-full border border-amber-200 bg-amber-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-amber-700 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-300">
                         {approval.status}
                       </span>
                     </td>
 
-                    <td className="px-6 py-5">
-                      <button className="inline-flex items-center gap-2 rounded-xl border border-gold/20 bg-white px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/5 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700">
+                    <td className="px-4 py-5 sm:px-6">
+                      <button className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon dark:text-slate-300">
                         Review
                         <ChevronRight size={16} />
                       </button>
@@ -257,11 +259,11 @@ const Dashboard = () => {
       </section>
 
       <section className={sectionCardClassName}>
-        <div className="mb-6">
-          <h2 className="text-2xl font-black tracking-tight text-maroon-dark dark:text-white">
+        <div className="mb-6 sm:mb-8">
+          <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
             Recent Supervision Activity
           </h2>
-          <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 md:text-md">
+          <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
             Chronological log of your recent interactions and approvals
           </p>
         </div>
@@ -273,10 +275,10 @@ const Dashboard = () => {
             return (
               <div
                 key={`${activity.title}-${index}`}
-                className="flex items-center gap-5 rounded-2xl border border-border/30 bg-background/50 p-5 transition-colors hover:bg-background dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                className="flex flex-col items-start gap-3 rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 transition-colors hover:bg-background dark:hover:bg-slate-800 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
               >
                 <div
-                  className={`flex h-11 w-11 items-center justify-center rounded-xl ${
+                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
                     isEvaluation
                       ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                       : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
@@ -290,7 +292,7 @@ const Dashboard = () => {
                 </div>
 
                 <div className="flex-1">
-                  <h3 className="text-sm font-bold text-maroon-dark dark:text-white md:text-md">
+                  <h3 className="text-sm font-bold text-maroon-dark dark:text-slate-300 sm:text-base">
                     {activity.title} &bull;{" "}
                     <span className="font-medium text-text-secondary dark:text-slate-300">
                       {activity.user}
@@ -301,7 +303,7 @@ const Dashboard = () => {
                   </p>
                 </div>
 
-                <div className="text-xs font-bold uppercase tracking-tighter text-text-secondary/50 dark:text-slate-400 md:text-sm">
+                <div className="text-xs font-bold uppercase tracking-wide text-text-secondary/50 dark:text-slate-400 sm:text-sm">
                   {activity.time}
                 </div>
               </div>
