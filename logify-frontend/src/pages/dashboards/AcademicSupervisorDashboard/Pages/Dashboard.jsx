@@ -78,7 +78,7 @@ const activities = [
 ];
 
 const sectionCardClassName =
-  "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+  "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
   const handleReviewApproval = (approval) => {
@@ -86,12 +86,12 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <header className="mb-8 sm:mb-10 lg:mb-12">
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Academic <span className="text-gold">Dashboard</span>
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
           Welcome back, Dr. Roberts! Monitor student progress and manage
           academic approvals with real-time statistics.
         </p>
@@ -115,7 +115,7 @@ const Dashboard = () => {
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Supervised Interns
               </h2>
-              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
+              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
                 Students currently under your mentorship
               </p>
             </div>
@@ -129,7 +129,7 @@ const Dashboard = () => {
             {supervisedInterns.map((intern) => (
               <div
                 key={intern.name}
-                className="rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 transition-all hover:scale-[1.005] sm:p-5"
+                className="rounded-2xl border border-border bg-muted p-4 transition-all hover:scale-[1.005] sm:p-5"
               >
                 <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                   <div className="flex items-center gap-4">
@@ -141,10 +141,10 @@ const Dashboard = () => {
                       <h4 className="text-sm font-bold text-maroon-dark dark:text-white sm:text-base lg:text-lg">
                         {intern.name}
                       </h4>
-                      <p className="text-sm text-text-secondary dark:text-slate-300">
+                      <p className="text-sm text-muted-foreground">
                         {intern.company}
                       </p>
-                      <p className="mt-1 text-xs text-text-secondary/80 dark:text-slate-400">
+                      <p className="mt-1 text-xs text-muted-foreground/80">
                         {intern.course}
                       </p>
                     </div>
@@ -155,14 +155,14 @@ const Dashboard = () => {
                   </span>
                 </div>
 
-                <div className="mb-2 h-3 w-full overflow-hidden rounded-full border border-border/30 bg-gray-50/50 dark:border-slate-700 dark:bg-slate-800">
+                <div className="mb-2 h-3 w-full overflow-hidden rounded-full border border-border/30 bg-background">
                   <div
                     className="h-full rounded-full bg-maroonCustom transition-all duration-1000 dark:bg-gold"
                     style={{ width: `${intern.progress}%` }}
                   />
                 </div>
 
-                <div className="text-right text-xs font-semibold text-text-secondary dark:text-slate-300">
+                <div className="text-right text-xs font-semibold text-muted-foreground">
                   {intern.progress}%
                 </div>
               </div>
@@ -178,7 +178,7 @@ const Dashboard = () => {
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Pending Approvals
               </h2>
-              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
+              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
                 Review and authorize new internship site requests
               </p>
             </div>
@@ -188,10 +188,10 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="overflow-x-auto rounded-2xl border border-border dark:border-slate-700/60">
+          <div className="overflow-x-auto rounded-2xl border border-border">
             <table className="min-w-full text-left">
               <thead>
-                <tr className="border-b border-border/50 bg-background/70 dark:border-slate-700 dark:bg-slate-800/70">
+                <tr className="border-b border-border/50 bg-muted/70">
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Student
                   </th>
@@ -213,11 +213,11 @@ const Dashboard = () => {
                 </tr>
               </thead>
 
-              <tbody className="divide-y divide-border/30 dark:divide-slate-700">
+              <tbody className="divide-y divide-border/30">
                 {approvals.map((approval) => (
                   <tr
                     key={approval.student}
-                    className="transition-colors hover:bg-background/40 dark:hover:bg-slate-800"
+                    className="transition-colors hover:bg-muted/40"
                   >
                     <td className="px-4 py-5 sm:px-6">
                       <div className="flex items-center gap-3">
@@ -230,15 +230,15 @@ const Dashboard = () => {
                       </div>
                     </td>
 
-                    <td className="px-4 py-5 text-sm text-text-secondary dark:text-slate-300 sm:px-6">
+                    <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
                       {approval.org}
                     </td>
 
-                    <td className="px-4 py-5 text-sm text-text-secondary/90 dark:text-slate-300 sm:px-6">
+                    <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
                       {approval.role}
                     </td>
 
-                    <td className="px-4 py-5 text-sm text-text-secondary dark:text-slate-300 sm:px-6">
+                    <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
                       {approval.date}
                     </td>
 
@@ -270,7 +270,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
             Recent Supervision Activity
           </h2>
-          <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
+          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
             Chronological log of your recent interactions and approvals
           </p>
         </div>
@@ -282,7 +282,7 @@ const Dashboard = () => {
             return (
               <div
                 key={`${activity.title}-${index}`}
-                className="flex flex-col items-start gap-3 rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 transition-colors hover:bg-background dark:hover:bg-slate-800 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+                className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-muted p-4 transition-colors hover:bg-background sm:flex-row sm:items-center sm:gap-5 sm:p-5"
               >
                 <div
                   className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
@@ -301,16 +301,16 @@ const Dashboard = () => {
                 <div className="flex-1">
                   <h3 className="text-sm font-bold text-maroon-dark dark:text-slate-300 sm:text-base">
                     {activity.title} &bull;{" "}
-                    <span className="font-medium text-text-secondary dark:text-slate-300">
+                    <span className="font-medium text-muted-foreground">
                       {activity.user}
                     </span>
                   </h3>
-                  <p className="mt-0.5 text-sm text-text-secondary dark:text-slate-300">
+                  <p className="mt-0.5 text-sm text-muted-foreground">
                     {activity.desc}
                   </p>
                 </div>
 
-                <div className="text-xs font-bold uppercase tracking-wide text-text-secondary/50 dark:text-slate-400 sm:text-sm">
+                <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground/60 sm:text-sm">
                   {activity.time}
                 </div>
               </div>
