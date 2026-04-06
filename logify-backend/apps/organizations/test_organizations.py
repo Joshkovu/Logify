@@ -1,4 +1,5 @@
 # from django.urls import reverse
+from apps.accounts.models import User
 from apps.organizations.models import Organizations
 from django.urls import reverse
 from rest_framework import status
@@ -7,6 +8,14 @@ from rest_framework.test import APITestCase
 
 class TestOrganizationAPI(APITestCase):
     def setUp(self):
+        self.admin = User.objects.create_user(
+            email="admin@test.com",
+            password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,
+            first_name="Internship",
+            last_name="Admin",
+        )
+        self.client.force_authenticate(user=self.admin)
         self.organization = Organizations.objects.create(
             name="Acme Corp",
             industry="Technology",

@@ -17,8 +17,9 @@ import { useState } from "react";
 const Profile = () => {
   const [isModal1Open, setIsModal1Open] = useState(false);
   const [isModal2Open, setIsModal2Open] = useState(false);
+  const [idx, setIdx] = useState(0);
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
         <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
           My <span className="text-gold">Profile</span>
@@ -30,7 +31,7 @@ const Profile = () => {
       </header>
 
       <section className="mb-12">
-        <div className="bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
           <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
             SJ
           </div>
@@ -43,7 +44,7 @@ const Profile = () => {
             </p>
             <div className="flex gap-2">
               <button
-                className="text-xs font-bold text-white px-5 py-2.5 bg-maroonCustom hover:bg-red-800 transition-all rounded-lg shadow-md"
+                className=" text-xs font-bold text-white px-5 py-2.5 bg-maroonCustom hover:bg-red-800 transition-all rounded-lg shadow-md"
                 onClick={() => setIsModal1Open(true)}
               >
                 Edit Profile
@@ -53,7 +54,7 @@ const Profile = () => {
                 onClose={() => setIsModal1Open(false)}
               />
               <button
-                className="hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
+                className="dark:bg-slate-900 dark:hover:bg-slate-700 hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
                 onClick={() => setIsModal2Open(true)}
               >
                 Change Password
@@ -76,7 +77,7 @@ const Profile = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <User size={20} />
@@ -126,7 +127,7 @@ const Profile = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-[12px] p-10 border border-border h-full">
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <GraduationCap size={20} />
@@ -182,7 +183,7 @@ const Profile = () => {
       </div>
 
       <section>
-        <div className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8 flex items-center gap-3">
             <div className="p-2 bg-maroonCustom/10 rounded-lg text-maroonCustom">
               <Shield size={20} />
@@ -202,14 +203,14 @@ const Profile = () => {
               {
                 title: "Email Notifications",
                 desc: "Receive real-time updates about log approvals and evaluations.",
-                status: "Enabled",
+                status: ["Disabled", "Enabled"],
                 icon: Bell,
                 active: true,
               },
               {
                 title: "Two-Factor Authentication",
                 desc: "Add an extra layer of security to your student portal access.",
-                status: "Disabled",
+                status: ["Disabled", "Enabled"],
                 icon: Lock,
                 active: false,
               },
@@ -234,10 +235,11 @@ const Profile = () => {
                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                       setting.active
                         ? "bg-maroonCustom text-white hover:bg-red-800"
-                        : "bg-white border-border text-text-secondary hover:bg-gray-50"
+                        : "bg-maroonCustom text-white hover:bg-red-800"
                     }`}
+                    onClick={() => setIdx((prev) => (prev === 0 ? 1 : 0))}
                   >
-                    {setting.status}
+                    {setting.status[idx]}
                   </button>
                 </div>
               </div>

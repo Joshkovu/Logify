@@ -148,14 +148,14 @@ class TestInternshipReportAPI(APITestCase):
             report_type="final",
         )
         url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
-        self.client.force_login(user=self.user)
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url + "?report_type=final")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["report_type"], "final")  # type: ignore
 
     def test_csv_export(self):
         url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
-        self.client.force_login(user=self.user)
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url + "?export=csv")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.get("Content-Type"), "text/csv")
@@ -163,7 +163,7 @@ class TestInternshipReportAPI(APITestCase):
 
     def testCreateReport(self):
         url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
-        self.client.force_login(user=self.user)
+        self.client.force_authenticate(user=self.user)
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)

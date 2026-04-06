@@ -17,17 +17,19 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="text-sm text-gray-600 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
+        className="dark:text-white dark:bg-slate-900 text-sm text-gray-600 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="font-semibold text-black text-lg">Create Weekly Log</p>
-        <p className="mb-4 text-gray-600">
+        <p className="font-semibold dark:text-white text-black text-lg">
+          Create Weekly Log
+        </p>
+        <p className="mb-4">
           Submit your weekly activities, learnings, and challenges
         </p>
-        <p className="text-black font-semibold">Week Number</p>
+        <p className="dark:text-white text-black font-semibold">Week Number</p>
         <p>Week 9 (Feb 24 - Mar 2, 2026)</p>
         <section className="mt-4">
-          <p className="text-black font-semibold">
+          <p className="dark:text-white text-black font-semibold">
             Activities & Tasks Completed
           </p>
           <textarea
@@ -36,14 +38,18 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
           ></textarea>
         </section>
         <section className="mt-4">
-          <p className="text-black font-semibold">Key Learnings</p>
+          <p className="dark:text-white text-black font-semibold">
+            Key Learnings
+          </p>
           <textarea
             className="w-full border border-gray-200 rounded-lg h-15 p-1.5"
             placeholder="What did you learn this week?..."
           ></textarea>
         </section>
         <section className="mt-4">
-          <p className="text-black font-semibold">Challenges & Solutions</p>
+          <p className="dark:text-white text-black font-semibold">
+            Challenges & Solutions
+          </p>
           <textarea
             className="w-full border border-gray-200 rounded-lg h-15 p-1.5"
             placeholder="Describe any challenges you faced and how you addressed them..."
@@ -51,7 +57,7 @@ const CreateWeeklyLog = ({ isOpen, onClose }) => {
         </section>
         <section className="mt-4 w-full flex gap-2 justify-end">
           <button
-            className="text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
+            className="dark:text-white dark:hover:bg-slate-700 text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
             onClick={onClose}
           >
             Cancel
