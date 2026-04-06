@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 class MailjetService:
     def __init__(self):
+        self.client = None
         api_key = os.environ.get("MAILJET_API_KEY")
         api_secret = os.environ.get("MAILJET_API_SECRET")
         self.sender_email = os.environ.get("MAILJET_SENDER_EMAIL")

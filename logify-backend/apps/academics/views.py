@@ -1,8 +1,11 @@
 # from django.shortcuts import render
 from apps.accounts.models import User
+
+# Create your views here.
+from apps.accounts.permissions import IsInternshipAdmin
 from apps.placements.models import InternshipPlacements
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.permissions import BasePermission, IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -12,14 +15,6 @@ from .serializer import (
     InstitutionsSerializer,
     ProgrammesSerializer,
 )
-
-
-# Create your views here.
-class IsAdmin(BasePermission):
-    def has_permission(self, request, view):
-        if not request.user or not request.user.is_authenticated:
-            return False
-        return request.user.is_superuser or request.user.role == User.INTERNSHIP_ADMIN
 
 
 def get_accessible_institution_ids(user):
@@ -90,7 +85,7 @@ def get_accessible_programme_ids(user):
 
 
 class InstitutionsListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsInternshipAdmin]
 
     def get(self, request):
         institutions = Institutions.objects.all()
@@ -116,7 +111,7 @@ class InstitutionsDetailView(APIView):
 
 
 class DepartmentsListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsInternshipAdmin]
 
     def get(self, request):
         departments = Departments.objects.all()
@@ -154,7 +149,7 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
-    permission_classes = [IsAuthenticated, IsAdmin]
+    permission_classes = [IsAuthenticated, IsInternshipAdmin]
 
     def get(self, request):
         programmes = Programmes.objects.all()

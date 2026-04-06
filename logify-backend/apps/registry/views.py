@@ -5,6 +5,7 @@ import hashlib
 from datetime import timedelta
 
 import pyotp
+from apps.accounts.permissions import IsInternshipAdmin
 from apps.notifications.services import MailjetService
 from apps.registry.models import RegistrationAttempts, StudentRegistry
 from apps.registry.serializer import (
@@ -16,17 +17,9 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
-
-
-class IsInternshipAdmin(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == get_user_model().INTERNSHIP_ADMIN  # type: ignore
-
-
-class IsStudent(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and request.user.role == get_user_model().STUDENT  # type: ignore
+from rest_framework_simplejwt.tokens import RefreshToken
 
 
 class StudentRegistryViewSet(viewsets.ModelViewSet):
@@ -37,7 +30,7 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
 
 class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
     serializer_class = RegistrationAttemptsSerializer
-    permission_classes = [IsStudent]
+    permission_classes = [AllowAny]
 
     def get_queryset(self):
         user = self.request.user
@@ -115,8 +108,38 @@ class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
         student.claimed_at = timezone.now()
         student.save()
 
+        # Create or Get User for Student
+        user, created = get_user_model().objects.get_or_create(
+            email=student.webmail,
+            defaults={
+                "first_name": student.webmail.split(".")[0].capitalize(),
+                "last_name": (
+                    student.webmail.split(".")[1].split("@")[0].capitalize()
+                    if "." in student.webmail.split("@")[0]
+                    else ""
+                ),
+                "role": get_user_model().STUDENT,
+                "institution_id": str(student.institution.id),
+                "programme_id": str(student.programme.id),
+                "student_number": student.student_number,
+                "is_active": True,
+            },
+        )
+
+        # Generate tokens
+        refresh = RefreshToken.for_user(user)
         return Response(
-            {"message": "OTP verified successfully. You can now complete your registration."}
+            {
+                "message": "OTP verified successfully.",
+                "access": str(refresh.access_token),
+                "refresh": str(refresh),
+                "user": {
+                    "email": user.email,
+                    "first_name": user.first_name,
+                    "last_name": user.last_name,
+                    "role": user.role,
+                },
+            }
         )
 
 
