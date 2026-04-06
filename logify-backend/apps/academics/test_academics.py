@@ -89,7 +89,7 @@ class TestInstitutionsListView(APITestCase):
 
     def test_unauthenticated_cannot_list_institutions(self):
         response = self.client.get(reverse("institutions-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestInstitutionsDetailView(APITestCase):
@@ -161,7 +161,7 @@ class TestInstitutionsDetailView(APITestCase):
 
     def test_unauthenticated_cannot_view_institution(self):
         response = self.client.get(reverse("institutions-detail", args=[self.institution.pk]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestDepartmentsListView(APITestCase):
@@ -205,7 +205,7 @@ class TestDepartmentsListView(APITestCase):
 
     def test_unauthenticated_cannot_list_departments(self):
         response = self.client.get(reverse("departments-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestDepartmentsDetailView(APITestCase):
@@ -279,7 +279,7 @@ class TestDepartmentsDetailView(APITestCase):
 
     def test_unauthenticated_cannot_view_department(self):
         response = self.client.get(reverse("departments-detail", args=[self.department.pk]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestInstitutionDepartmentsListView(APITestCase):
@@ -384,7 +384,7 @@ class TestInstitutionDepartmentsListView(APITestCase):
         response = self.client.get(
             reverse("institution-departments-list", args=[self.institution.pk])
         )
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestProgrammesListView(APITestCase):
@@ -435,7 +435,7 @@ class TestProgrammesListView(APITestCase):
 
     def test_unauthenticated_cannot_list_programmes(self):
         response = self.client.get(reverse("programmes-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestProgrammesDetailView(APITestCase):
@@ -502,7 +502,7 @@ class TestProgrammesDetailView(APITestCase):
 
     def test_unauthenticated_cannot_view_programme(self):
         response = self.client.get(reverse("programmes-detail", args=[self.programme.pk]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class TestDepartmentProgrammesListView(APITestCase):
@@ -579,4 +579,4 @@ class TestDepartmentProgrammesListView(APITestCase):
 
     def test_unauthenticated_cannot_list_department_programmes(self):
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

@@ -10,7 +10,7 @@ const InternshipPlacement = () => {
   ];
 
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+    <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
@@ -38,7 +38,7 @@ const InternshipPlacement = () => {
       </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Organization Details
@@ -110,7 +110,7 @@ const InternshipPlacement = () => {
           </div>
         </section>
 
-        <section className="bg-white rounded-[12px] p-10 border border-border transition-transform">
+        <section className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border transition-transform">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Supervisor Records
@@ -187,7 +187,7 @@ const InternshipPlacement = () => {
       </div>
 
       <section>
-        <div className="bg-white rounded-[12px] p-10 border border-border">
+        <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border">
           <div className="mb-8">
             <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
               Status Timeline

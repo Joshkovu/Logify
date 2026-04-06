@@ -1,5 +1,6 @@
 import csv
 
+from apps.accounts.models import User
 from apps.logbook.models import WeeklyLogs
 from django.http import HttpResponse
 from rest_framework.exceptions import NotFound, PermissionDenied
@@ -45,11 +46,7 @@ class WeeklyLogsReportAPIView(APIView):
 
     def get(self, request, student_id):
         user = request.user
-        if not (
-            getattr(user, "is_staff", False)
-            or getattr(user, "is_superuser", False)
-            or user.id == student_id
-        ):
+        if not (user.role == User.INTERNSHIP_ADMIN or user.is_superuser or user.id == student_id):
             raise PermissionDenied("You do not have permission to view this report.")
         report_type = request.query_params.get("report_type")
         if report_type is not None:

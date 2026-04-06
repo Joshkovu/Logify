@@ -46,15 +46,6 @@ const initialApprovals = [
   },
 ];
 
-const pageCard =
-  "rounded-[12px] border border-border bg-white p-10 shadow-sm transition-all hover:shadow-md dark:border-slate-700 dark:bg-slate-900";
-
-const infoCard =
-  "rounded-2xl border border-border/30 bg-[#FCFBF8] p-6 dark:border-slate-700 dark:bg-slate-800";
-
-const sectionLabel =
-  "text-[10px] font-black uppercase tracking-widest text-text-secondary/50 dark:text-slate-400";
-
 const InternshipApprovals = () => {
   const [pendingApprovals, setPendingApprovals] = useState(initialApprovals);
   const [approvedApprovals, setApprovedApprovals] = useState([
@@ -251,19 +242,27 @@ const InternshipApprovals = () => {
     );
   };
 
+  const pageCard =
+    "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+
+  const infoCard = "rounded-2xl border border-border bg-muted p-4 sm:p-6";
+
+  const sectionLabel =
+    "text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60";
+
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans text-[#1e1e1e] dark:bg-black dark:text-white">
-      <header className="mb-12">
-        <h1 className="mb-3 text-5xl font-black tracking-tighter text-maroon-dark dark:text-white">
+    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <header className="mb-8 sm:mb-10 lg:mb-12">
+        <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Internship <span className="text-gold">Approvals</span>
         </h1>
-        <p className="max-w-2xl text-lg leading-relaxed text-text-secondary/80 dark:text-slate-300">
+        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
           Review and authorize student internship placement requests for the
           current semester.
         </p>
       </header>
 
-      <section className="mb-12 grid grid-cols-1 gap-8 md:grid-cols-3">
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 xl:gap-8">
         {stats.map((stat) => (
           <MetricCard
             key={stat.title}
@@ -274,31 +273,34 @@ const InternshipApprovals = () => {
         ))}
       </section>
 
-      <section className="space-y-8">
+      <section className="space-y-6 sm:space-y-8">
         {pendingApprovals.length > 0 ? (
           pendingApprovals.map((item) => (
             <div key={item.id} className={pageCard}>
-              <div className="mb-8 flex flex-col gap-6 border-b border-border/50 pb-8 dark:border-slate-700 lg:flex-row lg:items-start lg:justify-between">
-                <div className="flex items-start gap-5">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gold/10 text-2xl font-black text-gold">
+              <div className="mb-8 flex flex-col gap-6 border-b border-border/50 pb-8 lg:flex-row lg:items-start lg:justify-between">
+                <div className="flex items-start gap-4 sm:gap-5">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-gold/10 text-xl font-black text-gold dark:text-slate-300 sm:h-14 sm:w-14 sm:rounded-2xl sm:text-2xl">
                     {item.name.charAt(0)}
                   </div>
 
-                  <div>
+                  <div className="min-w-0">
                     <div className="mb-2 flex flex-wrap items-center gap-3">
-                      <h2 className="text-3xl font-black tracking-tight text-maroon-dark dark:text-white">
+                      <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl lg:text-3xl">
                         {item.name}
                       </h2>
 
-                      <div className="flex items-center gap-2 rounded-full border border-gold/20 bg-gold/10 px-4 py-1.5">
-                        <Clock size={16} className="text-gold" />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-gold">
+                      <div className="flex items-center gap-2 rounded-full bg-gold/10 px-3 py-1">
+                        <Clock
+                          size={16}
+                          className="text-gold dark:text-slate-300"
+                        />
+                        <span className="text-xs font-bold uppercase tracking-[0.2em] text-gold dark:text-slate-300">
                           {item.status}
                         </span>
                       </div>
                     </div>
 
-                    <p className="text-sm font-bold uppercase tracking-widest text-text-secondary/60 dark:text-slate-400">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
                       Reg: {item.regNo} &bull; {item.program}
                     </p>
 
@@ -312,100 +314,91 @@ const InternshipApprovals = () => {
                 </div>
               </div>
 
-              <div className="mb-10 grid grid-cols-1 gap-6 xl:grid-cols-3">
+              <div className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-3">
                 <div className={infoCard}>
-                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-gold">
+                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-slate-300">
                     <Building2 size={18} />
-                    <h3 className="text-sm font-black uppercase tracking-widest">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em]">
                       Organization Details
                     </h3>
                   </div>
 
-                  <p className="text-lg font-bold text-maroon-dark dark:text-white">
+                  <p className="text-base font-bold text-maroon-dark dark:text-white sm:text-lg">
                     {item.organization}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
+                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
                     <MapPin size={16} className="mt-0.5 shrink-0" />
-                    <p className="text-sm font-medium leading-relaxed">
-                      {item.address}
-                    </p>
+                    <p className="text-sm leading-relaxed">{item.address}</p>
                   </div>
                 </div>
 
                 <div className={infoCard}>
-                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-gold">
+                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-slate-300">
                     <Briefcase size={18} />
-                    <h3 className="text-sm font-black uppercase tracking-widest">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em]">
                       Placement Specifics
                     </h3>
                   </div>
 
-                  <p className="text-lg font-bold text-maroon-dark dark:text-white">
+                  <p className="text-base font-bold text-maroon-dark dark:text-white sm:text-lg">
                     {item.position}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
+                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
                     <Calendar size={16} className="mt-0.5 shrink-0" />
-                    <p className="text-sm font-medium leading-relaxed">
-                      {item.duration}
-                    </p>
+                    <p className="text-sm leading-relaxed">{item.duration}</p>
                   </div>
                 </div>
 
                 <div className={infoCard}>
-                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-gold">
+                  <div className="mb-4 flex items-center gap-2 text-maroonCustom dark:text-slate-300">
                     <User size={18} />
-                    <h3 className="text-sm font-black uppercase tracking-widest">
+                    <h3 className="text-sm font-black uppercase tracking-[0.2em]">
                       Workplace Supervisor
                     </h3>
                   </div>
 
-                  <p className="text-lg font-bold text-maroon-dark dark:text-white">
+                  <p className="text-base font-bold text-maroon-dark dark:text-white sm:text-lg">
                     {item.supervisor}
                   </p>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
+                    <div className="flex items-center gap-3 text-muted-foreground">
                       <Mail size={16} className="shrink-0" />
-                      <p className="text-sm font-medium break-all">
-                        {item.email}
-                      </p>
+                      <p className="text-sm break-all">{item.email}</p>
                     </div>
 
-                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
+                    <div className="flex items-center gap-3 text-muted-foreground">
                       <Phone size={16} className="shrink-0" />
-                      <p className="text-sm font-medium">{item.phone}</p>
+                      <p className="text-sm">{item.phone}</p>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 border-t border-border/50 pt-8 dark:border-slate-700 md:flex-row">
+              <div className="flex flex-col gap-4 border-t border-border/50 pt-8 md:flex-row">
                 <button
                   onClick={() => handleApprove(item)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#5B1E1E] px-8 py-4 font-bold text-white shadow-lg transition-transform hover:scale-[1.01] dark:bg-emerald-600 dark:hover:bg-emerald-700"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 active:scale-[0.98]"
                 >
-                  <CheckCircle2
-                    size={20}
-                    className="text-[#D4AF37] dark:text-white"
-                  />
+                  <CheckCircle2 size={18} />
                   Approve Request
                 </button>
 
                 <button
                   onClick={() => handleDecline(item)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#5B1E1E] bg-white px-8 py-4 font-bold text-[#5B1E1E] transition-colors hover:bg-red-50 dark:border-red-500 dark:bg-slate-900 dark:text-red-400 dark:hover:bg-red-950/30"
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
                 >
-                  <XCircle size={20} />
+                  <XCircle size={18} />
                   Decline Request
                 </button>
               </div>
             </div>
           ))
         ) : (
-          <div className="rounded-[12px] border border-border bg-white p-10 text-center dark:border-slate-700 dark:bg-slate-900">
-            <p className="text-lg font-semibold text-text-secondary dark:text-slate-300">
+          <div className="rounded-[12px] border border-border bg-card p-6 text-center sm:p-8 lg:p-10">
+            <p className="text-base font-semibold text-muted-foreground sm:text-lg">
               No pending internship approvals at the moment.
             </p>
           </div>
