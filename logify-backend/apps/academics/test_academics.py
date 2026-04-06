@@ -91,6 +91,33 @@ class TestInstitutionsListView(APITestCase):
         response = self.client.get(reverse("institutions-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_admin_can_create_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(
+            reverse("institutions-list"),
+            {
+                "name": "University C",
+                "email_domain": "@unic.com",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Institutions.objects.filter(name="University C", email_domain="@unic.com").exists()
+        )
+
+    def test_student_cannot_create_institution(self):
+        self.client.force_authenticate(user=self.student)
+        response = self.client.post(
+            reverse("institutions-list"),
+            {
+                "name": "University C",
+                "email_domain": "@unic.com",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class TestInstitutionsDetailView(APITestCase):
     def setUp(self):
@@ -162,6 +189,44 @@ class TestInstitutionsDetailView(APITestCase):
     def test_unauthenticated_cannot_view_institution(self):
         response = self.client.get(reverse("institutions-detail", args=[self.institution.pk]))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_can_update_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.put(
+            reverse("institutions-detail", args=[self.institution.pk]),
+            {
+                "name": "Updated University",
+                "email_domain": "@updated.com",
+                "is_active": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.institution.refresh_from_db()
+        self.assertEqual(self.institution.name, "Updated University")
+        self.assertEqual(self.institution.email_domain, "@updated.com")
+        self.assertFalse(self.institution.is_active)
+
+    def test_admin_can_patch_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("institutions-detail", args=[self.institution.pk]),
+            {
+                "is_active": False,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.institution.refresh_from_db()
+        self.assertFalse(self.institution.is_active)
+
+    def test_admin_can_delete_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(
+            reverse("institutions-detail", args=[self.other_institution.pk]),
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Institutions.objects.filter(pk=self.other_institution.pk).exists())
 
 
 class TestDepartmentsListView(APITestCase):

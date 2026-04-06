@@ -4,6 +4,7 @@ from apps.accounts.models import User
 # Create your views here.
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.placements.models import InternshipPlacements
+from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -92,6 +93,16 @@ class InstitutionsListView(APIView):
         serializer = InstitutionsSerializer(institutions, many=True)
         return Response(serializer.data)
 
+    def post(self, request):
+        serializer = InstitutionsSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            {"error": "Institution data is invalid.", "details": serializer.errors},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
 
 class InstitutionsDetailView(APIView):
     permission_classes = [IsAuthenticated]
@@ -102,6 +113,50 @@ class InstitutionsDetailView(APIView):
             raise PermissionDenied("You do not have access to this institution")
         serializer = InstitutionsSerializer(institution)
         return Response(serializer.data)
+
+    def put(self, request, pk):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
+            institution = self.get_object(pk)
+            serializer = InstitutionsSerializer(institution, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {"error": "Institution update data is invalid.", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"error": "Only Internship Admins can update institutions."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def patch(self, request, pk):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
+            institution = self.get_object(pk)
+            serializer = InstitutionsSerializer(institution, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {"error": "Institution update data is invalid.", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"error": "Only Internship Admins can update institutions."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def delete(self, request, pk):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
+            institution = self.get_object(pk)
+            institution.delete()
+            return Response(
+                {"message": "Institution deleted successfully"}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"error": "Only Internship Admins can delete institutions."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     def get_object(self, pk):
         try:
