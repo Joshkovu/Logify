@@ -1,7 +1,8 @@
 from django.urls import path
-from .views import SupervisorSignupView, SupervisorApprovalView
+from .views import StudentSignupView, SupervisorSignupView, SupervisorApprovalView
 
 urlpatterns = [
+    path("student/signup/", StudentSignupView.as_view(), name="student-signup"),
     path("supervisor/signup/", SupervisorSignupView.as_view(), name="supervisor-signup"),
     path(
         "supervisor/approve/<int:application_id>/",

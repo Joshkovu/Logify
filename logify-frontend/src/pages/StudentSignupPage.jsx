@@ -78,7 +78,7 @@ const StudentSignupPage = () => {
       }
 
       // Attempt registration
-      const result = registerStudent({
+      const result = await registerStudent({
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,

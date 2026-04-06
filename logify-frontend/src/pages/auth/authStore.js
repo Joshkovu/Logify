@@ -259,7 +259,7 @@ export function registerSupervisor({
   return { ok: true };
 }
 
-export function registerStudent({
+export async function registerStudent({
   fullName,
   email,
   password,
@@ -267,50 +267,35 @@ export function registerStudent({
   institution,
   department,
 }) {
-  const users = readUsers();
-  const normalizedEmail = normalizeEmail(email);
+  try {
+    const response = await fetch('http://localhost:8080/api/v1/accounts/student/signup/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        fullName,
+        email,
+        password,
+        matriculationNumber,
+        institution,
+        department,
+      }),
+    });
 
-  if (users.some((user) => user.email === normalizedEmail)) {
+    if (response.ok) {
+      return { ok: true };
+    } else {
+      const errorData = await response.json();
+      return {
+        ok: false,
+        error: errorData.message || 'Registration failed. Please try again.',
+      };
+    }
+  } catch (error) {
     return {
       ok: false,
-      error:
-        "This email is already registered. If you are a returning user, use Login instead.",
+      error: 'Network error. Please check your connection and try again.',
     };
   }
-
-  if (!matriculationNumber.trim()) {
-    return {
-      ok: false,
-      error: "Matriculation/Student ID is required.",
-    };
-  }
-
-  if (!institution.trim()) {
-    return {
-      ok: false,
-      error: "Educational institution is required.",
-    };
-  }
-
-  if (!department.trim()) {
-    return {
-      ok: false,
-      error: "Department is required.",
-    };
-  }
-
-  const newUser = {
-    id: Date.now(),
-    fullName: fullName.trim(),
-    email: normalizedEmail,
-    password,
-    role: "student",
-    matriculationNumber: matriculationNumber.trim(),
-    institution: institution.trim(),
-    department: department.trim(),
-    status: "approved",
-  };
-
-  writeUsers([...users, newUser]);
-  return { ok: true };
 }
