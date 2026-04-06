@@ -1,3 +1,10 @@
+from apps.accounts.models import User
+from apps.accounts.permissions import (
+    IsAcademicSupervisor,
+    IsInternshipAdmin,
+    IsStudent,
+    IsWorkplaceSupervisor,
+)
 from apps.notifications.services import MailjetService
 from django.db import transaction
 from django.utils import timezone
@@ -10,11 +17,30 @@ from .models import InternshipPlacements, PlacementStatusHistory
 from .serializer import InternshipPlacementsSerializer
 
 
+class IsPlacementActor(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return (
+            IsStudent().has_permission(request, view)
+            or IsAcademicSupervisor().has_permission(request, view)
+            or IsWorkplaceSupervisor().has_permission(request, view)
+            or IsInternshipAdmin().has_permission(request, view)
+            or request.user.is_superuser
+        )
+
+
 class InternshipPlacementListCreateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsPlacementActor]
 
     def get(self, request):
-        placements = InternshipPlacements.objects.all()
+        if request.user.role == User.STUDENT:
+            placements = InternshipPlacements.objects.filter(intern=request.user)
+        elif request.user.role == User.ACADEMIC_SUPERVISOR:
+            placements = InternshipPlacements.objects.filter(academic_supervisor=request.user)
+        elif request.user.role == User.WORKPLACE_SUPERVISOR:
+            placements = InternshipPlacements.objects.filter(workplace_supervisor=request.user)
+        else:  # Admin
+            placements = InternshipPlacements.objects.all()
+
         serializer = InternshipPlacementsSerializer(placements, many=True)
         return Response(serializer.data)
 
@@ -38,7 +64,7 @@ class InternshipPlacementListCreateView(APIView):
 
 
 class InternshipPlacementDetailView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsPlacementActor]
 
     def get_object(self, pk):
         try:
@@ -81,8 +107,15 @@ class InternshipPlacementDetailView(APIView):
 
 
 class PlacementSubmitView(APIView):
+    permission_classes = [IsStudent]
+
     def post(self, request, pk):
         placement = self.get_object(pk)
+        if request.user != placement.intern:
+            return Response(
+                {"error": "Only the assigned student can submit this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         if placement.status != "draft":
             return Response(
                 {"error": f"Cannot submit a placement in {placement.status} status"},
@@ -112,7 +145,7 @@ class PlacementSubmitView(APIView):
 
 
 class PlacementApproveView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAcademicSupervisor]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -161,7 +194,7 @@ class PlacementApproveView(APIView):
 
 
 class PlacementRejectView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAcademicSupervisor]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -199,7 +232,7 @@ class PlacementRejectView(APIView):
 
 
 class PlacementActivateView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAcademicSupervisor]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -237,7 +270,7 @@ class PlacementActivateView(APIView):
 
 
 class PlacementCompleteView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAcademicSupervisor]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -277,7 +310,7 @@ class PlacementCompleteView(APIView):
 
 
 class PlacementCancelView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsAcademicSupervisor]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -315,7 +348,7 @@ class PlacementCancelView(APIView):
 
 
 class PlacementAssignAcademicSupervisorView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsInternshipAdmin]
 
     def post(self, request, pk):
         placement = self.get_object(pk)
@@ -336,7 +369,7 @@ class PlacementAssignAcademicSupervisorView(APIView):
 
 
 class PlacementAssignWorkplaceSupervisorView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsInternshipAdmin]
 
     def post(self, request, pk):
         placement = self.get_object(pk)

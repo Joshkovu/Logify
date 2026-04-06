@@ -3,12 +3,12 @@ from apps.accounts.models import User
 from apps.logbook.models import WeeklyLogs
 from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
-from django.test import TestCase
+from rest_framework.test import APITestCase
 
 # Create your tests here.
 
 
-class TestLogbook(TestCase):
+class TestLogbook(APITestCase):
     def setUp(self):
         # Institution, Department, Programme
         institution = Institutions.objects.create(name="Test University", email_domain="test.edu")
@@ -70,7 +70,7 @@ class TestLogbook(TestCase):
         # Use placement in an assertion
         self.assertEqual(self.placement.status, "active")
         # Log in the user
-        self.client.force_login(self.student_user)
+        self.client.force_authenticate(user=self.student_user)
         # Attempt to create a weekly log
         log_response = self.client.post(
             "/api/v1/logbook/create_weekly_log/",
@@ -105,7 +105,7 @@ class TestLogbook(TestCase):
         )
         log_id = weekly_log.id  # type: ignore
         # Log in the user
-        self.client.force_login(self.student_user)
+        self.client.force_authenticate(user=self.student_user)
         # Attempt to update the weekly log
         update_response = self.client.put(
             f"/api/v1/logbook/update_weekly_log/{log_id}/",
@@ -140,10 +140,10 @@ class TestLogbook(TestCase):
         )
         log_id = weekly_log.id  # type: ignore
         # Log in the student and submit the weekly log
-        self.client.force_login(self.student_user)
+        self.client.force_authenticate(user=self.student_user)
         submit_response = self.client.post(f"/api/v1/logbook/submit_weekly_log/{log_id}/")
         # Approval from supervisor but the supervisor has to first be logged in for this to pass
-        self.client.force_login(self.workplace_supervisor)
+        self.client.force_authenticate(user=self.workplace_supervisor)
         approve_response = self.client.post(
             f"/api/v1/logbook/approve_weekly_log/{log_id}/",
             {"comment": "Good work!"},

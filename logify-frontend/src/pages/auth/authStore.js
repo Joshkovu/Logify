@@ -1,3 +1,18 @@
+// Authentication Store - Production Ready
+//
+// This module handles user authentication with support for both:
+// 1. Mock authentication (development/testing) - uses localStorage
+// 2. Real API authentication (production) - connects to Django backend
+//
+// To toggle between modes, set VITE_USE_MOCK_AUTH=true in .env for development
+// Leave unset or set to false for production API integration
+
+import { api } from "../../config/api.js";
+
+// Flag to toggle between mock and real authentication
+const USE_MOCK_AUTH = import.meta.env.VITE_USE_MOCK_AUTH === "true";
+
+// Mock data for development only - NOT used in production
 const USERS_STORAGE_KEY = "logify-auth-users";
 const SESSION_STORAGE_KEY = "logify-auth-session";
 
@@ -90,6 +105,52 @@ export function clearSession() {
   window.localStorage.removeItem(SESSION_STORAGE_KEY);
 }
 
+export async function logout() {
+  const session = getSession();
+  if (session?.refreshToken) {
+    try {
+      // Call backend logout endpoint if available
+      await api.auth.logout({ refresh: session.refreshToken });
+    } catch (error) {
+      // Ignore logout errors - session will be cleared locally anyway
+      console.warn("Backend logout failed:", error);
+    }
+  }
+
+  clearSession();
+  return { ok: true };
+}
+
+export async function refreshToken() {
+  const session = getSession();
+  if (!session?.refreshToken) {
+    throw new Error("No refresh token available");
+  }
+
+  try {
+    const response = await api.auth.refresh({ refresh: session.refreshToken });
+
+    const updatedSession = {
+      ...session,
+      token: response.access,
+      refreshToken: response.refresh || session.refreshToken,
+    };
+
+    window.localStorage.setItem(
+      SESSION_STORAGE_KEY,
+      JSON.stringify(updatedSession),
+    );
+
+    return { ok: true, session: updatedSession };
+  } catch (error) {
+    // If refresh fails, clear session
+    clearSession();
+    throw new Error(
+      `Token refresh failed: ${error.message || "Session expired. Please log in again."}`,
+    );
+  }
+}
+
 function roleHome(role) {
   if (role === "internship_admin") {
     return "/admin";
@@ -103,7 +164,40 @@ function roleHome(role) {
   return "/";
 }
 
-export function authenticate({ email, password }) {
+export async function authenticate({ email, password }) {
+  if (USE_MOCK_AUTH) {
+    // Use existing mock authentication for development
+    return authenticateMock({ email, password });
+  }
+
+  // Use real backend API for production
+  try {
+    const response = await api.auth.login({ email, password });
+
+    const session = {
+      token: response.access,
+      refreshToken: response.refresh,
+      user: response.user,
+      tokenType: "Bearer",
+    };
+
+    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+
+    return {
+      ok: true,
+      session,
+      redirectPath: roleHome(response.user.role),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error.message || "Login failed. Please check your credentials.",
+    };
+  }
+}
+
+// Keep the original mock function for development
+function authenticateMock({ email, password }) {
   const users = readUsers();
   const normalized = normalizeEmail(email);
   const user = users.find((item) => item.email === normalized);
@@ -178,6 +272,16 @@ export function validateCommonSignupFields({
 }
 
 export function registerAdmin({ fullName, email, password }) {
+  // Admin registration is handled through Django admin interface
+  // This function is for development/testing only
+  if (!USE_MOCK_AUTH) {
+    return {
+      ok: false,
+      error:
+        "Admin registration is not available through the API. Please contact system administrator or use Django admin.",
+    };
+  }
+
   const users = readUsers();
   const normalizedEmail = normalizeEmail(email);
 
@@ -210,7 +314,52 @@ export function registerAdmin({ fullName, email, password }) {
   return { ok: true };
 }
 
-export function registerSupervisor({
+export async function registerSupervisor({
+  fullName,
+  email,
+  password,
+  role,
+  institutionOrOrganization,
+}) {
+  if (USE_MOCK_AUTH) {
+    // Use existing mock registration for development
+    return registerSupervisorMock({
+      fullName,
+      email,
+      password,
+      role,
+      institutionOrOrganization,
+    });
+  }
+
+  // Use real backend API for production
+  try {
+    const signupData = {
+      email,
+      password,
+      first_name: fullName.split(" ")[0],
+      last_name: fullName.split(" ").slice(1).join(" "),
+      role,
+      phone: "", // Add phone field if needed
+    };
+
+    await api.auth.supervisorSignup(signupData);
+
+    return {
+      ok: true,
+      message:
+        "Supervisor application submitted successfully. Your account is pending approval.",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error.message || "Registration failed. Please try again.",
+    };
+  }
+}
+
+// Keep the original mock function for development
+function registerSupervisorMock({
   fullName,
   email,
   password,
@@ -253,6 +402,143 @@ export function registerSupervisor({
     role,
     institutionOrOrganization: institutionOrOrganization.trim(),
     status: "pending_approval",
+  };
+
+  writeUsers([...users, newUser]);
+  return { ok: true };
+}
+
+export async function registerStudent({
+  fullName,
+  email,
+  password,
+  studentId,
+  program,
+  yearOfStudy,
+}) {
+  if (USE_MOCK_AUTH) {
+    // Use existing mock registration for development
+    return registerStudentMock({
+      fullName,
+      email,
+      password,
+      studentId,
+      program,
+      yearOfStudy,
+    });
+  }
+
+  // Use real backend API for production - OTP-based registration
+  try {
+    // First request OTP
+    await api.auth.studentRequestOTP({ email });
+
+    return {
+      ok: true,
+      requiresOTP: true,
+      message:
+        "OTP sent to your email. Please verify to complete registration.",
+      registrationData: {
+        fullName,
+        email,
+        password,
+        studentId,
+        program,
+        yearOfStudy,
+      },
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error.message || "Failed to send OTP. Please try again.",
+    };
+  }
+}
+
+export async function verifyStudentOTP({ email, otp, registrationData }) {
+  if (USE_MOCK_AUTH) {
+    // For mock mode, just complete registration
+    return registerStudentMock(registrationData);
+  }
+
+  // Use real backend API for production
+  try {
+    const signupData = {
+      email,
+      otp,
+      password: registrationData.password,
+      first_name: registrationData.fullName.split(" ")[0],
+      last_name: registrationData.fullName.split(" ").slice(1).join(" "),
+      student_id: registrationData.studentId,
+      program: registrationData.program,
+      year_of_study: registrationData.yearOfStudy,
+    };
+
+    await api.auth.studentVerifyOTP(signupData);
+
+    return {
+      ok: true,
+      message: "Student registration successful. Welcome to Logify!",
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error.message || "OTP verification failed. Please try again.",
+    };
+  }
+}
+
+// Keep the original mock function for development
+function registerStudentMock({
+  fullName,
+  email,
+  password,
+  studentId,
+  program,
+  yearOfStudy,
+}) {
+  const users = readUsers();
+  const normalizedEmail = normalizeEmail(email);
+
+  if (users.some((user) => user.email === normalizedEmail)) {
+    return {
+      ok: false,
+      error:
+        "This email is already registered. If you are a returning user, use Login instead.",
+    };
+  }
+
+  if (!studentId?.trim()) {
+    return {
+      ok: false,
+      error: "Student ID is required.",
+    };
+  }
+
+  if (!program?.trim()) {
+    return {
+      ok: false,
+      error: "Program is required.",
+    };
+  }
+
+  if (!yearOfStudy) {
+    return {
+      ok: false,
+      error: "Year of study is required.",
+    };
+  }
+
+  const newUser = {
+    id: Date.now(),
+    fullName: fullName.trim(),
+    email: normalizedEmail,
+    password,
+    role: "student",
+    studentId: studentId.trim(),
+    program: program.trim(),
+    yearOfStudy: parseInt(yearOfStudy),
+    status: "approved", // Students are auto-approved
   };
 
   writeUsers([...users, newUser]);
