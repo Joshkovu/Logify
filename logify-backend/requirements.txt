@@ -9,5 +9,8 @@ flake8
 pytest
 pytest-django
 djangorestframework
+djangorestframework-simplejwt
 testcontainers[postgresql]
 psycopg2-binary
+mailjet-rest
+pyotp

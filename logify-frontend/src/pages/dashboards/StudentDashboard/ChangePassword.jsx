@@ -17,24 +17,28 @@ const ChangePassword = ({ isOpen, onClose }) => {
       onClick={onClose}
     >
       <div
-        className="text-sm text-gray-600 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
+        className="dark:bg-slate-900 text-sm dark:text-slate-300 relative w-full max-w-md transform overflow-hidden rounded-lg bg-white p-6 shadow-xl transition-all"
         onClick={(e) => e.stopPropagation()}
       >
-        <p className="font-semibold text-black text-lg">Change Password</p>
-        <p className="mb-4 text-gray-600">Change your password to a new one</p>
-        <p className="text-black font-semibold">Old Password</p>
+        <p className="dark:text-white font-semibold text-black text-lg">
+          Change Password
+        </p>
+        <p className="dark:text-slate-300 mb-4 text-gray-600">
+          Change your password to a new one
+        </p>
+        <p className="dark:text-white text-black font-semibold">Old Password</p>
         <input
           type="password"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
-        <p className="text-black font-semibold">New Password</p>
+        <p className="dark:text-white text-black font-semibold">New Password</p>
         <input
           type="password"
           className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
         />
         <section className="mt-4 w-full flex gap-2 justify-end">
           <button
-            className="text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
+            className="dark:hover:bg-slate-700 dark:text-white text-black text-sm font-semibold hover:bg-gray-200 transition-colors border border-gray-200 rounded-md p-2"
             onClick={onClose}
           >
             Cancel

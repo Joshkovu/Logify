@@ -39,6 +39,85 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class StaffProfilesSerializer(serializers.ModelSerializer):
+    department_name = serializers.ReadOnlyField(source="department.name")
+
     class Meta:
         model = StaffProfiles
-        fields = "__all__"
+        fields = ("staff_number", "department", "department_name", "title")
+
+
+class SupervisorSignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+    staff_number = serializers.CharField(write_only=True, required=False)
+    department = serializers.IntegerField(write_only=True, required=False)
+    title = serializers.CharField(write_only=True, required=False)
+
+    class Meta:
+        model = User
+        fields = (
+            "email",
+            "password",
+            "first_name",
+            "last_name",
+            "role",
+            "phone",
+            "staff_number",
+            "department",
+            "title",
+        )
+
+    def validate_role(self, value):
+        if value not in [User.WORKPLACE_SUPERVISOR, User.ACADEMIC_SUPERVISOR]:
+            raise serializers.ValidationError("Invalid role for supervisor signup.")
+        return value
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        role = validated_data.pop("role", None)
+
+        # Create inactive user
+        user = User.objects.create_user(is_active=False, **validated_data)
+        user.set_password(password)
+        if role is not None:  # type: ignore
+            user.role = role  # type: ignore
+        user.save()
+
+        # Create SupervisorApplication
+        from .models import SupervisorApplication
+
+        SupervisorApplication.objects.create(user=user)
+
+        # Create StaffProfile if data provided
+        staff_number = validated_data.pop("staff_number", None)
+        department_id = validated_data.pop("department", None)
+        title = validated_data.pop("title", None)
+
+        if staff_number and department_id and title:
+            from apps.academics.models import Departments
+
+            department = Departments.objects.get(id=department_id)
+            StaffProfiles.objects.create(
+                user=user, staff_number=staff_number, department=department, title=title
+            )
+
+        return user
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    staff_profile = StaffProfilesSerializer(source="staffprofiles", read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "id",
+            "email",
+            "first_name",
+            "last_name",
+            "role",
+            "phone",
+            "institution_id",
+            "programme_id",
+            "student_number",
+            "is_active",
+            "staff_profile",
+        )

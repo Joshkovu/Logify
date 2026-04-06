@@ -1,4 +1,9 @@
 from apps.accounts.models import User
+from apps.accounts.permissions import (
+    IsAcademicSupervisor,
+    IsStudent,
+    IsWorkplaceSupervisor,
+)
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.permissions import BasePermission, IsAuthenticated
@@ -8,21 +13,16 @@ from rest_framework.views import APIView
 from .models import SupervisorReviews, WeeklyLogs
 from .serializer import WeeklyLogsSerializer
 
-
-class IsStudent(BasePermission):
-    def has_permission(self, request, view):
-        return request.user.is_authenticated and getattr(request.user, "role", None) == User.STUDENT
+# Create your views here.
 
 
-class IsWorkplaceSupervisor(BasePermission):
+class IsStudentOrSupervisor(BasePermission):
     def has_permission(self, request, view):
         return (
-            request.user.is_authenticated
-            and getattr(request.user, "role", None) == User.WORKPLACE_SUPERVISOR
+            IsStudent().has_permission(request, view)
+            or IsWorkplaceSupervisor().has_permission(request, view)
+            or IsAcademicSupervisor().has_permission(request, view)
         )
-
-
-# Create your views here.
 
 
 class CreateWeeklyLogAPIView(APIView):
@@ -211,7 +211,7 @@ class RequestChangesWeeklyLogAPIView(APIView):
 
 
 class GetWeeklyLogAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStudentOrSupervisor]
 
     def get(self, request, log_id):
         querySet = WeeklyLogs.objects.all()
@@ -246,7 +246,7 @@ class GetWeeklyLogAPIView(APIView):
 
 
 class GetWeeklyLogsAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStudentOrSupervisor]
 
     def get(self, request):
         if request.user.role == User.STUDENT:
@@ -288,7 +288,7 @@ class DeleteWeeklyLogAPIView(APIView):
 
 
 class GetHistoryOfWeeklyLogsAPIView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsStudentOrSupervisor]
 
     def get(self, request):
         if request.user.role == User.STUDENT:
