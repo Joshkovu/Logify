@@ -109,16 +109,27 @@ const AuthEntryPage = () => {
               </Link>
             </div>
 
-            <div className="mb-10 flex items-center justify-between">
-              <div>
-                <h2 className="text-3xl font-black tracking-tight text-maroon-dark dark:text-gold sm:text-4xl">
-                  {selectedRole ? "Choose Action" : "Select Your Role"}
-                </h2>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                  {selectedRole
-                    ? `You selected ${activeRole?.title}. What would you like to do?`
-                    : "Tell us who you are to receive the right access and onboarding path."}
-                </p>
+            <div className="mb-10 flex items-start justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div>
+                  <h2 className="text-3xl font-black tracking-tight text-maroon-dark dark:text-gold sm:text-4xl">
+                    {selectedRole ? "Choose Action" : "Select Your Role"}
+                  </h2>
+                  <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                    {selectedRole
+                      ? `You selected ${activeRole?.title}. What would you like to do?`
+                      : "Tell us who you are to receive the right access and onboarding path."}
+                  </p>
+                </div>
+                {!selectedRole && (
+                  <button
+                    onClick={() => navigate(-1)}
+                    className="flex h-10 items-center justify-center gap-2 rounded-xl border border-border bg-white px-4 text-xs font-bold uppercase tracking-wider text-text-secondary transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                )}
               </div>
 
               {selectedRole && (
