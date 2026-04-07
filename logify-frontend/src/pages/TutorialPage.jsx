@@ -114,12 +114,12 @@ const TutorialPage = () => {
                 Get Started
                 <ArrowRight className="h-4 w-4 text-gold" />
               </button>
-              <Link
+              {/* <Link
                 to="/"
                 className="inline-flex items-center justify-center rounded-xl border border-white/50 bg-white/30 px-6 py-3 text-sm font-bold uppercase tracking-wider text-maroon-dark shadow-sm backdrop-blur-md transition-all hover:bg-white/50 hover:shadow-md dark:border-white/10 dark:bg-white/5 dark:text-slate-100 dark:hover:bg-white/10"
               >
                 Back To Landing
-              </Link>
+              </Link> */}
             </div>
           </section>
         </div>
