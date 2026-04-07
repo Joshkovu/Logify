@@ -122,11 +122,47 @@ export const api = {
 
     getDepartments: () => apiRequest("/v1/academics/departments/"),
     getDepartment: (id) => apiRequest(`/v1/academics/departments/${id}/`),
+    createDepartment: (data) =>
+      apiRequest(`/v1/academics/departments/`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    updateDepartment: (id, data) =>
+      apiRequest(`/v1/academics/departments/${id}/`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    patchDepartment: (id, data) =>
+      apiRequest(`/v1/academics/departments/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    deleteDepartment: (id) =>
+      apiRequest(`/v1/academics/departments/${id}/`, { method: "DELETE" }),
+
     getInstitutionDepartments: (institutionId) =>
       apiRequest(`/v1/academics/institutions/${institutionId}/departments/`),
 
     getProgrammes: () => apiRequest("/v1/academics/programmes/"),
     getProgramme: (id) => apiRequest(`/v1/academics/programmes/${id}/`),
+    createProgramme: (data) =>
+      apiRequest(`/v1/academics/programmes/`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    updateProgramme: (id, data) =>
+      apiRequest(`/v1/academics/programmes/${id}/`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    patchProgramme: (id, data) =>
+      apiRequest(`/v1/academics/programmes/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    deleteProgramme: (id) =>
+      apiRequest(`/v1/academics/programmes/${id}/`, { method: "DELETE" }),
+
     getDepartmentProgrammes: (departmentId) =>
       apiRequest(`/v1/academics/departments/${departmentId}/programmes/`),
   },
