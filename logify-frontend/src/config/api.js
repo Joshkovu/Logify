@@ -100,8 +100,25 @@ export const api = {
   },
 
   academics: {
-    getInstitutions: () => apiRequest("/v1/academics/institutions"),
+    getInstitutions: () => apiRequest("/v1/academics/institutions/"),
     getInstitution: (id) => apiRequest(`/v1/academics/institutions/${id}/`),
+    createInstitution: (data) =>
+      apiRequest(`/v1/academics/institutions/`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    updateInstitution: (id, data) =>
+      apiRequest(`/v1/academics/institutions/${id}/`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    patchInstitution: (id, data) =>
+      apiRequest(`/v1/academics/institutions/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    deleteInstitution: (id) =>
+      apiRequest(`/v1/academics/institutions/${id}/`, { method: "DELETE" }),
 
     getDepartments: () => apiRequest("/v1/academics/departments/"),
     getDepartment: (id) => apiRequest(`/v1/academics/departments/${id}/`),
