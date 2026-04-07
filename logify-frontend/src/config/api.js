@@ -74,6 +74,11 @@ export const api = {
         body: JSON.stringify(data),
       }),
     me: () => apiRequest("/v1/auth/me/"),
+    adminSignup: (data) =>
+      apiRequest("/v1/auth/admin/signup/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     supervisorSignup: (data) =>
       apiRequest("/v1/auth/supervisor/signup/", {
         method: "POST",
