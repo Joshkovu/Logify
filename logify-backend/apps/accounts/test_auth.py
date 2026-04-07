@@ -182,6 +182,37 @@ class TestSupervisorAuth:
 
 
 @pytest.mark.django_db
+class TestAdminAuth:
+    def test_admin_signup_and_login(self, api_client):
+        signup_response = api_client.post(
+            "/api/v1/auth/admin/signup/",
+            {
+                "email": "admin.signup@test.com",
+                "password": "securepassword123",
+                "first_name": "Internship",
+                "last_name": "Admin",
+                "phone": "0700000000",
+            },
+        )
+
+        assert signup_response.status_code == status.HTTP_201_CREATED
+
+        user = User.objects.get(email="admin.signup@test.com")
+        assert user.role == User.INTERNSHIP_ADMIN  # type: ignore
+        assert user.is_active
+        assert user.is_staff
+
+        login_response = api_client.post(
+            "/api/v1/auth/login/",
+            {"email": "admin.signup@test.com", "password": "securepassword123"},
+        )
+
+        assert login_response.status_code == status.HTTP_200_OK
+        assert "access" in login_response.data
+        assert "refresh" in login_response.data
+
+
+@pytest.mark.django_db
 class TestAuthMe:
     def test_get_me(self, api_client):
         user = User.objects.create_user(
