@@ -1,23 +1,28 @@
+import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-import { getSession } from "./authStore";
+import { AuthContext } from "../../contexts/AuthContext";
 
 const roleToPath = {
   student: "/student",
   internship_admin: "/admin",
   academic_supervisor: "/supervisor",
-  workplace_supervisor: "/supervisor",
+  workplace_supervisor: "/workplace-supervisor",
 };
 
 const GuestOnlyRoute = ({ children }) => {
-  const session = getSession();
+  const { isAuthenticated, isLoadingUser, user } = useContext(AuthContext);
 
-  if (!session || !session.user) {
+  if (isLoadingUser) {
+    return null;
+  }
+
+  if (!isAuthenticated || !user) {
     return children;
   }
 
-  const redirectPath = roleToPath[session.user.role] || "/";
+  const redirectPath = roleToPath[user.role] || "/";
   return <Navigate to={redirectPath} replace />;
 };
 
