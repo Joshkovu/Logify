@@ -86,21 +86,31 @@ def get_accessible_programme_ids(user):
 
 
 class InstitutionsListView(APIView):
-    permission_classes = [IsAuthenticated, IsInternshipAdmin]
+    permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        institutions = Institutions.objects.all()
-        serializer = InstitutionsSerializer(institutions, many=True)
-        return Response(serializer.data)
+        if request.user.role == User.INTERNSHIP_ADMIN:
+            institutions = Institutions.objects.all()
+            serializer = InstitutionsSerializer(institutions, many=True)
+            return Response(serializer.data)
+        return Response(
+            {"error": "Only Internship admins can view all institutions."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
 
     def post(self, request):
-        serializer = InstitutionsSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.role == User.STUDENT:
+            serializer = InstitutionsSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {"error": "Institution data is invalid.", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(
-            {"error": "Institution data is invalid.", "details": serializer.errors},
-            status=status.HTTP_400_BAD_REQUEST,
+            {"error": "Only Students and Internship admins can create an institution."},
+            status=status.HTTP_403_FORBIDDEN,
         )
 
 
