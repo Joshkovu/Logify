@@ -11,10 +11,25 @@ from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 from .models import SupervisorApplication
 from .permissions import IsInternshipAdmin
 from .serializers import (
+    AdminSignupSerializer,
     SupervisorApplicationSerializer,
     SupervisorSignupSerializer,
     UserDetailSerializer,
 )
+
+
+class AdminSignupView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = AdminSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Internship admin account created successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SupervisorSignupView(APIView):
@@ -74,7 +89,7 @@ class SupervisorApplicationListView(ListAPIView):
             "user", "user__staffprofiles", "user__staffprofiles__department"
         ).order_by("-created_at")
 
-        status_filter = self.request.query_params.get("status")
+        status_filter = self.request.query_params.get("status")  # type: ignore
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
