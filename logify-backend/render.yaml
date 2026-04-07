@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: logify-backend
+    runtime: docker
+    rootDir: logify-backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    preDeployCommand: python manage.py migrate --noinput
+    autoDeployTrigger: commit
+    envVars:
+      - key: DJANGO_SECRET_KEY
+        sync: false
+      - key: DEBUG
+        sync: false
+      - key: ALLOWED_HOSTS
+        sync: false
+      - key: FRONTEND_ORIGINS
+        sync: false
+      - key: POSTGRES_DB
+        sync: false
+      - key: POSTGRES_USER
+        sync: false
+      - key: POSTGRES_PASSWORD
+        sync: false
+      - key: POSTGRES_HOST
+        sync: false
+      - key: POSTGRES_PORT
+        sync: false
+      - key: POSTGRES_SSLMODE
+        sync: false
+      - key: POSTGRES_CHANNEL_BINDING
+        sync: false
+      - key: MAILJET_API_KEY
+        sync: false
+      - key: MAILJET_API_SECRET
+        sync: false
