@@ -1,12 +1,36 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
-import { registerAdmin, validateCommonSignupFields } from "./auth/authStore";
+
+const validateAdminSignup = (formData) => {
+  const errors = {};
+
+  if (!formData.fullName.trim()) {
+    errors.fullName = "Full name is required.";
+  }
+
+  if (!formData.email.trim()) {
+    errors.email = "Institutional email is required.";
+  }
+
+  if (!formData.password) {
+    errors.password = "Password is required.";
+  } else if (formData.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
+  }
+
+  if (!formData.confirmPassword) {
+    errors.confirmPassword = "Confirm your password.";
+  } else if (formData.confirmPassword !== formData.password) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+};
 
 const AdminSignupPage = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -25,22 +49,16 @@ const AdminSignupPage = () => {
     event.preventDefault();
     setError("");
 
-    const errors = validateCommonSignupFields(formData);
+    const errors = validateAdminSignup(formData);
     setFieldErrors(errors);
+
     if (Object.keys(errors).length > 0) {
       return;
     }
 
-    const result = registerAdmin(formData);
-    if (!result.ok) {
-      setError(result.error || "Unable to create admin account.");
-      return;
-    }
-
-    navigate("/login", {
-      replace: true,
-      state: { signupSuccess: "Admin account created. Please log in." },
-    });
+    setError(
+      "Internship Admin self-signup is not available yet because no backend endpoint exists for it.",
+    );
   };
 
   return (

@@ -1,23 +1,24 @@
-import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 
+import { AuthContext } from "../contexts/AuthContext";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
-import { authenticate } from "./auth/authStore";
 
 const LoginPage = () => {
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
-  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const location = useLocation();
   const signupSuccess = location.state?.signupSuccess || "";
+  const { login } = useContext(AuthContext);
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
@@ -26,13 +27,15 @@ const LoginPage = () => {
       return;
     }
 
-    const result = authenticate(formData);
-    if (!result.ok) {
-      setError(result.error || "Unable to log in.");
-      return;
-    }
+    setIsSubmitting(true);
 
-    navigate(result.redirectPath, { replace: true });
+    try {
+      await login(formData.email.trim(), formData.password);
+    } catch (loginError) {
+      setError(loginError.message || "Unable to log in.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -93,9 +96,10 @@ const LoginPage = () => {
 
           <button
             type="submit"
+            disabled={isSubmitting}
             className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01]"
           >
-            Login
+            {isSubmitting ? "Logging In..." : "Login"}
           </button>
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
