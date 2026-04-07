@@ -92,10 +92,20 @@ export const api = {
   },
 
   accounts: {
+    getSupervisorApplications: (params = {}) => {
+      const queryString = new URLSearchParams(params).toString();
+      const endpoint = `/v1/accounts/supervisor/applications/${queryString ? `?${queryString}` : ""}`;
+      return apiRequest(endpoint);
+    },
     approveSupervisor: (applicationId, data) =>
       apiRequest(`/v1/accounts/supervisor/approve/${applicationId}/`, {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+    reviewSupervisorApplication: (applicationId, action) =>
+      apiRequest(`/v1/accounts/supervisor/approve/${applicationId}/`, {
+        method: "POST",
+        body: JSON.stringify({ action }),
       }),
   },
 
