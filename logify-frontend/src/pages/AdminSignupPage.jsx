@@ -1,14 +1,19 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
+import { AuthContext } from "../contexts/AuthContext";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
 const validateAdminSignup = (formData) => {
   const errors = {};
+  const trimmedFullName = formData.fullName.trim();
+  const nameParts = trimmedFullName.split(/\s+/).filter(Boolean);
 
-  if (!formData.fullName.trim()) {
+  if (!trimmedFullName) {
     errors.fullName = "Full name is required.";
+  } else if (nameParts.length < 2) {
+    errors.fullName = "Enter both first and last name.";
   }
 
   if (!formData.email.trim()) {
@@ -31,6 +36,8 @@ const validateAdminSignup = (formData) => {
 };
 
 const AdminSignupPage = () => {
+  const navigate = useNavigate();
+  const { adminSignUp } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -39,13 +46,14 @@ const AdminSignupPage = () => {
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
@@ -56,16 +64,28 @@ const AdminSignupPage = () => {
       return;
     }
 
-    setError(
-      "Internship Admin self-signup is not available yet because no backend endpoint exists for it.",
-    );
+    setIsSubmitting(true);
+
+    try {
+      await adminSignUp(formData);
+      navigate("/login", {
+        replace: true,
+        state: {
+          signupSuccess: "Admin account created. Please log in.",
+        },
+      });
+    } catch (signupError) {
+      setError(signupError.message || "Unable to create admin account.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <GuestOnlyRoute>
       <AuthLayout
         title="Internship Admin Signup"
-        subtitle="This signup path is controlled and available only to pre-authorized institutional emails."
+        subtitle="Create an internship administrator account for institution-level platform management."
       >
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -149,9 +169,10 @@ const AdminSignupPage = () => {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01]"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Create Admin Account
+            {isSubmitting ? "Creating Account..." : "Create Admin Account"}
           </button>
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
