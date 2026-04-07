@@ -61,6 +61,20 @@ const toSupervisorPayload = (data) => {
   };
 };
 
+const toAdminPayload = (data) => {
+  const trimmedName = data.fullName?.trim() || "";
+  const [firstName = "", ...rest] = trimmedName.split(/\s+/);
+  const lastName = rest.join(" ");
+
+  return {
+    email: data.email,
+    password: data.password,
+    first_name: data.firstName ?? firstName,
+    last_name: data.lastName ?? lastName,
+    phone: data.phone,
+  };
+};
+
 // eslint-disable-next-line react/prop-types
 const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
@@ -152,6 +166,14 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const adminSignUp = async (data) => {
+    try {
+      return await api.auth.adminSignup(toAdminPayload(data));
+    } catch (error) {
+      throw new Error(error.message || "Internship admin signup failed.");
+    }
+  };
+
   const logout = async () => {
     const refreshToken = session?.refreshToken;
 
@@ -183,6 +205,7 @@ const AuthProvider = ({ children }) => {
         studentSignup,
         verifyStudentSignup,
         supervisorSignUp,
+        adminSignUp,
       }}
     >
       {children}
