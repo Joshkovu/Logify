@@ -6,5 +6,6 @@ WORKDIR /app
 COPY requirements.txt /app/
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . /app/
+RUN chmod +x /app/entrypoint.sh
 EXPOSE 8080
-CMD ["gunicorn", "config.wsgi:application", "--bind", "0.0.0.0:8080"]
+CMD ["/app/entrypoint.sh"]
