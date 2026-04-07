@@ -103,6 +103,26 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
         return user
 
 
+class AdminSignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "password", "first_name", "last_name", "phone")
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        user = User.objects.create_user(
+            role=User.INTERNSHIP_ADMIN,
+            is_active=True,
+            is_staff=True,
+            **validated_data,
+        )
+        user.set_password(password)
+        user.save()
+        return user
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
     staff_profile = StaffProfilesSerializer(source="staffprofiles", read_only=True)
 
