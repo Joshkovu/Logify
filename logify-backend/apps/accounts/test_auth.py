@@ -70,7 +70,7 @@ class TestStudentAuth:
 
         response = api_client.post(
             "/api/v1/auth/student/verify-otp/",
-            {"attempt_id": attempt.id, "otp": otp},
+            {"attempt_id": attempt.id, "otp": otp},  # type: ignore
         )
 
         assert response.status_code == status.HTTP_200_OK
@@ -79,7 +79,7 @@ class TestStudentAuth:
         assert response.data["user"]["email"] == "test.student@univ.ac.ug"
 
         user = User.objects.get(email="test.student@univ.ac.ug")
-        assert user.role == User.STUDENT
+        assert user.role == User.STUDENT  # type: ignore
 
 
 @pytest.mark.django_db
@@ -92,7 +92,7 @@ class TestSupervisorAuth:
                 "password": "securepassword123",
                 "first_name": "John",
                 "last_name": "Doe",
-                "role": User.ACADEMIC_SUPERVISOR,
+                "role": User.ACADEMIC_SUPERVISOR,  # type: ignore
                 "phone": "0700000000",
             },
         )
@@ -111,7 +111,7 @@ class TestSupervisorAuth:
         admin = User.objects.create_user(
             email="admin@test.com",
             password="adminpassword",
-            role=User.INTERNSHIP_ADMIN,
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
             first_name="Internship",
             last_name="Admin",
         )
@@ -119,7 +119,7 @@ class TestSupervisorAuth:
         app = SupervisorApplication.objects.get(user=user)
 
         response = api_client.post(
-            f"/api/v1/accounts/supervisor/approve/{app.id}/",
+            f"/api/v1/accounts/supervisor/approve/{app.id}/",  # pyright: ignore[reportAttributeAccessIssue]
             {"action": "approve"},
         )
         assert response.status_code == status.HTTP_200_OK
@@ -135,6 +135,82 @@ class TestSupervisorAuth:
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
 
+    def test_admin_can_list_supervisor_applications(self, api_client):
+        pending_user = User.objects.create_user(
+            email="pending.supervisor@test.com",
+            password="securepassword123",
+            role=User.WORKPLACE_SUPERVISOR,  # type: ignore
+            first_name="Pending",
+            last_name="Supervisor",
+            is_active=False,
+        )
+        SupervisorApplication.objects.create(user=pending_user, status="pending")
+
+        approved_user = User.objects.create_user(
+            email="approved.supervisor@test.com",
+            password="securepassword123",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            first_name="Approved",
+            last_name="Supervisor",
+            is_active=True,
+        )
+        SupervisorApplication.objects.create(user=approved_user, status="approved")
+
+        admin = User.objects.create_user(
+            email="admin.list@test.com",
+            password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            first_name="Internship",
+            last_name="Admin",
+        )
+        api_client.force_authenticate(user=admin)
+
+        response = api_client.get("/api/v1/accounts/supervisor/applications/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 2
+        assert response.data[0]["email"] == "approved.supervisor@test.com"
+        assert response.data[1]["email"] == "pending.supervisor@test.com"
+
+        pending_response = api_client.get(
+            "/api/v1/accounts/supervisor/applications/?status=pending"
+        )
+
+        assert pending_response.status_code == status.HTTP_200_OK
+        assert len(pending_response.data) == 1
+        assert pending_response.data[0]["status"] == "pending"
+
+
+@pytest.mark.django_db
+class TestAdminAuth:
+    def test_admin_signup_and_login(self, api_client):
+        signup_response = api_client.post(
+            "/api/v1/auth/admin/signup/",
+            {
+                "email": "admin.signup@test.com",
+                "password": "securepassword123",
+                "first_name": "Internship",
+                "last_name": "Admin",
+                "phone": "0700000000",
+            },
+        )
+
+        assert signup_response.status_code == status.HTTP_201_CREATED
+
+        user = User.objects.get(email="admin.signup@test.com")
+        assert user.role == User.INTERNSHIP_ADMIN  # type: ignore
+        assert user.is_active
+        assert user.is_staff
+
+        login_response = api_client.post(
+            "/api/v1/auth/login/",
+            {"email": "admin.signup@test.com", "password": "securepassword123"},
+        )
+
+        assert login_response.status_code == status.HTTP_200_OK
+        assert "access" in login_response.data
+        assert "refresh" in login_response.data
+
 
 @pytest.mark.django_db
 class TestAuthMe:
@@ -143,7 +219,7 @@ class TestAuthMe:
             email="me@test.com",
             first_name="Me",
             last_name="Too",
-            role=User.INTERNSHIP_ADMIN,
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
         )
         api_client.force_authenticate(user=user)
 
@@ -151,4 +227,4 @@ class TestAuthMe:
 
         assert response.status_code == status.HTTP_200_OK
         assert response.data["email"] == "me@test.com"
-        assert response.data["role"] == User.INTERNSHIP_ADMIN
+        assert response.data["role"] == User.INTERNSHIP_ADMIN  # type: ignore

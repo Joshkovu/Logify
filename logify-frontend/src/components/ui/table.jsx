@@ -42,21 +42,23 @@ function TableRow({ children, index }) {
   );
 }
 
-function TableCell({ children, className = "" }) {
+function TableCell({ children, className = "", ...props }) {
   return (
     <td
       className={`px-4 py-3 text-text-primary dark:text-slate-100 ${className}`}
+      {...props}
     >
       {children}
     </td>
   );
 }
 
-function TableHeaderCell({ children, className = "" }) {
+function TableHeaderCell({ children, className = "", ...props }) {
   return (
     <th
       className={`sticky top-0 border-b border-border bg-background px-4 py-3 text-left font-bold uppercase tracking-wider text-maroon dark:border-slate-700 dark:bg-slate-800 dark:text-gold ${className}`}
       scope="col"
+      {...props}
     >
       {children}
     </th>

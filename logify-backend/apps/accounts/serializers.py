@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import StaffProfiles, User
+from .models import StaffProfiles, SupervisorApplication, User
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -103,6 +103,26 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
         return user
 
 
+class AdminSignupSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = User
+        fields = ("email", "password", "first_name", "last_name", "phone")
+
+    def create(self, validated_data):
+        password = validated_data.pop("password")
+        user = User.objects.create_user(
+            role=User.INTERNSHIP_ADMIN,
+            is_active=True,
+            is_staff=True,
+            **validated_data,
+        )
+        user.set_password(password)
+        user.save()
+        return user
+
+
 class UserDetailSerializer(serializers.ModelSerializer):
     staff_profile = StaffProfilesSerializer(source="staffprofiles", read_only=True)
 
@@ -121,3 +141,34 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "is_active",
             "staff_profile",
         )
+
+
+class SupervisorApplicationSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source="user.email", read_only=True)
+    first_name = serializers.CharField(source="user.first_name", read_only=True)
+    last_name = serializers.CharField(source="user.last_name", read_only=True)
+    role = serializers.CharField(source="user.role", read_only=True)
+    phone = serializers.CharField(source="user.phone", read_only=True)
+    is_active = serializers.BooleanField(source="user.is_active", read_only=True)
+    full_name = serializers.SerializerMethodField()
+    staff_profile = StaffProfilesSerializer(source="user.staffprofiles", read_only=True)
+
+    class Meta:
+        model = SupervisorApplication
+        fields = (
+            "id",
+            "status",
+            "created_at",
+            "updated_at",
+            "email",
+            "first_name",
+            "last_name",
+            "full_name",
+            "role",
+            "phone",
+            "is_active",
+            "staff_profile",
+        )
+
+    def get_full_name(self, obj):
+        return f"{obj.user.first_name} {obj.user.last_name}".strip()
