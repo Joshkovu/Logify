@@ -106,8 +106,23 @@ class TestInstitutionsListView(APITestCase):
             Institutions.objects.filter(name="University C", email_domain="@unic.com").exists()
         )
 
-    def test_student_cannot_create_institution(self):
+    def test_student_can_create_institution(self):
         self.client.force_authenticate(user=self.student)
+        response = self.client.post(
+            reverse("institutions-list"),
+            {
+                "name": "University C",
+                "email_domain": "@unic.com",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Institutions.objects.filter(name="University C", email_domain="@unic.com").exists()
+        )
+
+    def test_workplace_supervisor_cannot_create_institution(self):
+        self.client.force_authenticate(user=self.workplace_supervisor)
         response = self.client.post(
             reverse("institutions-list"),
             {
