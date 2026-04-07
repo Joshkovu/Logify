@@ -1,6 +1,7 @@
 from apps.notifications.services import MailjetService
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,7 +10,26 @@ from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 
 from .models import SupervisorApplication
 from .permissions import IsInternshipAdmin
-from .serializers import SupervisorSignupSerializer, UserDetailSerializer
+from .serializers import (
+    AdminSignupSerializer,
+    SupervisorApplicationSerializer,
+    SupervisorSignupSerializer,
+    UserDetailSerializer,
+)
+
+
+class AdminSignupView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        serializer = AdminSignupSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Internship admin account created successfully."},
+                status=status.HTTP_201_CREATED,
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class SupervisorSignupView(APIView):
@@ -58,6 +78,22 @@ class SupervisorApprovalView(APIView):
             return Response({"message": "Supervisor application rejected."})
 
         return Response({"error": "Invalid action."}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SupervisorApplicationListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsInternshipAdmin]
+    serializer_class = SupervisorApplicationSerializer
+
+    def get_queryset(self):
+        queryset = SupervisorApplication.objects.select_related(
+            "user", "user__staffprofiles", "user__staffprofiles__department"
+        ).order_by("-created_at")
+
+        status_filter = self.request.query_params.get("status")  # type: ignore
+        if status_filter:
+            queryset = queryset.filter(status=status_filter)
+
+        return queryset
 
 
 class MeView(APIView):

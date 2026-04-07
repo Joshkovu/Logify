@@ -74,6 +74,11 @@ export const api = {
         body: JSON.stringify(data),
       }),
     me: () => apiRequest("/v1/auth/me/"),
+    adminSignup: (data) =>
+      apiRequest("/v1/auth/admin/signup/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     supervisorSignup: (data) =>
       apiRequest("/v1/auth/supervisor/signup/", {
         method: "POST",
@@ -92,10 +97,20 @@ export const api = {
   },
 
   accounts: {
+    getSupervisorApplications: (params = {}) => {
+      const queryString = new URLSearchParams(params).toString();
+      const endpoint = `/v1/accounts/supervisor/applications/${queryString ? `?${queryString}` : ""}`;
+      return apiRequest(endpoint);
+    },
     approveSupervisor: (applicationId, data) =>
       apiRequest(`/v1/accounts/supervisor/approve/${applicationId}/`, {
         method: "POST",
         body: JSON.stringify(data),
+      }),
+    reviewSupervisorApplication: (applicationId, action) =>
+      apiRequest(`/v1/accounts/supervisor/approve/${applicationId}/`, {
+        method: "POST",
+        body: JSON.stringify({ action }),
       }),
   },
 
