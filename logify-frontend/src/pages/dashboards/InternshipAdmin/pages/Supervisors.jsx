@@ -74,17 +74,7 @@ const Supervisors = () => {
 
     try {
       await api.accounts.reviewSupervisorApplication(applicationId, action);
-      setApplications((currentApplications) =>
-        currentApplications.map((application) =>
-          application.id === applicationId
-            ? {
-                ...application,
-                status: action === "approve" ? "approved" : "rejected",
-                is_active: action === "approve",
-              }
-            : application,
-        ),
-      );
+      await loadApplications();
     } catch (reviewError) {
       setError(reviewError.message || "Unable to review application.");
     } finally {
