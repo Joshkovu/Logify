@@ -18,10 +18,10 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Main Landing Page */}
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/landing-page" element={<LandingPage />} />
 
           {/* Auth and onboarding pages */}
-          <Route path="/tutorial" element={<TutorialPage />} />
+          <Route path="/" element={<TutorialPage />} />
           <Route path="/auth" element={<AuthEntryPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupRolePage />} />
