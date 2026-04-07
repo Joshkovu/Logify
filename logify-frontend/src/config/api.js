@@ -1,4 +1,12 @@
-const API_BASE_URL = import.meta.env.VITE_BACKEND_URL;
+const rawApiBaseUrl = import.meta.env.VITE_BACKEND_URL;
+
+if (!rawApiBaseUrl) {
+  throw new Error(
+    "VITE_BACKEND_URL is not defined. Set it to your backend API base URL, for example https://your-host/api",
+  );
+}
+
+const API_BASE_URL = rawApiBaseUrl.replace(/\/$/, "");
 
 const SESSION_STORAGE_KEY = "logify-auth-session";
 
