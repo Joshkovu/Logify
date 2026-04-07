@@ -441,45 +441,10 @@ export async function registerStudent({
         error: errorData.message || 'Registration failed. Please try again.',
       };
     }
-  } catch (error) {
-    return {
-      ok: false,
-      error: 'Network error. Please check your connection and try again.',
-    };
+  } catch {
+      return {
+        ok: false,
+        error: 'Network error. Please check your connection and try again.',
+      };
+    }
   }
-}
-      ok: false,
-      error: "Student ID is required.",
-    };
-  }
-
-  if (!program?.trim()) {
-    return {
-      ok: false,
-      error: "Program is required.",
-    };
-  }
-
-  if (!yearOfStudy) {
-    return {
-      ok: false,
-      error: "Year of study is required.",
-    };
-  }
-
-  const newUser = {
-    id: Date.now(),
-    fullName: fullName.trim(),
-    email: normalizedEmail,
-    password,
-    role: "student",
-    studentId: studentId.trim(),
-    program: program.trim(),
-    yearOfStudy: parseInt(yearOfStudy),
-    status: "approved", // Students are auto-approved
-  };
-
-  writeUsers([...users, newUser]);
-  return { ok: true };
-}
->>>>>>> origin/main

@@ -101,4 +101,3 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Custom logic if needed after successful login
             pass
         return response
->>>>>>> origin/main
