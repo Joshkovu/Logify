@@ -242,6 +242,54 @@ class TestDepartmentsListView(APITestCase):
         response = self.client.get(reverse("departments-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_admin_can_create_department(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(
+            reverse("departments-list"),
+            {
+                "institution": self.institution.pk,
+                "name": "Department C",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Departments.objects.filter(
+                institution=self.institution.pk,
+                name="Department C",
+            ).exists()
+        )
+
+    def test_student_can_create_department(self):
+        self.client.force_authenticate(user=self.student)
+        response = self.client.post(
+            reverse("departments-list"),
+            {
+                "institution": self.institution.pk,
+                "name": "Department C",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Departments.objects.filter(
+                institution=self.institution.pk,
+                name="Department C",
+            ).exists()
+        )
+
+    def test_workplace_supervisor_cannot_create_department(self):
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("departments-list"),
+            {
+                "institution": self.institution.pk,
+                "name": "Department C",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class TestDepartmentsDetailView(APITestCase):
     def setUp(self):
@@ -300,6 +348,40 @@ class TestDepartmentsDetailView(APITestCase):
     def test_unauthenticated_cannot_view_department(self):
         response = self.client.get(reverse("departments-detail", args=[self.department.pk]))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_can_update_department(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.put(
+            reverse("departments-detail", args=[self.department.pk]),
+            {
+                "institution": self.institution.pk,
+                "name": "Updated Department",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.department.refresh_from_db()
+        self.assertEqual(self.department.name, "Updated Department")
+        self.assertEqual(self.department.institution, self.institution)
+
+    def test_admin_can_patch_department(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("departments-detail", args=[self.department.pk]),
+            {
+                "name": "Patched Department",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.department.refresh_from_db()
+        self.assertEqual(self.department.name, "Patched Department")
+
+    def test_admin_can_delete_department(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(reverse("departments-detail", args=[self.department.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Departments.objects.filter(pk=self.department.pk).exists())
 
 
 class TestInstitutionDepartmentsListView(APITestCase):
@@ -424,6 +506,61 @@ class TestProgrammesListView(APITestCase):
         response = self.client.get(reverse("programmes-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_admin_can_create_programme(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Programmes.objects.filter(
+                department=self.department,
+                name="Programme C",
+                level="Level C",
+                duration_years=3,
+            ).exists()
+        )
+
+    def test_student_can_create_programme(self):
+        self.client.force_authenticate(user=self.student)
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Programmes.objects.filter(
+                department=self.department, name="Programme C", level="Level C", duration_years=3
+            ).exists()
+        )
+
+    def test_workplace_supervisor_cannot_create_programme(self):
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
 
 class TestProgrammesDetailView(APITestCase):
     def setUp(self):
@@ -475,6 +612,44 @@ class TestProgrammesDetailView(APITestCase):
     def test_unauthenticated_cannot_view_programme(self):
         response = self.client.get(reverse("programmes-detail", args=[self.programme.pk]))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_admin_can_update_programme(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.put(
+            reverse("programmes-detail", args=[self.programme.pk]),
+            {
+                "department": self.department.pk,
+                "name": "Updated Programme",
+                "level": "Updated Level",
+                "duration_years": 4,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.programme.refresh_from_db()
+        self.assertEqual(self.programme.department, self.department)
+        self.assertEqual(self.programme.name, "Updated Programme")
+        self.assertEqual(self.programme.level, "Updated Level")
+        self.assertEqual(self.programme.duration_years, 4)
+
+    def test_admin_can_patch_programme(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.patch(
+            reverse("programmes-detail", args=[self.programme.pk]),
+            {
+                "name": "Patched Programme",
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.programme.refresh_from_db()
+        self.assertEqual(self.programme.name, "Patched Programme")
+
+    def test_admin_can_delete_programme(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(reverse("programmes-detail", args=[self.programme.pk]))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertFalse(Programmes.objects.filter(pk=self.programme.pk).exists())
 
 
 class TestDepartmentProgrammesListView(APITestCase):
@@ -534,6 +709,11 @@ class TestDepartmentProgrammesListView(APITestCase):
         self.client.force_authenticate(user=self.academic_supervisor)
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_workplace_supervisor_cannot_list_department_programmes(self):
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unauthenticated_cannot_list_department_programmes(self):
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
