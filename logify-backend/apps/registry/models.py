@@ -19,6 +19,8 @@ from django.db import models
 
 
 class StudentRegistry(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
     programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
     student_number = models.IntegerField()
@@ -47,6 +49,9 @@ class StudentRegistry(models.Model):
 
 
 class RegistrationAttempts(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    password_hash = models.CharField(max_length=255, blank=True, default="")
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
     webmail = models.EmailField()
     student_number = models.IntegerField()
