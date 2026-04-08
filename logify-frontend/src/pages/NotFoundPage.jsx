@@ -14,7 +14,7 @@ const NotFoundPage = () => {
       primaryLabel="Go Home"
       primaryTo="/"
       secondaryLabel="Back"
-      secondaryTo="/landing-page"
+      secondaryAction={() => window.history.back()}
     />
   );
 };
