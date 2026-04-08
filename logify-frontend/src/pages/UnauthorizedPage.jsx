@@ -8,10 +8,10 @@ const UnauthorizedPage = () => {
     <ErrorStatePage
       code="401"
       title="Unauthorized access."
-      description="You need the right account session to open this part of Logify. Sign in again or return to a page that is available for your current role."
+      description="You need the right account session to open this part of Logify. Sign in again or Sign Up or return to a page that is available for your current role."
       imageUrl={UNAUTHORIZED_ILLUSTRATION_URL}
       imageAlt="Security access illustration"
-      primaryLabel="Sign Up"
+      primaryLabel="Auth Page"
       primaryTo="/auth"
       secondaryLabel="Go Home"
       secondaryTo="/"
