@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupRolePage from "./pages/SignupRolePage";
 import AdminSignupPage from "./pages/AdminSignupPage";
 import SupervisorSignupPage from "./pages/SupervisorSignupPage";
+import StudentSignupPage from "./pages/StudentSignupPage";
 import StudentDashboard from "./pages/dashboards/StudentDashboard/StudentDashboard";
 import AdminDashboard from "./pages/dashboards/InternshipAdmin/AdminDashboard";
 import SupervisorDashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/SupervisorDashboard";
@@ -27,6 +28,7 @@ function App() {
           <Route path="/signup" element={<SignupRolePage />} />
           <Route path="/signup/admin" element={<AdminSignupPage />} />
           <Route path="/signup/supervisor" element={<SupervisorSignupPage />} />
+          <Route path="/signup/student" element={<StudentSignupPage />} />
 
           {/* Dashboards with nested routing */}
           <Route path="/student/*" element={<StudentDashboard />} />
