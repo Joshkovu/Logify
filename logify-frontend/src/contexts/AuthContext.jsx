@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { api } from "../config/api.js";
+import { api, SESSION_CLEARED_EVENT } from "../config/api.js";
 
 const SESSION_STORAGE_KEY = "logify-auth-session";
 const ROLE_TO_PATH = {
@@ -107,6 +107,18 @@ const AuthProvider = ({ children }) => {
 
     loadUser();
   }, [session?.token]);
+
+  useEffect(() => {
+    const handleSessionCleared = () => {
+      setSession(null);
+      setUser(null);
+      setIsLoadingUser(false);
+    };
+
+    window.addEventListener(SESSION_CLEARED_EVENT, handleSessionCleared);
+    return () =>
+      window.removeEventListener(SESSION_CLEARED_EVENT, handleSessionCleared);
+  }, []);
 
   const login = async (email, password) => {
     try {
