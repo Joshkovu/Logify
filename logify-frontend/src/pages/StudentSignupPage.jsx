@@ -1,7 +1,20 @@
+import { useState } from "react";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
 const StudentSignupPage = () => {
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+  };
+
   return (
     <GuestOnlyRoute>
       <AuthLayout
@@ -14,6 +27,9 @@ const StudentSignupPage = () => {
               Full Name
             </label>
             <input
+              name="fullName"
+              value={formData.fullName}
+              onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="Your full name"
             />
@@ -25,6 +41,9 @@ const StudentSignupPage = () => {
               Email/Webmail
             </label>
             <input
+              name="email"
+              value={formData.email}
+              onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="name@institution.ac.ug"
             />
@@ -36,6 +55,9 @@ const StudentSignupPage = () => {
               Password
             </label>
             <input
+              name="password"
+              value={formData.password}
+              onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="At least 8 characters"
             />
@@ -47,6 +69,9 @@ const StudentSignupPage = () => {
               Confirm Password
             </label>
             <input
+              name="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="Re-enter password"
             />
