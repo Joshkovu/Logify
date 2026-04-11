@@ -1,17 +1,20 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { BrowserRouter } from "react-router-dom";
-import { vi } from "vitest";
 import { AuthContext } from "../contexts/AuthContext";
 import AdminSignupPage from "../pages/AdminSignupPage";
 
-// eslint-disable-next-line no-undef
-/* global , test, expect */
+jest.mock("../contexts/AuthContext", () => {
+  const { createContext } = jest.requireActual("react");
+  return {
+    AuthContext: createContext({}),
+  };
+});
 
-vi.mock("react-router-dom", async () => {
-  const actual = await vi.importActual("react-router-dom");
+jest.mock("react-router-dom", () => {
+  const actual = jest.requireActual("react-router-dom");
   return {
     ...actual,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => jest.fn(),
   };
 });
 function renderWithProviders(ui, { providerProps, ...renderOptions }) {
@@ -25,7 +28,7 @@ function renderWithProviders(ui, { providerProps, ...renderOptions }) {
 
 test("renders form and shows validation errors", async () => {
   renderWithProviders(<AdminSignupPage />, {
-    providerProps: { value: { adminSignUp: vi.fn() } },
+    providerProps: { value: { adminSignUp: jest.fn() } },
   });
   fireEvent.click(
     screen.getByRole("button", { name: /create admin account/i }),
@@ -39,7 +42,7 @@ test("renders form and shows validation errors", async () => {
 });
 
 test("submits valid form and calls adminSignUp", async () => {
-  const adminSignUp = vi.fn().mockResolvedValue({});
+  const adminSignUp = jest.fn().mockResolvedValue({});
 
   renderWithProviders(<AdminSignupPage />, {
     providerProps: { value: { adminSignUp } },
