@@ -38,7 +38,6 @@ jobs:
 
       - name: Django system check
         run: python manage.py check
-
       - name: Ensure Docker is running
         if: runner.os != 'Windows'
         run: |
@@ -92,4 +91,6 @@ jobs:
         run: pnpm lint
 
       - name: Test (optional)
+        env:
+          VITE_BACKEND_URL: ${{secrets.VITE_BACKEND_URL}}
         run: pnpm test
