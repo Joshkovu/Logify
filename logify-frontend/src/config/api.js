@@ -2,13 +2,15 @@ const rawApiBaseUrl = import.meta.env.VITE_BACKEND_URL;
 
 if (!rawApiBaseUrl) {
   throw new Error(
-    "VITE_BACKEND_URL is not defined. Set it to your backend API base URL, for example https://your-host/api",
+    "VITE_BACKEND_URL is not defined. Set it to your backend API base URL,",
   );
 }
 
 const API_BASE_URL = rawApiBaseUrl.replace(/\/$/, "");
 
 const SESSION_STORAGE_KEY = "logify-auth-session";
+const SESSION_CLEARED_EVENT = "logify:session-cleared";
+let refreshPromise = null;
 
 const getSession = () => {
   const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
@@ -21,24 +23,73 @@ const getSession = () => {
   }
 };
 
-const getAuthHeaders = () => {
-  const session = getSession();
-  return session
-    ? {
-        Authorization: `${session.tokenType} ${session.token}`,
-        "Content-Type": "application/json",
-      }
-    : {
-        "Content-Type": "application/json",
-      };
+const persistSession = (session) => {
+  window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
 };
 
-const apiRequest = async (endpoint, options = {}) => {
+const clearSession = () => {
+  window.localStorage.removeItem(SESSION_STORAGE_KEY);
+  window.dispatchEvent(new Event(SESSION_CLEARED_EVENT));
+};
+
+const getAuthHeaders = (session = getSession()) => ({
+  ...(session?.token
+    ? { Authorization: `${session.tokenType || "Bearer"} ${session.token}` }
+    : {}),
+  "Content-Type": "application/json",
+});
+
+const refreshSession = async () => {
+  const session = getSession();
+  if (!session?.refreshToken) {
+    clearSession();
+    return null;
+  }
+
+  if (!refreshPromise) {
+    refreshPromise = fetch(`${API_BASE_URL}/v1/auth/refresh/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh: session.refreshToken }),
+    })
+      .then(async (response) => {
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+
+        const data = await response.json();
+        const nextSession = {
+          ...session,
+          token: data.access,
+          refreshToken: data.refresh || session.refreshToken,
+          tokenType: session.tokenType || "Bearer",
+        };
+        persistSession(nextSession);
+        return nextSession;
+      })
+      .catch((error) => {
+        clearSession();
+        throw error;
+      })
+      .finally(() => {
+        refreshPromise = null;
+      });
+  }
+
+  return refreshPromise;
+};
+
+const apiRequest = async (
+  endpoint,
+  options = {},
+  retryOnAuthFailure = true,
+) => {
   const url = `${API_BASE_URL}${endpoint}`;
+  const session = getSession();
   const config = {
     ...options,
     headers: {
-      ...getAuthHeaders(),
+      ...getAuthHeaders(session),
       ...options.headers,
     },
   };
@@ -46,6 +97,35 @@ const apiRequest = async (endpoint, options = {}) => {
     const response = await fetch(url, config);
     if (!response.ok) {
       const errorData = await response.text();
+
+      if (
+        response.status === 401 &&
+        retryOnAuthFailure &&
+        session?.refreshToken
+      ) {
+        try {
+          const nextSession = await refreshSession();
+          if (nextSession?.token) {
+            return apiRequest(
+              endpoint,
+              {
+                ...options,
+                headers: {
+                  ...getAuthHeaders(nextSession),
+                  ...options.headers,
+                },
+              },
+              false,
+            );
+          }
+        } catch {
+          // Continue to the parsed error handling below.
+        }
+      }
+
+      if (response.status === 401) {
+        clearSession();
+      }
 
       let errorMessage = `HTTP ${response.status}`;
       try {
@@ -63,6 +143,8 @@ const apiRequest = async (endpoint, options = {}) => {
     throw err;
   }
 };
+
+export { SESSION_CLEARED_EVENT };
 
 export const api = {
   auth: {
