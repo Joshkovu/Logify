@@ -1,8 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
+import { api } from "../config/api.js";
 
 const validateStudentForm = (formData) => {
   const errors = {};
@@ -48,10 +49,25 @@ const StudentSignupPage = () => {
     password: "",
     confirmPassword: "",
     studentNumber: "",
+    institution: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [institutions, setInstitutions] = useState([]);
+
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const data = await api.academics.getInstitutions();
+        setInstitutions(data);
+      } catch (err) {
+        console.error("Failed to fetch institutions:", err);
+      }
+    };
+
+    fetchInstitutions();
+  }, []);
 
   const { studentSignup } = useContext(AuthContext);
 
@@ -70,10 +86,12 @@ const StudentSignupPage = () => {
     const lastName = rest.join(" ");
 
     const payload = {
-      firstName: firstName,
-      lastName: lastName,
+      first_name: firstName,
+      last_name: lastName,
       webmail: formData.webmail,
       password: formData.password,
+      student_number: formData.studentNumber,
+      institution_id: formData.institution,
     };
 
     setIsSubmitting(true);
@@ -120,6 +138,30 @@ const StudentSignupPage = () => {
             {fieldErrors.fullName && (
               <p className="mt-1 text-xs text-red-600">
                 {fieldErrors.fullName}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Institution
+            </label>
+            <select
+              name="institution"
+              value={formData.institution}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">Select your Institution</option>
+              {institutions.map((inst) => (
+                <option key={inst.id} value={inst.id}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.institution && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.institution}
               </p>
             )}
           </div>
