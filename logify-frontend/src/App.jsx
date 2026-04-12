@@ -8,6 +8,9 @@ import SignupRolePage from "./pages/SignupRolePage";
 import AdminSignupPage from "./pages/AdminSignupPage";
 import SupervisorSignupPage from "./pages/SupervisorSignupPage";
 import StudentSignupPage from "./pages/StudentSignupPage";
+import UnauthorizedPage from "./pages/UnauthorizedPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import ServerErrorPage from "./pages/ServerErrorPage";
 import StudentDashboard from "./pages/dashboards/StudentDashboard/StudentDashboard";
 import AdminDashboard from "./pages/dashboards/InternshipAdmin/AdminDashboard";
 import SupervisorDashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/SupervisorDashboard";
@@ -29,6 +32,9 @@ function App() {
           <Route path="/signup/admin" element={<AdminSignupPage />} />
           <Route path="/signup/supervisor" element={<SupervisorSignupPage />} />
           <Route path="/signup/student" element={<StudentSignupPage />} />
+          <Route path="/401" element={<UnauthorizedPage />} />
+          <Route path="/404" element={<NotFoundPage />} />
+          <Route path="/500" element={<ServerErrorPage />} />
 
           {/* Dashboards with nested routing */}
           <Route path="/student/*" element={<StudentDashboard />} />
@@ -39,8 +45,7 @@ function App() {
             element={<WorkplaceSupervisorDashboard />}
           />
 
-          {/* Fallback to landing page for now */}
-          <Route path="*" element={<LandingPage />} />
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </AuthProvider>
     </BrowserRouter>
