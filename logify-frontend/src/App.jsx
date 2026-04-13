@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import SignupRolePage from "./pages/SignupRolePage";
 import AdminSignupPage from "./pages/AdminSignupPage";
 import SupervisorSignupPage from "./pages/SupervisorSignupPage";
+import StudentSignupPage from "./pages/StudentSignupPage";
 import UnauthorizedPage from "./pages/UnauthorizedPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import ServerErrorPage from "./pages/ServerErrorPage";
@@ -30,6 +31,7 @@ function App() {
           <Route path="/signup" element={<SignupRolePage />} />
           <Route path="/signup/admin" element={<AdminSignupPage />} />
           <Route path="/signup/supervisor" element={<SupervisorSignupPage />} />
+          <Route path="/signup/student" element={<StudentSignupPage />} />
           <Route path="/401" element={<UnauthorizedPage />} />
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
