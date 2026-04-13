@@ -3,18 +3,16 @@ import pytest
 
 @pytest.fixture(scope="session")
 def postgres_container():
-    """Start a PostgreSQL testcontainer once per test session.
-
-    Skips all database tests gracefully when Docker is unavailable
-    (e.g., on Windows CI runners that do not have Docker installed).
-    """
+    """Start a PostgreSQL testcontainer once per test session."""
     from testcontainers.postgres import PostgresContainer
 
     container = PostgresContainer("postgres:15.3")
     try:
         container.start()
     except Exception as exc:
-        pytest.skip(f"Docker unavailable, skipping database tests: {exc}")
+        raise RuntimeError(
+            "Docker is required to run backend tests. Start Docker and rerun pytest."
+        ) from exc
     try:
         yield container
     finally:
