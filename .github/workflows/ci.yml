@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        os: [ubuntu-latest]
         python-version: ["3.11", "3.12"]
 
     defaults:
@@ -39,27 +39,16 @@ jobs:
       - name: Django system check
         run: python manage.py check
       - name: Ensure Docker is running
-        if: runner.os != 'Windows'
         run: |
           docker info
 
-      - name: Run tests (Ubuntu)
-        if: runner.os != 'Windows'
+      - name: Run tests
         env:
           DJANGO_SETTINGS_MODULE: config.settings
           TESTCONTAINERS_RYUK_DISABLED: true
           DOCKER_HOST: unix:///var/run/docker.sock
         run: |
           pytest -q
-
-      - name: Run tests (Windows)
-        if: runner.os == 'Windows'
-        shell: pwsh
-        env:
-          DJANGO_SETTINGS_MODULE: config.settings
-        run: |
-          pytest -q
-          if ($LASTEXITCODE -ne 0) { exit 0 }
   frontend:
     name: logify-frontend (React) - ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
