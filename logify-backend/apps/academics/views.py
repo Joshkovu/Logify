@@ -5,7 +5,7 @@ from apps.accounts.models import User
 from apps.placements.models import InternshipPlacements
 from rest_framework import status
 from rest_framework.exceptions import NotFound, PermissionDenied
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -85,17 +85,12 @@ def get_accessible_programme_ids(user):
 
 
 class InstitutionsListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
-            institutions = Institutions.objects.all()
-            serializer = InstitutionsSerializer(institutions, many=True)
-            return Response(serializer.data)
-        return Response(
-            {"error": "Only Internship Admins can view all institutions."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
+        institutions = Institutions.objects.all()
+        serializer = InstitutionsSerializer(institutions, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if (

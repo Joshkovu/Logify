@@ -60,21 +60,15 @@ class TestInstitutionsListView(APITestCase):
         Institutions.objects.create(name="University A", email_domain="@unia.com")
         Institutions.objects.create(name="University B", email_domain="@unib.com")
 
-    def test_admin_can_list_institutions(self):
-        self.client.force_authenticate(user=self.admin)
+    def test_unauthenticated_can_list_institutions(self):
         response = self.client.get(reverse("institutions-list"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 2)
 
-    def test_admin_sees_empty_list(self):
+    def test_unauthenticated_sees_empty_list(self):
         Institutions.objects.all().delete()
-        self.client.force_authenticate(user=self.admin)
         response = self.client.get(reverse("institutions-list"))
         self.assertEqual(response.data, [])
-
-    def test_unauthenticated_cannot_list_institutions(self):
-        response = self.client.get(reverse("institutions-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_admin_can_create_institution(self):
         self.client.force_authenticate(user=self.admin)

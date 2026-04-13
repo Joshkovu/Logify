@@ -6,6 +6,7 @@ from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import SupervisorApplication
 from apps.registry.models import RegistrationAttempts, StudentRegistry
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -26,6 +27,8 @@ def setup_data(db):
         name="Computer Science", department=department, level="BSc", duration_years=4
     )
     student_registry = StudentRegistry.objects.create(
+        first_name="First",
+        last_name="Name",
         institution=institution,
         programme=programme,
         student_number=2024001,
@@ -50,6 +53,9 @@ class TestStudentAuth:
                 "webmail": "test.student@univ.ac.ug",
                 "institution_id": setup_data["institution"].id,
                 "student_number": 2024001,
+                "first_name": "First",
+                "last_name": "Name",
+                "password": "securepassword123",
             },
         )
 
@@ -63,6 +69,9 @@ class TestStudentAuth:
             institution=setup_data["institution"],
             webmail="test.student@univ.ac.ug",
             student_number=2024001,
+            first_name="First",
+            last_name="Name",
+            password_hash=make_password("securepassword123"),
             status="pending",
             otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
             expires_at=timezone.now() + timedelta(minutes=10),
@@ -77,9 +86,45 @@ class TestStudentAuth:
         assert "access" in response.data
         assert "refresh" in response.data
         assert response.data["user"]["email"] == "test.student@univ.ac.ug"
+        assert response.data["user"]["first_name"] == "First"
+        assert response.data["user"]["last_name"] == "Name"
 
         user = User.objects.get(email="test.student@univ.ac.ug")
         assert user.role == User.STUDENT  # type: ignore
+        assert user.first_name == "First"
+        assert user.last_name == "Name"
+        assert user.student_number == 2024001
+
+    def test_student_can_login_after_signup(self, api_client, setup_data):
+        otp = "123456"
+        attempt = RegistrationAttempts.objects.create(
+            institution=setup_data["institution"],
+            webmail="test.student@univ.ac.ug",
+            student_number=2024001,
+            first_name="First",
+            last_name="Name",
+            password_hash=make_password("securepassword123"),
+            status="pending",
+            otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
+            expires_at=timezone.now() + timedelta(minutes=10),
+        )
+
+        verify_response = api_client.post(
+            "/api/v1/auth/student/verify-otp/",
+            {"attempt_id": attempt.id, "otp": otp},
+        )
+        assert verify_response.status_code == status.HTTP_200_OK
+
+        login_response = api_client.post(
+            "/api/v1/auth/login/",
+            {
+                "email": "test.student@univ.ac.ug",
+                "password": "securepassword123",
+            },
+        )
+        assert login_response.status_code == status.HTTP_200_OK
+        assert "access" in login_response.data
+        assert "refresh" in login_response.data
 
 
 @pytest.mark.django_db
