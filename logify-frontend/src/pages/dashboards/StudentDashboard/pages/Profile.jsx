@@ -1,8 +1,6 @@
 import {
   User,
   Mail,
-  Phone,
-  MapPin,
   GraduationCap,
   School,
   Calendar,
@@ -10,14 +8,51 @@ import {
   Lock,
   Bell,
 } from "lucide-react";
+import { api } from "@/config/api.js";
 import ChangePassword from "../ChangePassword";
 import EditProfile from "../EditProfile";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Profile = () => {
   const [isModal1Open, setIsModal1Open] = useState(false);
   const [isModal2Open, setIsModal2Open] = useState(false);
-  const [idx, setIdx] = useState(0);
+  const [emailEnabled, setEmailEnabled] = useState(false);
+  const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+
+  const [personalInformation, setPersonalInformation] = useState(null);
+  const [academicInformation, setAcademicInformation] = useState(null);
+
+  const [errorI, setErrorI] = useState(null);
+  const [errorP, setErrorP] = useState(null);
+
+  useEffect(() => {
+    const fetchPersonalInformation = async () => {
+      try {
+        const data = await api.auth.me();
+        setPersonalInformation(data);
+      } catch (err) {
+        setErrorP(err);
+      }
+    };
+    fetchPersonalInformation();
+  }, []);
+
+  useEffect(() => {
+    if (!personalInformation) return;
+    const fetchAcademicInformation = async () => {
+      try {
+        const [institution, programme] = await Promise.all([
+          api.academics.getInstitution(personalInformation.institution_id),
+          api.academics.getProgramme(personalInformation.programme_id),
+        ]);
+        setAcademicInformation({ institution, programme });
+      } catch (err) {
+        setErrorI(err);
+      }
+    };
+    fetchAcademicInformation();
+  }, [personalInformation]);
+
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
@@ -32,47 +67,48 @@ const Profile = () => {
 
       <section className="mb-12">
         <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
-          <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
-            SJ
-          </div>
-          <div className="flex-1">
-            <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
-              Sarah Johnson
-            </h2>
-            <p className="text-sm font-bold text-gold uppercase tracking-widest mb-4">
-              Software Engineering Student
-            </p>
-            <div className="flex gap-2">
-              <button
-                className=" text-xs font-bold text-white px-5 py-2.5 bg-maroonCustom hover:bg-red-800 transition-all rounded-lg shadow-md"
-                onClick={() => setIsModal1Open(true)}
-              >
-                Edit Profile
-              </button>
-              <EditProfile
-                isOpen={isModal1Open}
-                onClose={() => setIsModal1Open(false)}
-              />
-              <button
-                className="dark:bg-slate-900 dark:hover:bg-slate-700 hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
-                onClick={() => setIsModal2Open(true)}
-              >
-                Change Password
-              </button>
-              <ChangePassword
-                isOpen={isModal2Open}
-                onClose={() => setIsModal2Open(false)}
-              />
-            </div>
-          </div>
-          <div className="text-right hidden md:block">
-            <p className="text-[10px] uppercase font-bold text-text-secondary/40 tracking-widest mb-1">
-              Student ID
-            </p>
-            <p className="lg:text-lg md:text-sm sm:text-sm font-bold">
-              #STR-2024-0427
-            </p>
-          </div>
+          {personalInformation ? (
+            <>
+              <div>
+                <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
+                  SJ
+                </div>
+                <div className="flex-1">
+                  <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
+                    {personalInformation.first_name}{" "}
+                    {personalInformation.last_name}
+                  </h2>
+                  <p className="text-sm font-bold text-gold uppercase tracking-widest mb-4">
+                    Software Engineering Student
+                  </p>
+                  <div className="flex gap-2">
+                    <button
+                      className=" text-xs font-bold text-white px-5 py-2.5 bg-maroonCustom hover:bg-red-800 transition-all rounded-lg shadow-md"
+                      onClick={() => setIsModal1Open(true)}
+                    >
+                      Edit Profile
+                    </button>
+                    <EditProfile
+                      isOpen={isModal1Open}
+                      onClose={() => setIsModal1Open(false)}
+                    />
+                    <button
+                      className="dark:bg-slate-900 dark:hover:bg-slate-700 hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
+                      onClick={() => setIsModal2Open(true)}
+                    >
+                      Change Password
+                    </button>
+                    <ChangePassword
+                      isOpen={isModal2Open}
+                      onClose={() => setIsModal2Open(false)}
+                    />
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : errorP ? (
+            <p>Something went wrong: {errorP.message}</p>
+          ) : null}
         </div>
       </section>
 
@@ -94,27 +130,33 @@ const Profile = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-y-8 gap-x-12">
             {[
-              { label: "First Name", value: "Sarah", icon: User },
-              { label: "Last Name", value: "Johnson", icon: User },
               {
-                label: "Email Address",
-                value: "sarah.j@university.edu",
+                label: "First Name",
+                value:
+                  personalInformation?.first_name ||
+                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                icon: User,
+              },
+              {
+                label: "Last Name",
+                value:
+                  personalInformation?.last_name ||
+                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                icon: User,
+              },
+              {
+                label: "Webmail",
+                value:
+                  personalInformation?.email ||
+                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
                 icon: Mail,
               },
               {
-                label: "Phone Number",
-                value: "+1 (555) 234-5678",
-                icon: Phone,
-              },
-              {
-                label: "Date of Birth",
-                value: "March 15, 2002",
-                icon: Calendar,
-              },
-              {
-                label: "Address",
-                value: "123 Student Lane, Campus City",
-                icon: MapPin,
+                label: "Student Number",
+                value:
+                  personalInformation?.student_number ||
+                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                icon: User,
               },
             ].map((item, i) => (
               <div key={i}>
@@ -146,13 +188,17 @@ const Profile = () => {
             {[
               {
                 label: "University",
-                value: "University of Technology",
+                value:
+                  academicInformation?.institution.name ??
+                  (errorI ? `Error: ${errorI.message}` : "null"),
                 icon: School,
               },
               { label: "Faculty", value: "Engineering & Tech", icon: School },
               {
-                label: "Program",
-                value: "B.Sc. Software Engineering",
+                label: "Programme",
+                value:
+                  academicInformation?.programme.name ??
+                  (errorI ? `Error: ${errorI.message}` : "null"),
                 icon: GraduationCap,
               },
               {
@@ -205,19 +251,21 @@ const Profile = () => {
                 desc: "Receive real-time updates about log approvals and evaluations.",
                 status: ["Disabled", "Enabled"],
                 icon: Bell,
-                active: true,
+                active: emailEnabled,
+                toggle: () => setEmailEnabled((prev) => !prev),
               },
               {
                 title: "Two-Factor Authentication",
                 desc: "Add an extra layer of security to your student portal access.",
                 status: ["Disabled", "Enabled"],
                 icon: Lock,
-                active: false,
+                active: twoFactorEnabled,
+                toggle: () => setTwoFactorEnabled((prev) => !prev),
               },
             ].map((setting, i) => (
               <div
                 key={i}
-                className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
+                className="flex flex-wrap items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
               >
                 <div className="h-12 w-12 rounded-xl bg-gold/10 flex items-center justify-center text-gold">
                   <setting.icon size={24} />
@@ -230,16 +278,16 @@ const Profile = () => {
                     {setting.desc}
                   </p>
                 </div>
-                <div>
+                <div className="w-full sm:w-auto">
                   <button
                     className={`px-4 py-2 rounded-lg text-xs font-bold transition-all ${
                       setting.active
                         ? "bg-maroonCustom text-white hover:bg-red-800"
                         : "bg-maroonCustom text-white hover:bg-red-800"
                     }`}
-                    onClick={() => setIdx((prev) => (prev === 0 ? 1 : 0))}
+                    onClick={setting.toggle}
                   >
-                    {setting.status[idx]}
+                    {setting.active ? "Enabled" : "Disabled"}
                   </button>
                 </div>
               </div>
