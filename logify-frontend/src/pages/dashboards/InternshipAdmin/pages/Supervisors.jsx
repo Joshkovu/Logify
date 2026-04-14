@@ -1,3 +1,12 @@
+import { useEffect, useState } from "react";
+import {
+  Check,
+  RefreshCcw,
+  ShieldCheck,
+  UserRoundCheck,
+  X,
+} from "lucide-react";
+
 import {
   Table,
   TableHead,
@@ -6,207 +15,291 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../../../../components/ui/table";
-import { useState } from "react";
-
 import { Button } from "../../../../components/ui/Button";
 import { Badge } from "../../../../components/ui/Badge";
-import { UserPlus } from "lucide-react";
+import { api } from "../../../../config/api";
+
+const roleLabels = {
+  academic_supervisor: "Academic Supervisor",
+  workplace_supervisor: "Workplace Supervisor",
+};
+
+const formatRole = (role) => roleLabels[role] || role || "Unknown";
+
+const formatDate = (value) => {
+  if (!value) {
+    return "N/A";
+  }
+
+  return new Date(value).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
+};
+
+const statusVariant = {
+  pending: "outline",
+  approved: "default",
+  rejected: "destructive",
+};
 
 const Supervisors = () => {
-  const [form, setForm] = useState({
-    name: "",
-    type: "",
-    affiliation: "",
-    interns: "",
-    email: "",
-  });
-  const [supervisors, setSupervisors] = useState([]);
-  const [showForm, setShowForm] = useState(false);
-  const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+  const [applications, setApplications] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [activeReviewId, setActiveReviewId] = useState(null);
+
+  const loadApplications = async () => {
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await api.accounts.getSupervisorApplications();
+      setApplications(Array.isArray(response) ? response : []);
+    } catch (loadError) {
+      setError(loadError.message || "Unable to load supervisor applications.");
+    } finally {
+      setIsLoading(false);
+    }
   };
-  const handleAddSupervisorClick = () => {
-    setShowForm(true);
+
+  useEffect(() => {
+    loadApplications();
+  }, []);
+
+  const handleReview = async (applicationId, action) => {
+    setActiveReviewId(applicationId);
+    setError("");
+
+    try {
+      await api.accounts.reviewSupervisorApplication(applicationId, action);
+      await loadApplications();
+    } catch (reviewError) {
+      setError(reviewError.message || "Unable to review application.");
+    } finally {
+      setActiveReviewId(null);
+    }
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    setShowForm(false);
-    setSupervisors([...supervisors, form]);
-    setForm({ name: "", type: "", affiliation: "", interns: "", email: "" });
-    alert("Supervisor added successfully!");
-  };
-  const handleCancel = () => {
-    setShowForm(false);
-    setForm({
-      name: "",
-      type: "",
-      affiliation: "",
-      interns: "",
-      email: "",
-    });
-  };
+
+  const pendingApplications = applications.filter(
+    (application) => application.status === "pending",
+  );
+  const approvedApplications = applications.filter(
+    (application) => application.status === "approved",
+  );
+  const academicSupervisors = approvedApplications.filter(
+    (application) => application.role === "academic_supervisor",
+  );
+  const workplaceSupervisors = approvedApplications.filter(
+    (application) => application.role === "workplace_supervisor",
+  );
+
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
-      <header className="mb-8">
-        <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
-          Supervisor Management
-        </h1>
-        <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
-          Manage all supervisors and their assigned interns
-        </p>
+    <div className="min-h-screen w-full bg-[#FCFBF8] px-4 py-6 font-sans transition-colors duration-300 dark:bg-slate-950 sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+      <header className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div>
+          <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
+            Supervisor Management
+          </h1>
+          <p className="text-sm text-text-secondary dark:text-slate-300 sm:text-base lg:text-lg">
+            Review new supervisor signups and manage approved supervisors.
+          </p>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          onClick={loadApplications}
+          disabled={isLoading}
+          className="border-border bg-white text-maroon-dark hover:bg-gold/10 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+        >
+          <RefreshCcw className="h-4 w-4" />
+          Refresh
+        </Button>
       </header>
-      <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
-        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
-            Total Supervisors
-          </span>
-          <span className="text-3xl font-extrabold text-blue-700 dark:text-blue-400">
-            10
-          </span>
+
+      {error && (
+        <div className="mb-6 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
+          {error}
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
+      )}
+
+      <section className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+          <div className="mb-3 inline-flex rounded-xl bg-amber-100 p-3 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300">
+            <ShieldCheck className="h-5 w-5" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary dark:text-slate-400">
+            Pending Approval
+          </p>
+          <p className="mt-2 text-3xl font-black text-maroon-dark dark:text-gold">
+            {pendingApplications.length}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+          <div className="mb-3 inline-flex rounded-xl bg-emerald-100 p-3 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+            <UserRoundCheck className="h-5 w-5" />
+          </div>
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary dark:text-slate-400">
+            Approved Supervisors
+          </p>
+          <p className="mt-2 text-3xl font-black text-maroon-dark dark:text-gold">
+            {approvedApplications.length}
+          </p>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary dark:text-slate-400">
             Academic Supervisors
-          </span>
-          <span className="text-3xl font-extrabold text-green-700 dark:text-emerald-400">
-            8
-          </span>
+          </p>
+          <p className="mt-2 text-3xl font-black text-maroon-dark dark:text-gold">
+            {academicSupervisors.length}
+          </p>
         </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
-            Total Interns Supervised
-          </span>
-          <span className="text-3xl font-extrabold text-blue-700 dark:text-blue-400">
-            20
-          </span>
-        </div>
-        <div className="flex flex-col items-center rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 transition-all hover:scale-102 sm:p-8">
-          <span className="text-xs font-bold uppercase text-text-secondary dark:text-slate-300 tracking-widest mb-1">
+
+        <div className="rounded-2xl border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary dark:text-slate-400">
             Workplace Supervisors
-          </span>
-          <span className="text-3xl font-extrabold text-green-700 dark:text-emerald-400">
-            18
-          </span>
+          </p>
+          <p className="mt-2 text-3xl font-black text-maroon-dark dark:text-gold">
+            {workplaceSupervisors.length}
+          </p>
         </div>
       </section>
+
       <section className="mb-8">
-        <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-1">
-              All Supervisors
-            </h2>
-            <p className="text-text-secondary dark:text-slate-300">
-              Complete list of all supervisors
-            </p>
-          </div>
-          <button
-            onClick={handleAddSupervisorClick}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-maroonCustom px-5 py-2 font-semibold text-white shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold sm:w-auto"
-          >
-            <UserPlus className="h-4 w-4 mr-2" />
-            Add Supervisor
-          </button>
-          {showForm && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-              <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-lg">
-                <h2 className="text-2xl font-bold text-maroon dark:text-slate-300 mb-4">
-                  Add New Supervisor
-                </h2>
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
-                  <input
-                    type="text"
-                    placeholder="Name"
-                    name="name"
-                    value={form.name}
-                    onChange={handleChange}
-                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Type (Academic/Workplace)"
-                    name="type"
-                    value={form.type}
-                    onChange={handleChange}
-                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Affiliation"
-                    name="affiliation"
-                    value={form.affiliation}
-                    onChange={handleChange}
-                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="number"
-                    placeholder="Number of Interns Supervised"
-                    name="interns"
-                    value={form.interns}
-                    onChange={handleChange}
-                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <input
-                    type="email"
-                    placeholder="Contact Email"
-                    name="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    className="border border-border dark:border-slate-700 rounded-lg px-4 py-2 bg-background dark:bg-slate-800 text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
-                  />
-                  <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
-                    <Button
-                      type="submit"
-                      className="bg-maroonCustom text-white px-5 py-2 rounded-lg font-semibold shadow hover:bg-maroon-dark focus:outline-none focus:ring-2 focus:ring-gold"
-                    >
-                      Save
-                    </Button>
-                    <Button
-                      type="button"
-                      onClick={handleCancel}
-                      className="bg-gray-300 dark:bg-slate-700 text-black dark:text-slate-100 px-5 py-2 rounded-lg font-semibold shadow hover:bg-gray-400 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-gray-400"
-                    >
-                      Cancel
-                    </Button>
-                  </div>
-                </form>
-              </div>
-            </div>
-          )}
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-maroon dark:text-slate-300">
+            Pending Supervisor Approvals
+          </h2>
+          <p className="text-text-secondary dark:text-slate-300">
+            New supervisor signups appear here until an internship admin reviews
+            them.
+          </p>
         </div>
+
         <Table>
           <TableHead>
             <TableRow index={0}>
               <TableHeaderCell>Name</TableHeaderCell>
               <TableHeaderCell>Type</TableHeaderCell>
-              <TableHeaderCell>Affiliation</TableHeaderCell>
-              <TableHeaderCell>Assigned Interns</TableHeaderCell>
-              <TableHeaderCell>Contact Email</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
+              <TableHeaderCell>Phone</TableHeaderCell>
+              <TableHeaderCell>Applied</TableHeaderCell>
+              <TableHeaderCell>Status</TableHeaderCell>
               <TableHeaderCell>Actions</TableHeaderCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {supervisors.map((sup, idx) => (
-              <TableRow key={idx} index={idx}>
-                <TableCell>{sup.name}</TableCell>
+            {pendingApplications.length === 0 && !isLoading && (
+              <TableRow index={0}>
+                <TableCell className="py-6" colSpan={7}>
+                  No pending supervisor applications right now.
+                </TableCell>
+              </TableRow>
+            )}
+
+            {isLoading && (
+              <TableRow index={0}>
+                <TableCell className="py-6" colSpan={7}>
+                  Loading supervisor applications...
+                </TableCell>
+              </TableRow>
+            )}
+
+            {pendingApplications.map((application, index) => (
+              <TableRow key={application.id} index={index}>
+                <TableCell>{application.full_name}</TableCell>
                 <TableCell>
-                  {" "}
-                  <Badge
-                    variant={sup.type === "Academic" ? "default" : "outline"}
-                  >
-                    {sup.type}
+                  <Badge variant="outline">
+                    {formatRole(application.role)}
                   </Badge>
                 </TableCell>
-                <TableCell>{sup.affiliation}</TableCell>
-                <TableCell>{sup.interns}</TableCell>
-                <TableCell>{sup.email}</TableCell>
+                <TableCell>{application.email}</TableCell>
+                <TableCell>{application.phone || "N/A"}</TableCell>
+                <TableCell>{formatDate(application.created_at)}</TableCell>
                 <TableCell>
-                  <Button variant="ghost" size="sm">
-                    View
-                  </Button>
+                  <Badge variant={statusVariant[application.status]}>
+                    {application.status}
+                  </Badge>
                 </TableCell>
+                <TableCell>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      size="sm"
+                      onClick={() => handleReview(application.id, "approve")}
+                      disabled={activeReviewId === application.id}
+                      className="bg-emerald-600 text-white hover:bg-emerald-700"
+                    >
+                      <Check className="h-4 w-4" />
+                      Approve
+                    </Button>
+                    <Button
+                      type="button"
+                      size="sm"
+                      variant="destructive"
+                      onClick={() => handleReview(application.id, "reject")}
+                      disabled={activeReviewId === application.id}
+                    >
+                      <X className="h-4 w-4" />
+                      Reject
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </section>
+
+      <section>
+        <div className="mb-4">
+          <h2 className="text-2xl font-bold text-maroon dark:text-slate-300">
+            Approved Supervisors
+          </h2>
+          <p className="text-text-secondary dark:text-slate-300">
+            Supervisors that have already been approved and can access the
+            platform.
+          </p>
+        </div>
+
+        <Table>
+          <TableHead>
+            <TableRow index={0}>
+              <TableHeaderCell>Name</TableHeaderCell>
+              <TableHeaderCell>Type</TableHeaderCell>
+              <TableHeaderCell>Email</TableHeaderCell>
+              <TableHeaderCell>Phone</TableHeaderCell>
+              <TableHeaderCell>Department</TableHeaderCell>
+              <TableHeaderCell>Approved</TableHeaderCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {approvedApplications.length === 0 && !isLoading && (
+              <TableRow index={0}>
+                <TableCell className="py-6" colSpan={6}>
+                  No approved supervisors yet.
+                </TableCell>
+              </TableRow>
+            )}
+
+            {approvedApplications.map((application, index) => (
+              <TableRow key={application.id} index={index}>
+                <TableCell>{application.full_name}</TableCell>
+                <TableCell>
+                  <Badge variant="default">
+                    {formatRole(application.role)}
+                  </Badge>
+                </TableCell>
+                <TableCell>{application.email}</TableCell>
+                <TableCell>{application.phone || "N/A"}</TableCell>
+                <TableCell>
+                  {application.staff_profile?.department_name || "N/A"}
+                </TableCell>
+                <TableCell>{formatDate(application.updated_at)}</TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -215,4 +308,5 @@ const Supervisors = () => {
     </div>
   );
 };
+
 export default Supervisors;
