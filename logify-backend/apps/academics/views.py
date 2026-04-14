@@ -22,9 +22,12 @@ def get_accessible_institution_ids(user):
         return Institutions.objects.values_list("id", flat=True)
 
     if user.role == User.STUDENT:
-        return InternshipPlacements.objects.filter(intern=user).values_list(
+        placement_institution_ids = InternshipPlacements.objects.filter(intern=user).values_list(
             "institution_id", flat=True
         )
+        profile_institution_ids = [int(user.institution_id)] if user.institution_id else []
+
+        return list(placement_institution_ids) + profile_institution_ids
 
     if user.role == User.WORKPLACE_SUPERVISOR:
         return InternshipPlacements.objects.filter(workplace_supervisor=user).values_list(
