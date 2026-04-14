@@ -143,7 +143,7 @@ const AuthProvider = ({ children }) => {
 
   const studentSignup = async (data) => {
     try {
-      return await api.auth.studentRequestOTP(data);
+      return await api.registry.requestOTP(data);
     } catch (error) {
       throw new Error(error.message || "Signup failed. Please try again.");
     }
@@ -151,7 +151,7 @@ const AuthProvider = ({ children }) => {
 
   const verifyStudentSignup = async (data) => {
     try {
-      const response = await api.auth.studentVerifyOTP(data);
+      const response = await api.registry.verifyOTP(data);
       const nextSession = toSession(response);
 
       persistSession(nextSession);
