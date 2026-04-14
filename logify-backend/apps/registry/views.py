@@ -76,7 +76,7 @@ class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
             webmail=webmail,
             institution_id=institution_id,
             student_number=student_number,
-            status="active",
+            status__iexact="active",
         ).first()
 
         if not student:
@@ -179,7 +179,7 @@ class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
             last_name=attempt.last_name,
             role=User.STUDENT,
             institution_id=str(student.institution.id),
-            programme_id=str(student.programme.id),
+            programme_id=str(student.programme.id) if student.programme else None,
             student_registry_id=str(student.id),
             student_number=student.student_number,
             is_active=True,

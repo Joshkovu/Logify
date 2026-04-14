@@ -49,7 +49,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     institution_id = models.CharField(max_length=255, null=True, blank=True)
     programme_id = models.CharField(max_length=255, null=True, blank=True)
     student_registry_id = models.CharField(max_length=255, null=True, blank=True)
-    student_number = models.IntegerField(null=True, blank=True)
+    student_number = models.BigIntegerField(null=True, blank=True)
     first_name = models.CharField(max_length=255)
     last_name = models.CharField(max_length=255)
     phone = models.CharField(max_length=20, null=True, blank=True)

@@ -1,6 +1,6 @@
+import PropTypes from "prop-types";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
-import { useNavigate } from "react-router-dom";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 import { api } from "../config/api.js";
@@ -41,8 +41,87 @@ const validateStudentForm = (formData) => {
   return errors;
 };
 
+const OTPModal = ({ isOpen, onClose, attemptId, webmail }) => {
+  const { verifyStudentSignup } = useContext(AuthContext);
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [isVerifying, setIsVerifying] = useState(false);
+
+  if (!isOpen) return null;
+
+  const handleVerify = async () => {
+    if (!otp.trim()) {
+      setError("Please enter the OTP.");
+      return;
+    }
+
+    setIsVerifying(true);
+    setError("");
+
+    try {
+      await verifyStudentSignup({ attempt_id: attemptId, otp });
+    } catch (err) {
+      setError(err.message || "Invalid OTP. Please try again.");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+      <div className="w-full max-w-md rounded-2xl bg-white dark:bg-slate-900 p-8 shadow-xl">
+        <h2 className="text-xl font-black text-maroon-dark tracking-tight mb-1">
+          Verify Your Email
+        </h2>
+        <p className="text-sm text-text-secondary mb-6">
+          An OTP has been sent to <span className="font-bold">{webmail}</span>.
+          Enter it below to complete your signup.
+        </p>
+
+        <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+          OTP Code
+        </label>
+        <input
+          value={otp}
+          onChange={(e) => setOtp(e.target.value)}
+          className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+          placeholder="Enter OTP"
+        />
+
+        {error && (
+          <div className="mt-3 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
+            {error}
+          </div>
+        )}
+
+        <div className="mt-6 flex gap-3">
+          <button
+            onClick={onClose}
+            className="flex-1 rounded-xl border border-border px-6 py-3 text-sm font-bold transition hover:bg-gray-100 dark:hover:bg-slate-800"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleVerify}
+            disabled={isVerifying}
+            className="flex-1 rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+          >
+            {isVerifying ? "Verifying..." : "Verify OTP"}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+OTPModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  attemptId: PropTypes.number,
+  webmail: PropTypes.string.isRequired,
+};
+
 const StudentSignupPage = () => {
-  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     webmail: "",
@@ -55,6 +134,8 @@ const StudentSignupPage = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [institutions, setInstitutions] = useState([]);
+  const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
+  const [attemptId, setAttemptId] = useState(null);
 
   useEffect(() => {
     const fetchInstitutions = async () => {
@@ -90,7 +171,7 @@ const StudentSignupPage = () => {
       last_name: lastName,
       webmail: formData.webmail,
       password: formData.password,
-      student_number: formData.studentNumber,
+      student_number: Number(formData.studentNumber),
       institution_id: formData.institution,
     };
 
@@ -99,12 +180,8 @@ const StudentSignupPage = () => {
     try {
       const response = await studentSignup(payload);
       console.log(response);
-      navigate("/login", {
-        replace: true,
-        state: {
-          signupSuccess: "Student account created. Please log in.",
-        },
-      });
+      setAttemptId(response.attempt_id);
+      setIsOTPModalOpen(true);
     } catch (signupError) {
       setError(signupError.message || "Unable to create student account.");
     } finally {
@@ -123,6 +200,12 @@ const StudentSignupPage = () => {
         title="Student Signup"
         subtitle="Create a student account for internship logging."
       >
+        <OTPModal
+          isOpen={isOTPModalOpen}
+          onClose={() => setIsOTPModalOpen(false)}
+          attemptId={attemptId}
+          webmail={formData.webmail}
+        />
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
