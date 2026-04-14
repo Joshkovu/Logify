@@ -1,22 +1,11 @@
 import MetricCard from "../../../../components/ui/MetricCard";
-import { User, CheckCircle2, ChevronRight } from "lucide-react";
+import { User, CheckCircle2, ChevronRight, Moon, Sun } from "lucide-react";
+import { useEffect, useState } from "react";
 
 const summaryCards = [
-  {
-    title: "Interns Supervised",
-    value: "5",
-    iconType: "interns",
-  },
-  {
-    title: "Pending Approvals",
-    value: "2",
-    iconType: "placements",
-  },
-  {
-    title: "Pending Evaluations",
-    value: "1",
-    iconType: "evaluations",
-  },
+  { title: "Interns Supervised", value: "5", iconType: "interns" },
+  { title: "Pending Approvals", value: "2", iconType: "placements" },
+  { title: "Pending Evaluations", value: "1", iconType: "evaluations" },
 ];
 
 const supervisedInterns = [
@@ -81,12 +70,46 @@ const sectionCardClassName =
   "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
   const handleReviewApproval = (approval) => {
     alert(`Reviewing approval for ${approval.student}`);
   };
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-background px-4 py-6 font-sans text-foreground transition-colors duration-300 sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
+        <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
+          LOGIFY ACADEMIC SUPERVISOR
+        </h1>
+
+        <button
+          onClick={() => setIsDark((prev) => !prev)}
+          className="p-1"
+          aria-label="Toggle theme"
+        >
+          {isDark ? (
+            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          ) : (
+            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          )}
+        </button>
+      </div>
+
       <header className="mb-8 sm:mb-10 lg:mb-12">
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Academic <span className="text-gold">Dashboard</span>

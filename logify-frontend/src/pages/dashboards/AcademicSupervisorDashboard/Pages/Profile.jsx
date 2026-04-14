@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   User,
   Mail,
@@ -14,6 +14,8 @@ import {
   X,
   Save,
   Lock,
+  Moon,
+  Sun,
 } from "lucide-react";
 
 const Profile = () => {
@@ -39,14 +41,28 @@ const Profile = () => {
 
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
-
   const [editForm, setEditForm] = useState(profile);
-
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
+
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   const sectionCardClassName =
     "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8";
@@ -155,6 +171,24 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
+        <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
+          LOGIFY ACADEMIC SUPERVISOR
+        </h1>
+
+        <button
+          onClick={() => setIsDark((prev) => !prev)}
+          className="p-1"
+          aria-label="Toggle theme"
+        >
+          {isDark ? (
+            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          ) : (
+            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          )}
+        </button>
+      </div>
+
       <div className="mx-auto max-w-4xl">
         <header className="mb-8 sm:mb-10 lg:mb-12">
           <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
