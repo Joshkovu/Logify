@@ -39,13 +39,55 @@ const Profile = () => {
 
   useEffect(() => {
     if (!personalInformation) return;
+    if (!personalInformation.institution_id) return;
     const fetchAcademicInformation = async () => {
       try {
-        const [institution, programme] = await Promise.all([
-          api.academics.getInstitution(personalInformation.institution_id),
-          api.academics.getProgramme(personalInformation.programme_id),
-        ]);
-        setAcademicInformation({ institution, programme });
+        const institution = await api.academics.getInstitution(
+          personalInformation.institution_id,
+        );
+
+        let programme = null;
+        if (personalInformation.programme_id) {
+          console.log(
+            "Fetching Programme for ID:",
+            personalInformation.programme_id,
+          );
+          try {
+            programme = await api.academics.getProgramme(
+              personalInformation.programme_id,
+            );
+            console.log("Programme:", programme);
+          } catch (err) {
+            console.error("Programme fetch error:", err);
+          }
+        } else {
+          console.warn(
+            "No programme_id found in personalInformation:",
+            personalInformation,
+          );
+        }
+
+        let registry = null;
+        if (personalInformation.student_registry_id) {
+          try {
+            registry = await api.registry.getStudent(
+              personalInformation.student_registry_id,
+            );
+          } catch (err) {
+            console.error("Registry fetch error:", err);
+          }
+        }
+
+        let placement = null;
+        if (personalInformation.student_registry_id) {
+          try {
+            const response = await api.placements.getPlacements();
+            placement = response.length > 0 ? response[0] : null;
+          } catch (err) {
+            console.error("Placement fetch error:", err);
+          }
+        }
+        setAcademicInformation({ institution, programme, registry, placement });
       } catch (err) {
         setErrorI(err);
       }
@@ -71,7 +113,8 @@ const Profile = () => {
             <>
               <div>
                 <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
-                  SJ
+                  {personalInformation.first_name[0]}
+                  {personalInformation.last_name[0]}
                 </div>
                 <div className="flex-1">
                   <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
@@ -163,7 +206,7 @@ const Profile = () => {
                 <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-semibold">{item.value}</p>
+                <p className="text-md font-semibold truncate">{item.value}</p>
               </div>
             ))}
           </div>
@@ -193,28 +236,31 @@ const Profile = () => {
                   (errorI ? `Error: ${errorI.message}` : "null"),
                 icon: School,
               },
-              { label: "Faculty", value: "Engineering & Tech", icon: School },
               {
                 label: "Programme",
-                value:
-                  academicInformation?.programme.name ??
-                  (errorI ? `Error: ${errorI.message}` : "null"),
+                value: academicInformation?.programme?.name ?? "Not Assigned",
                 icon: GraduationCap,
               },
               {
                 label: "Year Level",
-                value: "4th Year (Finalist)",
+                value: personalInformation?.year_of_study
+                  ? `Year ${personalInformation.year_of_study}`
+                  : "Not Available",
                 icon: Calendar,
               },
               {
-                label: "Academic Guard",
-                value: "Dr. Emily Roberts",
+                label: "Academic Supervisor",
+                value:
+                  academicInformation?.placement?.academic_supervisor ??
+                  "Not Assigned",
                 icon: User,
               },
               {
-                label: "Graduation",
-                value: "June 2026 (Expected)",
-                icon: Calendar,
+                label: "Workplace Supervisor",
+                value:
+                  academicInformation?.placement?.workplace_supervisor ??
+                  "Not Assigned",
+                icon: User,
               },
             ].map((item, i) => (
               <div key={i}>
