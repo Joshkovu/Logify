@@ -1,11 +1,11 @@
-import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-
+import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
+import { api } from "../config/api.js";
 
-const validateAdminSignup = (formData) => {
+const validateStudentForm = (formData) => {
   const errors = {};
   const trimmedFullName = formData.fullName.trim();
   const nameParts = trimmedFullName.split(/\s+/).filter(Boolean);
@@ -13,17 +13,23 @@ const validateAdminSignup = (formData) => {
   if (!trimmedFullName) {
     errors.fullName = "Full name is required.";
   } else if (nameParts.length < 2) {
-    errors.fullName = "Enter both first and last name.";
+    errors.fullName = "Enter both first name and last name.";
   }
 
-  if (!formData.email.trim()) {
-    errors.email = "Institutional email is required.";
+  if (!formData.webmail.trim()) {
+    errors.webmail = "Email/webmail is required.";
+  }
+
+  if (!formData.studentNumber.trim()) {
+    errors.studentNumber = "Student number is required.";
+  } else if (!Number.isInteger(Number(formData.studentNumber))) {
+    errors.studentNumber = "Student number must contain only numbers.";
   }
 
   if (!formData.password) {
     errors.password = "Password is required.";
   } else if (formData.password.length < 8) {
-    errors.password = "Password must be at least 8 characters.";
+    errors.password = "Password should be more than 8 characters long.";
   }
 
   if (!formData.confirmPassword) {
@@ -35,57 +41,87 @@ const validateAdminSignup = (formData) => {
   return errors;
 };
 
-const AdminSignupPage = () => {
+const StudentSignupPage = () => {
   const navigate = useNavigate();
-  const { adminSignUp } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     fullName: "",
-    email: "",
+    webmail: "",
     password: "",
     confirmPassword: "",
+    studentNumber: "",
+    institution: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [institutions, setInstitutions] = useState([]);
 
-  const onChange = (event) => {
-    const { name, value } = event.target;
-    setFormData((current) => ({ ...current, [name]: value }));
-  };
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const data = await api.academics.getInstitutions();
+        setInstitutions(data);
+      } catch (err) {
+        console.error("Failed to fetch institutions:", err);
+      }
+    };
 
-  const onSubmit = async (event) => {
-    event.preventDefault();
+    fetchInstitutions();
+  }, []);
+
+  const { studentSignup } = useContext(AuthContext);
+
+  const onSubmit = async (e) => {
+    e.preventDefault();
     setError("");
 
-    const errors = validateAdminSignup(formData);
+    const errors = validateStudentForm(formData);
     setFieldErrors(errors);
 
     if (Object.keys(errors).length > 0) {
       return;
     }
+    const trimmedFullName = formData.fullName.trim();
+    const [firstName, ...rest] = trimmedFullName.split(/\s+/);
+    const lastName = rest.join(" ");
+
+    const payload = {
+      first_name: firstName,
+      last_name: lastName,
+      webmail: formData.webmail,
+      password: formData.password,
+      student_number: formData.studentNumber,
+      institution_id: formData.institution,
+    };
 
     setIsSubmitting(true);
 
     try {
-      await adminSignUp(formData);
+      const response = await studentSignup(payload);
+      console.log(response);
       navigate("/login", {
         replace: true,
         state: {
-          signupSuccess: "Admin account created. Please log in.",
+          signupSuccess: "Student account created. Please log in.",
         },
       });
     } catch (signupError) {
-      setError(signupError.message || "Unable to create admin account.");
+      setError(signupError.message || "Unable to create student account.");
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  const onChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((current) => ({ ...current, [name]: value }));
+  };
+
   return (
     <GuestOnlyRoute>
       <AuthLayout
-        title="Internship Admin Signup"
-        subtitle="Create an internship administrator account for institution-level platform management."
+        title="Student Signup"
+        subtitle="Create a student account for internship logging."
       >
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
@@ -108,18 +144,59 @@ const AdminSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Institutional Email
+              Institution
+            </label>
+            <select
+              name="institution"
+              value={formData.institution}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">Select your Institution</option>
+              {institutions.map((inst) => (
+                <option key={inst.id} value={inst.id}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.institution && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.institution}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Institution Webmail
             </label>
             <input
-              name="email"
-              type="email"
-              value={formData.email}
+              name="webmail"
+              value={formData.webmail}
               onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               placeholder="name@institution.ac.ug"
             />
-            {fieldErrors.email && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+            {fieldErrors.webmail && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.webmail}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Student Number
+            </label>
+            <input
+              name="studentNumber"
+              value={formData.studentNumber}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              placeholder="2500123456"
+            />
+            {fieldErrors.studentNumber && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.studentNumber}
+              </p>
             )}
           </div>
 
@@ -128,8 +205,8 @@ const AdminSignupPage = () => {
               Password
             </label>
             <input
-              name="password"
               type="password"
+              name="password"
               value={formData.password}
               onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
@@ -147,8 +224,8 @@ const AdminSignupPage = () => {
               Confirm Password
             </label>
             <input
-              name="confirmPassword"
               type="password"
+              name="confirmPassword"
               value={formData.confirmPassword}
               onChange={onChange}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
@@ -162,32 +239,22 @@ const AdminSignupPage = () => {
           </div>
 
           {error && (
-            <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
+            <div className="my-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
               {error}
             </div>
           )}
 
           <button
             type="submit"
-            disabled={isSubmitting}
             className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
+            disabled={isSubmitting}
           >
-            {isSubmitting ? "Creating Account..." : "Create Admin Account"}
+            {isSubmitting ? "Creating Account..." : "Create Student Account"}
           </button>
-
-          <p className="text-center text-sm text-text-secondary dark:text-slate-300">
-            Looking for Supervisor signup?{" "}
-            <Link
-              to="/signup/supervisor"
-              className="font-bold text-maroonCustom hover:text-gold"
-            >
-              Switch role
-            </Link>
-          </p>
         </form>
       </AuthLayout>
     </GuestOnlyRoute>
   );
 };
 
-export default AdminSignupPage;
+export default StudentSignupPage;

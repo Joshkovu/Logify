@@ -42,6 +42,16 @@ const statusConfig = {
     text: "text-blue-700 dark:text-blue-400",
     dot: "bg-blue-500",
   },
+  Reviewed: {
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    dot: "bg-emerald-500",
+  },
+  reviewed: {
+    bg: "bg-emerald-100 dark:bg-emerald-900/30",
+    text: "text-emerald-700 dark:text-emerald-400",
+    dot: "bg-emerald-500",
+  },
   Approved: {
     bg: "bg-emerald-100 dark:bg-emerald-900/30",
     text: "text-emerald-700 dark:text-emerald-400",
@@ -87,10 +97,25 @@ const statusConfig = {
     text: "text-green-700 dark:text-green-400",
     dot: "bg-green-500",
   },
+  active: {
+    bg: "bg-green-100 dark:bg-green-900/30",
+    text: "text-green-700 dark:text-green-400",
+    dot: "bg-green-500",
+  },
   ACTIVE: {
     bg: "bg-green-100 dark:bg-green-900/30",
     text: "text-green-700 dark:text-green-400",
     dot: "bg-green-500",
+  },
+  Cancelled: {
+    bg: "bg-rose-100 dark:bg-rose-900/30",
+    text: "text-rose-700 dark:text-rose-400",
+    dot: "bg-rose-500",
+  },
+  cancelled: {
+    bg: "bg-rose-100 dark:bg-rose-900/30",
+    text: "text-rose-700 dark:text-rose-400",
+    dot: "bg-rose-500",
   },
 };
 

@@ -2,7 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-// import App3 from "./pages/dashboards/WorkplaceSupervisor/pages/App3";
 
 const THEME_STORAGE_KEY = "logify-theme";
 const DARK_MEDIA_QUERY = "(prefers-color-scheme: dark)";
@@ -15,6 +14,5 @@ document.documentElement.classList.toggle("dark", shouldUseDark);
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <App />
-    {/* <App3 /> */}
   </React.StrictMode>,
 );

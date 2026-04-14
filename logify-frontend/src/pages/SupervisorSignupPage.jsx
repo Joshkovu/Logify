@@ -1,62 +1,90 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { AuthContext } from "../contexts/AuthContext";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
-import {
-  registerSupervisor,
-  validateCommonSignupFields,
-} from "./auth/authStore";
+
+const validateSupervisorSignup = (formData) => {
+  const errors = {};
+  const trimmedFullName = formData.fullName.trim();
+  const nameParts = trimmedFullName.split(/\s+/).filter(Boolean);
+
+  if (!trimmedFullName) {
+    errors.fullName = "Full name is required.";
+  } else if (nameParts.length < 2) {
+    errors.fullName = "Enter both first and last name.";
+  }
+
+  if (!formData.email.trim()) {
+    errors.email = "Email is required.";
+  }
+
+  if (!formData.role) {
+    errors.role = "Select supervisor type.";
+  }
+
+  if (!formData.password) {
+    errors.password = "Password is required.";
+  } else if (formData.password.length < 8) {
+    errors.password = "Password must be at least 8 characters.";
+  }
+
+  if (!formData.confirmPassword) {
+    errors.confirmPassword = "Confirm your password.";
+  } else if (formData.confirmPassword !== formData.password) {
+    errors.confirmPassword = "Passwords do not match.";
+  }
+
+  return errors;
+};
 
 const SupervisorSignupPage = () => {
   const navigate = useNavigate();
+  const { supervisorSignUp } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
     role: "",
-    institutionOrOrganization: "",
     password: "",
     confirmPassword: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onChange = (event) => {
     const { name, value } = event.target;
     setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  const onSubmit = (event) => {
+  const onSubmit = async (event) => {
     event.preventDefault();
     setError("");
 
-    const errors = validateCommonSignupFields(formData);
-    if (!formData.role) {
-      errors.role = "Select supervisor type.";
-    }
-    if (!formData.institutionOrOrganization.trim()) {
-      errors.institutionOrOrganization =
-        "Organization or institution is required.";
-    }
-
+    const errors = validateSupervisorSignup(formData);
     setFieldErrors(errors);
+
     if (Object.keys(errors).length > 0) {
       return;
     }
 
-    const result = registerSupervisor(formData);
-    if (!result.ok) {
-      setError(result.error || "Unable to create supervisor account.");
-      return;
-    }
+    setIsSubmitting(true);
 
-    navigate("/login", {
-      replace: true,
-      state: {
-        signupSuccess:
-          "Signup submitted. Your supervisor account is pending Internship Admin approval.",
-      },
-    });
+    try {
+      await supervisorSignUp(formData);
+      navigate("/login", {
+        replace: true,
+        state: {
+          signupSuccess:
+            "Signup submitted. Your supervisor account is pending Internship Admin approval.",
+        },
+      });
+    } catch (signupError) {
+      setError(signupError.message || "Unable to create supervisor account.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -122,24 +150,6 @@ const SupervisorSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Organization / Institution
-            </label>
-            <input
-              name="institutionOrOrganization"
-              value={formData.institutionOrOrganization}
-              onChange={onChange}
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-              placeholder="Makerere University or company name"
-            />
-            {fieldErrors.institutionOrOrganization && (
-              <p className="mt-1 text-xs text-red-600">
-                {fieldErrors.institutionOrOrganization}
-              </p>
-            )}
-          </div>
-
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               Password
             </label>
             <input
@@ -184,9 +194,10 @@ const SupervisorSignupPage = () => {
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01]"
+            disabled={isSubmitting}
+            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
           >
-            Submit For Approval
+            {isSubmitting ? "Submitting..." : "Submit For Approval"}
           </button>
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
