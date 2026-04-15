@@ -5,6 +5,7 @@ import hashlib
 from datetime import timedelta
 
 import pyotp
+from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.notifications.services import MailjetService
 from apps.registry.models import RegistrationAttempts, StudentRegistry
@@ -14,11 +15,12 @@ from apps.registry.serializer import (
 )
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
+from django.core.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import permissions, status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -26,7 +28,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class StudentRegistryViewSet(viewsets.ModelViewSet):
     queryset = StudentRegistry.objects.all()
     serializer_class = StudentRegistrySerializer
-    permission_classes = [IsInternshipAdmin]
+
+    def get_patch_permissions(self):
+        if self.action in ["retrieve", "partial_update"]:
+            return [IsAuthenticated()]
+        return [IsInternshipAdmin()]
+
+    def get_object(self):
+        obj = super().get_object()
+        if self.request.user.role == User.STUDENT:
+            if str(obj.id) != self.request.user.student_registry_id:
+                raise PermissionDenied("You can only access your own registry record.")
+            return obj
 
 
 class RegistrationAttemptsViewSet(viewsets.ModelViewSet):
