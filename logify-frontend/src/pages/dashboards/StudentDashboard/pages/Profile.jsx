@@ -21,15 +21,61 @@ const Profile = () => {
 
   const [personalInformation, setPersonalInformation] = useState(null);
   const [academicInformation, setAcademicInformation] = useState(null);
+  const [originalData, setOriginalData] = useState(null);
 
   const [errorI, setErrorI] = useState(null);
   const [errorP, setErrorP] = useState(null);
+  const handleUpdate = async (formData) => {
+    if (!originalData) return;
+
+    const patchData = Object.keys(formData).reduce((acc, key) => {
+      if (formData[key] != originalData[key] && formData[key] !== "") {
+        acc[key] = formData[key];
+      }
+      return acc;
+    }, {});
+
+    if (Object.keys(patchData).length === 0) {
+      console.log("No changes detected.");
+      return;
+    }
+
+    try {
+      console.log("Patching profile with:", patchData);
+
+      await api.registry.patchStudent(
+        personalInformation.student_registry_id,
+        patchData,
+      );
+      const freshData = await api.auth.me();
+
+      setPersonalInformation(freshData);
+
+      setOriginalData({
+        first_name: freshData.first_name,
+        last_name: freshData.last_name,
+        email: freshData.email,
+        student_number: freshData.student_number,
+      });
+
+      alert("Profile updated successfully!");
+    } catch (err) {
+      console.error("Failed to update profile:", err);
+      alert("Error updating profile. Please try again.");
+    }
+  };
 
   useEffect(() => {
     const fetchPersonalInformation = async () => {
       try {
         const data = await api.auth.me();
         setPersonalInformation(data);
+        setOriginalData({
+          first_name: data.first_name,
+          last_name: data.last_name,
+          email: data.email,
+          student_number: data.student_number,
+        });
       } catch (err) {
         setErrorP(err);
       }
@@ -95,6 +141,8 @@ const Profile = () => {
     fetchAcademicInformation();
   }, [personalInformation]);
 
+  console.log("Original data", originalData);
+
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12">
@@ -113,8 +161,8 @@ const Profile = () => {
             <>
               <div>
                 <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
-                  {personalInformation.first_name[0]}
-                  {personalInformation.last_name[0]}
+                  {personalInformation?.first_name?.[0]}
+                  {personalInformation?.last_name?.[0]}
                 </div>
                 <div className="flex-1">
                   <h2 className="text-3xl font-black text-maroon-dark tracking-tight mb-1">
@@ -132,8 +180,11 @@ const Profile = () => {
                       Edit Profile
                     </button>
                     <EditProfile
+                      key={isModal1Open ? "open" : "closed"}
                       isOpen={isModal1Open}
                       onClose={() => setIsModal1Open(false)}
+                      personalInformation={personalInformation}
+                      onUpdate={handleUpdate}
                     />
                     <button
                       className="dark:bg-slate-900 dark:hover:bg-slate-700 hover:bg-gray-200 text-xs font-bold px-5 py-2.5 transition-all rounded-lg border border-gray-200"
