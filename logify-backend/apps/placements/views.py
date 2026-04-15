@@ -47,7 +47,11 @@ class InternshipPlacementListCreateView(APIView):
     def post(self, request):
         serializer = InternshipPlacementsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        placement = serializer.save()
+        placement = serializer.save(
+            intern=request.user,
+            institution_id=request.user.institution_id,
+            programme_id=request.user.programme_id,
+        )
 
         # Notify supervisors if assigned
         mail_service = MailjetService()

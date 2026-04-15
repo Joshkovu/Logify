@@ -7,6 +7,11 @@ class InternshipPlacementsSerializer(serializers.ModelSerializer):
     class Meta:
         model = InternshipPlacements
         fields = "__all__"
+        read_only_fields = [
+            "intern",
+            "institution",
+            "programme",
+        ]
 
 
 class PlacementStatusHistorySerializer(serializers.ModelSerializer):
