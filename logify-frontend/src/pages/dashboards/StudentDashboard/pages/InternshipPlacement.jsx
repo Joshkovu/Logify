@@ -1,14 +1,112 @@
 import { Clock, MapPin, Building2, User, Phone, Mail } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
+import CreatePlacement from "../CreatePlacement";
+import { useState, useEffect, useCallback } from "react";
+import { api } from "@/config/api";
 
 const InternshipPlacement = () => {
-  const metrics = [
-    { title: "Placement Status", value: "Active", iconType: "placements" },
-    { title: "Total Duration", value: "12 Weeks", iconType: "reviews" },
-    { title: "Current Week", value: "Week 8", iconType: "reviews" },
-    { title: "Days Remaining", value: "24 Days", iconType: "reviews" },
-  ];
+  const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
+  const [organizationData, setOrganizationData] = useState(null);
 
+  const [existingPlacement, setExistingPlacement] = useState(null);
+  const fetchPlacement = useCallback(async () => {
+    try {
+      const data = await api.placements.getPlacements();
+      if (data.length > 0) setExistingPlacement(data[0]);
+    } catch (err) {
+      console.error("Failed to fetch placement:", err);
+    }
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchPlacement();
+  }, [fetchPlacement]);
+
+  useEffect(() => {
+    if (existingPlacement) {
+      const fetchOrganizationData = async () => {
+        try {
+          const data = await api.organizations.getOrganization(
+            existingPlacement?.organization,
+          );
+          setOrganizationData(data);
+          console.log("fetched organization data", data);
+        } catch (err) {
+          console.log(err.message);
+        }
+      };
+      fetchOrganizationData();
+    }
+  }, [existingPlacement]);
+
+  const getWeeksBetweenDates = (date1, date2) => {
+    const diffInMs = Math.abs(new Date(date2) - new Date(date1));
+    return Math.floor(diffInMs / (1000 * 60 * 60 * 24 * 7));
+  };
+  const getCurrentWeekInRange = (startDate) => {
+    const today = new Date();
+    const start = new Date(startDate);
+
+    if (today < start) return 0;
+
+    const diffInMs = today - start;
+    const msInWeek = 1000 * 60 * 60 * 24 * 7;
+
+    return Math.floor(diffInMs / msInWeek) + 1;
+  };
+
+  const getDaysRemaining = (endDate) => {
+    const today = new Date();
+    const end = new Date(endDate);
+
+    // Normalize both dates to midnight to ignore time-of-day differences
+    today.setHours(0, 0, 0, 0);
+    end.setHours(0, 0, 0, 0);
+
+    const diffInMs = end - today;
+    const msInDay = 1000 * 60 * 60 * 24;
+
+    // Calculate days
+    const daysRemaining = Math.ceil(diffInMs / msInDay);
+
+    // Return 0 if the date has already passed
+    return daysRemaining > 0 ? daysRemaining : 0;
+  };
+
+  const placementStatusCapitalized = (word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  };
+  const metrics = [
+    {
+      title: "Placement Status",
+      value: existingPlacement
+        ? `${placementStatusCapitalized(existingPlacement?.status)}`
+        : "Loading...",
+      iconType: "placements",
+    },
+    {
+      title: "Total Duration",
+      value: existingPlacement
+        ? `${getWeeksBetweenDates(existingPlacement?.start_date, existingPlacement?.end_date)} Weeks`
+        : "Loading...",
+      iconType: "reviews",
+    },
+    {
+      title: "Current Week",
+      value: existingPlacement
+        ? `Week ${getCurrentWeekInRange(existingPlacement?.start_date)}`
+        : "Loading...",
+      iconType: "reviews",
+    },
+    {
+      title: "Days Remaining",
+      value: existingPlacement
+        ? `${getDaysRemaining(existingPlacement?.end_date)}`
+        : "Loading...",
+      iconType: "reviews",
+    },
+  ];
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12 flex justify-between items-start">
@@ -21,9 +119,21 @@ const InternshipPlacement = () => {
             contact info.
           </p>
         </div>
-        <button className="text-sm text-white font-bold hover:bg-red-800 transition-colors px-6 py-3 bg-maroonCustom rounded-xl shadow-sm">
-          Edit Details
-        </button>
+        {(!existingPlacement || existingPlacement.status === "draft") && (
+          <button
+            onClick={() => setIsPlacementModalOpen(true)}
+            className="text-sm text-white font-bold hover:bg-red-800 transition-colors px-6 py-3 bg-maroonCustom rounded-xl shadow-sm"
+          >
+            {existingPlacement ? "Edit Placement" : "Create Placement"}
+          </button>
+        )}{" "}
+        <CreatePlacement
+          key={isPlacementModalOpen ? "open" : "closed"}
+          isOpen={isPlacementModalOpen}
+          onClose={() => setIsPlacementModalOpen(false)}
+          placement={existingPlacement ?? null}
+          onSuccess={fetchPlacement}
+        />
       </header>
 
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
@@ -58,7 +168,7 @@ const InternshipPlacement = () => {
                   Organization Name
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  TechCorp Solutions Inc.
+                  {organizationData?.name ?? "Loading..."}
                 </p>
               </div>
             </div>
@@ -72,9 +182,7 @@ const InternshipPlacement = () => {
                   Physical Address
                 </p>
                 <p className="text-lg font-bold text-maroon-dark leading-snug">
-                  456 Innovation Drive, Tech Park,
-                  <br />
-                  Silicon Valley, CA 94025
+                  {organizationData?.address ?? "Loading..."}
                 </p>
               </div>
             </div>
@@ -89,7 +197,7 @@ const InternshipPlacement = () => {
                     Contact
                   </p>
                   <p className="text-sm font-bold text-maroon-dark">
-                    +1 (555) 123-4567
+                    {organizationData?.contact_phone ?? "Loading..."}
                   </p>
                 </div>
               </div>
@@ -102,7 +210,7 @@ const InternshipPlacement = () => {
                     Email
                   </p>
                   <p className="text-sm font-bold text-maroon-dark truncate">
-                    contact@techcorp.com
+                    {organizationData?.contact_email ?? "Loading..."}
                   </p>
                 </div>
               </div>
