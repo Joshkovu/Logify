@@ -61,7 +61,9 @@ const Dashboard = () => {
   const metrics = [
     {
       title: "Status",
-      value: placementStatusCapitalized(placementData?.status),
+      value: placementData
+        ? placementStatusCapitalized(placementData?.status)
+        : "",
       iconType: "placements",
     },
     { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
