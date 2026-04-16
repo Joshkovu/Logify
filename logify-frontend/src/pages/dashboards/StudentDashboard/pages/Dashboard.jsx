@@ -1,14 +1,69 @@
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
+import { useState, useEffect } from "react";
+import { api } from "@/config/api";
 
 const Dashboard = () => {
+  const [placementData, setPlacementData] = useState(null);
+  const [organizationData, setOrganizationData] = useState(null);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await api.auth.me();
+        setUserData(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlacementData = async () => {
+      try {
+        const data = await api.placements.getPlacements();
+        setPlacementData(data[0]);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchPlacementData();
+  }, []);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchOrganizationData = async () => {
+        try {
+          const data = await api.organizations.getOrganization(
+            placementData?.organization,
+          );
+          setOrganizationData(data);
+          console.log("fetched org data");
+        } catch (err) {
+          console.error(err);
+        }
+      };
+      fetchOrganizationData();
+    }
+  }, [placementData]);
+
   const person = {
-    firstName: "Sarah",
-    lastName: "Johnson",
+    firstName: userData?.first_name,
+    lastName: userData?.last_name,
+  };
+
+  const placementStatusCapitalized = (word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
   const metrics = [
-    { title: "Status", value: "Active", iconType: "placements" },
+    {
+      title: "Status",
+      value: placementStatusCapitalized(placementData?.status),
+      iconType: "placements",
+    },
     { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
     { title: "Pending Tasks", value: "3", iconType: "reviews" },
     { title: "Final Score", value: "Pending", iconType: "evaluations" },
@@ -45,7 +100,7 @@ const Dashboard = () => {
                 Current Internship
               </h2>
               <p className="text-text-secondary text-md mt-1">
-                Your active placement details
+                Your placement details
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -54,39 +109,39 @@ const Dashboard = () => {
                   Organization
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  TechCorp Solutions Inc.
+                  {organizationData?.name ?? "Loading..."}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Workplace Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Michael Chen
+                  {placementData?.workplace_supervisor ?? "Not Assigned"}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Start Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  Jan 15, 2026
+                  {placementData?.start_date ?? "Loading..."}
                 </p>
               </div>
               <div>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
-                  Position
+                  Internship Title
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Software Engineering Intern
+                  {placementData?.internship_title ?? "Loading..."}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Academic Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Dr. Emily Roberts
+                  {placementData?.academic_supervisor ?? "Not Assigned"}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   End Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  Apr 10, 2026
+                  {placementData?.end_date ?? "Loading..."}
                 </p>
               </div>
             </div>
