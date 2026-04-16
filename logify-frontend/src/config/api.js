@@ -358,26 +358,26 @@ export const api = {
   },
 
   organizations: {
-    getOrganizations: () => apiRequest("/v1/organizations/createOrganization/"),
+    getOrganizations: () => apiRequest("/v1/organizations/organizations/"),
     getOrganization: (id) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`),
+      apiRequest(`/v1/organizations/organizations/${id}/`),
     createOrganization: (data) =>
-      apiRequest("/v1/organizations/createOrganization/", {
+      apiRequest("/v1/organizations/organizations/", {
         method: "POST",
         body: JSON.stringify(data),
       }),
     updateOrganization: (id, data) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
     patchOrganization: (id, data) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
     deleteOrganization: (id) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "DELETE",
       }),
   },
