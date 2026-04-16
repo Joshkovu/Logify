@@ -283,17 +283,12 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
-            programmes = Programmes.objects.all()
-            serializer = ProgrammesSerializer(programmes, many=True)
-            return Response(serializer.data)
-        return Response(
-            {"error": "Only Internship Admins can view all programmes."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
+        programmes = Programmes.objects.all()
+        serializer = ProgrammesSerializer(programmes, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if (
