@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 // import reacti from "../../assets/avatar.jpg";
 import { PiSignOut } from "react-icons/pi";
 import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
-import { useLocation } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Search from "./Search";
 import { ShieldCheck } from "lucide-react";
 
@@ -119,8 +119,8 @@ export const SidebarItem = ({ icon, text, href }) => {
      ${expanded ? "py-2 px-3 my-2" : "p-3 my-3 transition-all duration-200"}
     `}
     >
-      <a
-        href={href}
+      <Link
+        to={href}
         className={`flex items-center w-full ${expanded ? "justify-start" : "justify-center"} transition-all duration-200  `}
       >
         {icon}
@@ -133,7 +133,7 @@ export const SidebarItem = ({ icon, text, href }) => {
         >
           {text}
         </span>
-      </a>
+      </Link>
 
       {!expanded && (
         <div
