@@ -22,6 +22,7 @@ const Profile = () => {
   const [personalInformation, setPersonalInformation] = useState(null);
   const [academicInformation, setAcademicInformation] = useState(null);
   const [originalData, setOriginalData] = useState(null);
+  const [registryData, setRegistryData] = useState(null);
 
   const [errorI, setErrorI] = useState(null);
   const [errorP, setErrorP] = useState(null);
@@ -82,6 +83,23 @@ const Profile = () => {
     };
     fetchPersonalInformation();
   }, []);
+
+  useEffect(() => {
+    if (!personalInformation) return;
+    const fetchRegistryInformation = async () => {
+      if (personalInformation.student_registry_id) {
+        try {
+          const data = await api.registry.getStudent(
+            personalInformation.student_registry_id,
+          );
+          setRegistryData(data);
+        } catch (err) {
+          console.error("Registry fetch error:", err);
+        }
+      }
+    };
+    fetchRegistryInformation();
+  }, [personalInformation]);
 
   useEffect(() => {
     if (!personalInformation) return;
@@ -284,19 +302,19 @@ const Profile = () => {
                 label: "University",
                 value:
                   academicInformation?.institution.name ??
-                  (errorI ? `Error: ${errorI.message}` : "null"),
+                  (errorI ? `Error: ${errorI.message}` : "Loading..."),
                 icon: School,
               },
               {
                 label: "Programme",
-                value: academicInformation?.programme?.name ?? "Not Assigned",
+                value: academicInformation?.programme?.name ?? "Loading...",
                 icon: GraduationCap,
               },
               {
                 label: "Year Level",
-                value: personalInformation?.year_of_study
-                  ? `Year ${personalInformation.year_of_study}`
-                  : "Not Available",
+                value: registryData?.year_of_study
+                  ? `Year ${registryData.year_of_study}`
+                  : "Loading...",
                 icon: Calendar,
               },
               {
