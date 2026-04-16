@@ -26,6 +26,22 @@ const validateStudentForm = (formData) => {
     errors.studentNumber = "Student number must contain only numbers.";
   }
 
+  if (!formData.institution) {
+    errors.institution = "Institution is required.";
+  }
+
+  if (!formData.programme) {
+    errors.programme = "Programme is required.";
+  }
+
+  if (!formData.yearOfStudy.trim()) {
+    errors.yearOfStudy = "Year of study is required.";
+  } else if (!Number.isInteger(Number(formData.yearOfStudy))) {
+    errors.yearOfStudy = "Year of study must contain only numbers.";
+  } else if (Number(formData.yearOfStudy) > 7) {
+    errors.yearOfStudy = "Year of study cannot be longer than 7 years";
+  }
+
   if (!formData.password) {
     errors.password = "Password is required.";
   } else if (formData.password.length < 8) {
@@ -129,11 +145,14 @@ const StudentSignupPage = () => {
     confirmPassword: "",
     studentNumber: "",
     institution: "",
+    programme: "",
+    yearOfStudy: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [institutions, setInstitutions] = useState([]);
+  const [programmes, setProgrammes] = useState([]);
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
   const [attemptId, setAttemptId] = useState(null);
 
@@ -148,6 +167,19 @@ const StudentSignupPage = () => {
     };
 
     fetchInstitutions();
+  }, []);
+
+  useEffect(() => {
+    const fetchProgrammes = async () => {
+      try {
+        const data = await api.academics.getProgrammes();
+        setProgrammes(data);
+      } catch (err) {
+        console.error("Failed to fetch programmes:", err);
+      }
+    };
+
+    fetchProgrammes();
   }, []);
 
   const { studentSignup } = useContext(AuthContext);
@@ -173,6 +205,8 @@ const StudentSignupPage = () => {
       password: formData.password,
       student_number: Number(formData.studentNumber),
       institution_id: formData.institution,
+      programme_id: formData.programme,
+      year_of_study: Number(formData.yearOfStudy),
     };
 
     setIsSubmitting(true);
@@ -245,6 +279,48 @@ const StudentSignupPage = () => {
             {fieldErrors.institution && (
               <p className="mt-1 text-xs text-red-600">
                 {fieldErrors.institution}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Programme
+            </label>
+            <select
+              name="programme"
+              value={formData.programme}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">Select your Programme</option>
+              {programmes.map((prog) => (
+                <option key={prog.id} value={prog.id}>
+                  {prog.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.programme && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.programme}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Year of Study
+            </label>
+            <input
+              name="yearOfStudy"
+              value={formData.yearOfStudy}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              placeholder="2"
+            />
+            {fieldErrors.yearOfStudy && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.yearOfStudy}
               </p>
             )}
           </div>
