@@ -26,6 +26,9 @@ const Profile = () => {
 
   const [errorI, setErrorI] = useState(null);
   const [errorP, setErrorP] = useState(null);
+  const [isLoadingPersonal, setIsLoadingPersonal] = useState(true);
+  const [isLoadingRegistry, setIsLoadingRegistry] = useState(false);
+  const [isLoadingAcademic, setIsLoadingAcademic] = useState(false);
   const handleUpdate = async (formData) => {
     if (!originalData) return;
 
@@ -69,6 +72,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchPersonalInformation = async () => {
       try {
+        setIsLoadingPersonal(true);
         const data = await api.auth.me();
         setPersonalInformation(data);
         setOriginalData({
@@ -79,6 +83,8 @@ const Profile = () => {
         });
       } catch (err) {
         setErrorP(err);
+      } finally {
+        setIsLoadingPersonal(false);
       }
     };
     fetchPersonalInformation();
@@ -89,12 +95,15 @@ const Profile = () => {
     const fetchRegistryInformation = async () => {
       if (personalInformation.student_registry_id) {
         try {
+          setIsLoadingRegistry(true);
           const data = await api.registry.getStudent(
             personalInformation.student_registry_id,
           );
           setRegistryData(data);
         } catch (err) {
           console.error("Registry fetch error:", err);
+        } finally {
+          setIsLoadingRegistry(false);
         }
       }
     };
@@ -106,6 +115,7 @@ const Profile = () => {
     if (!personalInformation.institution_id) return;
     const fetchAcademicInformation = async () => {
       try {
+        setIsLoadingAcademic(true);
         const institution = await api.academics.getInstitution(
           personalInformation.institution_id,
         );
@@ -154,6 +164,8 @@ const Profile = () => {
         setAcademicInformation({ institution, programme, registry, placement });
       } catch (err) {
         setErrorI(err);
+      } finally {
+        setIsLoadingAcademic(false);
       }
     };
     fetchAcademicInformation();
@@ -175,7 +187,13 @@ const Profile = () => {
 
       <section className="mb-12">
         <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border shadow-sm flex items-center gap-10">
-          {personalInformation ? (
+          {isLoadingPersonal ? (
+            <div className="flex items-center justify-center w-full py-8">
+              <p className="text-lg font-semibold text-text-secondary">
+                Loading profile...
+              </p>
+            </div>
+          ) : personalInformation ? (
             <>
               <div>
                 <div className="md:h-32 md:w-32 lg:h-32 lg:w-32 bg-maroonCustom md:rounded-[12px] sm:rounded-[12px] lg:rounded-full sm:h-18 sm:w-18 flex items-center justify-center text-white text-5xl font-black shadow-lg shadow-maroonCustom/20 transition-all">
@@ -244,30 +262,34 @@ const Profile = () => {
             {[
               {
                 label: "First Name",
-                value:
-                  personalInformation?.first_name ||
-                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                value: isLoadingPersonal
+                  ? "Loading..."
+                  : personalInformation?.first_name ||
+                    (errorP ? `Error: ${errorP.message}` : "Not available"),
                 icon: User,
               },
               {
                 label: "Last Name",
-                value:
-                  personalInformation?.last_name ||
-                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                value: isLoadingPersonal
+                  ? "Loading..."
+                  : personalInformation?.last_name ||
+                    (errorP ? `Error: ${errorP.message}` : "Not available"),
                 icon: User,
               },
               {
                 label: "Webmail",
-                value:
-                  personalInformation?.email ||
-                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                value: isLoadingPersonal
+                  ? "Loading..."
+                  : personalInformation?.email ||
+                    (errorP ? `Error: ${errorP.message}` : "Not available"),
                 icon: Mail,
               },
               {
                 label: "Student Number",
-                value:
-                  personalInformation?.student_number ||
-                  (errorP ? `Error: ${errorP.message}` : "Loading..."),
+                value: isLoadingPersonal
+                  ? "Loading..."
+                  : personalInformation?.student_number ||
+                    (errorP ? `Error: ${errorP.message}` : "Not available"),
                 icon: User,
               },
             ].map((item, i) => (
@@ -300,35 +322,42 @@ const Profile = () => {
             {[
               {
                 label: "University",
-                value:
-                  academicInformation?.institution.name ??
-                  (errorI ? `Error: ${errorI.message}` : "Loading..."),
+                value: isLoadingAcademic
+                  ? "Loading..."
+                  : (academicInformation?.institution.name ??
+                    (errorI ? `Error: ${errorI.message}` : "Not available")),
                 icon: School,
               },
               {
                 label: "Programme",
-                value: academicInformation?.programme?.name ?? "Loading...",
+                value: isLoadingAcademic
+                  ? "Loading..."
+                  : (academicInformation?.programme?.name ?? "Not available"),
                 icon: GraduationCap,
               },
               {
                 label: "Year Level",
-                value: registryData?.year_of_study
-                  ? `Year ${registryData.year_of_study}`
-                  : "Loading...",
+                value: isLoadingRegistry
+                  ? "Loading..."
+                  : registryData?.year_of_study
+                    ? `Year ${registryData.year_of_study}`
+                    : "Not available",
                 icon: Calendar,
               },
               {
                 label: "Academic Supervisor",
-                value:
-                  academicInformation?.placement?.academic_supervisor ??
-                  "Not Assigned",
+                value: isLoadingAcademic
+                  ? "Loading..."
+                  : (academicInformation?.placement?.academic_supervisor ??
+                    "Not Assigned"),
                 icon: User,
               },
               {
                 label: "Workplace Supervisor",
-                value:
-                  academicInformation?.placement?.workplace_supervisor ??
-                  "Not Assigned",
+                value: isLoadingAcademic
+                  ? "Loading..."
+                  : (academicInformation?.placement?.workplace_supervisor ??
+                    "Not Assigned"),
                 icon: User,
               },
             ].map((item, i) => (

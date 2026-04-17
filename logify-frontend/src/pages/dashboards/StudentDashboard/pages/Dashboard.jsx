@@ -7,6 +7,8 @@ const Dashboard = () => {
   const [placementData, setPlacementData] = useState(null);
   const [organizationData, setOrganizationData] = useState(null);
   const [userData, setUserData] = useState(null);
+  const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
+  const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -23,10 +25,13 @@ const Dashboard = () => {
   useEffect(() => {
     const fetchPlacementData = async () => {
       try {
+        setIsLoadingPlacement(true);
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
       } catch (err) {
         console.error(err.message);
+      } finally {
+        setIsLoadingPlacement(false);
       }
     };
     fetchPlacementData();
@@ -36,6 +41,7 @@ const Dashboard = () => {
     if (placementData) {
       const fetchOrganizationData = async () => {
         try {
+          setIsLoadingOrganization(true);
           const data = await api.organizations.getOrganization(
             placementData?.organization,
           );
@@ -43,6 +49,8 @@ const Dashboard = () => {
           console.log("fetched org data");
         } catch (err) {
           console.error(err);
+        } finally {
+          setIsLoadingOrganization(false);
         }
       };
       fetchOrganizationData();
@@ -61,9 +69,11 @@ const Dashboard = () => {
   const metrics = [
     {
       title: "Status",
-      value: placementData
-        ? placementStatusCapitalized(placementData?.status)
-        : "",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : placementData
+          ? placementStatusCapitalized(placementData?.status)
+          : "No placement found",
       iconType: "placements",
     },
     { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
@@ -111,19 +121,25 @@ const Dashboard = () => {
                   Organization
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  {organizationData?.name ?? "Loading..."}
+                  {isLoadingOrganization
+                    ? "Loading..."
+                    : (organizationData?.name ?? "Not assigned")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Workplace Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  {placementData?.workplace_supervisor ?? "Not Assigned"}
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.workplace_supervisor ?? "Not Assigned")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Start Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  {placementData?.start_date ?? "Loading..."}
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.start_date ?? "Not set")}
                 </p>
               </div>
               <div>
@@ -131,19 +147,25 @@ const Dashboard = () => {
                   Internship Title
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  {placementData?.internship_title ?? "Loading..."}
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.internship_title ?? "Not set")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Academic Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  {placementData?.academic_supervisor ?? "Not Assigned"}
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.academic_supervisor ?? "Not Assigned")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   End Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  {placementData?.end_date ?? "Loading..."}
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.end_date ?? "Not set")}
                 </p>
               </div>
             </div>
