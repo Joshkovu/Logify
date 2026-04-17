@@ -9,12 +9,17 @@ const InternshipPlacement = () => {
   const [organizationData, setOrganizationData] = useState(null);
 
   const [existingPlacement, setExistingPlacement] = useState(null);
+  const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
+  const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);
   const fetchPlacement = useCallback(async () => {
     try {
+      setIsLoadingPlacement(true);
       const data = await api.placements.getPlacements();
       if (data.length > 0) setExistingPlacement(data[0]);
     } catch (err) {
       console.error("Failed to fetch placement:", err);
+    } finally {
+      setIsLoadingPlacement(false);
     }
   }, []);
 
@@ -27,6 +32,7 @@ const InternshipPlacement = () => {
     if (existingPlacement) {
       const fetchOrganizationData = async () => {
         try {
+          setIsLoadingOrganization(true);
           const data = await api.organizations.getOrganization(
             existingPlacement?.organization,
           );
@@ -34,6 +40,8 @@ const InternshipPlacement = () => {
           console.log("fetched organization data", data);
         } catch (err) {
           console.log(err.message);
+        } finally {
+          setIsLoadingOrganization(false);
         }
       };
       fetchOrganizationData();
@@ -80,30 +88,38 @@ const InternshipPlacement = () => {
   const metrics = [
     {
       title: "Placement Status",
-      value: existingPlacement
-        ? `${placementStatusCapitalized(existingPlacement?.status)}`
-        : "Loading...",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : existingPlacement
+          ? `${placementStatusCapitalized(existingPlacement?.status)}`
+          : "No placement found",
       iconType: "placements",
     },
     {
       title: "Total Duration",
-      value: existingPlacement
-        ? `${getWeeksBetweenDates(existingPlacement?.start_date, existingPlacement?.end_date)} Weeks`
-        : "Loading...",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : existingPlacement
+          ? `${getWeeksBetweenDates(existingPlacement?.start_date, existingPlacement?.end_date)} Weeks`
+          : "N/A",
       iconType: "reviews",
     },
     {
       title: "Current Week",
-      value: existingPlacement
-        ? `Week ${getCurrentWeekInRange(existingPlacement?.start_date)}`
-        : "Loading...",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : existingPlacement
+          ? `Week ${getCurrentWeekInRange(existingPlacement?.start_date)}`
+          : "N/A",
       iconType: "reviews",
     },
     {
       title: "Days Remaining",
-      value: existingPlacement
-        ? `${getDaysRemaining(existingPlacement?.end_date)}`
-        : "Loading...",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : existingPlacement
+          ? `${getDaysRemaining(existingPlacement?.end_date)}`
+          : "N/A",
       iconType: "reviews",
     },
   ];
@@ -119,14 +135,20 @@ const InternshipPlacement = () => {
             contact info.
           </p>
         </div>
-        {(!existingPlacement || existingPlacement.status === "draft") && (
+        {isLoadingPlacement ? (
+          <p className="text-sm text-white font-bold transition-all px-6 py-3 bg-maroonCustom rounded-xl">
+            Loading...
+          </p>
+        ) : !existingPlacement || existingPlacement.status === "draft" ? (
           <button
             onClick={() => setIsPlacementModalOpen(true)}
-            className="text-sm text-white font-bold hover:bg-red-800 transition-colors px-6 py-3 bg-maroonCustom rounded-xl shadow-sm"
+            className="text-sm text-white font-bold hover:bg-red-800 transition-all px-6 py-3 bg-maroonCustom rounded-xl shadow-sm"
           >
             {existingPlacement ? "Edit Placement" : "Create Placement"}
           </button>
-        )}{" "}
+        ) : (
+          ""
+        )}
         <CreatePlacement
           key={isPlacementModalOpen ? "open" : "closed"}
           isOpen={isPlacementModalOpen}
@@ -168,7 +190,9 @@ const InternshipPlacement = () => {
                   Organization Name
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  {organizationData?.name ?? "Loading..."}
+                  {isLoadingOrganization
+                    ? "Loading..."
+                    : (organizationData?.name ?? "Not available")}
                 </p>
               </div>
             </div>
@@ -182,7 +206,9 @@ const InternshipPlacement = () => {
                   Physical Address
                 </p>
                 <p className="text-lg font-bold text-maroon-dark leading-snug">
-                  {organizationData?.address ?? "Loading..."}
+                  {isLoadingOrganization
+                    ? "Loading..."
+                    : (organizationData?.address ?? "Not available")}
                 </p>
               </div>
             </div>
@@ -197,7 +223,9 @@ const InternshipPlacement = () => {
                     Contact
                   </p>
                   <p className="text-sm font-bold text-maroon-dark">
-                    {organizationData?.contact_phone ?? "Loading..."}
+                    {isLoadingOrganization
+                      ? "Loading..."
+                      : (organizationData?.contact_phone ?? "Not available")}
                   </p>
                 </div>
               </div>
@@ -210,7 +238,9 @@ const InternshipPlacement = () => {
                     Email
                   </p>
                   <p className="text-sm font-bold text-maroon-dark truncate">
-                    {organizationData?.contact_email ?? "Loading..."}
+                    {isLoadingOrganization
+                      ? "Loading..."
+                      : (organizationData?.contact_email ?? "Not available")}
                   </p>
                 </div>
               </div>
