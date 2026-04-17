@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import SupervisorReviews, WeeklyLogs
-from .serializer import WeeklyLogsSerializer
+from .serializer import SupervisorReviewsSerializer, WeeklyLogsSerializer
 
 # Create your views here.
 
@@ -309,5 +309,22 @@ class GetHistoryOfWeeklyLogsAPIView(APIView):
                 "success": "Weekly logs history retrieved successfully",
                 "weekly_logs": serializer.data,
             },
+            status=status.HTTP_200_OK,
+        )
+
+
+class GetSupervisorReviewsAPIView(APIView):
+    permission_classes = [IsAuthenticated, IsStudentOrSupervisor]
+
+    def get(self, request, log_id):
+        try:
+            weekly_log = WeeklyLogs.objects.get(id=log_id)
+        except WeeklyLogs.DoesNotExist:
+            return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        reviews = SupervisorReviews.objects.filter(weekly_log=weekly_log)
+        serializer = SupervisorReviewsSerializer(reviews, many=True)
+        return Response(
+            {"success": "Reviews retrieved successfully", "reviews": serializer.data},
             status=status.HTTP_200_OK,
         )

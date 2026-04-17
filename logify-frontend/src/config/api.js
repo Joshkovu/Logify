@@ -355,6 +355,9 @@ export const api = {
     getWeeklyLogHistory: () => apiRequest(`/v1/logbook/history/`),
     deleteWeeklyLog: (id) =>
       apiRequest(`/v1/logbook/delete_weekly_log/${id}/`, { method: "DELETE" }),
+
+    getWeeklyLogReviews: (id) =>
+      apiRequest(`/v1/logbook/weekly_log_reviews/${id}/`),
   },
 
   organizations: {
