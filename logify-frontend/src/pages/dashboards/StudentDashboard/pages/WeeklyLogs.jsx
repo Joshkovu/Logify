@@ -1,67 +1,83 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { api } from "@/config/api";
 import CreateWeeklyLog from "../CreateWeeklyLog";
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 
 const WeeklyLogs = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [placementData, setPlacementData] = useState(null);
+  const [weeklyLogList, setWeeklyLogList] = useState(null);
+  const [selectedLog, setSelectedLog] = useState(null);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
+  const fetchWeeklyLogs = useCallback(async () => {
+    try {
+      setIsLoadingLogs(true);
+      const data = await api.logbook.getWeeklyLogHistory();
+      setWeeklyLogList(data.weekly_logs ?? []);
+    } catch (err) {
+      console.error("Failed to fetch weekly logs:", err);
+      setWeeklyLogList([]);
+    } finally {
+      setIsLoadingLogs(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    const fetchPlacementData = async () => {
+      try {
+        setIsLoadingPlacement(true);
+        const data = await api.placements.getPlacements();
+        setPlacementData(data[0]);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setIsLoadingPlacement(false);
+      }
+    };
+    fetchPlacementData();
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    fetchWeeklyLogs();
+  }, [fetchWeeklyLogs]);
+
+  const approvedList =
+    weeklyLogList?.filter((log) => log.status.toLowerCase() === "approved") ??
+    [];
+  const approvalRate =
+    weeklyLogList?.length > 0
+      ? Math.round((approvedList.length / weeklyLogList.length) * 100)
+      : 0;
   const metrics = [
-    { title: "Total Logs", value: "8", iconType: "reviews" },
-    { title: "Approved", value: "8", iconType: "evaluations" },
-    { title: "Approval Rate", value: "100%", iconType: "placements" },
-  ];
-
-  const logs = [
     {
-      week: "Week 8",
-      range: "Feb 17 - Feb 23",
-      status: "Approved",
-      date: "Feb 23, 2026",
+      title: "Total Logs",
+      value: isLoadingLogs
+        ? "Loading..."
+        : (weeklyLogList?.length ?? 0).toString(),
+      iconType: "reviews",
     },
     {
-      week: "Week 7",
-      range: "Feb 10 - Feb 16",
-      status: "Approved",
-      date: "Feb 16, 2026",
+      title: "Approved",
+      value: isLoadingLogs
+        ? "Loading..."
+        : (approvedList?.length ?? 0).toString(),
+      iconType: "evaluations",
     },
     {
-      week: "Week 6",
-      range: "Feb 3 - Feb 9",
-      status: "Approved",
-      date: "Feb 9, 2026",
-    },
-    {
-      week: "Week 5",
-      range: "Jan 27 - Feb 2",
-      status: "Approved",
-      date: "Feb 2, 2026",
-    },
-    {
-      week: "Week 4",
-      range: "Jan 20 - Jan 26",
-      status: "Approved",
-      date: "Jan 26, 2026",
-    },
-    {
-      week: "Week 3",
-      range: "Jan 13 - Jan 19",
-      status: "Approved",
-      date: "Jan 19, 2026",
-    },
-    {
-      week: "Week 2",
-      range: "Jan 6 - Jan 12",
-      status: "Approved",
-      date: "Jan 12, 2026",
-    },
-    {
-      week: "Week 1",
-      range: "Dec 30 - Jan 5",
-      status: "Approved",
-      date: "Jan 5, 2026",
+      title: "Approval Rate",
+      value: isLoadingLogs
+        ? "Loading..."
+        : weeklyLogList?.length > 0
+          ? `${approvalRate}%`
+          : "0%",
+      iconType: "placements",
     },
   ];
-
+  console.log("weekly log list", weeklyLogList);
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12 flex justify-between items-start">
@@ -76,15 +92,27 @@ const WeeklyLogs = () => {
         </div>
         <div className="ml-auto mt-2.5">
           <button
-            className="flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl"
+            className="disabled:bg-maroonCustom/60 flex items-center gap-2 text-sm font-bold text-white px-6 py-3 bg-maroonCustom hover:bg-red-800 transition-all rounded-xl"
             onClick={() => setIsModalOpen(true)}
+            disabled={placementData?.status.toLowerCase() !== "active"}
           >
             <FilePlus size={18} />
-            New Log
+            {isLoadingPlacement
+              ? "Loading..."
+              : (!placementData && "Placement not found") ||
+                (placementData?.status.toLowerCase() == "active" &&
+                  "New Log") ||
+                (placementData?.status.toLowerCase() !== "active" &&
+                  "Placement not active")}
           </button>
           <CreateWeeklyLog
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+              setIsModalOpen(false);
+              setSelectedLog(null);
+            }}
+            onSuccess={fetchWeeklyLogs}
+            weeklyLog={selectedLog}
           />
         </div>
       </header>
@@ -112,58 +140,108 @@ const WeeklyLogs = () => {
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-border">
-                  <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
-                    Week
-                  </th>
-                  <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
-                    Date Range
-                  </th>
-                  <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
-                    Status
-                  </th>
-                  <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
-                    Submitted
-                  </th>
-                  <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40 text-right">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/50">
-                {logs.map((log, i) => (
-                  <tr
-                    key={i}
-                    className="hover:bg-background/50 transition-colors group"
-                  >
-                    <td className="py-5 px-4">
-                      <span className="font-bold text-maroon-dark">
-                        {log.week}
-                      </span>
-                    </td>
-                    <td className="py-5 px-4 text-sm text-text-secondary font-medium">
-                      {log.range}
-                    </td>
-                    <td className="py-5 px-4">
-                      <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase tracking-wider">
-                        {log.status}
-                      </span>
-                    </td>
-                    <td className="py-5 px-4 text-sm text-text-secondary/60 font-medium">
-                      {log.date}
-                    </td>
-                    <td className="py-5 px-4 text-right">
-                      <button className="inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gold/10">
-                        <Eye size={14} />
-                        View Details
-                      </button>
-                    </td>
+            {isLoadingLogs ? (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-lg font-semibold text-text-secondary">
+                  Loading weekly logs...
+                </p>
+              </div>
+            ) : weeklyLogList && weeklyLogList.length > 0 ? (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-border">
+                    <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
+                      Week
+                    </th>
+                    <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
+                      Date Range
+                    </th>
+                    <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
+                      Status
+                    </th>
+                    <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40">
+                      Submitted
+                    </th>
+                    <th className="py-4 px-4 text-[10px] uppercase tracking-widest font-black text-text-secondary/40 text-right">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border/50">
+                  {weeklyLogList?.map((log, i) => (
+                    <tr
+                      key={i}
+                      className="hover:bg-background/50 transition-colors group"
+                    >
+                      <td className="py-5 px-4">
+                        <span className="font-bold text-maroon-dark">
+                          Week {log.week_number}
+                        </span>
+                      </td>
+                      <td className="py-5 px-4 text-sm text-text-secondary font-medium">
+                        {new Date(log.week_start_date).toLocaleDateString()} -{" "}
+                        {new Date(log.week_end_date).toLocaleDateString()}
+                      </td>
+                      <td className="py-5 px-4">
+                        <span
+                          className={`inline-flex items-center px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider
+                          ${
+                            log.status.toLowerCase() === "approved"
+                              ? "bg-emerald-100 text-emerald-700"
+                              : log.status.toLowerCase() === "draft"
+                                ? "bg-gray-200 text-gray-600"
+                                : log.status.toLowerCase() === "submitted"
+                                  ? "bg-orange-100 text-orange-700"
+                                  : log.status.toLowerCase() === "rejected"
+                                    ? "bg-red-100 text-red-700"
+                                    : "bg-gray-100 text-gray-600"
+                          }`}
+                        >
+                          {log.status}
+                        </span>
+                      </td>
+                      <td className="py-5 px-4 text-sm text-text-secondary/60 font-medium">
+                        {log.submitted_at
+                          ? new Date(log.submitted_at).toLocaleDateString()
+                          : "Not submitted"}
+                      </td>
+                      <td className="py-5 px-4 text-right">
+                        {log.status.toLowerCase() !== "draft" && (
+                          <button
+                            onClick={() => {
+                              setSelectedLog(log);
+                              setIsModalOpen(true);
+                            }}
+                            className="hover:bg-gray-300 inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gray-300"
+                          >
+                            <Eye size={14} />
+                            View Details
+                          </button>
+                        )}{" "}
+                        {log.status.toLowerCase() == "draft" && (
+                          <button
+                            onClick={() => {
+                              setSelectedLog(log);
+                              setIsModalOpen(true);
+                            }}
+                            className=" hover:bg-gray-300 ml-2 inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gray-300"
+                          >
+                            <Eye size={14} />
+                            Edit Log
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <div className="flex items-center justify-center py-12">
+                <p className="text-lg font-semibold text-text-secondary">
+                  No weekly logs found
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
