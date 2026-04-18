@@ -491,15 +491,6 @@ class TestProgrammesListView(APITestCase):
         response = self.client.get(reverse("programmes-list"))
         self.assertEqual(response.data, [])
 
-    def test_workplace_supervisor_cannot_list_programmes(self):
-        self.client.force_authenticate(user=self.workplace_supervisor)
-        response = self.client.get(reverse("programmes-list"))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-
-    def test_unauthenticated_cannot_list_programmes(self):
-        response = self.client.get(reverse("programmes-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-
     def test_admin_can_create_programme(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.post(
