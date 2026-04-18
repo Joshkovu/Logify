@@ -1,4 +1,3 @@
-from apps.notifications.services import MailjetService
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -39,11 +38,7 @@ class SupervisorSignupView(APIView):
     def post(self, request):
         serializer = SupervisorSignupSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-
-            # Send notification
-            mail_service = MailjetService()
-            mail_service.send_supervisor_signup_notification(user.email)  # type: ignore
+            serializer.save()
 
             return Response(
                 {"message": "Application received. Your account is inactive until approved."},
@@ -66,10 +61,6 @@ class SupervisorApprovalView(APIView):
             user = application.user
             user.is_active = True
             user.save()
-
-            # Send notification
-            mail_service = MailjetService()
-            mail_service.send_supervisor_approval_notification(user.email)
 
             return Response({"message": "Supervisor approved and account activated."})
 

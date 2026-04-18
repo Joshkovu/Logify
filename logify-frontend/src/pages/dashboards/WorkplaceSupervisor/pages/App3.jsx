@@ -1,7 +1,7 @@
 import Side_bar, { SidebarItem } from "../components/dashboard/Side_bar";
 import { LayoutDashboard, Users, User, FileCheck } from "lucide-react";
 import Dashboard from "../components/dashboard/Dashboard";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import AssignedInterns from "./AssignedInterns";
 import PendingLogReview from "./PendingLogReview";
 import Profile from "./Profile";
@@ -10,26 +10,26 @@ const navParameters = [
   {
     icon: <LayoutDashboard size={20} />,
     text: "Dashboard",
-    href: "/",
+    href: "/workplace-supervisor",
   },
   {
     icon: <Users size={20} />,
     text: "Assigned Interns",
-    href: "/assigned-interns",
+    href: "/workplace-supervisor/assigned-interns",
   },
   {
     icon: <FileCheck size={20} />,
     text: "Pending Log Reviews",
-    href: "/pending-log-review",
+    href: "/workplace-supervisor/pending-log-review",
   },
   {
     icon: <User size={20} />,
     text: "Profile",
-    href: "/profile",
+    href: "/workplace-supervisor/profile",
   },
 ];
 
-const App3 = () => {
+const WorkplaceSupervisorDashboard = () => {
   const navItems = navParameters.map((parameter) => (
     <SidebarItem
       key={parameter.text}
@@ -39,9 +39,8 @@ const App3 = () => {
     />
   ));
   return (
-    <Router>
-      <main className=" bg-stone-100">
-        {/* <div className=" relative flex bg-stone-100 h-15">
+    <main className=" bg-stone-100">
+      {/* <div className=" relative flex bg-stone-100 h-15">
           <div className=" absolute h-15 w-72 bg-maroon-50 border-gray-900 rounded-lg mx-1 shadow"></div>
           <div className=" ml-74 bg-white rounded-b-lg w-full  p-1 shadow">
             <h1 className="text-xl text-gray-700 font-medium pl-4">
@@ -53,25 +52,27 @@ const App3 = () => {
           </div>
         </div> */}
 
-        <div className="mt-1 flex h-screen overflow-hidden">
-          <Side_bar>{navItems}</Side_bar>
-          {/* <div className="w-70 rounded-r-lg">
+      <div className="mt-1 flex h-screen overflow-hidden">
+        <Side_bar>{navItems}</Side_bar>
+        {/* <div className="w-70 rounded-r-lg">
         </div> */}
-          <div className="flex-1  overflow-y-auto w-full">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/assigned-interns" element={<AssignedInterns />} />
-              <Route
-                path="/pending-log-review"
-                element={<PendingLogReview />}
-              />
-              <Route path="/profile" element={<Profile />} />
-            </Routes>
-          </div>
+        <div className="flex-1  overflow-y-auto w-full">
+          <Routes>
+            <Route path="/workplace-supervisor" element={<Dashboard />} />
+            <Route
+              path="/workplace-supervisor/assigned-interns"
+              element={<AssignedInterns />}
+            />
+            <Route
+              path="/workplace-supervisor/pending-log-review"
+              element={<PendingLogReview />}
+            />
+            <Route path="/workplace-supervisor/profile" element={<Profile />} />
+          </Routes>
         </div>
-      </main>
-    </Router>
+      </div>
+    </main>
   );
 };
 
-export default App3;
+export default WorkplaceSupervisorDashboard;

@@ -164,9 +164,7 @@ const AuthProvider = ({ children }) => {
 
       return response;
     } catch (error) {
-      throw new Error(
-        error.message || "OTP verification failed. Please try again.",
-      );
+      throw new Error(error.message || "Signup failed. Please try again.");
     }
   };
 
@@ -215,7 +213,6 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         studentSignup,
-        verifyStudentSignup,
         supervisorSignUp,
         adminSignUp,
       }}
