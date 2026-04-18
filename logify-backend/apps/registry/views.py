@@ -1,15 +1,17 @@
 # from django.shortcuts import render
 
 # Create your views here.
+from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.registry.models import StudentRegistry
 from apps.registry.serializer import StudentRegistrySerializer
 from django.contrib.auth import get_user_model
-from django.db import IntegrityError, transaction
+from django.core.exceptions import PermissionDenied
+from django.db import transaction
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -17,7 +19,18 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class StudentRegistryViewSet(viewsets.ModelViewSet):
     queryset = StudentRegistry.objects.all()
     serializer_class = StudentRegistrySerializer
-    permission_classes = [IsInternshipAdmin]
+
+    def get_patch_permissions(self):
+        if self.action in ["retrieve", "partial_update"]:
+            return [IsAuthenticated()]
+        return [IsInternshipAdmin()]
+
+    def get_object(self):
+        obj = super().get_object()
+        if self.request.user.role == User.STUDENT:
+            if str(obj.id) != self.request.user.student_registry_id:
+                raise PermissionDenied("You can only access your own registry record.")
+            return obj
 
 
 class StudentAuthViewSet(viewsets.ViewSet):
@@ -55,10 +68,43 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "Password must be at least 8 characters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+        # Check if student exists in registry
+        student = StudentRegistry.objects.filter(
+            webmail=webmail,
+            institution_id=institution_id,
+            student_number=student_number,
+            status__iexact="active",
+        ).first()
+
+        if not student:
+            return Response(
+                {"error": "Student not found or inactive in registry."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+
+        if student.first_name.strip().lower() != first_name.lower():
+            return Response(
+                {"error": "First name does not match registry records."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if student.last_name.strip().lower() != last_name.lower():
+            return Response(
+                {"error": "Last name does not match registry records."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if student.is_claimed:
+            return Response(
+                {"error": "This student account has already been claimed."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Create user account
         User = get_user_model()
         try:
             with transaction.atomic():
-                # Lock registry row to prevent concurrent claims.
+                # Lock registry row to prevent concurrent claims
                 student = (
                     StudentRegistry.objects.select_for_update()
                     .filter(
@@ -76,18 +122,6 @@ class StudentAuthViewSet(viewsets.ViewSet):
                         status=status.HTTP_404_NOT_FOUND,
                     )
 
-                if student.first_name.strip().lower() != first_name.lower():
-                    return Response(
-                        {"error": "First name does not match registry records."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
-                if student.last_name.strip().lower() != last_name.lower():
-                    return Response(
-                        {"error": "Last name does not match registry records."},
-                        status=status.HTTP_400_BAD_REQUEST,
-                    )
-
                 if student.is_claimed:
                     return Response(
                         {"error": "This student account has already been claimed."},
@@ -101,13 +135,13 @@ class StudentAuthViewSet(viewsets.ViewSet):
                     )
 
                 user = User.objects.create_user(
-                    email=student.webmail,
+                    email=webmail,
                     password=password,
                     first_name=first_name,
                     last_name=last_name,
                     role=User.STUDENT,
                     institution_id=str(student.institution.id),
-                    programme_id=str(student.programme.id),
+                    programme_id=str(student.programme.id) if student.programme else None,
                     student_registry_id=str(student.id),
                     student_number=student.student_number,
                     is_active=True,
@@ -116,7 +150,7 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 student.is_claimed = True
                 student.claimed_at = timezone.now()
                 student.save(update_fields=["is_claimed", "claimed_at"])
-        except IntegrityError:
+        except Exception:
             return Response(
                 {"error": "An account with this webmail already exists."},
                 status=status.HTTP_400_BAD_REQUEST,

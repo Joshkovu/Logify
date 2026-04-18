@@ -182,6 +182,9 @@ export const api = {
   },
 
   accounts: {
+    getAcademicSupervisor: (id) => apiRequest(`/v1/accounts/users/${id}/`),
+    getWorkplaceSupervisor: (id) => apiRequest(`/v1/accounts/users/${id}/`),
+    getUser: (id) => apiRequest(`/v1/accounts/users/${id}/`),
     getSupervisorApplications: (params = {}) => {
       const queryString = new URLSearchParams(params).toString();
       const endpoint = `/v1/accounts/supervisor/applications/${queryString ? `?${queryString}` : ""}`;
@@ -350,29 +353,32 @@ export const api = {
     getWeeklyLogHistory: () => apiRequest(`/v1/logbook/history/`),
     deleteWeeklyLog: (id) =>
       apiRequest(`/v1/logbook/delete_weekly_log/${id}/`, { method: "DELETE" }),
+
+    getWeeklyLogReviews: (id) =>
+      apiRequest(`/v1/logbook/weekly_log_reviews/${id}/`),
   },
 
   organizations: {
-    getOrganizations: () => apiRequest("/v1/organizations/createOrganization/"),
+    getOrganizations: () => apiRequest("/v1/organizations/organizations/"),
     getOrganization: (id) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`),
+      apiRequest(`/v1/organizations/organizations/${id}/`),
     createOrganization: (data) =>
-      apiRequest("/v1/organizations/createOrganization/", {
+      apiRequest("/v1/organizations/organizations/", {
         method: "POST",
         body: JSON.stringify(data),
       }),
     updateOrganization: (id, data) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "PUT",
         body: JSON.stringify(data),
       }),
     patchOrganization: (id, data) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "PATCH",
         body: JSON.stringify(data),
       }),
     deleteOrganization: (id) =>
-      apiRequest(`/v1/organizations/getOrganization/${id}/`, {
+      apiRequest(`/v1/organizations/organizations/${id}/`, {
         method: "DELETE",
       }),
   },
