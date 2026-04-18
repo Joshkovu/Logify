@@ -29,6 +29,17 @@ const Profile = () => {
   const [isLoadingPersonal, setIsLoadingPersonal] = useState(true);
   const [isLoadingRegistry, setIsLoadingRegistry] = useState(false);
   const [isLoadingAcademic, setIsLoadingAcademic] = useState(false);
+
+  const [placementData, setPlacementData] = useState(null);
+  const [workplaceSupervisorData, setWorkplaceSupervisorData] = useState(null);
+  const [
+    isLoadingWorkplaceSupervisorData,
+    setIsLoadingWorkplaceSupervisorData,
+  ] = useState(true);
+  const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
+  const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
+    useState(true);
+
   const handleUpdate = async (formData) => {
     if (!originalData) return;
 
@@ -68,6 +79,58 @@ const Profile = () => {
       alert("Error updating profile. Please try again.");
     }
   };
+
+  useEffect(() => {
+    const fetchPlacementData = async () => {
+      try {
+        const data = await api.placements.getPlacements();
+        setPlacementData(data[0]);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchPlacementData();
+  }, []);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchAcademicSupervisorData = async () => {
+        try {
+          setIsLoadingAcademicSupervisorData(true);
+          const data = await api.accounts.getAcademicSupervisor(
+            placementData.academic_supervisor,
+          );
+          console.log("academic: ", data);
+          setAcademicSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get academic supervisor: ", err);
+        } finally {
+          setIsLoadingAcademicSupervisorData(false);
+        }
+      };
+      fetchAcademicSupervisorData();
+    }
+  }, [placementData]);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchWorkplaceSupervisorData = async () => {
+        try {
+          setIsLoadingWorkplaceSupervisorData(true);
+          const data = await api.accounts.getWorkplaceSupervisor(
+            placementData.workplace_supervisor,
+          );
+          console.log("workplace: ", data);
+          setWorkplaceSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get workplace supervisor: ", err);
+        } finally {
+          setIsLoadingWorkplaceSupervisorData(false);
+        }
+      };
+      fetchWorkplaceSupervisorData();
+    }
+  }, [placementData]);
 
   useEffect(() => {
     const fetchPersonalInformation = async () => {
@@ -152,16 +215,7 @@ const Profile = () => {
           }
         }
 
-        let placement = null;
-        if (personalInformation.student_registry_id) {
-          try {
-            const response = await api.placements.getPlacements();
-            placement = response.length > 0 ? response[0] : null;
-          } catch (err) {
-            console.error("Placement fetch error:", err);
-          }
-        }
-        setAcademicInformation({ institution, programme, registry, placement });
+        setAcademicInformation({ institution, programme, registry });
       } catch (err) {
         setErrorI(err);
       } finally {
@@ -346,18 +400,20 @@ const Profile = () => {
               },
               {
                 label: "Academic Supervisor",
-                value: isLoadingAcademic
+                value: isLoadingAcademicSupervisorData
                   ? "Loading..."
-                  : (academicInformation?.placement?.academic_supervisor ??
-                    "Not Assigned"),
+                  : academicSupervisorData
+                    ? `${academicSupervisorData?.first_name} ${academicSupervisorData?.last_name}`
+                    : "Not Assigned",
                 icon: User,
               },
               {
                 label: "Workplace Supervisor",
-                value: isLoadingAcademic
+                value: isLoadingWorkplaceSupervisorData
                   ? "Loading..."
-                  : (academicInformation?.placement?.workplace_supervisor ??
-                    "Not Assigned"),
+                  : workplaceSupervisorData
+                    ? `${workplaceSupervisorData?.first_name} ${workplaceSupervisorData?.last_name}`
+                    : "Not Assigned",
                 icon: User,
               },
             ].map((item, i) => (
