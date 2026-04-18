@@ -44,7 +44,7 @@ repos:
           [
             "logify-frontend/node_modules/prettier/bin/prettier.cjs",
             "logify-frontend",
-            "--check",
+            "--write",
           ]
         language: system
         pass_filenames: false
