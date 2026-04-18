@@ -1,6 +1,6 @@
 from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import User
-from apps.registry.models import RegistrationAttempts, StudentRegistry
+from apps.registry.models import StudentRegistry
 from django.test import TestCase
 from rest_framework.test import APITestCase
 
@@ -26,21 +26,9 @@ class TestRegistryModels(TestCase):
             status="active",
             is_claimed=False,
         )
-        self.registration_attempt = RegistrationAttempts.objects.create(
-            institution=self.institution,
-            student_number=self.student_registry.student_number,
-            webmail=self.student_registry.webmail,
-            otp_hash="hashedotp",
-            status="pending",
-            created_at="2024-01-01",
-            expires_at="2024-12-31",
-        )
 
     def test_student_registry_creation(self):
         self.assertEqual(self.student_registry.webmail, "example.james@mac.ac.ug")
-
-    def test_registration_attempt_creation(self):
-        self.assertEqual(self.registration_attempt.status, "pending")
 
 
 class TestRegistrationAPI(APITestCase):
@@ -68,15 +56,6 @@ class TestRegistrationAPI(APITestCase):
             intake_year=2022,
             status="active",
             is_claimed=False,
-        )
-        self.registration_attempt = RegistrationAttempts.objects.create(
-            institution=self.institution,
-            student_number=self.student_registry.student_number,
-            webmail=self.student_registry.webmail,
-            otp_hash="hashedotp",
-            status="pending",
-            created_at="2024-01-01",
-            expires_at="2024-12-31",
         )
 
     def test_get_student_registry(self):
