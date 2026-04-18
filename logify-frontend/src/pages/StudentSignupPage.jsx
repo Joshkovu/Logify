@@ -97,14 +97,8 @@ const StudentSignupPage = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await studentSignup(payload);
-      console.log(response);
-      navigate("/login", {
-        replace: true,
-        state: {
-          signupSuccess: "Student account created. Please log in.",
-        },
-      });
+      await studentSignup(payload);
+      navigate("/student", { replace: true });
     } catch (signupError) {
       setError(signupError.message || "Unable to create student account.");
     } finally {
