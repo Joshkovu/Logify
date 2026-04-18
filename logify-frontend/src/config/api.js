@@ -187,6 +187,9 @@ export const api = {
   },
 
   accounts: {
+    getAcademicSupervisor: (id) => apiRequest(`/v1/accounts/users/${id}/`),
+    getWorkplaceSupervisor: (id) => apiRequest(`/v1/accounts/users/${id}/`),
+    getUser: (id) => apiRequest(`/v1/accounts/users/${id}/`),
     getSupervisorApplications: (params = {}) => {
       const queryString = new URLSearchParams(params).toString();
       const endpoint = `/v1/accounts/supervisor/applications/${queryString ? `?${queryString}` : ""}`;
