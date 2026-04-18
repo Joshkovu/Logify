@@ -1,6 +1,7 @@
 from apps.notifications.services import MailjetService
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -8,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
 from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 
-from .models import SupervisorApplication
+from .models import SupervisorApplication, User
 from .permissions import IsInternshipAdmin
 from .serializers import (
     AdminSignupSerializer,
@@ -124,3 +125,18 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Custom logic if needed after successful login
             pass
         return response
+
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data)
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound("User not found.")
