@@ -12,5 +12,7 @@ class StudentRegistrySerializer(serializers.ModelSerializer):
 class RegistrationAttemptsSerializer(serializers.ModelSerializer):
     class Meta:
         model = RegistrationAttempts
-        fields = "__all__"
-        exclude = ("otp_hash",)
+        exclude = (
+            "otp_hash",
+            "password_hash",
+        )

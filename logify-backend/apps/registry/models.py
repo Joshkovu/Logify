@@ -19,13 +19,15 @@ from django.db import models
 
 
 class StudentRegistry(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
-    programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
-    student_number = models.IntegerField()
+    programme = models.ForeignKey(Programmes, on_delete=models.CASCADE, null=True, blank=True)
+    student_number = models.BigIntegerField(null=True, blank=True)
     webmail = models.EmailField()
-    year_of_study = models.IntegerField()
-    intake_year = models.IntegerField()
-    status = models.CharField(max_length=255)
+    year_of_study = models.IntegerField(null=True, blank=True)
+    intake_year = models.IntegerField(null=True, blank=True)
+    status = models.CharField(max_length=255, blank=True, default="active")
     is_claimed = models.BooleanField(default=False)
     claimed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -47,9 +49,12 @@ class StudentRegistry(models.Model):
 
 
 class RegistrationAttempts(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    password_hash = models.CharField(max_length=255, blank=True, default="")
     institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
     webmail = models.EmailField()
-    student_number = models.IntegerField()
+    student_number = models.BigIntegerField()
     status = models.CharField(max_length=255)
     otp_hash = models.CharField(max_length=255)
     expires_at = models.DateTimeField()
