@@ -143,15 +143,7 @@ const AuthProvider = ({ children }) => {
 
   const studentSignup = async (data) => {
     try {
-      return await api.auth.studentRequestOTP(data);
-    } catch (error) {
-      throw new Error(error.message || "Signup failed. Please try again.");
-    }
-  };
-
-  const verifyStudentSignup = async (data) => {
-    try {
-      const response = await api.auth.studentVerifyOTP(data);
+      const response = await api.auth.studentSignup(data);
       const nextSession = toSession(response);
 
       persistSession(nextSession);
@@ -164,9 +156,7 @@ const AuthProvider = ({ children }) => {
 
       return response;
     } catch (error) {
-      throw new Error(
-        error.message || "OTP verification failed. Please try again.",
-      );
+      throw new Error(error.message || "Signup failed. Please try again.");
     }
   };
 
@@ -215,7 +205,6 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         studentSignup,
-        verifyStudentSignup,
         supervisorSignUp,
         adminSignUp,
       }}
