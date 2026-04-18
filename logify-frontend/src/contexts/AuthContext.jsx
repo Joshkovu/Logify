@@ -149,25 +149,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const verifyStudentSignup = async (data) => {
-    try {
-      const response = await api.registry.verifyOTP(data);
-      const nextSession = toSession(response);
-
-      persistSession(nextSession);
-      setSession(nextSession);
-      setUser(response.user ?? null);
-
-      if (response.user?.role) {
-        navigate(getRedirectPath(response.user.role));
-      }
-
-      return response;
-    } catch (error) {
-      throw new Error(error.message || "Signup failed. Please try again.");
-    }
-  };
-
   const supervisorSignUp = async (data) => {
     try {
       return await api.auth.supervisorSignup(toSupervisorPayload(data));
