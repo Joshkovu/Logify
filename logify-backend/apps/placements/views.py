@@ -5,7 +5,6 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
-from apps.notifications.services import MailjetService
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
@@ -177,16 +176,6 @@ class PlacementApproveView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
             )
-
-            # Notify student
-            student_email = placement.intern.email
-            supervisor_name = request.user.get_full_name()
-        transaction.on_commit(
-            lambda: MailjetService().send_student_approval_notification(
-                student_email,
-                supervisor_name,
-            )
-        )
 
         return Response(InternshipPlacementsSerializer(placement).data)
 

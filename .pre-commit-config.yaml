@@ -32,22 +32,19 @@ repos:
     hooks:
       - id: frontend-lint
         name: Frontend Lint
-        entry: bash
-        args:
-          [
-            "-lc",
-            "cd logify-frontend && node node_modules/eslint/bin/eslint.js .",
-          ]
+        entry: pnpm
+        args: ["--dir", "logify-frontend", "exec", "eslint", "."]
         language: system
         pass_filenames: false
 
       - id: frontend-format
         name: Frontend Format
-        entry: bash
+        entry: node
         args:
           [
-            "-lc",
-            "cd logify-frontend && node node_modules/prettier/bin/prettier.cjs . --write",
+            "logify-frontend/node_modules/prettier/bin/prettier.cjs",
+            "logify-frontend",
+            "--write",
           ]
         language: system
         pass_filenames: false

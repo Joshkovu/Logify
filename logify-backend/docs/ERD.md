@@ -42,16 +42,6 @@ student_registry {
     datetime claimed_at
     datetime created_at
 }
-registration_attempts {
-    int id
-    int institution_id
-    text webmail
-    int student_number
-    text status
-    text otp_hash
-    datetime expires_at
-    datetime created_at
-}
 
 %% =========================
 %%  USERS & STAFF
@@ -266,7 +256,6 @@ institutions ||--o{ users : has
 departments ||--o{ staff_profiles : has_staff
 users ||--|| staff_profiles : profile
 users ||--|| supervisor_applications : applies
-institutions ||--o{ registration_attempts : verifies
 institutions ||--o{ internship_placements : manages
 programmes ||--o{ internship_placements : tracks
 organizations ||--o{ internship_placements : hosts
