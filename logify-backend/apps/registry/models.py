@@ -36,34 +36,6 @@ class StudentRegistry(models.Model):
         return self.webmail
 
 
-# registration_attempts {
-#     text id
-#     text institution_id
-#     text webmail
-#     integer student_number
-#     text status
-#     text otp_hash
-#     integer expires_at
-#     integer created_at
-# }
-
-
-class RegistrationAttempts(models.Model):
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    password_hash = models.CharField(max_length=255, blank=True, default="")
-    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
-    webmail = models.EmailField()
-    student_number = models.BigIntegerField()
-    status = models.CharField(max_length=255)
-    otp_hash = models.CharField(max_length=255)
-    expires_at = models.DateTimeField()
-    created_at = models.DateTimeField(auto_now_add=True)
-
-    def __str__(self):
-        return self.webmail
-
-
 # staff_profiles {
 #     text id
 #     text user_id

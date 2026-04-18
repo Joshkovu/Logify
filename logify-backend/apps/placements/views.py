@@ -5,7 +5,6 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
-from apps.notifications.services import MailjetService
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
@@ -47,18 +46,7 @@ class InternshipPlacementListCreateView(APIView):
     def post(self, request):
         serializer = InternshipPlacementsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        placement = serializer.save()
-
-        # Notify supervisors if assigned
-        mail_service = MailjetService()
-        if placement.workplace_supervisor:  # type: ignore
-            mail_service.send_supervisor_assignment_notification(
-                placement.workplace_supervisor.email, placement.intern.get_full_name()  # type: ignore
-            )
-        if placement.academic_supervisor:  # type: ignore
-            mail_service.send_supervisor_assignment_notification(
-                placement.academic_supervisor.email, placement.intern.get_full_name()  # type: ignore
-            )
+        serializer.save()
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -173,16 +161,6 @@ class PlacementApproveView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
             )
-
-            # Notify student
-            student_email = placement.intern.email
-            supervisor_name = request.user.get_full_name()
-        transaction.on_commit(
-            lambda: MailjetService().send_student_approval_notification(
-                student_email,
-                supervisor_name,
-            )
-        )
 
         return Response(InternshipPlacementsSerializer(placement).data)
 
