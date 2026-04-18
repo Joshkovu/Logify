@@ -143,18 +143,7 @@ const AuthProvider = ({ children }) => {
 
   const studentSignup = async (data) => {
     try {
-      const response = await api.auth.studentSignup(data);
-      const nextSession = toSession(response);
-
-      persistSession(nextSession);
-      setSession(nextSession);
-      setUser(response.user ?? null);
-
-      if (response.user?.role) {
-        navigate(getRedirectPath(response.user.role));
-      }
-
-      return response;
+      return await api.registry.requestOTP(data);
     } catch (error) {
       throw new Error(error.message || "Signup failed. Please try again.");
     }

@@ -22,9 +22,12 @@ def get_accessible_institution_ids(user):
         return Institutions.objects.values_list("id", flat=True)
 
     if user.role == User.STUDENT:
-        return InternshipPlacements.objects.filter(intern=user).values_list(
+        placement_institution_ids = InternshipPlacements.objects.filter(intern=user).values_list(
             "institution_id", flat=True
         )
+        profile_institution_ids = [int(user.institution_id)] if user.institution_id else []
+
+        return list(placement_institution_ids) + profile_institution_ids
 
     if user.role == User.WORKPLACE_SUPERVISOR:
         return InternshipPlacements.objects.filter(workplace_supervisor=user).values_list(
@@ -280,17 +283,12 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
-        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
-            programmes = Programmes.objects.all()
-            serializer = ProgrammesSerializer(programmes, many=True)
-            return Response(serializer.data)
-        return Response(
-            {"error": "Only Internship Admins can view all programmes."},
-            status=status.HTTP_403_FORBIDDEN,
-        )
+        programmes = Programmes.objects.all()
+        serializer = ProgrammesSerializer(programmes, many=True)
+        return Response(serializer.data)
 
     def post(self, request):
         if (

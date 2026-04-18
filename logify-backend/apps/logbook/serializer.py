@@ -4,6 +4,9 @@ from .models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 
 
 class WeeklyLogsSerializer(serializers.ModelSerializer):
+    status = serializers.CharField(read_only=True)
+    placement = serializers.PrimaryKeyRelatedField(read_only=True)
+
     class Meta:
         model = WeeklyLogs
         fields = "__all__"
