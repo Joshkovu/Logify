@@ -5,6 +5,7 @@ from apps.accounts.permissions import IsInternshipAdmin
 from apps.registry.models import StudentRegistry
 from apps.registry.serializer import StudentRegistrySerializer
 from django.contrib.auth import get_user_model
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -54,65 +55,72 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "Password must be at least 8 characters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-        # Check if student exists in registry
-        student = StudentRegistry.objects.filter(
-            webmail=webmail,
-            institution_id=institution_id,
-            student_number=student_number,
-            status="active",
-        ).first()
-
-        if not student:
-            return Response(
-                {"error": "Student not found or inactive in registry."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-
-        if student.first_name.strip().lower() != first_name.lower():
-            return Response(
-                {"error": "First name does not match registry records."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if student.last_name.strip().lower() != last_name.lower():
-            return Response(
-                {"error": "Last name does not match registry records."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        if student.is_claimed:
-            return Response(
-                {"error": "This student account has already been claimed."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
         User = get_user_model()
-        existing_user = User.objects.filter(email=webmail).first()
-        if existing_user:
+        try:
+            with transaction.atomic():
+                # Lock registry row to prevent concurrent claims.
+                student = (
+                    StudentRegistry.objects.select_for_update()
+                    .filter(
+                        webmail=webmail,
+                        institution_id=institution_id,
+                        student_number=student_number,
+                        status="active",
+                    )
+                    .first()
+                )
+
+                if not student:
+                    return Response(
+                        {"error": "Student not found or inactive in registry."},
+                        status=status.HTTP_404_NOT_FOUND,
+                    )
+
+                if student.first_name.strip().lower() != first_name.lower():
+                    return Response(
+                        {"error": "First name does not match registry records."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if student.last_name.strip().lower() != last_name.lower():
+                    return Response(
+                        {"error": "Last name does not match registry records."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if student.is_claimed:
+                    return Response(
+                        {"error": "This student account has already been claimed."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                if User.objects.filter(email=webmail).exists():
+                    return Response(
+                        {"error": "An account with this webmail already exists."},
+                        status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                user = User.objects.create_user(
+                    email=student.webmail,
+                    password=password,
+                    first_name=first_name,
+                    last_name=last_name,
+                    role=User.STUDENT,
+                    institution_id=str(student.institution.id),
+                    programme_id=str(student.programme.id),
+                    student_registry_id=str(student.id),
+                    student_number=student.student_number,
+                    is_active=True,
+                )
+
+                student.is_claimed = True
+                student.claimed_at = timezone.now()
+                student.save(update_fields=["is_claimed", "claimed_at"])
+        except IntegrityError:
             return Response(
                 {"error": "An account with this webmail already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        # Mark student as claimed
-        student.is_claimed = True
-        student.claimed_at = timezone.now()
-        student.save()
-
-        # Create User for Student
-
-        user = User.objects.create_user(
-            email=student.webmail,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            role=User.STUDENT,
-            institution_id=str(student.institution.id),
-            programme_id=str(student.programme.id),
-            student_registry_id=str(student.id),
-            student_number=student.student_number,
-            is_active=True,
-        )
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
