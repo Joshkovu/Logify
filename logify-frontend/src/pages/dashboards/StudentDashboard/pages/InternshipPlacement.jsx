@@ -7,7 +7,14 @@ import { api } from "@/config/api";
 const InternshipPlacement = () => {
   const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
   const [organizationData, setOrganizationData] = useState(null);
-
+  const [workplaceSupervisorData, setWorkplaceSupervisorData] = useState(null);
+  const [
+    isLoadingWorkplaceSupervisorData,
+    setIsLoadingWorkplaceSupervisorData,
+  ] = useState(true);
+  const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
+  const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
+    useState(true);
   const [existingPlacement, setExistingPlacement] = useState(null);
   const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
   const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);
@@ -27,6 +34,46 @@ const InternshipPlacement = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchPlacement();
   }, [fetchPlacement]);
+
+  useEffect(() => {
+    if (existingPlacement) {
+      const fetchAcademicSupervisorData = async () => {
+        try {
+          setIsLoadingAcademicSupervisorData(true);
+          const data = await api.accounts.getAcademicSupervisor(
+            existingPlacement.academic_supervisor,
+          );
+          console.log("academic: ", data);
+          setAcademicSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get academic supervisor: ", err);
+        } finally {
+          setIsLoadingAcademicSupervisorData(false);
+        }
+      };
+      fetchAcademicSupervisorData();
+    }
+  }, [existingPlacement]);
+
+  useEffect(() => {
+    if (existingPlacement) {
+      const fetchWorkplaceSupervisorData = async () => {
+        try {
+          setIsLoadingWorkplaceSupervisorData(true);
+          const data = await api.accounts.getWorkplaceSupervisor(
+            existingPlacement.workplace_supervisor,
+          );
+          console.log("workplace: ", data);
+          setWorkplaceSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get workplace supervisor: ", err);
+        } finally {
+          setIsLoadingWorkplaceSupervisorData(false);
+        }
+      };
+      fetchWorkplaceSupervisorData();
+    }
+  }, [existingPlacement]);
 
   useEffect(() => {
     if (existingPlacement) {
@@ -266,7 +313,11 @@ const InternshipPlacement = () => {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-maroon-dark">
-                    Michael Chen
+                    {isLoadingWorkplaceSupervisorData
+                      ? "Loading..."
+                      : workplaceSupervisorData
+                        ? `${workplaceSupervisorData?.first_name} ${workplaceSupervisorData?.last_name}`
+                        : "Not Assigned"}
                   </h3>
                   <p className="text-[10px] uppercase font-bold text-maroonCustom tracking-widest">
                     Workplace Supervisor
@@ -274,18 +325,16 @@ const InternshipPlacement = () => {
                 </div>
               </div>
               <div className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 text-sm font-semibold text-text-secondary">
-                <div className="mb-4">
-                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
-                    Position
-                  </p>
-                  <p className="text-maroon-dark">Senior SE</p>
-                </div>
                 <div>
                   <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
                     Email
                   </p>
                   <p className="text-maroon-dark truncate">
-                    m.chen@techcorp.com
+                    {isLoadingWorkplaceSupervisorData
+                      ? "Loading..."
+                      : workplaceSupervisorData
+                        ? `${workplaceSupervisorData?.email}`
+                        : "Unavailable"}
                   </p>
                 </div>
               </div>
@@ -297,25 +346,29 @@ const InternshipPlacement = () => {
                   <User size={24} />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold">Dr. Emily Roberts</h3>
+                  <h3 className="text-lg font-bold">
+                    {isLoadingAcademicSupervisorData
+                      ? "Loading..."
+                      : academicSupervisorData
+                        ? `${academicSupervisorData?.first_name} ${academicSupervisorData?.last_name}`
+                        : "Not Assigned"}
+                  </h3>
                   <p className="text-[10px] uppercase font-bold text-maroonCustom tracking-widest">
                     Academic Supervisor
                   </p>
                 </div>
               </div>
               <div className="grid lg:grid-cols-2 md:grid-cols-1 sm:grid-cols-1 text-sm font-semibold text-text-secondary">
-                <div className="mb-4">
-                  <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
-                    Department
-                  </p>
-                  <p className="text-maroon-dark">Comp Sci</p>
-                </div>
                 <div>
                   <p className="text-[10px] uppercase text-text-secondary/40 mb-1">
                     Email
                   </p>
                   <p className="text-maroon-dark truncate">
-                    e.roberts@university.edu
+                    {isLoadingAcademicSupervisorData
+                      ? "Loading..."
+                      : academicSupervisorData
+                        ? `${academicSupervisorData?.email}`
+                        : "Unavailable"}
                   </p>
                 </div>
               </div>
