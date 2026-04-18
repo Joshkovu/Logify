@@ -6,11 +6,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('registry', '0003_merge_20260413_2006'),
+        ("registry", "0003_merge_20260413_2006"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='RegistrationAttempts',
+            name="RegistrationAttempts",
         ),
     ]
