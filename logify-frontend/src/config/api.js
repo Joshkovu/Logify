@@ -174,13 +174,8 @@ export const api = {
         method: "POST",
         body: JSON.stringify(data),
       }),
-    studentRequestOTP: (data) =>
-      apiRequest("/v1/auth/student/request-otp/", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
-    studentVerifyOTP: (data) =>
-      apiRequest("/v1/auth/student/verify-otp/", {
+    studentSignup: (data) =>
+      apiRequest("/v1/auth/student/signup/", {
         method: "POST",
         body: JSON.stringify(data),
       }),
@@ -490,19 +485,6 @@ export const api = {
       }),
     deleteStudent: (id) =>
       apiRequest(`/v1/registry/students/${id}/`, { method: "DELETE" }),
-
-    getRegistrationAttempts: () =>
-      apiRequest("/v1/registry/registration-attempts/"),
-    requestOTP: (data) =>
-      apiRequest("/v1/registry/registration-attempts/request_otp/", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
-    verifyOTP: (data) =>
-      apiRequest("/v1/registry/registration-attempts/verify_otp/", {
-        method: "POST",
-        body: JSON.stringify(data),
-      }),
 
     importStudents: (data) =>
       apiRequest("/v1/registry/import-students/", {
