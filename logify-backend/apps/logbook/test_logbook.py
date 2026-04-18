@@ -3,6 +3,8 @@ from apps.accounts.models import User
 from apps.logbook.models import WeeklyLogs
 from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
+from django.urls import reverse
+from rest_framework import status
 from rest_framework.test import APITestCase
 
 # Create your tests here.
@@ -175,3 +177,31 @@ class TestLogbook(APITestCase):
         print(submit_response.content)
         # Check if the log was submitted successfully
         self.assertIn("success", submit_response.json())
+
+    def test_student_can_get_supervisor_reviews(self):
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=1,
+            week_start_date="2024-01-01",
+            week_end_date="2024-01-07",
+            activities="Worked on project X",
+            challenges="Faced issue Y",
+            learnings="Learned about Z",
+            status="approved",
+        )
+        log_id = weekly_log.id
+
+        self.client.force_authenticate(user=self.student_user)
+        response = self.client.get(reverse("weekly_log_reviews", kwargs={"log_id": log_id}))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("reviews", response.json())
+        self.assertEqual(response.json()["success"], "Reviews retrieved successfully")
+
+    def test_get_reviews_for_nonexisten_log_returns_404(self):
+        self.client.force_authenticate(user=self.student_user)
+        response = self.client.get(reverse("weekly_log_reviews", kwargs={"log_id": 99999}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_unauthenticated_cannot_get_reviews(self):
+        response = self.client.get(reverse("weekly_log_reviews", kwargs={"log_id": 99999}))
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)

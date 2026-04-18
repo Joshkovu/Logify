@@ -133,7 +133,7 @@ class UserDetailView(APIView):
     def get(self, request, pk):
         user = self.get_object(pk)
         serializer = UserDetailSerializer(user)
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def get_object(self, pk):
         try:
