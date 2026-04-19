@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 
 const InternComponent = ({ url, names, course, institution, week }) => {
   return (
-    <div className="w-full p-4 border bg-white border-stone-300 items-center rounded-lg flex mt-3 flex-row hover:shadow-lg transition-shadow duration-300  justify-between shadow">
+    <div className="w-full p-4 border bg-white border-stone-300 items-center rounded-lg flex mt-3 flex-row hover:shadow-lg transition-shadow duration-300  justify-between shadow dark:bg-slate-800/50 dark:border-slate-700">
       <div className=" flex ">
         <img
           src={url}
@@ -11,12 +11,12 @@ const InternComponent = ({ url, names, course, institution, week }) => {
         />
         <div className="mx-3 mt-3">
           <h1 className="font-bold ">{names}</h1>
-          <h2 className="text-sm text-gray-500">{course}</h2>
-          <h3 className="text-sm text-gray-500">{institution}</h3>
+          <h2 className="text-sm text-gray-500 dark:text-slate-400">{course}</h2>
+          <h3 className="text-sm text-gray-500 dark:text-slate-400">{institution}</h3>
         </div>
       </div>
       <div className=" flex flex-col items-end">
-        <p className="text-sm text-gray-500">Week {week}/12</p>
+        <p className="text-sm text-gray-500 dark:text-slate-400">Week {week}/12</p>
         <div className="h-2 w-24 rounded-full bg-red-50 ">
           <div
             className={`h-full bg-maroonCustom rounded-l-full `}
