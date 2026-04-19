@@ -6,13 +6,8 @@ from apps.accounts.permissions import IsInternshipAdmin
 from apps.registry.models import StudentRegistry
 from apps.registry.serializer import StudentRegistrySerializer
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
-from django.contrib.auth.hashers import make_password
-from django.shortcuts import get_object_or_404
-=======
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 from django.utils import timezone
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
@@ -41,27 +36,13 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
 class StudentAuthViewSet(viewsets.ViewSet):
     permission_classes = [AllowAny]
 
-<<<<<<< HEAD
-    def get_queryset(self):
-        user = self.request.user
-        if not user or not user.is_authenticated:
-            return RegistrationAttempts.objects.none()
-        return RegistrationAttempts.objects.filter(webmail=user.email)  # type: ignore
-
-    @action(detail=False, methods=["post"], permission_classes=[permissions.AllowAny])
-    def request_otp(self, request):
-=======
     @action(detail=False, methods=["post"], permission_classes=[AllowAny])
     def signup(self, request):
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
         webmail = request.data.get("webmail", "").strip().lower()
         institution_id = request.data.get("institution_id")
         student_number = request.data.get("student_number")
         first_name = request.data.get("first_name", "").strip()
         last_name = request.data.get("last_name", "").strip()
-<<<<<<< HEAD
-        password = request.data.get("password", "")
-=======
         programme_id = request.data.get("programme_id") or None
         year_of_study = request.data.get("year_of_study")
         password = request.data.get("password", "")
@@ -100,7 +81,6 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "Password must be at least 8 characters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
         if not webmail or not institution_id or not student_number:
             return Response(
@@ -144,45 +124,12 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "First name does not match registry records."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-<<<<<<< HEAD
 
         if student.last_name.strip().lower() != last_name.lower():
             return Response(
                 {"error": "Last name does not match registry records."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
-
-        if student.is_claimed:
-            return Response(
-                {"error": "This student account has already been claimed."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        # Generate OTP
-        totp = pyotp.TOTP(pyotp.random_base32(), interval=600)  # 10 minutes
-        otp = totp.now()
-        otp_hash = hashlib.sha256(otp.encode()).hexdigest()
-
-        # Save attempt
-        attempt = RegistrationAttempts.objects.create(
-            institution_id=institution_id,
-            webmail=webmail,
-            student_number=student_number,
-            first_name=first_name,
-            last_name=last_name,
-            password_hash=make_password(password),
-            status="pending",
-            otp_hash=otp_hash,
-            expires_at=timezone.now() + timedelta(minutes=10),
-        )
-=======
-
-        if student.last_name.strip().lower() != last_name.lower():
-            return Response(
-                {"error": "Last name does not match registry records."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
         if programme_id and student.programme_id and str(student.programme_id) != str(programme_id):
             return Response(
@@ -200,20 +147,9 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-<<<<<<< HEAD
-    @action(detail=False, methods=["post"], permission_classes=[permissions.AllowAny])
-    def verify_otp(self, request):
-        attempt_id = request.data.get("attempt_id")
-        otp = request.data.get("otp", "").strip()
-
-        if not attempt_id or not otp:
-            return Response(
-                {"error": "Attempt ID and OTP are required."},
-=======
         if student.is_claimed:
             return Response(
                 {"error": "This student account has already been claimed."},
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
@@ -245,45 +181,6 @@ class StudentAuthViewSet(viewsets.ViewSet):
                         status=status.HTTP_400_BAD_REQUEST,
                     )
 
-<<<<<<< HEAD
-        student = StudentRegistry.objects.get(
-            webmail=attempt.webmail,
-            institution=attempt.institution,
-            student_number=attempt.student_number,
-        )
-
-        User = get_user_model()
-        existing_user = User.objects.filter(email=student.webmail).first()
-        if existing_user:
-            return Response(
-                {"error": "An account with this webmail already exists."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        attempt.status = "verified"
-        attempt.save()
-
-        # Mark student as claimed
-        student.is_claimed = True
-        student.claimed_at = timezone.now()
-        student.save()
-
-        # Create User for Student
-
-        user = User.objects.create(
-            email=student.webmail,
-            first_name=attempt.first_name,
-            last_name=attempt.last_name,
-            role=User.STUDENT,
-            institution_id=str(student.institution.id),
-            programme_id=str(student.programme.id),
-            student_registry_id=str(student.id),
-            student_number=student.student_number,
-            is_active=True,
-        )
-        user.password = attempt.password_hash
-        user.save()
-=======
                 if User.objects.filter(email=webmail).exists():
                     return Response(
                         {"error": "An account with this webmail already exists."},
@@ -329,7 +226,6 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "An account with this webmail already exists."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
         # Generate tokens
         refresh = RefreshToken.for_user(user)
