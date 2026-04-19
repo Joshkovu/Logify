@@ -17,9 +17,9 @@ const internsData = [
 
 const PendingLogs = () => {
   return (
-    <div className="mt-3 rounded-lg p-6 border col-span-12 bg-white border-stone-300 shadow-inner h-auto">
+    <div className="mt-3 rounded-lg p-6 border col-span-12 bg-white border-stone-300 shadow-inner h-auto dark:bg-slate-800/50 dark:border-slate-700">
       <h1 className="font-bold"> Pending Log Review</h1>
-      <h2 className="text-gray-500 font-medium">
+      <h2 className="text-gray-500 font-medium dark:text-slate-400">
         Logs that need your review and approval
       </h2>
       {internsData.map((intern, index) => (

@@ -2,8 +2,8 @@ import PropTypes from "prop-types";
 
 const LogReview = ({ intern }) => {
   return (
-    <div className="mt-3 rounded-lg p-6 border  bg-white border-stone-300 shadow-inner h-auto ">
-      <div className="flex items-center justify-between mb-4 border-b pb-3 border-stone-300">
+    <div className="mt-3 rounded-lg p-6 border  bg-white border-stone-300 shadow-inner h-auto dark:bg-slate-800/50 dark:border-slate-700/50">
+      <div className="flex items-center justify-between mb-4 border-b pb-3 border-stone-300 dark:border-slate-700/50">
         <div>
           <h1 className="font-bold">
             {intern.names} - Week {intern.week}
@@ -19,13 +19,13 @@ const LogReview = ({ intern }) => {
         <h2 className="font-bold text-2xl mb-2">
           Activities & Tasks Completed
         </h2>
-        <p className="text-gray-700 mb-4 text-xl">{intern.log.activities}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.activities}</p>
 
         <h2 className="font-bold text-2xl mb-2">Key Learnings</h2>
-        <p className="text-gray-700 mb-4 text-xl">{intern.log.learnings}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.learnings}</p>
 
         <h2 className="font-bold text-2xl mb-2">Challenges & Solutions</h2>
-        <p className="text-gray-700 mb-4 text-xl">{intern.log.challenges}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.challenges}</p>
       </div>
     </div>
   );
