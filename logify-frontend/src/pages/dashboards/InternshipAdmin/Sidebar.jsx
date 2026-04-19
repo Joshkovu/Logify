@@ -1,4 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
+import { useContext } from "react";
 import PropTypes from "prop-types";
 import {
   Home,
@@ -17,6 +18,7 @@ import {
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 const navLinks = [
   { name: "Dashboard", path: "/admin", icon: Home },
@@ -41,7 +43,16 @@ const Sidebar = ({
   onToggleExpanded,
 }) => {
   const location = useLocation();
+  const { logout } = useContext(AuthContext);
   const showExpandedContent = !isDesktop || expanded;
+
+  const handleSignOut = async () => {
+    await logout();
+
+    if (!isDesktop) {
+      onCloseMobile();
+    }
+  };
 
   return (
     <aside
@@ -203,6 +214,8 @@ const Sidebar = ({
         </div>
 
         <Button
+          type="button"
+          onClick={handleSignOut}
           variant="outline"
           className={`h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20 ${
             showExpandedContent

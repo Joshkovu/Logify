@@ -175,7 +175,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (redirectTo = "/auth") => {
     const refreshToken = session?.refreshToken;
 
     try {
@@ -188,7 +188,7 @@ const AuthProvider = ({ children }) => {
       setSession(null);
       setUser(null);
       clearStoredSession();
-      navigate("/login");
+      navigate(redirectTo);
     }
   };
 
