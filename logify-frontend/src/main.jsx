@@ -2,8 +2,6 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
-import WorkplaceSupervisorDashboard from "./pages/dashboards/WorkplaceSupervisor/pages/App3";
-import { BrowserRouter } from "react-router-dom";
 
 const THEME_STORAGE_KEY = "logify-theme";
 const DARK_MEDIA_QUERY = "(prefers-color-scheme: dark)";
@@ -15,9 +13,6 @@ document.documentElement.classList.toggle("dark", shouldUseDark);
 
 createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    {/* <App /> */}
-    <BrowserRouter>
-      <WorkplaceSupervisorDashboard />
-    </BrowserRouter>
+    <App />
   </React.StrictMode>,
 );
