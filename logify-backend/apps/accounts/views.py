@@ -1,6 +1,6 @@
-from apps.notifications.services import MailjetService
 from django.shortcuts import get_object_or_404
 from rest_framework import status
+from rest_framework.exceptions import NotFound
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -8,7 +8,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
 from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 
-from .models import SupervisorApplication
+from .models import SupervisorApplication, User
 from .permissions import IsInternshipAdmin
 from .serializers import (
     AdminSignupSerializer,
@@ -38,11 +38,7 @@ class SupervisorSignupView(APIView):
     def post(self, request):
         serializer = SupervisorSignupSerializer(data=request.data)
         if serializer.is_valid():
-            user = serializer.save()
-
-            # Send notification
-            mail_service = MailjetService()
-            mail_service.send_supervisor_signup_notification(user.email)  # type: ignore
+            serializer.save()
 
             return Response(
                 {"message": "Application received. Your account is inactive until approved."},
@@ -65,10 +61,6 @@ class SupervisorApprovalView(APIView):
             user = application.user
             user.is_active = True
             user.save()
-
-            # Send notification
-            mail_service = MailjetService()
-            mail_service.send_supervisor_approval_notification(user.email)
 
             return Response({"message": "Supervisor approved and account activated."})
 
@@ -124,3 +116,29 @@ class CustomTokenObtainPairView(TokenObtainPairView):
             # Custom logic if needed after successful login
             pass
         return response
+
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        user = self.get_object(pk)
+        serializer = UserDetailSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def get_object(self, pk):
+        try:
+            return User.objects.get(pk=pk)
+        except User.DoesNotExist:
+            raise NotFound("User not found.")
+
+    def delete(self, request, pk):
+        if request.user.role != User.INTERNSHIP_ADMIN and not request.user.is_superuser:
+            return Response(
+                {"error": "Only internship administrators can delete users."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)

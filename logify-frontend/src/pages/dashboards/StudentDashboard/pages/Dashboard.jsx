@@ -1,16 +1,152 @@
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
+import { useState, useEffect } from "react";
+import { api } from "@/config/api";
 
 const Dashboard = () => {
+  const [placementData, setPlacementData] = useState(null);
+  const [organizationData, setOrganizationData] = useState(null);
+  const [weeklyLogData, setWeeklyLogData] = useState(null);
+  const [isLoadingLogs, setIsLoadingLogs] = useState(true);
+  const [userData, setUserData] = useState(null);
+  const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
+  const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);
+  const [workplaceSupervisorData, setWorkplaceSupervisorData] = useState(null);
+  const [
+    isLoadingWorkplaceSupervisorData,
+    setIsLoadingWorkplaceSupervisorData,
+  ] = useState(true);
+  const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
+  const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
+    useState(true);
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const data = await api.auth.me();
+        setUserData(data);
+      } catch (err) {
+        console.error(err.message);
+      }
+    };
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchWeeklyLogData = async () => {
+      try {
+        setIsLoadingLogs(true);
+        const data = await api.logbook.getWeeklyLogs();
+        setWeeklyLogData(data.weekly_logs ?? []);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setIsLoadingLogs(false);
+      }
+    };
+    fetchWeeklyLogData();
+  }, []);
+
+  useEffect(() => {
+    const fetchPlacementData = async () => {
+      try {
+        setIsLoadingPlacement(true);
+        const data = await api.placements.getPlacements();
+        setPlacementData(data[0]);
+      } catch (err) {
+        console.error(err.message);
+      } finally {
+        setIsLoadingPlacement(false);
+      }
+    };
+    fetchPlacementData();
+  }, []);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchOrganizationData = async () => {
+        try {
+          setIsLoadingOrganization(true);
+          const data = await api.organizations.getOrganization(
+            placementData?.organization,
+          );
+          setOrganizationData(data);
+          console.log("fetched org data");
+        } catch (err) {
+          console.error(err);
+        } finally {
+          setIsLoadingOrganization(false);
+        }
+      };
+      fetchOrganizationData();
+    }
+  }, [placementData]);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchAcademicSupervisorData = async () => {
+        try {
+          setIsLoadingAcademicSupervisorData(true);
+          const data = await api.accounts.getAcademicSupervisor(
+            placementData.academic_supervisor,
+          );
+          console.log("academic: ", data);
+          setAcademicSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get academic supervisor: ", err);
+        } finally {
+          setIsLoadingAcademicSupervisorData(false);
+        }
+      };
+      fetchAcademicSupervisorData();
+    }
+  }, [placementData]);
+
+  useEffect(() => {
+    if (placementData) {
+      const fetchWorkplaceSupervisorData = async () => {
+        try {
+          setIsLoadingWorkplaceSupervisorData(true);
+          const data = await api.accounts.getWorkplaceSupervisor(
+            placementData.workplace_supervisor,
+          );
+          console.log("workplace: ", data);
+          setWorkplaceSupervisorData(data);
+        } catch (err) {
+          console.error("failed to get workplace supervisor: ", err);
+        } finally {
+          setIsLoadingWorkplaceSupervisorData(false);
+        }
+      };
+      fetchWorkplaceSupervisorData();
+    }
+  }, [placementData]);
+
   const person = {
-    firstName: "Sarah",
-    lastName: "Johnson",
+    firstName: userData?.first_name,
+    lastName: userData?.last_name,
+  };
+
+  const placementStatusCapitalized = (word) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
   const metrics = [
-    { title: "Status", value: "Active", iconType: "placements" },
-    { title: "Weekly Logs", value: "8/12", iconType: "reviews" },
-    { title: "Pending Tasks", value: "3", iconType: "reviews" },
+    {
+      title: "Status",
+      value: isLoadingPlacement
+        ? "Loading..."
+        : placementData
+          ? placementStatusCapitalized(placementData?.status)
+          : "No placement found",
+      iconType: "placements",
+    },
+    {
+      title: "Weekly Logs",
+      value: isLoadingLogs
+        ? "Loading..."
+        : (!weeklyLogData && "Unavailable") || weeklyLogData?.length,
+      iconType: "reviews",
+    },
     { title: "Final Score", value: "Pending", iconType: "evaluations" },
   ];
 
@@ -45,7 +181,7 @@ const Dashboard = () => {
                 Current Internship
               </h2>
               <p className="text-text-secondary text-md mt-1">
-                Your active placement details
+                Your placement details
               </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -54,39 +190,55 @@ const Dashboard = () => {
                   Organization
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  TechCorp Solutions Inc.
+                  {isLoadingOrganization
+                    ? "Loading..."
+                    : (organizationData?.name ?? "Not assigned")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Workplace Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Michael Chen
+                  {isLoadingWorkplaceSupervisorData
+                    ? "Loading..."
+                    : workplaceSupervisorData
+                      ? `${workplaceSupervisorData?.first_name} ${workplaceSupervisorData?.last_name}`
+                      : "Not Assigned"}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Start Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  Jan 15, 2026
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.start_date ?? "Not set")}
                 </p>
               </div>
               <div>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
-                  Position
+                  Internship Title
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Software Engineering Intern
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.internship_title ?? "Not set")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Academic Supervisor
                 </p>
                 <p className="text-lg font-bold text-maroon-dark mb-4">
-                  Dr. Emily Roberts
+                  {isLoadingAcademicSupervisorData
+                    ? "Loading..."
+                    : academicSupervisorData
+                      ? `${academicSupervisorData?.first_name} ${academicSupervisorData?.last_name}`
+                      : "Not Assigned"}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   End Date
                 </p>
                 <p className="text-lg font-bold text-maroon-dark">
-                  Apr 10, 2026
+                  {isLoadingPlacement
+                    ? "Loading..."
+                    : (placementData?.end_date ?? "Not set")}
                 </p>
               </div>
             </div>

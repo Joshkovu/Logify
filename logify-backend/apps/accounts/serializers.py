@@ -137,6 +137,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "phone",
             "institution_id",
             "programme_id",
+            "student_registry_id",
             "student_number",
             "is_active",
             "staff_profile",
