@@ -143,30 +143,19 @@ const AuthProvider = ({ children }) => {
 
   const studentSignup = async (data) => {
     try {
-      return await api.auth.studentRequestOTP(data);
-    } catch (error) {
-      throw new Error(error.message || "Signup failed. Please try again.");
-    }
-  };
-
-  const verifyStudentSignup = async (data) => {
-    try {
-      const response = await api.auth.studentVerifyOTP(data);
+      const response = await api.auth.studentSignup(data);
       const nextSession = toSession(response);
 
       persistSession(nextSession);
       setSession(nextSession);
-      setUser(response.user ?? null);
 
-      if (response.user?.role) {
-        navigate(getRedirectPath(response.user.role));
-      }
+      const currentUser = await api.auth.me();
+      setUser(currentUser);
 
-      return response;
+      navigate(getRedirectPath(currentUser?.role));
+      return currentUser;
     } catch (error) {
-      throw new Error(
-        error.message || "OTP verification failed. Please try again.",
-      );
+      throw new Error(error.message || "Signup failed. Please try again.");
     }
   };
 
@@ -186,7 +175,7 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const logout = async (redirectTo = "/auth") => {
     const refreshToken = session?.refreshToken;
 
     try {
@@ -199,7 +188,7 @@ const AuthProvider = ({ children }) => {
       setSession(null);
       setUser(null);
       clearStoredSession();
-      navigate("/login");
+      navigate(redirectTo);
     }
   };
 
@@ -215,7 +204,6 @@ const AuthProvider = ({ children }) => {
         login,
         logout,
         studentSignup,
-        verifyStudentSignup,
         supervisorSignUp,
         adminSignUp,
       }}

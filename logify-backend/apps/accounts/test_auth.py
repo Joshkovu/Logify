@@ -1,13 +1,8 @@
-import hashlib
-from datetime import timedelta
-
 import pytest  # type: ignore
 from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import SupervisorApplication
-from apps.registry.models import RegistrationAttempts, StudentRegistry
+from apps.registry.models import StudentRegistry
 from django.contrib.auth import get_user_model
-from django.contrib.auth.hashers import make_password
-from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -46,9 +41,9 @@ def setup_data(db):
 
 @pytest.mark.django_db
 class TestStudentAuth:
-    def test_request_otp(self, api_client, setup_data):
+    def test_student_signup_creates_user_and_issues_tokens(self, api_client, setup_data):
         response = api_client.post(
-            "/api/v1/auth/student/request-otp/",
+            "/api/v1/auth/student/signup/",
             {
                 "webmail": "test.student@univ.ac.ug",
                 "institution_id": setup_data["institution"].id,
@@ -59,30 +54,7 @@ class TestStudentAuth:
             },
         )
 
-        assert response.status_code == status.HTTP_200_OK
-        assert "attempt_id" in response.data
-        assert RegistrationAttempts.objects.count() == 1
-
-    def test_verify_otp_and_issue_token(self, api_client, setup_data):
-        otp = "123456"
-        attempt = RegistrationAttempts.objects.create(
-            institution=setup_data["institution"],
-            webmail="test.student@univ.ac.ug",
-            student_number=2024001,
-            first_name="First",
-            last_name="Name",
-            password_hash=make_password("securepassword123"),
-            status="pending",
-            otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
-            expires_at=timezone.now() + timedelta(minutes=10),
-        )
-
-        response = api_client.post(
-            "/api/v1/auth/student/verify-otp/",
-            {"attempt_id": attempt.id, "otp": otp},  # type: ignore
-        )
-
-        assert response.status_code == status.HTTP_200_OK
+        assert response.status_code == status.HTTP_201_CREATED
         assert "access" in response.data
         assert "refresh" in response.data
         assert response.data["user"]["email"] == "test.student@univ.ac.ug"
@@ -96,24 +68,18 @@ class TestStudentAuth:
         assert user.student_number == 2024001
 
     def test_student_can_login_after_signup(self, api_client, setup_data):
-        otp = "123456"
-        attempt = RegistrationAttempts.objects.create(
-            institution=setup_data["institution"],
-            webmail="test.student@univ.ac.ug",
-            student_number=2024001,
-            first_name="First",
-            last_name="Name",
-            password_hash=make_password("securepassword123"),
-            status="pending",
-            otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
-            expires_at=timezone.now() + timedelta(minutes=10),
+        signup_response = api_client.post(
+            "/api/v1/auth/student/signup/",
+            {
+                "webmail": "test.student@univ.ac.ug",
+                "institution_id": setup_data["institution"].id,
+                "student_number": 2024001,
+                "first_name": "First",
+                "last_name": "Name",
+                "password": "securepassword123",
+            },
         )
-
-        verify_response = api_client.post(
-            "/api/v1/auth/student/verify-otp/",
-            {"attempt_id": attempt.id, "otp": otp},
-        )
-        assert verify_response.status_code == status.HTTP_200_OK
+        assert signup_response.status_code == status.HTTP_201_CREATED
 
         login_response = api_client.post(
             "/api/v1/auth/login/",
@@ -125,6 +91,43 @@ class TestStudentAuth:
         assert login_response.status_code == status.HTTP_200_OK
         assert "access" in login_response.data
         assert "refresh" in login_response.data
+
+    def test_student_signup_updates_registry_programme_and_year_of_study(
+        self, api_client, setup_data
+    ):
+        student_registry = StudentRegistry.objects.create(
+            first_name="Update",
+            last_name="Programme",
+            institution=setup_data["institution"],
+            programme=None,
+            student_number=2024002,
+            webmail="update.programme@univ.ac.ug",
+            year_of_study=None,
+            intake_year=2024,
+            status="active",
+        )
+
+        response = api_client.post(
+            "/api/v1/auth/student/signup/",
+            {
+                "webmail": "update.programme@univ.ac.ug",
+                "institution_id": setup_data["institution"].id,
+                "student_number": 2024002,
+                "first_name": "Update",
+                "last_name": "Programme",
+                "programme_id": setup_data["programme"].id,
+                "year_of_study": 1,
+                "password": "securepassword123",
+            },
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        user = User.objects.get(email="update.programme@univ.ac.ug")
+        student_registry.refresh_from_db()
+
+        assert user.programme_id == str(setup_data["programme"].id)
+        assert student_registry.programme_id == setup_data["programme"].id
+        assert student_registry.year_of_study == 1
 
 
 @pytest.mark.django_db

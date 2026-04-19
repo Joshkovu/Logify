@@ -1,4 +1,4 @@
-from apps.registry.views import RegistrationAttemptsViewSet
+from apps.registry.views import StudentAuthViewSet
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView  # type: ignore
 
@@ -12,14 +12,9 @@ from .views import (
 
 urlpatterns = [
     path(
-        "student/request-otp/",
-        RegistrationAttemptsViewSet.as_view({"post": "request_otp"}),
-        name="student-request-otp",
-    ),
-    path(
-        "student/verify-otp/",
-        RegistrationAttemptsViewSet.as_view({"post": "verify_otp"}),
-        name="student-verify-otp",
+        "student/signup/",
+        StudentAuthViewSet.as_view({"post": "signup"}),
+        name="student-signup",
     ),
     path("login/", CustomTokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("refresh/", TokenRefreshView.as_view(), name="token_refresh"),

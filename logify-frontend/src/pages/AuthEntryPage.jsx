@@ -19,9 +19,9 @@ const roles = [
     title: "Student",
     desc: "Logs activities & submits reports.",
     icon: UserRound,
-    signupAllowed: false,
-    signupMsg: "Students are added by their institution.",
-    signupPath: null,
+    signupAllowed: true,
+    signupMsg: "Create a new student account.",
+    signupPath: "/signup/student",
   },
   {
     id: "workplace_supervisor",
