@@ -283,11 +283,7 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
-<<<<<<< HEAD
-    permission_classes = [IsAuthenticated]
-=======
     permission_classes = [AllowAny]
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
     def get(self, request):
         if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:

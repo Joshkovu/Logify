@@ -3,11 +3,6 @@ from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import SupervisorApplication
 from apps.registry.models import StudentRegistry
 from django.contrib.auth import get_user_model
-<<<<<<< HEAD
-from django.contrib.auth.hashers import make_password
-from django.utils import timezone
-=======
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 from rest_framework import status
 from rest_framework.test import APIClient
 
@@ -59,34 +54,7 @@ class TestStudentAuth:
             },
         )
 
-<<<<<<< HEAD
-        assert response.status_code == status.HTTP_200_OK
-        assert "attempt_id" in response.data
-        assert RegistrationAttempts.objects.count() == 1
-
-    def test_verify_otp_and_issue_token(self, api_client, setup_data):
-        otp = "123456"
-        attempt = RegistrationAttempts.objects.create(
-            institution=setup_data["institution"],
-            webmail="test.student@univ.ac.ug",
-            student_number=2024001,
-            first_name="First",
-            last_name="Name",
-            password_hash=make_password("securepassword123"),
-            status="pending",
-            otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
-            expires_at=timezone.now() + timedelta(minutes=10),
-        )
-
-        response = api_client.post(
-            "/api/v1/auth/student/verify-otp/",
-            {"attempt_id": attempt.id, "otp": otp},  # type: ignore
-        )
-
-        assert response.status_code == status.HTTP_200_OK
-=======
         assert response.status_code == status.HTTP_201_CREATED
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
         assert "access" in response.data
         assert "refresh" in response.data
         assert response.data["user"]["email"] == "test.student@univ.ac.ug"
@@ -100,26 +68,6 @@ class TestStudentAuth:
         assert user.student_number == 2024001
 
     def test_student_can_login_after_signup(self, api_client, setup_data):
-<<<<<<< HEAD
-        otp = "123456"
-        attempt = RegistrationAttempts.objects.create(
-            institution=setup_data["institution"],
-            webmail="test.student@univ.ac.ug",
-            student_number=2024001,
-            first_name="First",
-            last_name="Name",
-            password_hash=make_password("securepassword123"),
-            status="pending",
-            otp_hash=hashlib.sha256(otp.encode()).hexdigest(),
-            expires_at=timezone.now() + timedelta(minutes=10),
-        )
-
-        verify_response = api_client.post(
-            "/api/v1/auth/student/verify-otp/",
-            {"attempt_id": attempt.id, "otp": otp},
-        )
-        assert verify_response.status_code == status.HTTP_200_OK
-=======
         signup_response = api_client.post(
             "/api/v1/auth/student/signup/",
             {
@@ -132,7 +80,6 @@ class TestStudentAuth:
             },
         )
         assert signup_response.status_code == status.HTTP_201_CREATED
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
         login_response = api_client.post(
             "/api/v1/auth/login/",
@@ -144,8 +91,6 @@ class TestStudentAuth:
         assert login_response.status_code == status.HTTP_200_OK
         assert "access" in login_response.data
         assert "refresh" in login_response.data
-<<<<<<< HEAD
-=======
 
     def test_student_signup_updates_registry_programme_and_year_of_study(
         self, api_client, setup_data
@@ -183,7 +128,6 @@ class TestStudentAuth:
         assert user.programme_id == str(setup_data["programme"].id)
         assert student_registry.programme_id == setup_data["programme"].id
         assert student_registry.year_of_study == 1
->>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
 
 @pytest.mark.django_db
