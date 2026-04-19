@@ -2,9 +2,9 @@ import Grid from "./Grid";
 
 const Dashboard = () => {
   return (
-    <div className="bg-[#FCFBF8]  pb-4 shadow h-screen w-full p-16 transition-all overflow-y-auto">
+    <div className="bg-[#FCFBF8]  pb-4 shadow h-screen w-full p-16 transition-all overflow-y-auto dark:bg-slate-950">
       <h1 className=" font-bold text-2xl ">Dashboard</h1>
-      <h2 className="font-light text-lg text-gray-600">
+      <h2 className="font-light text-lg text-gray-600 dark:text-slate-400">
         Welcome back, John! Here your supervision overview
       </h2>
 

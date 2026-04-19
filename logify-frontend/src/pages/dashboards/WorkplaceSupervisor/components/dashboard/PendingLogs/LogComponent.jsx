@@ -3,7 +3,7 @@ import { FileCheck } from "lucide-react";
 
 const LogComponent = ({ url, names, week, date }) => {
   return (
-    <div className="w-full p-6 border rounded-lg mt-4 border-amber-300 bg-amber-50 flex flex-row justify-between items-center">
+    <div className="w-full p-6 border rounded-lg mt-4 border-amber-300 bg-amber-50 flex flex-row justify-between items-center dark:bg-amber-800/50 dark:border-amber-700">
       <div className=" flex ">
         <img
           src={url}
