@@ -92,6 +92,43 @@ class TestStudentAuth:
         assert "access" in login_response.data
         assert "refresh" in login_response.data
 
+    def test_student_signup_updates_registry_programme_and_year_of_study(
+        self, api_client, setup_data
+    ):
+        student_registry = StudentRegistry.objects.create(
+            first_name="Update",
+            last_name="Programme",
+            institution=setup_data["institution"],
+            programme=None,
+            student_number=2024002,
+            webmail="update.programme@univ.ac.ug",
+            year_of_study=None,
+            intake_year=2024,
+            status="active",
+        )
+
+        response = api_client.post(
+            "/api/v1/auth/student/signup/",
+            {
+                "webmail": "update.programme@univ.ac.ug",
+                "institution_id": setup_data["institution"].id,
+                "student_number": 2024002,
+                "first_name": "Update",
+                "last_name": "Programme",
+                "programme_id": setup_data["programme"].id,
+                "year_of_study": 1,
+                "password": "securepassword123",
+            },
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        user = User.objects.get(email="update.programme@univ.ac.ug")
+        student_registry.refresh_from_db()
+
+        assert user.programme_id == str(setup_data["programme"].id)
+        assert student_registry.programme_id == setup_data["programme"].id
+        assert student_registry.year_of_study == 1
+
 
 @pytest.mark.django_db
 class TestSupervisorAuth:

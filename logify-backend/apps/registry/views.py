@@ -43,7 +43,20 @@ class StudentAuthViewSet(viewsets.ViewSet):
         student_number = request.data.get("student_number")
         first_name = request.data.get("first_name", "").strip()
         last_name = request.data.get("last_name", "").strip()
+        programme_id = request.data.get("programme_id") or None
+        year_of_study = request.data.get("year_of_study")
         password = request.data.get("password", "")
+
+        if year_of_study in [None, ""]:
+            year_of_study = None
+        else:
+            try:
+                year_of_study = int(year_of_study)
+            except (TypeError, ValueError):
+                return Response(
+                    {"error": "Year of study must be a number."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
 
         if not webmail or not institution_id or not student_number:
             return Response(
@@ -68,6 +81,7 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 {"error": "Password must be at least 8 characters."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
+
         # Check if student exists in registry
         student = StudentRegistry.objects.filter(
             webmail=webmail,
@@ -94,6 +108,22 @@ class StudentAuthViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        if programme_id and student.programme_id and str(student.programme_id) != str(programme_id):
+            return Response(
+                {"error": "Programme does not match registry records."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if (
+            year_of_study is not None
+            and student.year_of_study is not None
+            and student.year_of_study != year_of_study
+        ):
+            return Response(
+                {"error": "Year of study does not match registry records."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
         if student.is_claimed:
             return Response(
                 {"error": "This student account has already been claimed."},
@@ -111,7 +141,7 @@ class StudentAuthViewSet(viewsets.ViewSet):
                         webmail=webmail,
                         institution_id=institution_id,
                         student_number=student_number,
-                        status="active",
+                        status__iexact="active",
                     )
                     .first()
                 )
@@ -132,6 +162,24 @@ class StudentAuthViewSet(viewsets.ViewSet):
                     return Response(
                         {"error": "An account with this webmail already exists."},
                         status=status.HTTP_400_BAD_REQUEST,
+                    )
+
+                registry_updated = False
+                if programme_id and not student.programme_id:
+                    student.programme_id = programme_id
+                    registry_updated = True
+
+                if year_of_study is not None and student.year_of_study is None:
+                    student.year_of_study = year_of_study
+                    registry_updated = True
+
+                if registry_updated:
+                    student.save(
+                        update_fields=[
+                            field
+                            for field in ["programme_id", "year_of_study"]
+                            if getattr(student, field) is not None
+                        ]
                     )
 
                 user = User.objects.create_user(
