@@ -30,7 +30,3 @@ services:
         sync: false
       - key: POSTGRES_CHANNEL_BINDING
         sync: false
-      - key: MAILJET_API_KEY
-        sync: false
-      - key: MAILJET_API_SECRET
-        sync: false

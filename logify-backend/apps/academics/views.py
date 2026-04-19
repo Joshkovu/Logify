@@ -22,9 +22,12 @@ def get_accessible_institution_ids(user):
         return Institutions.objects.values_list("id", flat=True)
 
     if user.role == User.STUDENT:
-        return InternshipPlacements.objects.filter(intern=user).values_list(
+        placement_institution_ids = InternshipPlacements.objects.filter(intern=user).values_list(
             "institution_id", flat=True
         )
+        profile_institution_ids = [int(user.institution_id)] if user.institution_id else []
+
+        return list(placement_institution_ids) + profile_institution_ids
 
     if user.role == User.WORKPLACE_SUPERVISOR:
         return InternshipPlacements.objects.filter(workplace_supervisor=user).values_list(
@@ -280,7 +283,11 @@ class InstitutionDepartmentsListView(APIView):
 
 
 class ProgrammesListView(APIView):
+<<<<<<< HEAD
     permission_classes = [IsAuthenticated]
+=======
+    permission_classes = [AllowAny]
+>>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
     def get(self, request):
         if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
@@ -289,6 +296,25 @@ class ProgrammesListView(APIView):
             return Response(serializer.data)
         return Response(
             {"error": "Only Internship Admins can view all programmes."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def post(self, request):
+        if (
+            request.user.role == User.INTERNSHIP_ADMIN
+            or request.user.is_superuser
+            or request.user.role == User.STUDENT
+        ):
+            serializer = ProgrammesSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {"error": "Programme data is invalid", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"error": "Only Students and Internship Admins can create programmes."},
             status=status.HTTP_403_FORBIDDEN,
         )
 

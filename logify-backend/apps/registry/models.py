@@ -36,6 +36,7 @@ class StudentRegistry(models.Model):
         return self.webmail
 
 
+<<<<<<< HEAD
 # registration_attempts {
 #     text id
 #     text institution_id
@@ -64,6 +65,8 @@ class RegistrationAttempts(models.Model):
         return self.webmail
 
 
+=======
+>>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 # staff_profiles {
 #     text id
 #     text user_id

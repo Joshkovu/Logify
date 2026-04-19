@@ -40,7 +40,7 @@ const WorkplaceSupervisorDashboard = () => {
   ));
   return (
     <main className=" bg-stone-100">
-        {/* <div className=" relative flex bg-stone-100 h-15">
+      {/* <div className=" relative flex bg-stone-100 h-15">
           <div className=" absolute h-15 w-72 bg-maroon-50 border-gray-900 rounded-lg mx-1 shadow"></div>
           <div className=" ml-74 bg-white rounded-b-lg w-full  p-1 shadow">
             <h1 className="text-xl text-gray-700 font-medium pl-4">
@@ -52,23 +52,26 @@ const WorkplaceSupervisorDashboard = () => {
           </div>
         </div> */}
 
-        <div className="mt-1 flex h-screen overflow-hidden">
-          <Side_bar>{navItems}</Side_bar>
-          {/* <div className="w-70 rounded-r-lg">
+      <div className="mt-1 flex h-screen overflow-hidden">
+        <Side_bar>{navItems}</Side_bar>
+        {/* <div className="w-70 rounded-r-lg">
         </div> */}
-          <div className="flex-1  overflow-y-auto w-full">
-            <Routes>
-              <Route path="/workplace-supervisor" element={<Dashboard />} />
-              <Route path="/workplace-supervisor/assigned-interns" element={<AssignedInterns />} />
-              <Route
-                path="/workplace-supervisor/pending-log-review"
-                element={<PendingLogReview />}
-              />
-              <Route path="/workplace-supervisor/profile" element={<Profile />} />
-            </Routes>
-          </div>
+        <div className="flex-1  overflow-y-auto w-full">
+          <Routes>
+            <Route path="/workplace-supervisor" element={<Dashboard />} />
+            <Route
+              path="/workplace-supervisor/assigned-interns"
+              element={<AssignedInterns />}
+            />
+            <Route
+              path="/workplace-supervisor/pending-log-review"
+              element={<PendingLogReview />}
+            />
+            <Route path="/workplace-supervisor/profile" element={<Profile />} />
+          </Routes>
         </div>
-      </main>
+      </div>
+    </main>
   );
 };
 

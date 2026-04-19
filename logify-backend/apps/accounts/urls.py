@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import SupervisorApplicationListView, SupervisorApprovalView
+from .views import SupervisorApplicationListView, SupervisorApprovalView, UserDetailView
 
 urlpatterns = [
     path(
@@ -13,4 +13,5 @@ urlpatterns = [
         SupervisorApprovalView.as_view(),
         name="supervisor-approve",
     ),
+    path("users/<int:pk>/", UserDetailView.as_view(), name="user-detail"),
 ]

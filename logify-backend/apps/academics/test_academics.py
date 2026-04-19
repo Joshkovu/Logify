@@ -491,11 +491,66 @@ class TestProgrammesListView(APITestCase):
         response = self.client.get(reverse("programmes-list"))
         self.assertEqual(response.data, [])
 
+<<<<<<< HEAD
     def test_workplace_supervisor_cannot_list_programmes(self):
+=======
+    def test_admin_can_create_programme(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Programmes.objects.filter(
+                department=self.department,
+                name="Programme C",
+                level="Level C",
+                duration_years=3,
+            ).exists()
+        )
+
+    def test_student_can_create_programme(self):
+        self.client.force_authenticate(user=self.student)
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(
+            Programmes.objects.filter(
+                department=self.department, name="Programme C", level="Level C", duration_years=3
+            ).exists()
+        )
+
+    def test_workplace_supervisor_cannot_create_programme(self):
+>>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
         self.client.force_authenticate(user=self.workplace_supervisor)
-        response = self.client.get(reverse("programmes-list"))
+        response = self.client.post(
+            reverse("programmes-list"),
+            {
+                "department": self.department.pk,
+                "name": "Programme C",
+                "level": "Level C",
+                "duration_years": 3,
+            },
+            format="json",
+        )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+<<<<<<< HEAD
     def test_unauthenticated_cannot_list_programmes(self):
         response = self.client.get(reverse("programmes-list"))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
@@ -555,6 +610,8 @@ class TestProgrammesListView(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
+=======
+>>>>>>> 0657105d0cd97afad7b89a4ad48542f58ba79b39
 
 class TestProgrammesDetailView(APITestCase):
     def setUp(self):
