@@ -5,16 +5,16 @@ import PropTypes from "prop-types";
 const CommentSection = ({ intern_log }) => {
   const [comment, setComment] = useState("");
   return (
-    <div className="mt-3 rounded-lg p-6 border col-span-4 bg-white border-stone-300 shadow-inner h-auto ">
+    <div className="mt-3 rounded-lg p-6 border col-span-4 bg-white border-stone-300 shadow-inner h-auto dark:bg-slate-800/50 dark:border-slate-700/50">
       <h1 className="font-bold"> Review &amp; Feedback</h1>
-      <h2 className="text-gray-500 font-medium">
+      <h2 className="text-gray-500 font-medium dark:text-slate-400">
         Provide a Comment for {intern_log.names}
       </h2>
 
       <div className="mt-4">
         <h1 className="font-bold mb-2">Comments</h1>
         <textarea
-          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-maroonCustom w-full h-32 resize-none"
+          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-maroonCustom w-full h-32 resize-none dark:bg-slate-700/50 dark:border-slate-600/50 dark:text-slate-300" 
           placeholder={`Write your feedback for ${intern_log.names} here...`}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
