@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MetricCard from "../../../../components/ui/MetricCard";
-import { TrendingUp, FileDown, Upload, X } from "lucide-react";
+import { TrendingUp, FileDown, Upload, X, Moon, Sun } from "lucide-react";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -88,6 +88,22 @@ const Reports = () => {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  const [isDark, setIsDark] = useState(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
 
   const activeCount = students.filter(
     (student) => student.status === "Active",
@@ -262,6 +278,24 @@ const Reports = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
+        <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
+          LOGIFY ACADEMIC SUPERVISOR
+        </h1>
+
+        <button
+          onClick={() => setIsDark((prev) => !prev)}
+          className="p-1"
+          aria-label="Toggle theme"
+        >
+          {isDark ? (
+            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          ) : (
+            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
+          )}
+        </button>
+      </div>
+
       <header className="mb-8 flex flex-col items-start justify-between gap-6 sm:mb-10 lg:mb-12 md:flex-row md:items-center">
         <div>
           <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
