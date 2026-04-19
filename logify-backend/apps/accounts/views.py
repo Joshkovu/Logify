@@ -131,3 +131,14 @@ class UserDetailView(APIView):
             return User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise NotFound("User not found.")
+
+    def delete(self, request, pk):
+        if request.user.role != User.INTERNSHIP_ADMIN and not request.user.is_superuser:
+            return Response(
+                {"error": "Only internship administrators can delete users."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        user = self.get_object(pk)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
