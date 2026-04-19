@@ -10,8 +10,8 @@ const ActivityTable = ({ title, comment, daysPast, Approved }) => {
           />
           <div className="">
             <p className="font-bold text-xl">{title}</p>
-            <p className="text-gray-500 text-xl font-light">{comment}</p>
-            <p className="text-sm text-gray-400">{daysPast} days ago</p>
+            <p className="text-gray-500 text-xl font-light dark:text-slate-400">{comment}</p>
+            <p className="text-sm text-gray-400 dark:text-slate-500">{daysPast} days ago</p>
           </div>
         </div>
       </td>
