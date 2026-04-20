@@ -48,7 +48,7 @@ class EvaluationRubricsViewSet(viewsets.ModelViewSet):
 class EvaluationCriteriaViewSet(viewsets.ModelViewSet):
     queryset = EvaluationCriteria.objects.all()
     serializer_class = EvaluationCriteriaSerializer
-    permission_classes = [IsSupervisorOrAdmin]
+    permission_classes = [IsEvaluationWriteAllowed]
 
 
 class EvaluationsViewSet(viewsets.ModelViewSet):
@@ -73,7 +73,7 @@ class EvaluationsViewSet(viewsets.ModelViewSet):
 class EvaluationScoresViewSet(viewsets.ModelViewSet):
     queryset = EvaluationScores.objects.all()
     serializer_class = EvaluationScoresSerializer
-    permission_classes = [IsSupervisorOrAdmin]
+    permission_classes = [IsEvaluationWriteAllowed]
 
 
 class FinalResultsViewSet(viewsets.ReadOnlyModelViewSet):
