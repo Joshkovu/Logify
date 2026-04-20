@@ -8,7 +8,7 @@ import {
   Lock,
   Bell,
 } from "lucide-react";
-import { api } from "@/config/api.js";
+import { api } from "../../../../config/api.js";
 import ChangePassword from "../ChangePassword";
 import EditProfile from "../EditProfile";
 import { useState, useEffect } from "react";

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../../config/api";
 import CreateWeeklyLog from "../CreateWeeklyLog";
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
