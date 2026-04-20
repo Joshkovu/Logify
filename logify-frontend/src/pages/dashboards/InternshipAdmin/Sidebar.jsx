@@ -15,7 +15,6 @@ import {
   ArrowRightToLine,
   X,
 } from "lucide-react";
-
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -43,7 +42,7 @@ const Sidebar = ({
   onToggleExpanded,
 }) => {
   const location = useLocation();
-  const { logout } = useContext(AuthContext);
+  const { logout, user, isLoadingUser } = useContext(AuthContext);
   const showExpandedContent = !isDesktop || expanded;
 
   const handleSignOut = async () => {
@@ -53,6 +52,8 @@ const Sidebar = ({
       onCloseMobile();
     }
   };
+  const userData = user;
+  const isLoading = isLoadingUser;
 
   return (
     <aside
@@ -193,7 +194,14 @@ const Sidebar = ({
         >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 font-bold text-white">
-              JK
+              {isLoading
+                ? "..."
+                : userData?.name
+                  ? userData.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "AU"}
             </AvatarFallback>
           </Avatar>
 
@@ -205,10 +213,14 @@ const Sidebar = ({
             }`}
           >
             <span className="max-w-30 truncate text-xs font-bold text-foreground">
-              Joash Kuteesa
+              {isLoading ? "Loading..." : userData?.name || "Admin User"}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-red-600">
-              Department of Computer Science
+              {isLoading
+                ? "Loading..."
+                : userData?.role === "Internship Admin"
+                  ? "Super Admin"
+                  : ""}
             </span>
           </div>
         </div>

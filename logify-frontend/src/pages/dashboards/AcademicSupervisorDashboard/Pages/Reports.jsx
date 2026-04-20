@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { TrendingUp, FileDown, Upload, X } from "lucide-react";
 import { Bar, Doughnut } from "react-chartjs-2";

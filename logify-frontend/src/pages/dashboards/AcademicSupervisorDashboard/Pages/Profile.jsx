@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import {
   User,
   Mail,

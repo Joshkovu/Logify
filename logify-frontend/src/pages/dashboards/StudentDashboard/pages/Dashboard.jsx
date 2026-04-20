@@ -1,7 +1,7 @@
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { useState, useEffect } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../../config/api";
 
 const Dashboard = () => {
   const [placementData, setPlacementData] = useState(null);

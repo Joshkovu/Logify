@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 import { isNumber } from "chart.js/helpers";
 const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
