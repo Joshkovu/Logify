@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import {
   User,
   Mail,
@@ -14,8 +15,6 @@ import {
   X,
   Save,
   Lock,
-  Moon,
-  Sun,
 } from "lucide-react";
 
 const Profile = () => {
@@ -48,7 +47,7 @@ const Profile = () => {
     confirmPassword: "",
   });
 
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
@@ -176,17 +175,7 @@ const Profile = () => {
           LOGIFY ACADEMIC SUPERVISOR
         </h1>
 
-        <button
-          onClick={() => setIsDark((prev) => !prev)}
-          className="p-1"
-          aria-label="Toggle theme"
-        >
-          {isDark ? (
-            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          ) : (
-            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <div className="mx-auto max-w-4xl">
