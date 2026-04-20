@@ -42,12 +42,19 @@ const Sidebar = ({
   onCloseMobile,
   onToggleExpanded,
 }) => {
-  const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const { logout } = useContext(AuthContext);
   const showExpandedContent = !isDesktop || expanded;
 
+  const handleSignOut = async () => {
+    await logout();
+
+    if (!isDesktop) {
+      onCloseMobile();
+    }
+  };
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -60,17 +67,8 @@ const Sidebar = ({
         setIsLoading(false);
       }
     };
-
     fetchUserData();
   }, []);
-
-  const handleSignOut = async () => {
-    await logout();
-
-    if (!isDesktop) {
-      onCloseMobile();
-    }
-  };
 
   return (
     <aside
