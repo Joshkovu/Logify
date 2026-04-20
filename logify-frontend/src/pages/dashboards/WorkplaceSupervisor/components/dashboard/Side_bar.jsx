@@ -188,6 +188,7 @@ export const SidebarItem = ({ icon, text, href }) => {
     `}
     >
       <Link
+        key={href}
         to={href}
         className={`flex items-center w-full dark:text-slate-300 ${expanded ? "justify-start" : "justify-center"} transition-all duration-200  `}
       >

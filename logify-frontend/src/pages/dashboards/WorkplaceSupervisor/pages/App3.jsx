@@ -58,16 +58,16 @@ const WorkplaceSupervisorDashboard = () => {
         </div> */}
         <div className="flex-1  overflow-y-auto w-full">
           <Routes>
-            <Route path="/workplace-supervisor" element={<Dashboard />} />
+            <Route path="/" element={<Dashboard />} />
             <Route
-              path="/workplace-supervisor/assigned-interns"
+              path="assigned-interns"
               element={<AssignedInterns />}
             />
             <Route
-              path="/workplace-supervisor/pending-log-review"
+              path="pending-log-review"
               element={<PendingLogReview />}
             />
-            <Route path="/workplace-supervisor/profile" element={<Profile />} />
+            <Route path="profile" element={<Profile />} />
           </Routes>
         </div>
       </div>
