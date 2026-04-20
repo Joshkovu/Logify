@@ -8,8 +8,6 @@ import {
   User,
   LogOut,
   ShieldCheck,
-  Moon,
-  Sun,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/Button";
@@ -31,7 +29,7 @@ const Sidebar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
@@ -184,36 +182,6 @@ const Sidebar = () => {
               Supervisor
             </span>
           </div>
-        </div>
-
-        <div className={`mb-4 ${isExpanded ? "block" : "flex justify-center"}`}>
-          {isExpanded ? (
-            <Button
-              variant="outline"
-              onClick={() => setIsDark((prev) => !prev)}
-              className="h-9 w-full justify-start gap-2 border-primary/10 text-xs font-bold dark:border-slate-700"
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-              {isDark ? "Light Mode" : "Dark Mode"}
-            </Button>
-          ) : (
-            <button
-              onClick={() => setIsDark((prev) => !prev)}
-              className="flex h-10 w-10 items-center justify-center rounded-xl transition-colors hover:bg-black/5 dark:hover:bg-slate-800"
-              aria-label="Toggle dark mode"
-              title="Toggle dark mode"
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
-              ) : (
-                <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
-              )}
-            </button>
-          )}
         </div>
 
         <Button
