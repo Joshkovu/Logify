@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Home,
@@ -15,7 +15,7 @@ import {
   ArrowRightToLine,
   X,
 } from "lucide-react";
-
+import { api } from "../../../config/api";
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -42,9 +42,27 @@ const Sidebar = ({
   onCloseMobile,
   onToggleExpanded,
 }) => {
+  const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
   const { logout } = useContext(AuthContext);
   const showExpandedContent = !isDesktop || expanded;
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoading(true);
+        const data = await api.auth.me();
+        setUserData(data);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleSignOut = async () => {
     await logout();
@@ -205,10 +223,14 @@ const Sidebar = ({
             }`}
           >
             <span className="max-w-30 truncate text-xs font-bold text-foreground">
-              Joash Kuteesa
+              {isLoading ? "Loading..." : userData?.name || "Admin User"}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-red-600">
-              Department of Computer Science
+              {isLoading
+                ? "Loading..."
+                : userData?.role === "Internship Admin"
+                  ? "Super Admin"
+                  : ""}
             </span>
           </div>
         </div>

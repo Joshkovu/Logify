@@ -7,7 +7,7 @@ import Search from "./Search";
 import { ShieldCheck } from "lucide-react";
 import { Moon, Sun } from "lucide-react";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/Button";
+import { Button } from "../../../../../components/ui/Button";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
