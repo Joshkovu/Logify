@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -16,6 +16,7 @@ import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { useWindowSize } from "./StudentDashboard";
 import PropTypes from "prop-types";
+import { api } from "@/config/api";
 
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },
@@ -35,6 +36,23 @@ const Sidebar = ({ onClose }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const isMobile = useWindowSize() < 768;
   const collapsed = isMobile ? false : isCollapsed;
+  const [userData, setUserData] = useState(null);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        setIsLoadingUser(true);
+        const data = await api.auth.me();
+        setUserData(data);
+      } catch (err) {
+        console.error("Unable to fetch user data: ", err);
+      } finally {
+        setIsLoadingUser(false);
+      }
+    };
+    fetchUserData();
+  }, []);
 
   return (
     <aside
@@ -121,7 +139,11 @@ const Sidebar = ({ onClose }) => {
           </Avatar>
           <div className={`${collapsed ? "hidden" : ""} flex flex-col`}>
             <span className="text-xs font-bold text-foreground truncate max-w-30">
-              Sarah Johnson
+              {isLoadingUser
+                ? "Loading..."
+                : userData
+                  ? `${userData?.first_name} ${userData?.last_name}`
+                  : "Error"}
             </span>
             <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
               Student Intern
