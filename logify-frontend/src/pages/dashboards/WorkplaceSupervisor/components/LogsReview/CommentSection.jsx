@@ -14,7 +14,7 @@ const CommentSection = ({ intern_log }) => {
       <div className="mt-4">
         <h1 className="font-bold mb-2">Comments</h1>
         <textarea
-          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-maroonCustom w-full h-32 resize-none dark:bg-slate-700/50 dark:border-slate-600/50 dark:text-slate-300" 
+          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-1 focus:ring-maroonCustom w-full h-32 resize-none dark:bg-slate-700/50 dark:border-slate-600/50 dark:text-slate-300"
           placeholder={`Write your feedback for ${intern_log.names} here...`}
           value={comment}
           onChange={(e) => setComment(e.target.value)}

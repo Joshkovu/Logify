@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
-import { TrendingUp, FileDown, Upload, X, Moon, Sun } from "lucide-react";
+import { TrendingUp, FileDown, Upload, X } from "lucide-react";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -89,7 +90,7 @@ const Reports = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
@@ -283,17 +284,7 @@ const Reports = () => {
           LOGIFY ACADEMIC SUPERVISOR
         </h1>
 
-        <button
-          onClick={() => setIsDark((prev) => !prev)}
-          className="p-1"
-          aria-label="Toggle theme"
-        >
-          {isDark ? (
-            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          ) : (
-            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <header className="mb-8 flex flex-col items-start justify-between gap-6 sm:mb-10 lg:mb-12 md:flex-row md:items-center">

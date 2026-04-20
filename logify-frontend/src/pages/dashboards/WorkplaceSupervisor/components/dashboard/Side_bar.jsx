@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/Button";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-
 const SidebarContext = React.createContext();
 
 const Side_bar = ({ children }) => {
@@ -21,18 +20,18 @@ const Side_bar = ({ children }) => {
     return localStorage.getItem("theme") === "dark";
   });
 
-    useEffect(() => {
-      const root = document.documentElement;
-  
-      if (isDark) {
-        root.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-      } else {
-        root.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      }
-    }, [isDark]);
-  
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
   return (
     <aside className="h-screen flex">
       <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm dark:bg-slate-900 dark:border-slate-700">
@@ -54,7 +53,7 @@ const Side_bar = ({ children }) => {
           className={`p-4 pb-4 flex justify-between items-center ${expanded ? "" : "pt-37"} `}
         >
           <div
-            className={`mr-1 overflow-hidden duration-200 transition-all 
+            className={`mr-1 overflow-hidden duration-200 transition-all
             ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
           >
             <Search />
@@ -64,50 +63,56 @@ const Side_bar = ({ children }) => {
             className={`p-2  rounded-full bg-[#FCFBF2]  hover:bg-gray-100 ml-0.5 duration-200 transition-all shadow-lg dark:bg-slate-800/50 dark:hover:bg-slate-700/50 dark:border dark:border-slate-300 ${expanded ? "" : "ml-2"}`}
           >
             {expanded ? (
-              <ArrowLeftToLine size={20} className=" text-gray-700 dark:text-slate-200" />
+              <ArrowLeftToLine
+                size={20}
+                className=" text-gray-700 dark:text-slate-200"
+              />
             ) : (
-              <ArrowRightToLine size={20} className=" text-gray-700 dark:text-slate-200" />
+              <ArrowRightToLine
+                size={20}
+                className=" text-gray-700 dark:text-slate-200"
+              />
             )}
           </button>
         </div>
-        <div className="flex justify-between gap-3 mx-3">  
-        <p
-          className={`flex text-sm justify-start  font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
+        <div className="flex justify-between gap-3 mx-3">
+          <p
+            className={`flex text-sm justify-start  font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
             ${expanded ? "w-52 " : "w-0 ml-0 hidden"} dark:text-slate-300`}
-        >
-          MAIN NAVIGATION
-        </p>
-        <div
-          className={` flex ${expanded ? "justify-between" : "justify-center"}`}
-        >
-          {expanded ? (
-            <Button
-              variant="outline"
-              onClick={() => setIsDark((prev) => !prev)}
-              className="h-9 w-full justify-start gap-2 border text-xs font-bold dark:border-slate-700 hover:shadow-lg shadow-xs  border-stone-200 "
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-              {isDark ? "Light Mode" : "Dark Mode"}
-            </Button>
-          ) : (
-            <button
-              onClick={() => setIsDark((prev) => !prev)}
-              className="flex h-10 w-10 items-center justify-center border rounded-xl transition-colors hover:bg-background dark:hover:bg-slate-800/50 mx-3  border-stone-200  hover:shadow-lg shadow-xs"
-              aria-label="Toggle dark mode"
-              title="Toggle dark mode"
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
-              ) : (
-                <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
-              )}
-            </button>
-          )}
-        </div>
+          >
+            MAIN NAVIGATION
+          </p>
+          <div
+            className={` flex ${expanded ? "justify-between" : "justify-center"}`}
+          >
+            {expanded ? (
+              <Button
+                variant="outline"
+                onClick={() => setIsDark((prev) => !prev)}
+                className="h-9 w-full justify-start gap-2 border text-xs font-bold dark:border-slate-700 hover:shadow-lg shadow-xs  border-stone-200 "
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                {isDark ? "Light Mode" : "Dark Mode"}
+              </Button>
+            ) : (
+              <button
+                onClick={() => setIsDark((prev) => !prev)}
+                className="flex h-10 w-10 items-center justify-center border rounded-xl transition-colors hover:bg-background dark:hover:bg-slate-800/50 mx-3  border-stone-200  hover:shadow-lg shadow-xs"
+                aria-label="Toggle dark mode"
+                title="Toggle dark mode"
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
+                ) : (
+                  <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         <SidebarContext.Provider value={{ expanded }}>
@@ -132,14 +137,14 @@ const Side_bar = ({ children }) => {
           >
             <div className=" leading-4">
               <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600 dark:text-slate-300">johndoe@gmail.com</span>
+              <span className="text-xs text-gray-600 dark:text-slate-300">
+                johndoe@gmail.com
+              </span>
             </div>
           </div>
-          
         </div>
 
-        
-          {expanded ? (
+        {expanded ? (
           <Button
             variant="outline"
             onClick={() => navigate("/dashboards")}
@@ -158,7 +163,6 @@ const Side_bar = ({ children }) => {
             <LogOut className="h-4 w-4 text-gold dark:text-slate-300" />
           </button>
         )}
-        
       </nav>
     </aside>
   );

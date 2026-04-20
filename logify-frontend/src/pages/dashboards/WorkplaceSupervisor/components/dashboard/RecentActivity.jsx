@@ -25,7 +25,9 @@ const RecentActivity = () => {
   return (
     <div className="mt-3 rounded-lg p-6 border col-span-12 bg-white border-stone-300 shadow-inner h-auto dark:bg-slate-800/50 dark:border-slate-700">
       <h1 className="font-bold"> Recent Activity</h1>
-      <h2 className="text-gray-500 font-medium dark:text-slate-400">Your latest review actions</h2>
+      <h2 className="text-gray-500 font-medium dark:text-slate-400">
+        Your latest review actions
+      </h2>
       <table className="w-full mt-4">
         <tbody className="mt-4 divide-y divide-gray-200 dark:divide-slate-700">
           {activityData.map((activity, index) => (
