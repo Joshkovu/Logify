@@ -1,5 +1,6 @@
+import ThemeToggle from "@/components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
-import { User, CheckCircle2, ChevronRight, Moon, Sun } from "lucide-react";
+import { User, CheckCircle2, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 const summaryCards = [
@@ -70,7 +71,7 @@ const sectionCardClassName =
   "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark] = useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
@@ -97,17 +98,7 @@ const Dashboard = () => {
           LOGIFY ACADEMIC SUPERVISOR
         </h1>
 
-        <button
-          onClick={() => setIsDark((prev) => !prev)}
-          className="p-1"
-          aria-label="Toggle theme"
-        >
-          {isDark ? (
-            <Sun className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          ) : (
-            <Moon className="h-4 w-4 text-black/70 dark:text-slate-300" />
-          )}
-        </button>
+        <ThemeToggle />
       </div>
 
       <header className="mb-8 sm:mb-10 lg:mb-12">

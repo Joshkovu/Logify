@@ -29,7 +29,9 @@ const Card = ({ title, value, icon, description, color }) => {
     <div className=" p-4 bg-white rounded-lg border border-stone-300 col-span-4  hover:shadow-lg transition-shadow duration-300 shadow dark:bg-slate-800/50 dark:border-slate-700">
       <div className="flex mb-2 items-start justify-between flex-col">
         <div>
-          <h3 className="font-medium text-sm text-gray-500 dark:text-slate-400">{title}</h3>
+          <h3 className="font-medium text-sm text-gray-500 dark:text-slate-400">
+            {title}
+          </h3>
         </div>
         <div
           className={`w-full flex justify-between mt-20 text-4xl font-bold ${color == "amber" ? "text-amber-500" : ""}
