@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 
 const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {

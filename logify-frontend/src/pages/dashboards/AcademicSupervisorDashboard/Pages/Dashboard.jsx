@@ -1,4 +1,4 @@
-import ThemeToggle from "@/components/ui/ThemeToggle";
+import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { User, CheckCircle2, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
