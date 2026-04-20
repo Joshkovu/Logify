@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import PropTypes from "prop-types";
 import {
   Home,
@@ -15,7 +15,6 @@ import {
   ArrowRightToLine,
   X,
 } from "lucide-react";
-import { api } from "../../../config/api";
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { AuthContext } from "../../../contexts/AuthContext";
@@ -43,7 +42,7 @@ const Sidebar = ({
   onToggleExpanded,
 }) => {
   const location = useLocation();
-  const { logout } = useContext(AuthContext);
+  const { logout, user, isLoadingUser } = useContext(AuthContext);
   const showExpandedContent = !isDesktop || expanded;
 
   const handleSignOut = async () => {
@@ -53,22 +52,8 @@ const Sidebar = ({
       onCloseMobile();
     }
   };
-  const [userData, setUserData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoading(true);
-        const data = await api.auth.me();
-        setUserData(data);
-      } catch (error) {
-        console.error("Error fetching user data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    fetchUserData();
-  }, []);
+  const userData = user;
+  const isLoading = isLoadingUser;
 
   return (
     <aside
@@ -209,7 +194,14 @@ const Sidebar = ({
         >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 font-bold text-white">
-              JK
+              {isLoading
+                ? "..."
+                : userData?.name
+                  ? userData.name
+                      .split(" ")
+                      .map((n) => n[0])
+                      .join("")
+                  : "AU"}
             </AvatarFallback>
           </Avatar>
 
