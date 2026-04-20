@@ -16,7 +16,7 @@ import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { useWindowSize } from "./StudentDashboard";
 import PropTypes from "prop-types";
-import { api } from "@/config/api";
+import { api } from "../../../config/api";
 
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },

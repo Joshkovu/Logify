@@ -2,7 +2,7 @@ import { Clock, MapPin, Building2, User, Phone, Mail } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 import CreatePlacement from "../CreatePlacement";
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../../config/api";
 
 const InternshipPlacement = () => {
   const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
