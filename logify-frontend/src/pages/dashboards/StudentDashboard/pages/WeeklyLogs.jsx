@@ -238,7 +238,7 @@ const WeeklyLogs = () => {
             ) : (
               <div className="flex items-center justify-center py-12">
                 <p className="text-lg font-semibold text-text-secondary">
-                  No weekly logs found
+                  No weekly logs
                 </p>
               </div>
             )}

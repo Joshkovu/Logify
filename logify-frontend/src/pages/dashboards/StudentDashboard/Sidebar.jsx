@@ -134,7 +134,8 @@ const Sidebar = ({ onClose }) => {
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 text-white font-bold">
-              SJ
+              {userData?.first_name?.[0]}
+              {userData?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
           <div className={`${collapsed ? "hidden" : ""} flex flex-col`}>

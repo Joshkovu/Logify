@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { api } from "../../../../config/api";
 
 const Dashboard = () => {
+  const [finalResult, setFinalResult] = useState(null);
+  const [isLoadingFinalResult, setIsLoadingFinalResult] = useState(true);
   const [placementData, setPlacementData] = useState(null);
   const [organizationData, setOrganizationData] = useState(null);
   const [weeklyLogData, setWeeklyLogData] = useState(null);
@@ -15,10 +17,10 @@ const Dashboard = () => {
   const [
     isLoadingWorkplaceSupervisorData,
     setIsLoadingWorkplaceSupervisorData,
-  ] = useState(true);
+  ] = useState(false);
   const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
   const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
-    useState(true);
+    useState(false);
   useEffect(() => {
     const fetchUserData = async () => {
       try {
@@ -29,6 +31,22 @@ const Dashboard = () => {
       }
     };
     fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    const fetchFinalResult = async () => {
+      try {
+        setIsLoadingFinalResult(true);
+        const data = await api.evaluations.getResults();
+        setFinalResult(data[0]);
+        console.log("Final Result: ", data);
+      } catch (err) {
+        console.error("Failed to fetch Final Result: ", err.message);
+      } finally {
+        setIsLoadingFinalResult(false);
+      }
+    };
+    fetchFinalResult();
   }, []);
 
   useEffect(() => {
@@ -147,7 +165,15 @@ const Dashboard = () => {
         : (!weeklyLogData && "Unavailable") || weeklyLogData?.length,
       iconType: "reviews",
     },
-    { title: "Final Score", value: "Pending", iconType: "evaluations" },
+    {
+      title: "Final Score",
+      value: isLoadingFinalResult
+        ? "Loading..."
+        : finalResult
+          ? `${finalResult?.final_score}%`
+          : "Unavailable",
+      iconType: "evaluations",
+    },
   ];
 
   return (
@@ -192,7 +218,7 @@ const Dashboard = () => {
                 <p className="text-lg font-bold text-maroon-dark mb-4">
                   {isLoadingOrganization
                     ? "Loading..."
-                    : (organizationData?.name ?? "Not assigned")}
+                    : (organizationData?.name ?? "Unavailable")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Workplace Supervisor
@@ -210,7 +236,7 @@ const Dashboard = () => {
                 <p className="text-lg font-bold text-maroon-dark">
                   {isLoadingPlacement
                     ? "Loading..."
-                    : (placementData?.start_date ?? "Not set")}
+                    : (placementData?.start_date ?? "Unavailable")}
                 </p>
               </div>
               <div>
@@ -220,7 +246,7 @@ const Dashboard = () => {
                 <p className="text-lg font-bold text-maroon-dark mb-4">
                   {isLoadingPlacement
                     ? "Loading..."
-                    : (placementData?.internship_title ?? "Not set")}
+                    : (placementData?.internship_title ?? "Unavailable")}
                 </p>
                 <p className="text-text-secondary/60 text-xs uppercase tracking-widest font-bold mb-1">
                   Academic Supervisor
@@ -238,7 +264,7 @@ const Dashboard = () => {
                 <p className="text-lg font-bold text-maroon-dark">
                   {isLoadingPlacement
                     ? "Loading..."
-                    : (placementData?.end_date ?? "Not set")}
+                    : (placementData?.end_date ?? "Unavailable")}
                 </p>
               </div>
             </div>
