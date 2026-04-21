@@ -11,10 +11,10 @@ const InternshipPlacement = () => {
   const [
     isLoadingWorkplaceSupervisorData,
     setIsLoadingWorkplaceSupervisorData,
-  ] = useState(true);
+  ] = useState(false);
   const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
   const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
-    useState(true);
+    useState(false);
   const [existingPlacement, setExistingPlacement] = useState(null);
   const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
   const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);
