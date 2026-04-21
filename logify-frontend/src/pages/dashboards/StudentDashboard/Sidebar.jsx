@@ -11,6 +11,7 @@ import {
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
+import { clearAuthUser } from "../../../lib/auth";
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },
   {
@@ -92,7 +93,10 @@ const Sidebar = () => {
         <Button
           variant="outline"
           className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-          onClick={() => navigate("/")}
+          onClick={() => {
+            clearAuthUser();
+            navigate("/");
+          }}
         >
           <LogOut className="h-3.5 w-3.5" />
           Sign Out

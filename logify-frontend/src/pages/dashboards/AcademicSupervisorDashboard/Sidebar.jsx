@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
   CheckSquare,
@@ -11,6 +11,7 @@ import {
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
+import { clearAuthUser } from "../../../lib/auth";
 
 const navLinks = [
   { name: "Dashboard", path: "/supervisor", icon: Home },
@@ -26,6 +27,7 @@ const navLinks = [
 
 const Sidebar = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   return (
     <aside className="h-screen w-72 bg-maroon-dark text-black flex flex-col py-8 px-5 shadow-2xl shrink-0 border-r border-gray-200">
       <div className="mb-12 px-4">
@@ -91,6 +93,10 @@ const Sidebar = () => {
         <Button
           variant="outline"
           className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
+          onClick={() => {
+            clearAuthUser();
+            navigate("/");
+          }}
         >
           <LogOut className="h-3.5 w-3.5" />
           Sign Out

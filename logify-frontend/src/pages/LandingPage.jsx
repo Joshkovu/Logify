@@ -8,7 +8,7 @@ const LandingPage = () => {
       description:
         "Submit weekly logs, view evaluations, and track your internship progress.",
       icon: <GraduationCap size={48} />,
-      path: "/student",
+      path: "/login?role=student",
       color: "bg-maroonCustom",
       accent: "text-white",
     },
@@ -17,7 +17,7 @@ const LandingPage = () => {
       description:
         "Manage institutions, supervisors, and student placements across the university.",
       icon: <UserCog size={48} />,
-      path: "/admin",
+      path: "/login?role=internship_admin",
       color: "bg-maroonCustom",
       accent: "text-white",
     },
@@ -26,7 +26,7 @@ const LandingPage = () => {
       description:
         "Review student logs, complete evaluations, and monitor academic performance.",
       icon: <ShieldCheck size={48} />,
-      path: "/supervisor",
+      path: "/login?role=academic_supervisor",
       color: "bg-maroonCustom",
       accent: "text-white",
     },
