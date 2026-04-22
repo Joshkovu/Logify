@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import {
   User,
@@ -16,28 +16,33 @@ import {
   Save,
   Lock,
 } from "lucide-react";
+import {
+  getUserDisplayName,
+  loadAcademicSupervisorData,
+} from "../utils/academicSupervisorData";
 
 const Profile = () => {
+  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
   const [profile, setProfile] = useState({
-    firstName: "Emily",
-    lastName: "Roberts",
-    email: "e.roberts@university.edu",
-    officePhone: "+1 (555) 987-6543",
-    university: "University of Technology",
-    department: "Computer Science",
-    position: "Associate Professor",
-    officeLocation: "Building A, Room 305",
-    specialization: "Software Engineering & AI",
-    yearsAtUniversity: "12 years",
+    firstName: "",
+    lastName: "",
+    email: "",
+    officePhone: "",
+    university: "",
+    department: "",
+    position: "",
+    officeLocation: "",
+    specialization: "",
+    yearsAtUniversity: "",
   });
-
-  const [stats] = useState([
-    { value: "5", label: "Current Interns" },
-    { value: "15", label: "Total Students" },
-    { value: "86.6%", label: "Average Score" },
-    { value: "95%", label: "Completion Rate" },
+  const [stats, setStats] = useState([
+    { value: "0", label: "Current Interns" },
+    { value: "0", label: "Total Students" },
+    { value: "0%", label: "Average Score" },
+    { value: "0%", label: "Completion Rate" },
   ]);
-
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [editForm, setEditForm] = useState(profile);
@@ -45,10 +50,6 @@ const Profile = () => {
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
-  });
-
-  const [isDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
   });
 
   useEffect(() => {
@@ -63,56 +64,141 @@ const Profile = () => {
     }
   }, [isDark]);
 
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const data = await loadAcademicSupervisorData();
+        const me = data.me;
+        const averageScore =
+          data.results.length === 0
+            ? 0
+            : Math.round(
+                data.results.reduce(
+                  (total, result) => total + Number(result.final_score || 0),
+                  0,
+                ) / data.results.length,
+              );
+        const completionRate =
+          data.placements.length === 0
+            ? 0
+            : Math.round(
+                (data.placements.filter(
+                  (placement) => placement.status === "completed",
+                ).length /
+                  data.placements.length) *
+                  100,
+              );
+
+        const nextProfile = {
+          firstName: me?.first_name || "",
+          lastName: me?.last_name || "",
+          email: me?.email || "",
+          officePhone: me?.phone || "",
+          university: me?.institution_id || "Unavailable",
+          department: me?.staff_profile?.department_name || "Unavailable",
+          position: me?.staff_profile?.title || "Academic Supervisor",
+          officeLocation: "Unavailable",
+          specialization: "Unavailable",
+          yearsAtUniversity: "Unavailable",
+        };
+
+        setProfile(nextProfile);
+        setEditForm(nextProfile);
+        setStats([
+          {
+            value: String(data.placements.length),
+            label: "Current Interns",
+          },
+          {
+            value: String(data.placements.length),
+            label: "Total Students",
+          },
+          {
+            value: `${averageScore}%`,
+            label: "Average Score",
+          },
+          {
+            value: `${completionRate}%`,
+            label: "Completion Rate",
+          },
+        ]);
+      } catch (loadError) {
+        setError(loadError.message || "Unable to load your profile.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
   const sectionCardClassName =
     "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8";
 
-  const personalInfo = [
-    { label: "First Name", value: profile.firstName, icon: <User size={16} /> },
-    { label: "Last Name", value: profile.lastName, icon: <User size={16} /> },
-    {
-      label: "Email Address",
-      value: profile.email,
-      icon: <Mail size={16} />,
-    },
-    {
-      label: "Office Phone",
-      value: profile.officePhone,
-      icon: <Phone size={16} />,
-    },
-  ];
+  const personalInfo = useMemo(
+    () => [
+      {
+        label: "First Name",
+        value: profile.firstName || "Unavailable",
+        icon: <User size={16} />,
+      },
+      {
+        label: "Last Name",
+        value: profile.lastName || "Unavailable",
+        icon: <User size={16} />,
+      },
+      {
+        label: "Email Address",
+        value: profile.email || "Unavailable",
+        icon: <Mail size={16} />,
+      },
+      {
+        label: "Office Phone",
+        value: profile.officePhone || "Unavailable",
+        icon: <Phone size={16} />,
+      },
+    ],
+    [profile],
+  );
 
-  const academicInfo = [
-    {
-      label: "University",
-      value: profile.university,
-      icon: <GraduationCap size={16} />,
-    },
-    {
-      label: "Department",
-      value: profile.department,
-      icon: <Building2 size={16} />,
-    },
-    {
-      label: "Position",
-      value: profile.position,
-      icon: <Award size={16} />,
-    },
-    {
-      label: "Office Location",
-      value: profile.officeLocation,
-      icon: <MapPin size={16} />,
-    },
-    {
-      label: "Specialization",
-      value: profile.specialization,
-      icon: <ShieldCheck size={16} />,
-    },
-    {
-      label: "Years at University",
-      value: profile.yearsAtUniversity,
-      icon: <Calendar size={16} />,
-    },
-  ];
+  const academicInfo = useMemo(
+    () => [
+      {
+        label: "University",
+        value: profile.university || "Unavailable",
+        icon: <GraduationCap size={16} />,
+      },
+      {
+        label: "Department",
+        value: profile.department || "Unavailable",
+        icon: <Building2 size={16} />,
+      },
+      {
+        label: "Position",
+        value: profile.position || "Unavailable",
+        icon: <Award size={16} />,
+      },
+      {
+        label: "Office Location",
+        value: profile.officeLocation || "Unavailable",
+        icon: <MapPin size={16} />,
+      },
+      {
+        label: "Specialization",
+        value: profile.specialization || "Unavailable",
+        icon: <ShieldCheck size={16} />,
+      },
+      {
+        label: "Years at University",
+        value: profile.yearsAtUniversity || "Unavailable",
+        icon: <Calendar size={16} />,
+      },
+    ],
+    [profile],
+  );
 
   const handleOpenEditModal = () => {
     setEditForm(profile);
@@ -120,9 +206,10 @@ const Profile = () => {
   };
 
   const handleSaveProfile = () => {
-    setProfile(editForm);
     setShowEditModal(false);
-    alert("Profile updated successfully.");
+    setError(
+      "Profile updates are not currently supported by the backend for academic supervisors.",
+    );
   };
 
   const handlePasswordChange = () => {
@@ -131,27 +218,29 @@ const Profile = () => {
       !passwordForm.newPassword ||
       !passwordForm.confirmPassword
     ) {
-      alert("Please fill in all password fields.");
+      setError("Please fill in all password fields.");
       return;
     }
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert("New password and confirm password do not match.");
+      setError("New password and confirm password do not match.");
       return;
     }
 
     if (passwordForm.newPassword.length < 6) {
-      alert("New password must be at least 6 characters long.");
+      setError("New password must be at least 6 characters long.");
       return;
     }
 
+    setShowSecurityModal(false);
     setPasswordForm({
       currentPassword: "",
       newPassword: "",
       confirmPassword: "",
     });
-    setShowSecurityModal(false);
-    alert("Password updated successfully.");
+    setError(
+      "Password changes are not currently supported by the backend for academic supervisors.",
+    );
   };
 
   const handleEditInputChange = (field, value) => {
@@ -167,6 +256,16 @@ const Profile = () => {
       [field]: value,
     }));
   };
+
+  const initials = getUserDisplayName(
+    { first_name: profile.firstName, last_name: profile.lastName },
+    "ER",
+  )
+    .split(" ")
+    .map((part) => part[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10">
@@ -187,6 +286,11 @@ const Profile = () => {
             Manage your professional identity and academic credentials within
             the Logify ecosystem.
           </p>
+          {error && (
+            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+              {error}
+            </p>
+          )}
         </header>
 
         <div className="space-y-6">
@@ -194,7 +298,7 @@ const Profile = () => {
             <div className="flex flex-col items-center text-center">
               <div className="relative mb-4">
                 <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#7A1C1C] text-xl font-black text-white shadow-sm">
-                  ER
+                  {isLoading ? "..." : initials}
                 </div>
 
                 <button className="absolute -bottom-1 -right-1 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-white text-maroon-dark transition-colors hover:text-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-slate-300">
@@ -203,7 +307,9 @@ const Profile = () => {
               </div>
 
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
-                Dr. {profile.firstName} {profile.lastName}
+                {isLoading
+                  ? "Loading profile..."
+                  : `${profile.position === "Academic Supervisor" ? "" : `${profile.position} `}${profile.firstName} ${profile.lastName}`.trim()}
               </h2>
 
               <p className="mt-2 rounded-full bg-gold/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.2em] text-gold dark:text-slate-300">
@@ -211,26 +317,26 @@ const Profile = () => {
               </p>
 
               <p className="mt-2 text-sm text-text-secondary dark:text-slate-300">
-                Department of {profile.department}
+                Department of {profile.department || "Unavailable"}
               </p>
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3">
               <div className="rounded-xl border border-border/40 bg-background dark:border-slate-700/30 dark:bg-slate-800/50 p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark dark:text-white">
-                  5
+                  {stats[0].value}
                 </p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
-                  Current Interns
+                  {stats[0].label}
                 </p>
               </div>
 
               <div className="rounded-xl border border-border/40 bg-background dark:border-slate-700/30 dark:bg-slate-800/50 p-3 text-center">
                 <p className="text-xl font-black text-maroon-dark dark:text-white">
-                  15
+                  {stats[1].value}
                 </p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400">
-                  Total Students
+                  {stats[1].label}
                 </p>
               </div>
             </div>
