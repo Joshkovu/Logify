@@ -41,14 +41,23 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
             <Route path="/student/*" element={<StudentDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["internship_admin"]} />}>
+          <Route
+            element={<ProtectedRoute allowedRoles={["internship_admin"]} />}
+          >
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["academic_supervisor"]} />}>
+          <Route
+            element={<ProtectedRoute allowedRoles={["academic_supervisor"]} />}
+          >
             <Route path="/supervisor/*" element={<SupervisorDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["workplace_supervisor"]} />}>
-            <Route path="/workplace-supervisor/*" element={<WorkplaceSupervisorDashboard />} />
+          <Route
+            element={<ProtectedRoute allowedRoles={["workplace_supervisor"]} />}
+          >
+            <Route
+              path="/workplace-supervisor/*"
+              element={<WorkplaceSupervisorDashboard />}
+            />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

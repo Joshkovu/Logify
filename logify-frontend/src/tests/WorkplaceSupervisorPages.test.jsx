@@ -46,6 +46,16 @@ jest.mock(
   "../pages/dashboards/WorkplaceSupervisor/utils/workplaceSupervisorData",
   () => ({
     loadWorkplaceSupervisorData: jest.fn(),
+    formatDate: jest.fn((value) => {
+      if (!value) return "N/A";
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) return "N/A";
+      return parsed.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    }),
   }),
   { virtual: true },
 );
@@ -67,35 +77,47 @@ const mockSnapshot = {
   placements: [
     {
       id: 1,
-      student: 101,
+      intern: 101,
       organization: 201,
       status: "active",
       internship_title: "Frontend Intern",
+      start_date: "2026-02-01",
+      end_date: "2026-04-30",
     },
     {
       id: 2,
-      student: 102,
+      intern: 102,
       organization: 202,
       status: "active",
       internship_title: "Backend Intern",
+      start_date: "2026-02-05",
+      end_date: "2026-05-05",
     },
   ],
   weeklyLogs: [
     {
       id: 1,
-      student: 101,
+      placement: 1,
       week_number: 9,
       status: "submitted",
       submitted_at: "2026-02-25",
       created_at: "2026-02-25",
+      updated_at: "2026-02-25",
+      activities: "Completed assigned frontend tasks.",
+      learnings: "Learned component testing.",
+      challenges: "Resolved state management issues.",
     },
     {
       id: 2,
-      student: 102,
+      placement: 2,
       week_number: 7,
       status: "submitted",
       submitted_at: "2026-02-24",
       created_at: "2026-02-24",
+      updated_at: "2026-02-24",
+      activities: "Worked on backend endpoints.",
+      learnings: "Learned API validation.",
+      challenges: "Handled serializer errors.",
     },
   ],
   usersById: {
@@ -104,12 +126,14 @@ const mockSnapshot = {
       first_name: "Sarah",
       last_name: "Johnson",
       email: "sarah.johnson@university.edu",
+      phone: "+256700000001",
     },
     102: {
       id: 102,
       first_name: "James",
       last_name: "Martinez",
       email: "james.martinez@university.edu",
+      phone: "+256700000002",
     },
   },
   organizationsById: {
@@ -172,19 +196,25 @@ describe("Workplace supervisor pages", () => {
         /select a log to review|select a log to inspect and review/i,
       ),
     ).toBeInTheDocument();
-    expect(await screen.findByText("Sarah Johnson")).toBeInTheDocument();
+    expect(
+      await screen.findByRole("button", { name: /sarah johnson\s+- week 9/i }),
+    ).toBeInTheDocument();
   });
 
   test("switches pending log details when another intern is selected", async () => {
     render(<PendingLogReview />);
 
-    fireEvent.click(await screen.findByText("James Martinez"));
+    fireEvent.click(
+      await screen.findByRole("button", { name: /james martinez\s+- week 7/i }),
+    );
 
     expect(
-      await screen.findByText(/provide a comment for james martinez/i),
+      await screen.findByRole("heading", {
+        name: /james martinez\s+- week 7/i,
+      }),
     ).toBeInTheDocument();
     expect(
-      await screen.findByText(/james martinez - week 7/i),
+      await screen.findByText(/worked on backend endpoints/i),
     ).toBeInTheDocument();
   });
 
@@ -201,6 +231,6 @@ describe("Workplace supervisor pages", () => {
       screen.getAllByText(/academic credentials|recent assigned placements/i)
         .length,
     ).toBeGreaterThan(0);
-    expect(screen.getAllByText(/current interns/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/assigned interns/i).length).toBeGreaterThan(0);
   });
 });
