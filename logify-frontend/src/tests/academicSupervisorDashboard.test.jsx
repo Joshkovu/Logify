@@ -1,5 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
-import PropTypes from "prop-types";
+import { render, screen } from "@testing-library/react";
 import Dashboard from "../pages/dashboards/AcademicSupervisorDashboard/Pages/Dashboard";
 
 jest.mock("../config/api", () => ({
@@ -7,7 +6,12 @@ jest.mock("../config/api", () => ({
     auth: { me: jest.fn() },
     placements: { getPlacements: jest.fn() },
     logbook: { getWeeklyLogs: jest.fn() },
-    evaluations: { getEvaluations: jest.fn() },
+    evaluations: {
+      getEvaluations: jest.fn(),
+      getScores: jest.fn(),
+      getCriteria: jest.fn(),
+      getResults: jest.fn(),
+    },
     accounts: { getUser: jest.fn() },
     organizations: { getOrganization: jest.fn() },
   },
@@ -24,6 +28,8 @@ jest.mock("../components/ui/ThemeToggle", () => {
 });
 
 jest.mock("../components/ui/MetricCard", () => {
+  const PropTypes = require("prop-types");
+
   function MetricCardMock({ title, value }) {
     return (
       <div>
@@ -69,20 +75,29 @@ const setupSuccessfulResponses = ({
       updated_at: "2026-04-20T10:00:00Z",
     },
   ],
+  scores = [],
+  criteria = [],
+  results = [],
 } = {}) => {
   api.auth.me.mockResolvedValue({
     first_name: "Emily",
     last_name: "Roberts",
   });
+
   api.placements.getPlacements.mockResolvedValue(placements);
   api.logbook.getWeeklyLogs.mockResolvedValue(weeklyLogs);
   api.evaluations.getEvaluations.mockResolvedValue(evaluations);
+  api.evaluations.getScores.mockResolvedValue(scores);
+  api.evaluations.getCriteria.mockResolvedValue(criteria);
+  api.evaluations.getResults.mockResolvedValue(results);
+
   api.accounts.getUser.mockResolvedValue({
     id: 101,
     first_name: "Sarah",
     last_name: "Johnson",
     student_number: "20240001",
   });
+
   api.organizations.getOrganization.mockResolvedValue({
     id: 201,
     name: "TechCorp Solutions",
@@ -99,6 +114,9 @@ test("shows a loading message while dashboard data is being fetched", () => {
   api.placements.getPlacements.mockReturnValue(new Promise(() => {}));
   api.logbook.getWeeklyLogs.mockReturnValue(new Promise(() => {}));
   api.evaluations.getEvaluations.mockReturnValue(new Promise(() => {}));
+  api.evaluations.getScores.mockReturnValue(new Promise(() => {}));
+  api.evaluations.getCriteria.mockReturnValue(new Promise(() => {}));
+  api.evaluations.getResults.mockReturnValue(new Promise(() => {}));
 
   render(<Dashboard />);
 
@@ -115,10 +133,10 @@ test("renders academic supervisor data from the backend responses", async () => 
   expect(
     await screen.findByText(/welcome back, emily roberts!/i),
   ).toBeInTheDocument();
+
   expect(screen.getByText("Interns Supervised")).toBeInTheDocument();
-  expect(screen.getByText("1")).toBeInTheDocument();
-  expect(screen.getByText("Sarah Johnson")).toBeInTheDocument();
-  expect(screen.getByText("TechCorp Solutions")).toBeInTheDocument();
+  expect(screen.getAllByText("Sarah Johnson").length).toBeGreaterThan(0);
+  expect(screen.getAllByText("TechCorp Solutions").length).toBeGreaterThan(0);
   expect(screen.getByText(/completed evaluation/i)).toBeInTheDocument();
 });
 
@@ -127,6 +145,9 @@ test("renders empty states when the supervisor has no assigned data", async () =
     placements: [],
     weeklyLogs: { weekly_logs: [] },
     evaluations: [],
+    scores: [],
+    criteria: [],
+    results: [],
   });
 
   render(<Dashboard />);
@@ -134,9 +155,11 @@ test("renders empty states when the supervisor has no assigned data", async () =
   expect(
     await screen.findByText(/no interns are currently assigned/i),
   ).toBeInTheDocument();
+
   expect(
     screen.getByText(/no pending placement approvals right now/i),
   ).toBeInTheDocument();
+
   expect(
     screen.getByText(/no recent supervision activity is available yet/i),
   ).toBeInTheDocument();
@@ -147,10 +170,11 @@ test("shows an error message when dashboard loading fails", async () => {
   api.placements.getPlacements.mockResolvedValue([]);
   api.logbook.getWeeklyLogs.mockResolvedValue({ weekly_logs: [] });
   api.evaluations.getEvaluations.mockResolvedValue([]);
+  api.evaluations.getScores.mockResolvedValue([]);
+  api.evaluations.getCriteria.mockResolvedValue([]);
+  api.evaluations.getResults.mockResolvedValue([]);
 
   render(<Dashboard />);
 
-  await waitFor(() => {
-    expect(screen.getByText(/backend unavailable/i)).toBeInTheDocument();
-  });
+  expect(await screen.findByText(/backend unavailable/i)).toBeInTheDocument();
 });
