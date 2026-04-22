@@ -10,229 +10,89 @@ import {
   CheckCircle2,
   FileText,
 } from "lucide-react";
+import { api } from "../../../../config/api";
+import {
+  buildEvaluationCriteria,
+  formatDate,
+  getPlacementProgress,
+  getUserDisplayName,
+  loadAcademicSupervisorData,
+} from "../utils/academicSupervisorData";
+
+const mapEvaluationRecord = ({
+  evaluation,
+  placementById,
+  usersById,
+  organizationsById,
+  scores,
+  criteriaById,
+  resultByPlacementId,
+  feedbackDrafts,
+}) => {
+  const placement = placementById[evaluation.placement];
+  const student = placement ? usersById[placement.intern] : null;
+  const organization = placement
+    ? organizationsById[placement.organization]
+    : null;
+  const finalResult = resultByPlacementId[evaluation.placement];
+  const { weekLabel } = placement
+    ? getPlacementProgress(placement)
+    : { weekLabel: "Schedule unavailable" };
+  const criteria = buildEvaluationCriteria({
+    evaluation,
+    scores,
+    criteriaById,
+  });
+  const feedbackFromScores = criteria
+    .map((item) => item.comment)
+    .filter(Boolean)
+    .join("\n\n");
+  const feedback =
+    feedbackDrafts[evaluation.id] ||
+    finalResult?.remarks ||
+    finalResult?.workplace_feedback ||
+    feedbackFromScores;
+
+  return {
+    id: evaluation.id,
+    category: evaluation.status === "reviewed" ? "history" : "pending",
+    name: placement ? getUserDisplayName(student, "Intern") : "Intern",
+    type:
+      evaluation.status === "reviewed"
+        ? "Final Evaluation"
+        : "Pending Evaluation",
+    company: organization?.name || "Unknown organization",
+    status:
+      evaluation.status === "reviewed"
+        ? "Authorized"
+        : evaluation.status === "submitted"
+          ? "Awaiting Review"
+          : "In Progress",
+    program: placement?.internship_title || "Placement unavailable",
+    week: weekLabel,
+    score: Math.round(finalResult?.final_score || evaluation.total_score || 0),
+    feedback: feedback || "",
+    date: formatDate(evaluation.updated_at || evaluation.submitted_at),
+    criteria,
+  };
+};
 
 const Evaluation = () => {
-  const initialPendingEvaluations = [
-    {
-      id: 1,
-      category: "pending",
-      name: "Sarah Johnson",
-      type: "Mid-Term Evaluation",
-      company: "TechCorp Solutions Inc.",
-      status: "In Progress",
-      program: "Software Engineering",
-      week: "Week 8 of 12",
-      score: 86,
-      feedback: "",
-      date: "",
-      criteria: [
-        {
-          title: "Technical Skills",
-          weight: "30%",
-          score: 88,
-          note: "Ability to apply technical knowledge and skills",
-          contribution: "26%",
-        },
-        {
-          title: "Communication",
-          weight: "20%",
-          score: 85,
-          note: "Written and verbal communication effectiveness",
-          contribution: "17%",
-        },
-        {
-          title: "Professionalism",
-          weight: "20%",
-          score: 90,
-          note: "Work ethic and professional conduct",
-          contribution: "18%",
-        },
-        {
-          title: "Initiative",
-          weight: "15%",
-          score: 82,
-          note: "Self-motivation and proactive approach",
-          contribution: "12%",
-        },
-        {
-          title: "Problem Solving",
-          weight: "15%",
-          score: 85,
-          note: "Analytical thinking and solution development",
-          contribution: "13%",
-        },
-      ],
-    },
-    {
-      id: 2,
-      category: "pending",
-      name: "Michael Brown",
-      type: "Final Evaluation",
-      company: "NovaSoft Labs",
-      status: "Awaiting Review",
-      program: "Information Systems",
-      week: "Week 12 of 12",
-      score: 91,
-      feedback: "",
-      date: "",
-      criteria: [
-        {
-          title: "Technical Skills",
-          weight: "30%",
-          score: 93,
-          note: "Ability to apply technical knowledge and skills",
-          contribution: "28%",
-        },
-        {
-          title: "Communication",
-          weight: "20%",
-          score: 89,
-          note: "Written and verbal communication effectiveness",
-          contribution: "18%",
-        },
-        {
-          title: "Professionalism",
-          weight: "20%",
-          score: 92,
-          note: "Work ethic and professional conduct",
-          contribution: "18%",
-        },
-        {
-          title: "Initiative",
-          weight: "15%",
-          score: 88,
-          note: "Self-motivation and proactive approach",
-          contribution: "13%",
-        },
-        {
-          title: "Problem Solving",
-          weight: "15%",
-          score: 90,
-          note: "Analytical thinking and solution development",
-          contribution: "14%",
-        },
-      ],
-    },
-  ];
-
-  const initialCompletedEvaluations = [
-    {
-      id: 101,
-      category: "history",
-      name: "Robert Kim",
-      type: "Mid-Term Evaluation",
-      company: "DataTech Analytics",
-      date: "Feb 18, 2026",
-      score: 88,
-      status: "Authorized",
-      program: "Data Science",
-      week: "Week 8 of 12",
-      feedback:
-        "Strong technical execution and dependable communication throughout the evaluation period.",
-      criteria: [
-        {
-          title: "Technical Skills",
-          weight: "30%",
-          score: 89,
-          note: "Ability to apply technical knowledge and skills",
-          contribution: "27%",
-        },
-        {
-          title: "Communication",
-          weight: "20%",
-          score: 84,
-          note: "Written and verbal communication effectiveness",
-          contribution: "17%",
-        },
-        {
-          title: "Professionalism",
-          weight: "20%",
-          score: 90,
-          note: "Work ethic and professional conduct",
-          contribution: "18%",
-        },
-        {
-          title: "Initiative",
-          weight: "15%",
-          score: 87,
-          note: "Self-motivation and proactive approach",
-          contribution: "13%",
-        },
-        {
-          title: "Problem Solving",
-          weight: "15%",
-          score: 88,
-          note: "Analytical thinking and solution development",
-          contribution: "13%",
-        },
-      ],
-    },
-    {
-      id: 102,
-      category: "history",
-      name: "Lisa Wang",
-      type: "Mid-Term Evaluation",
-      company: "CloudNet Systems",
-      date: "Feb 12, 2026",
-      score: 92,
-      status: "Authorized",
-      program: "Cloud Computing",
-      week: "Week 8 of 12",
-      feedback:
-        "Excellent ownership, professionalism, and technical depth. Delivered consistent results.",
-      criteria: [
-        {
-          title: "Technical Skills",
-          weight: "30%",
-          score: 94,
-          note: "Ability to apply technical knowledge and skills",
-          contribution: "28%",
-        },
-        {
-          title: "Communication",
-          weight: "20%",
-          score: 90,
-          note: "Written and verbal communication effectiveness",
-          contribution: "18%",
-        },
-        {
-          title: "Professionalism",
-          weight: "20%",
-          score: 93,
-          note: "Work ethic and professional conduct",
-          contribution: "19%",
-        },
-        {
-          title: "Initiative",
-          weight: "15%",
-          score: 91,
-          note: "Self-motivation and proactive approach",
-          contribution: "14%",
-        },
-        {
-          title: "Problem Solving",
-          weight: "15%",
-          score: 90,
-          note: "Analytical thinking and solution development",
-          contribution: "13%",
-        },
-      ],
-    },
-  ];
-
-  const [pendingEvaluations, setPendingEvaluations] = useState(
-    initialPendingEvaluations,
-  );
-  const [completedEvaluations, setCompletedEvaluations] = useState(
-    initialCompletedEvaluations,
-  );
-  const [selectedEvaluationRef, setSelectedEvaluationRef] = useState({
-    id: initialPendingEvaluations[0].id,
-    category: initialPendingEvaluations[0].category,
+  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const [feedbackDrafts, setFeedbackDrafts] = useState({});
+  const [snapshot, setSnapshot] = useState({
+    evaluations: [],
+    scores: [],
+    criteriaById: {},
+    placementById: {},
+    resultByPlacementId: {},
+    usersById: {},
+    organizationsById: {},
   });
-  const [isDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const [selectedEvaluationId, setSelectedEvaluationId] = useState(null);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -246,22 +106,97 @@ const Evaluation = () => {
     }
   }, [isDark]);
 
-  const allEvaluations = useMemo(() => {
-    return [...pendingEvaluations, ...completedEvaluations];
-  }, [pendingEvaluations, completedEvaluations]);
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      setError("");
 
-  const selectedEvaluation = useMemo(() => {
-    return (
-      allEvaluations.find(
-        (item) =>
-          item.id === selectedEvaluationRef.id &&
-          item.category === selectedEvaluationRef.category,
-      ) || null
-    );
-  }, [allEvaluations, selectedEvaluationRef]);
+      try {
+        const data = await loadAcademicSupervisorData();
+        setSnapshot({
+          evaluations: data.evaluations,
+          scores: data.scores,
+          criteriaById: data.criteriaById,
+          placementById: data.placementById,
+          resultByPlacementId: data.resultByPlacementId,
+          usersById: data.usersById,
+          organizationsById: data.organizationsById,
+        });
+      } catch (loadError) {
+        setError(loadError.message || "Unable to load evaluations.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const {
+    evaluations,
+    scores,
+    criteriaById,
+    placementById,
+    resultByPlacementId,
+    usersById,
+    organizationsById,
+  } = snapshot;
+
+  const records = useMemo(
+    () =>
+      evaluations.map((evaluation) =>
+        mapEvaluationRecord({
+          evaluation,
+          placementById,
+          usersById,
+          organizationsById,
+          scores,
+          criteriaById,
+          resultByPlacementId,
+          feedbackDrafts,
+        }),
+      ),
+    [
+      criteriaById,
+      evaluations,
+      feedbackDrafts,
+      organizationsById,
+      placementById,
+      resultByPlacementId,
+      scores,
+      usersById,
+    ],
+  );
+
+  const pendingEvaluations = useMemo(
+    () => records.filter((item) => item.category === "pending"),
+    [records],
+  );
+
+  const completedEvaluations = useMemo(
+    () => records.filter((item) => item.category === "history"),
+    [records],
+  );
+
+  useEffect(() => {
+    if (!selectedEvaluationId && records.length > 0) {
+      setSelectedEvaluationId(records[0].id);
+    }
+    if (
+      selectedEvaluationId &&
+      !records.some((item) => item.id === selectedEvaluationId)
+    ) {
+      setSelectedEvaluationId(records[0]?.id || null);
+    }
+  }, [records, selectedEvaluationId]);
+
+  const selectedEvaluation = useMemo(
+    () => records.find((item) => item.id === selectedEvaluationId) || null,
+    [records, selectedEvaluationId],
+  );
 
   const handleSelectRecord = (item) => {
-    setSelectedEvaluationRef({ id: item.id, category: item.category });
+    setSelectedEvaluationId(item.id);
   };
 
   const handleFeedbackChange = (value) => {
@@ -269,11 +204,10 @@ const Evaluation = () => {
       return;
     }
 
-    setPendingEvaluations((prev) =>
-      prev.map((item) =>
-        item.id === selectedEvaluation.id ? { ...item, feedback: value } : item,
-      ),
-    );
+    setFeedbackDrafts((current) => ({
+      ...current,
+      [selectedEvaluation.id]: value,
+    }));
   };
 
   const handleSaveReview = () => {
@@ -317,12 +251,7 @@ const Evaluation = () => {
       return;
     }
 
-    setSelectedEvaluationRef({
-      id: selectedEvaluation.id,
-      category: selectedEvaluation.category,
-    });
-
-    alert(`Viewing authorized record for ${selectedEvaluation.name}`);
+    setSelectedEvaluationId(selectedEvaluation.id);
   };
 
   const sectionCardClassName =
@@ -346,6 +275,11 @@ const Evaluation = () => {
           Assess intern performance across key academic and professional
           competencies.
         </p>
+        {error && (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+            {error}
+          </p>
+        )}
       </header>
 
       <section className="mb-8">
@@ -367,13 +301,11 @@ const Evaluation = () => {
           <div className="space-y-4">
             {pendingEvaluations.length > 0 ? (
               pendingEvaluations.map((item) => {
-                const isActive =
-                  selectedEvaluation?.id === item.id &&
-                  selectedEvaluation?.category === item.category;
+                const isActive = selectedEvaluation?.id === item.id;
 
                 return (
                   <button
-                    key={`${item.category}-${item.id}`}
+                    key={item.id}
                     type="button"
                     onClick={() => handleSelectRecord(item)}
                     className={`group flex w-full flex-col gap-4 rounded-2xl border p-4 text-left transition-all sm:flex-row sm:items-center sm:justify-between sm:p-5 ${
@@ -420,7 +352,9 @@ const Evaluation = () => {
             ) : (
               <div className="rounded-2xl border border-dashed border-border bg-muted p-6 text-center">
                 <p className="text-sm font-semibold text-muted-foreground">
-                  No pending evaluations at the moment.
+                  {isLoading
+                    ? "Loading evaluations..."
+                    : "No pending evaluations at the moment."}
                 </p>
               </div>
             )}
@@ -440,7 +374,7 @@ const Evaluation = () => {
                 </div>
 
                 <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl lg:text-3xl">
-                  {selectedEvaluation.type} &mdash; {selectedEvaluation.name}
+                  {selectedEvaluation.type} - {selectedEvaluation.name}
                 </h2>
 
                 <p className="mt-1 text-sm text-muted-foreground sm:text-base">
@@ -483,7 +417,7 @@ const Evaluation = () => {
               <div className="grid grid-cols-1 gap-6 sm:gap-8">
                 {selectedEvaluation.criteria.map((item) => (
                   <div
-                    key={item.title}
+                    key={`${selectedEvaluation.id}-${item.title}`}
                     className="rounded-2xl border border-border bg-muted p-4 sm:p-5"
                   >
                     <div className="mb-4 flex items-start justify-between gap-4">
@@ -601,13 +535,11 @@ const Evaluation = () => {
 
           <div className="space-y-4">
             {completedEvaluations.map((item) => {
-              const isActive =
-                selectedEvaluation?.id === item.id &&
-                selectedEvaluation?.category === item.category;
+              const isActive = selectedEvaluation?.id === item.id;
 
               return (
                 <button
-                  key={`${item.category}-${item.id}`}
+                  key={item.id}
                   type="button"
                   onClick={() => handleSelectRecord(item)}
                   className={`group flex w-full flex-col gap-4 rounded-2xl border p-4 text-left transition-all sm:flex-row sm:items-center sm:justify-between sm:p-5 ${
@@ -654,6 +586,14 @@ const Evaluation = () => {
                 </button>
               );
             })}
+
+            {!isLoading && completedEvaluations.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-border bg-muted p-6 text-center">
+                <p className="text-sm font-semibold text-muted-foreground">
+                  No authorized evaluations yet.
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </section>
