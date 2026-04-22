@@ -1,62 +1,136 @@
-import Side_bar, { SidebarItem } from "../components/dashboard/Side_bar";
-import { LayoutDashboard, Users, User, FileCheck } from "lucide-react";
+import { useEffect, useState } from "react";
+import { LayoutDashboard, Users, User, FileCheck, Menu } from "lucide-react";
 import Dashboard from "../components/dashboard/Dashboard";
 import { Routes, Route } from "react-router-dom";
 import AssignedInterns from "./AssignedInterns";
 import PendingLogReview from "./PendingLogReview";
 import Profile from "./Profile";
+import Side_bar from "../components/dashboard/Side_bar";
+import ThemeToggle from "../../../../components/ui/ThemeToggle";
+
+const DESKTOP_BREAKPOINT = "(min-width: 768px)";
 
 const navParameters = [
   {
-    icon: <LayoutDashboard size={20} />,
-    text: "Dashboard",
-    href: "/workplace-supervisor",
+    icon: LayoutDashboard,
+    name: "Dashboard",
+    path: "/workplace-supervisor",
   },
   {
-    icon: <Users size={20} />,
-    text: "Assigned Interns",
-    href: "/workplace-supervisor/assigned-interns",
+    icon: Users,
+    name: "Assigned Interns",
+    path: "/workplace-supervisor/assigned-interns",
   },
   {
-    icon: <FileCheck size={20} />,
-    text: "Pending Log Reviews",
-    href: "/workplace-supervisor/pending-log-review",
+    icon: FileCheck,
+    name: "Pending Log Reviews",
+    path: "/workplace-supervisor/pending-log-review",
   },
   {
-    icon: <User size={20} />,
-    text: "Profile",
-    href: "/workplace-supervisor/profile",
+    icon: User,
+    name: "Profile",
+    path: "/workplace-supervisor/profile",
   },
 ];
 
 const WorkplaceSupervisorDashboard = () => {
-  const navItems = navParameters.map((parameter) => (
-    <SidebarItem
-      key={parameter.text}
-      icon={parameter.icon}
-      text={parameter.text}
-      href={parameter.href}
-    />
-  ));
-  return (
-    <main className=" bg-stone-100">
-      {/* <div className=" relative flex bg-stone-100 h-15">
-          <div className=" absolute h-15 w-72 bg-maroon-50 border-gray-900 rounded-lg mx-1 shadow"></div>
-          <div className=" ml-74 bg-white rounded-b-lg w-full  p-1 shadow">
-            <h1 className="text-xl text-gray-700 font-medium pl-4">
-              University of Makerere
-            </h1>
-            <h2 className="text-sm text-gray-500 pl-4">
-              Academic Year 2025/2026-Session 1
-            </h2>
-          </div>
-        </div> */}
+  const [isDesktop, setIsDesktop] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
-      <div className="mt-1 flex h-screen overflow-hidden">
-        <Side_bar>{navItems}</Side_bar>
-        {/* <div className="w-70 rounded-r-lg">
-        </div> */}
-        <div className="flex-1  overflow-y-auto w-full">
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(DESKTOP_BREAKPOINT);
+    const syncViewport = (event) => {
+      const matches = event.matches ?? event.currentTarget?.matches ?? false;
+      setIsDesktop(matches);
+
+      if (matches) {
+        setIsMobileSidebarOpen(false);
+      }
+    };
+
+    syncViewport(mediaQuery);
+    mediaQuery.addEventListener("change", syncViewport);
+
+    return () => mediaQuery.removeEventListener("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
+    if (!isDesktop && isMobileSidebarOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+
+    document.body.style.overflow = "";
+    return undefined;
+  }, [isDesktop, isMobileSidebarOpen]);
+
+  useEffect(() => {
+    if (!isMobileSidebarOpen) {
+      return undefined;
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsMobileSidebarOpen(false);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isMobileSidebarOpen]);
+
+  return (
+    <div className="flex h-screen overflow-hidden bg-gray-50 transition-colors duration-300 dark:bg-slate-950">
+      {!isDesktop && (
+        <div
+          className={`fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ${
+            isMobileSidebarOpen
+              ? "pointer-events-auto opacity-100"
+              : "pointer-events-none opacity-0"
+          }`}
+          aria-hidden={!isMobileSidebarOpen}
+          onClick={() => setIsMobileSidebarOpen(false)}
+        />
+      )}
+
+      <Side_bar
+        navLinks={navParameters}
+        expanded={isSidebarExpanded}
+        isDesktop={isDesktop}
+        isMobileOpen={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        onToggleExpanded={() => setIsSidebarExpanded((current) => !current)}
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-border bg-[#FCFBF8]/95 px-4 py-3 backdrop-blur transition-colors duration-300 dark:bg-slate-900/95 md:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setIsMobileSidebarOpen(true)}
+              className="inline-flex items-center justify-center rounded-lg border border-border bg-white p-2 text-maroon-dark shadow-sm transition-colors hover:bg-gold/5 focus:outline-none focus:ring-2 focus:ring-gold dark:bg-slate-800 dark:text-gold dark:hover:bg-slate-700 md:hidden"
+              aria-label="Open sidebar"
+              aria-controls="workplace-supervisor-sidebar"
+              aria-expanded={isMobileSidebarOpen}
+            >
+              <Menu className="h-5 w-5" />
+            </button>
+            <span className="truncate text-sm font-bold uppercase tracking-[0.25em] text-maroon-dark transition-colors duration-300 dark:text-slate-300">
+              Logify Workplace Supervisor
+            </span>
+          </div>
+
+          <div className="ml-4 flex items-center gap-2">
+            <ThemeToggle />
+          </div>
+        </header>
+
+        <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route
@@ -69,9 +143,9 @@ const WorkplaceSupervisorDashboard = () => {
             />
             <Route path="profile" element={<Profile />} />
           </Routes>
-        </div>
+        </main>
       </div>
-    </main>
+    </div>
   );
 };
 

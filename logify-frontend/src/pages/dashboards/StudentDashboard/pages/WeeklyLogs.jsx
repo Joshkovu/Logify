@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../../config/api";
 import CreateWeeklyLog from "../CreateWeeklyLog";
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
@@ -238,7 +238,7 @@ const WeeklyLogs = () => {
             ) : (
               <div className="flex items-center justify-center py-12">
                 <p className="text-lg font-semibold text-text-secondary">
-                  No weekly logs found
+                  No weekly logs
                 </p>
               </div>
             )}

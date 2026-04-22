@@ -8,7 +8,7 @@ import {
   Lock,
   Bell,
 } from "lucide-react";
-import { api } from "@/config/api.js";
+import { api } from "../../../../config/api.js";
 import ChangePassword from "../ChangePassword";
 import EditProfile from "../EditProfile";
 import { useState, useEffect } from "react";
@@ -35,10 +35,10 @@ const Profile = () => {
   const [
     isLoadingWorkplaceSupervisorData,
     setIsLoadingWorkplaceSupervisorData,
-  ] = useState(true);
+  ] = useState(false);
   const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
   const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
-    useState(true);
+    useState(false);
 
   const handleUpdate = async (formData) => {
     if (!originalData) return;
@@ -318,32 +318,36 @@ const Profile = () => {
                 label: "First Name",
                 value: isLoadingPersonal
                   ? "Loading..."
-                  : personalInformation?.first_name ||
-                    (errorP ? `Error: ${errorP.message}` : "Not available"),
+                  : personalInformation
+                    ? personalInformation?.first_name
+                    : "Not available",
                 icon: User,
               },
               {
                 label: "Last Name",
                 value: isLoadingPersonal
                   ? "Loading..."
-                  : personalInformation?.last_name ||
-                    (errorP ? `Error: ${errorP.message}` : "Not available"),
+                  : personalInformation
+                    ? personalInformation?.last_name
+                    : "Not available",
                 icon: User,
               },
               {
                 label: "Webmail",
                 value: isLoadingPersonal
                   ? "Loading..."
-                  : personalInformation?.email ||
-                    (errorP ? `Error: ${errorP.message}` : "Not available"),
+                  : personalInformation
+                    ? personalInformation?.email
+                    : "Not available",
                 icon: Mail,
               },
               {
                 label: "Student Number",
                 value: isLoadingPersonal
                   ? "Loading..."
-                  : personalInformation?.student_number ||
-                    (errorP ? `Error: ${errorP.message}` : "Not available"),
+                  : personalInformation
+                    ? personalInformation?.student_number
+                    : "Not available",
                 icon: User,
               },
             ].map((item, i) => (

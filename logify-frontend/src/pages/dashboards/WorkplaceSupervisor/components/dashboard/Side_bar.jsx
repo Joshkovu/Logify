@@ -1,7 +1,3 @@
-import React from "react";
-import PropTypes from "prop-types";
-// import reacti from "../../assets/avatar.jpg";
-import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import Search from "./Search";
 import { ShieldCheck } from "lucide-react";
@@ -36,34 +32,45 @@ const Side_bar = ({ children }) => {
   }, [isDark]);
 
   return (
-    <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm dark:bg-slate-900 dark:border-slate-700">
+    <aside
+      id="workplace-supervisor-sidebar"
+      aria-label="Main Navigation"
+      aria-hidden={!isDesktop && !isMobileOpen}
+      className={`fixed inset-y-0 left-0 z-40 flex w-72 max-w-[85vw] flex-col overflow-y-auto overflow-x-hidden border-r border-gray-200 bg-[#FCFBF8] px-5 py-6 text-black transition-colors duration-300 ease-in-out dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 sm:py-8 ${
+        isMobileOpen ? "translate-x-0" : "-translate-x-full"
+      } md:static md:z-auto md:max-w-none md:translate-x-0 ${
+        expanded ? "md:w-72 md:px-5" : "md:w-24 md:px-3"
+      }`}
+    >
+      <div className={`mb-10 ${showExpandedContent ? "px-4" : "px-0"}`}>
         <div
-          className={`mb-12 px-4 ${expanded ? "" : "w-0 ml-0 hidden"} transition-all duration-200`}
+          className={`flex items-start ${
+            showExpandedContent ? "justify-between" : "justify-center"
+          }`}
         >
-          <div>
-            {" "}
-            <ShieldCheck className="text-white h-6 w-6" />
+          <div className="flex items-center gap-3">
+            {showExpandedContent && (
+              <span className="text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 dark:text-gold/80 md:hidden">
+                Menu
+              </span>
+            )}
           </div>
-          <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2 dark:text-slate-300 font-bold">
-            LOGIFY
-          </div>
-          <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
-            Student Portal
-          </div>
-        </div>
-        <div
-          className={`p-4 pb-4 flex justify-between items-center ${expanded ? "" : "pt-37"} `}
-        >
-          <div
-            className={`mr-1 overflow-hidden duration-200 transition-all 
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
-          >
-            <Search />
-          </div>
+
           <button
-            onClick={() => setExpanded((curr) => !curr)}
-            className={`p-2  rounded-full bg-[#FCFBF2]  hover:bg-gray-100 ml-0.5 duration-200 transition-all shadow-lg dark:bg-slate-800/50 dark:hover:bg-slate-700/50 dark:border dark:border-slate-300 ${expanded ? "" : "ml-2"}`}
+            type="button"
+            onClick={isDesktop ? onToggleExpanded : onCloseMobile}
+            className={`rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ${
+              !showExpandedContent && isDesktop ? "mr-4" : ""
+            }`}
+            aria-label={
+              isDesktop
+                ? expanded
+                  ? "Collapse sidebar"
+                  : "Expand sidebar"
+                : "Close sidebar"
+            }
+            aria-expanded={isDesktop ? expanded : isMobileOpen}
+            aria-controls="workplace-supervisor-sidebar"
           >
             {expanded ? (
               <ArrowLeftToLine
@@ -124,19 +131,28 @@ const Side_bar = ({ children }) => {
           </ul>
         </SidebarContext.Provider>
 
-        <div className=" border-t border-b flex p-3 bg-stone-50 border-stone-300 dark:bg-slate-800/50 dark:border-slate-700">
-          <img
-            src="https://api.dicebear.com/9.x/micah/svg?seed=Liam"
-            alt=""
-            className="size-15 rounded-full bg-maroonCustom"
-          />
+      <div
+        className={`mt-auto border-t border-border bg-muted/30 dark:border-slate-700 dark:bg-slate-800/40 ${
+          showExpandedContent ? "p-6" : "p-4"
+        }`}
+      >
+        <div
+          className={`mb-4 flex items-center ${
+            showExpandedContent ? "gap-3" : "justify-center"
+          }`}
+        >
+          <Avatar className="h-10 w-10 border-2 border-primary/10">
+            <AvatarFallback className="bg-amber-500 font-bold text-white">
+              {isLoadingUser ? "..." : initials || "WS"}
+            </AvatarFallback>
+          </Avatar>
 
           <div
-            className={`
-            flex justify-between items-center
-            overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0"}
-            `}
+            className={`flex flex-col overflow-hidden transition-all duration-200 ${
+              showExpandedContent
+                ? "w-auto opacity-100"
+                : "hidden w-0 opacity-0"
+            }`}
           >
             {loading ? (
               <div className="animate-pulse">
@@ -164,7 +180,6 @@ const Side_bar = ({ children }) => {
             onClick={handleSignOut}
             className="h-9 w-auto justify-start gap-2 border-border text-xs font-bold transition-colors hover:bg-background hover:text-maroon dark:border-slate-700 dark:hover:bg-slate-800/50 m-6 "
           >
-            <LogOut className="h-3.5 w-3.5" />
             Sign Out
           </Button>
         ) : (
@@ -183,7 +198,18 @@ const Side_bar = ({ children }) => {
 };
 
 Side_bar.propTypes = {
-  children: PropTypes.node.isRequired,
+  navLinks: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+      icon: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
+    }),
+  ).isRequired,
+  expanded: PropTypes.bool.isRequired,
+  isDesktop: PropTypes.bool.isRequired,
+  isMobileOpen: PropTypes.bool.isRequired,
+  onCloseMobile: PropTypes.func.isRequired,
+  onToggleExpanded: PropTypes.func.isRequired,
 };
 
 export default Side_bar;

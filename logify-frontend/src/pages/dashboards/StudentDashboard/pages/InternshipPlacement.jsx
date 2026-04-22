@@ -2,7 +2,7 @@ import { Clock, MapPin, Building2, User, Phone, Mail } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 import CreatePlacement from "../CreatePlacement";
 import { useState, useEffect, useCallback } from "react";
-import { api } from "@/config/api";
+import { api } from "../../../../config/api";
 
 const InternshipPlacement = () => {
   const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
@@ -11,10 +11,10 @@ const InternshipPlacement = () => {
   const [
     isLoadingWorkplaceSupervisorData,
     setIsLoadingWorkplaceSupervisorData,
-  ] = useState(true);
+  ] = useState(false);
   const [academicSupervisorData, setAcademicSupervisorData] = useState(null);
   const [isLoadingAcademicSupervisorData, setIsLoadingAcademicSupervisorData] =
-    useState(true);
+    useState(false);
   const [existingPlacement, setExistingPlacement] = useState(null);
   const [isLoadingPlacement, setIsLoadingPlacement] = useState(true);
   const [isLoadingOrganization, setIsLoadingOrganization] = useState(false);

@@ -19,13 +19,19 @@ const LogReview = ({ intern }) => {
         <h2 className="font-bold text-2xl mb-2">
           Activities & Tasks Completed
         </h2>
-        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.activities}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">
+          {intern.log.activities}
+        </p>
 
         <h2 className="font-bold text-2xl mb-2">Key Learnings</h2>
-        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.learnings}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">
+          {intern.log.learnings}
+        </p>
 
         <h2 className="font-bold text-2xl mb-2">Challenges & Solutions</h2>
-        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">{intern.log.challenges}</p>
+        <p className="text-gray-700 mb-4 text-xl dark:text-slate-400">
+          {intern.log.challenges}
+        </p>
       </div>
     </div>
   );
