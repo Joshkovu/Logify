@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
+import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, isAuthenticated, isLoadingUser } = useContext(AuthContext);
@@ -51,6 +52,10 @@ const ProtectedRoute = ({ allowedRoles }) => {
   const isAuthorized = allowedRoles.includes(user.role);
 
   return isAuthorized ? <Outlet /> : <Navigate to="/401" replace />;
+};
+
+ProtectedRoute.propTypes = {
+  allowedRoles: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
 export default ProtectedRoute;
