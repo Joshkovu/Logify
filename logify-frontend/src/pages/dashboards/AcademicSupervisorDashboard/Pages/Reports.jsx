@@ -207,34 +207,39 @@ const Reports = () => {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
       setSubmitted(true);
-    } catch {
-      setError("Failed to submit files. Please try again.");
+      setError(
+        "Files were prepared locally, but the backend does not currently expose a supervisor report upload endpoint.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleExportReport = async () => {
-    if (!submitted) {
-      setError("Please submit uploaded files before exporting the report.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const payload = {
+        generated_at: new Date().toISOString(),
+        summary: {
+          total_interns: totalInterns,
+          average_score: averageScore,
+          completion_rate: completionRate,
+          active_placements: activePlacements,
+          results_count: results.length,
+        },
+        students: reportRows,
+      };
 
-      const blob = new Blob(["Semester Report Export"], {
-        type: "text/plain;charset=utf-8",
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "semester-report.txt";
+      link.download = "academic-supervisor-report.json";
       link.click();
       window.URL.revokeObjectURL(url);
     } catch {
@@ -444,15 +449,9 @@ const Reports = () => {
               </div>
             )}
 
-            {error && (
-              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                {error}
-              </div>
-            )}
-
             {submitted && (
               <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
-                Files submitted successfully. You can now export the semester
+                Files prepared successfully. You can now export the semester
                 report.
               </div>
             )}
