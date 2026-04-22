@@ -149,40 +149,50 @@ const InternshipApprovals = () => {
         iconType: "reviews",
       },
     ];
-  }, [pendingApprovals, approvedApprovals, declinedApprovals]);
+  }, [
+    approvedApprovals.length,
+    declinedApprovals.length,
+    isLoading,
+    pendingApprovals.length,
+  ]);
 
-  const handleApprove = (item) => {
-    const approvedItem = {
-      ...item,
-      status: "Approved",
-      actionDate: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-    };
-
-    setApprovedApprovals((prev) => [approvedItem, ...prev]);
-    setPendingApprovals((prev) =>
-      prev.filter((approval) => approval.id !== item.id),
-    );
+  const updatePlacementStatus = (placementId, nextStatus, updatedPlacement) => {
+    setSnapshot((current) => ({
+      ...current,
+      placements: current.placements.map((placement) =>
+        placement.id === placementId
+          ? { ...placement, ...updatedPlacement, status: nextStatus }
+          : placement,
+      ),
+    }));
   };
 
-  const handleDecline = (item) => {
-    const declinedItem = {
-      ...item,
-      status: "Declined",
-      actionDate: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-    };
+  const handleApprove = async (item) => {
+    setActionId(item.id);
+    setError("");
 
-    setDeclinedApprovals((prev) => [declinedItem, ...prev]);
-    setPendingApprovals((prev) =>
-      prev.filter((approval) => approval.id !== item.id),
-    );
+    try {
+      const response = await api.placements.approvePlacement(item.id);
+      updatePlacementStatus(item.id, "approved", response || {});
+    } catch (actionError) {
+      setError(actionError.message || "Unable to approve this request.");
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const handleDecline = async (item) => {
+    setActionId(item.id);
+    setError("");
+
+    try {
+      const response = await api.placements.rejectPlacement(item.id);
+      updatePlacementStatus(item.id, "rejected", response || {});
+    } catch (actionError) {
+      setError(actionError.message || "Unable to decline this request.");
+    } finally {
+      setActionId(null);
+    }
   };
 
   const pageCard =
@@ -211,6 +221,11 @@ const InternshipApprovals = () => {
           Review and authorize student internship placement requests for the
           current semester.
         </p>
+        {error && (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+            {error}
+          </p>
+        )}
       </header>
 
       <section className="mb-8 grid grid-cols-1 gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 xl:gap-8">
@@ -246,7 +261,7 @@ const InternshipApprovals = () => {
                           className="text-gold dark:text-slate-300"
                         />
                         <span className="text-xs font-bold uppercase tracking-[0.2em] text-gold dark:text-slate-300">
-                          {item.status}
+                          Pending
                         </span>
                       </div>
                     </div>
@@ -331,18 +346,20 @@ const InternshipApprovals = () => {
               <div className="flex flex-col gap-4 border-t border-border/50 pt-8 md:flex-row">
                 <button
                   onClick={() => handleApprove(item)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 active:scale-[0.98]"
+                  disabled={actionId === item.id}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <CheckCircle2 size={18} />
-                  Approve Request
+                  {actionId === item.id ? "Approving..." : "Approve Request"}
                 </button>
 
                 <button
                   onClick={() => handleDecline(item)}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
+                  disabled={actionId === item.id}
+                  className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300"
                 >
                   <XCircle size={18} />
-                  Decline Request
+                  {actionId === item.id ? "Declining..." : "Decline Request"}
                 </button>
               </div>
             </div>
@@ -350,7 +367,9 @@ const InternshipApprovals = () => {
         ) : (
           <div className="rounded-[12px] border border-border bg-card p-6 text-center sm:p-8 lg:p-10">
             <p className="text-base font-semibold text-muted-foreground sm:text-lg">
-              No pending internship approvals at the moment.
+              {isLoading
+                ? "Loading internship approvals..."
+                : "No pending internship approvals at the moment."}
             </p>
           </div>
         )}
