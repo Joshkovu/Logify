@@ -1,5 +1,11 @@
 import { Link } from "react-router-dom";
-import { GraduationCap, ShieldCheck, UserCog, ArrowRight } from "lucide-react";
+import {
+  GraduationCap,
+  ShieldCheck,
+  UserCog,
+  Building2,
+  ArrowRight,
+} from "lucide-react";
 
 const LandingPage = () => {
   const dashboards = [
@@ -30,6 +36,15 @@ const LandingPage = () => {
       color: "bg-maroonCustom",
       accent: "text-white",
     },
+    {
+      title: "Workplace Supervisor",
+      description:
+        "Review workplace logs, provide feedback, and oversee assigned interns in real time.",
+      icon: <Building2 size={48} />,
+      path: "/workplace-supervisor",
+      color: "bg-maroonCustom",
+      accent: "text-white",
+    },
   ];
 
   return (
@@ -56,7 +71,7 @@ const LandingPage = () => {
 
       {/* Dashboard Selection */}
       <section className="px-6 pb-24">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 md:grid-cols-2 xl:grid-cols-4">
           {dashboards.map((dash, i) => (
             <Link
               key={i}
