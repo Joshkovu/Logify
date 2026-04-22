@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { TrendingUp, FileDown, Upload, X } from "lucide-react";
@@ -12,6 +12,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import {
+  formatDateRange,
+  getPlacementProgress,
+  getUserDisplayName,
+  loadAcademicSupervisorData,
+} from "../utils/academicSupervisorData";
 
 ChartJS.register(
   CategoryScale,
@@ -22,76 +28,21 @@ ChartJS.register(
   Legend,
 );
 
-const stats = [
-  {
-    title: "Total Interns",
-    value: "15",
-    iconType: "interns",
-  },
-  {
-    title: "Average Score",
-    value: "86.6%",
-    iconType: "reviews",
-  },
-  {
-    title: "Completion Rate",
-    value: "95%",
-    iconType: "evaluations",
-  },
-  {
-    title: "Active Placements",
-    value: "5",
-    iconType: "placements",
-  },
-];
-
-const students = [
-  {
-    name: "Sarah Johnson",
-    organization: "TechCorp Solutions",
-    progress: "Week 8/12",
-    status: "Active",
-    score: 85,
-  },
-  {
-    name: "Robert Kim",
-    organization: "DataTech Analytics",
-    progress: "Week 10/12",
-    status: "Active",
-    score: 88,
-  },
-  {
-    name: "Lisa Wang",
-    organization: "CloudNet Systems",
-    progress: "Week 6/12",
-    status: "Active",
-    score: 92,
-  },
-  {
-    name: "David Chen",
-    organization: "FinTech Corp",
-    progress: "Not Started",
-    status: "Pending",
-    score: 0,
-  },
-  {
-    name: "Maria Garcia",
-    organization: "InnovateTech",
-    progress: "Not Started",
-    status: "Pending",
-    score: 0,
-  },
-];
-
 const Reports = () => {
   const [showExportPanel, setShowExportPanel] = useState(false);
   const [files, setFiles] = useState([]);
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const [isDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
+  const [isLoading, setIsLoading] = useState(true);
+  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [snapshot, setSnapshot] = useState({
+    placements: [],
+    evaluations: [],
+    results: [],
+    usersById: {},
+    organizationsById: {},
+    resultByPlacementId: {},
   });
 
   useEffect(() => {
@@ -106,10 +57,130 @@ const Reports = () => {
     }
   }, [isDark]);
 
-  const activeCount = students.filter(
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const data = await loadAcademicSupervisorData();
+        setSnapshot({
+          placements: data.placements,
+          evaluations: data.evaluations,
+          results: data.results,
+          usersById: data.usersById,
+          organizationsById: data.organizationsById,
+          resultByPlacementId: data.resultByPlacementId,
+        });
+      } catch (loadError) {
+        setError(loadError.message || "Unable to load report analytics.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const {
+    placements,
+    evaluations,
+    results,
+    usersById,
+    organizationsById,
+    resultByPlacementId,
+  } = snapshot;
+
+  const reportRows = useMemo(
+    () =>
+      placements.map((placement) => {
+        const student = usersById[placement.intern];
+        const organization = organizationsById[placement.organization];
+        const result = resultByPlacementId[placement.id];
+        const evaluation = evaluations.find(
+          (item) => item.placement === placement.id,
+        );
+        const { weekLabel } = getPlacementProgress(placement);
+
+        return {
+          id: placement.id,
+          name: getUserDisplayName(student, "Intern"),
+          organization: organization?.name || "Unknown organization",
+          progress:
+            placement.status === "submitted" ? "Not Started" : weekLabel,
+          status:
+            placement.status === "active" || placement.status === "completed"
+              ? "Active"
+              : placement.status === "submitted"
+                ? "Pending"
+                : placement.status === "approved"
+                  ? "Approved"
+                  : placement.status.charAt(0).toUpperCase() +
+                    placement.status.slice(1),
+          score: Math.round(
+            result?.final_score || evaluation?.total_score || 0,
+          ),
+          dateRange: formatDateRange(placement.start_date, placement.end_date),
+        };
+      }),
+    [
+      evaluations,
+      organizationsById,
+      placements,
+      resultByPlacementId,
+      usersById,
+    ],
+  );
+
+  const totalInterns = reportRows.length;
+  const scoredRows = reportRows.filter((student) => student.score > 0);
+  const averageScore =
+    scoredRows.length === 0
+      ? 0
+      : Math.round(
+          scoredRows.reduce((total, student) => total + student.score, 0) /
+            scoredRows.length,
+        );
+  const completionRate =
+    placements.length === 0
+      ? 0
+      : Math.round(
+          (placements.filter((placement) => placement.status === "completed")
+            .length /
+            placements.length) *
+            100,
+        );
+  const activePlacements = placements.filter((placement) =>
+    ["approved", "active", "completed"].includes(placement.status),
+  ).length;
+
+  const stats = [
+    {
+      title: "Total Interns",
+      value: isLoading ? "..." : String(totalInterns),
+      iconType: "interns",
+    },
+    {
+      title: "Average Score",
+      value: isLoading ? "..." : `${averageScore}%`,
+      iconType: "reviews",
+    },
+    {
+      title: "Completion Rate",
+      value: isLoading ? "..." : `${completionRate}%`,
+      iconType: "evaluations",
+    },
+    {
+      title: "Active Placements",
+      value: isLoading ? "..." : String(activePlacements),
+      iconType: "placements",
+    },
+  ];
+
+  const activeCount = reportRows.filter(
     (student) => student.status === "Active",
   ).length;
-  const pendingCount = students.filter(
+  const pendingCount = reportRows.filter(
     (student) => student.status === "Pending",
   ).length;
 
@@ -136,34 +207,39 @@ const Reports = () => {
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1200));
       setSubmitted(true);
-    } catch {
-      setError("Failed to submit files. Please try again.");
+      setError(
+        "Files were prepared locally, but the backend does not currently expose a supervisor report upload endpoint.",
+      );
     } finally {
       setLoading(false);
     }
   };
 
   const handleExportReport = async () => {
-    if (!submitted) {
-      setError("Please submit uploaded files before exporting the report.");
-      return;
-    }
-
     setLoading(true);
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      const payload = {
+        generated_at: new Date().toISOString(),
+        summary: {
+          total_interns: totalInterns,
+          average_score: averageScore,
+          completion_rate: completionRate,
+          active_placements: activePlacements,
+          results_count: results.length,
+        },
+        students: reportRows,
+      };
 
-      const blob = new Blob(["Semester Report Export"], {
-        type: "text/plain;charset=utf-8",
+      const blob = new Blob([JSON.stringify(payload, null, 2)], {
+        type: "application/json;charset=utf-8",
       });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "semester-report.txt";
+      link.download = "academic-supervisor-report.json";
       link.click();
       window.URL.revokeObjectURL(url);
     } catch {
@@ -174,17 +250,19 @@ const Reports = () => {
   };
 
   const performanceChartData = {
-    labels: students.map((student) => student.name),
+    labels: reportRows.map((student) => student.name),
     datasets: [
       {
         label: "Score",
-        data: students.map((student) => student.score),
+        data: reportRows.map((student) => student.score),
         backgroundColor: [
           "#7A1C1C",
           "#8B2323",
           "#9C2A2A",
           "#D6D3D1",
           "#E7E5E4",
+          "#B45309",
+          "#166534",
         ],
         borderRadius: 10,
         barThickness: 36,
@@ -205,15 +283,10 @@ const Reports = () => {
     },
     scales: {
       x: {
-        grid: {
-          display: false,
-        },
+        grid: { display: false },
         ticks: {
           color: "#6B7280",
-          font: {
-            size: 11,
-            weight: "600",
-          },
+          font: { size: 11, weight: "600" },
         },
       },
       y: {
@@ -222,13 +295,8 @@ const Reports = () => {
         ticks: {
           color: "#6B7280",
           stepSize: 20,
-          callback: function (value) {
-            return `${value}%`;
-          },
-          font: {
-            size: 11,
-            weight: "600",
-          },
+          callback: (value) => `${value}%`,
+          font: { size: 11, weight: "600" },
         },
         grid: {
           color: "rgba(0,0,0,0.06)",
@@ -296,6 +364,11 @@ const Reports = () => {
             Gain deep insights into intern performance, placement trends, and
             academic milestones.
           </p>
+          {error && (
+            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+              {error}
+            </p>
+          )}
         </div>
 
         <button
@@ -376,15 +449,9 @@ const Reports = () => {
               </div>
             )}
 
-            {error && (
-              <div className="mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300">
-                {error}
-              </div>
-            )}
-
             {submitted && (
               <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
-                Files submitted successfully. You can now export the semester
+                Files prepared successfully. You can now export the semester
                 report.
               </div>
             )}
@@ -492,9 +559,9 @@ const Reports = () => {
             </thead>
 
             <tbody className="divide-y divide-border/30 dark:divide-slate-700">
-              {students.map((student) => (
+              {reportRows.map((student) => (
                 <tr
-                  key={student.name}
+                  key={student.id}
                   className="group transition-colors hover:bg-background/40 dark:hover:bg-slate-800/60"
                 >
                   <td className="px-4 py-5 sm:px-8 sm:py-6">
@@ -524,7 +591,7 @@ const Reports = () => {
                           : "text-maroon-dark dark:text-white"
                       }`}
                     >
-                      {student.score > 0 ? `${student.score}%` : "—"}
+                      {student.score > 0 ? `${student.score}%` : "-"}
                     </span>
                   </td>
 
@@ -541,6 +608,17 @@ const Reports = () => {
                   </td>
                 </tr>
               ))}
+
+              {!isLoading && reportRows.length === 0 && (
+                <tr>
+                  <td
+                    colSpan="5"
+                    className="px-8 py-8 text-center text-sm text-muted-foreground"
+                  >
+                    No supervised intern analytics are available yet.
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -1,225 +1,242 @@
-import React from "react";
-import PropTypes from "prop-types";
-// import reacti from "../../assets/avatar.jpg";
-import { ArrowLeftToLine, ArrowRightToLine } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import Search from "./Search";
-import { ShieldCheck } from "lucide-react";
-import { Moon, Sun } from "lucide-react";
-import { useEffect } from "react";
+import { useContext } from "react";
+import PropTypes from "prop-types";
+import { LogOut, ArrowLeftToLine, ArrowRightToLine, X } from "lucide-react";
+
 import { Button } from "../../../../../components/ui/Button";
-import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback } from "../../../../../components/ui/Avatar";
+import { AuthContext } from "../../../../../contexts/AuthContext";
 
-const SidebarContext = React.createContext();
+const Side_bar = ({
+  navLinks,
+  expanded,
+  isDesktop,
+  isMobileOpen,
+  onCloseMobile,
+  onToggleExpanded,
+}) => {
+  const location = useLocation();
+  const { logout, user, isLoadingUser } = useContext(AuthContext);
+  const showExpandedContent = !isDesktop || expanded;
 
-const Side_bar = ({ children }) => {
-  const [expanded, setExpanded] = React.useState(true);
-  const navigate = useNavigate();
-  const [isDark, setIsDark] = React.useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
+  const handleSignOut = async () => {
+    await logout();
 
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (isDark) {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+    if (!isDesktop) {
+      onCloseMobile();
     }
-  }, [isDark]);
+  };
+
+  const fullName = user
+    ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+    : "Supervisor User";
+
+  const initials = fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((token) => token[0])
+    .join("")
+    .toUpperCase();
 
   return (
-    <aside className="h-screen flex">
-      <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm dark:bg-slate-900 dark:border-slate-700">
+    <aside
+      id="workplace-supervisor-sidebar"
+      aria-label="Main Navigation"
+      aria-hidden={!isDesktop && !isMobileOpen}
+      className={`fixed inset-y-0 left-0 z-40 flex w-72 max-w-[85vw] flex-col overflow-y-auto overflow-x-hidden border-r border-gray-200 bg-[#FCFBF8] px-5 py-6 text-black transition-colors duration-300 ease-in-out dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 sm:py-8 ${
+        isMobileOpen ? "translate-x-0" : "-translate-x-full"
+      } md:static md:z-auto md:max-w-none md:translate-x-0 ${
+        expanded ? "md:w-72 md:px-5" : "md:w-24 md:px-3"
+      }`}
+    >
+      <div className={`mb-10 ${showExpandedContent ? "px-4" : "px-0"}`}>
         <div
-          className={`mb-12 px-4 ${expanded ? "" : "w-0 ml-0 hidden"} transition-all duration-200`}
+          className={`flex items-start ${
+            showExpandedContent ? "justify-between" : "justify-center"
+          }`}
         >
-          <div>
-            {" "}
-            <ShieldCheck className="text-white h-6 w-6" />
-          </div>
-          <div className="text-3xl text-black tracking-tighter text-gold flex items-center gap-2 dark:text-slate-300 font-bold">
-            LOGIFY
-          </div>
-          <div className="text-[10px] uppercase tracking-[0.2em] font-bold text-gold/60 mt-1 ml-10">
-            Student Portal
-          </div>
-        </div>
-        <div
-          className={`p-4 pb-4 flex justify-between items-center ${expanded ? "" : "pt-37"} `}
-        >
-          <div
-            className={`mr-1 overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0 hidden"}`}
-          >
-            <Search />
-          </div>
-          <button
-            onClick={() => setExpanded((curr) => !curr)}
-            className={`p-2  rounded-full bg-[#FCFBF2]  hover:bg-gray-100 ml-0.5 duration-200 transition-all shadow-lg dark:bg-slate-800/50 dark:hover:bg-slate-700/50 dark:border dark:border-slate-300 ${expanded ? "" : "ml-2"}`}
-          >
-            {expanded ? (
-              <ArrowLeftToLine
-                size={20}
-                className=" text-gray-700 dark:text-slate-200"
-              />
-            ) : (
-              <ArrowRightToLine
-                size={20}
-                className=" text-gray-700 dark:text-slate-200"
-              />
-            )}
-          </button>
-        </div>
-        <div className="flex justify-between gap-3 mx-3">
-          <p
-            className={`flex text-sm justify-start  font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 " : "w-0 ml-0 hidden"} dark:text-slate-300`}
-          >
-            MAIN NAVIGATION
-          </p>
-          <div
-            className={` flex ${expanded ? "justify-between" : "justify-center"}`}
-          >
-            {expanded ? (
-              <Button
-                variant="outline"
-                onClick={() => setIsDark((prev) => !prev)}
-                className="h-9 w-full justify-start gap-2 border text-xs font-bold dark:border-slate-700 hover:shadow-lg shadow-xs  border-stone-200 "
-              >
-                {isDark ? (
-                  <Sun className="h-4 w-4" />
-                ) : (
-                  <Moon className="h-4 w-4" />
-                )}
-                {isDark ? "Light Mode" : "Dark Mode"}
-              </Button>
-            ) : (
-              <button
-                onClick={() => setIsDark((prev) => !prev)}
-                className="flex h-10 w-10 items-center justify-center border rounded-xl transition-colors hover:bg-background dark:hover:bg-slate-800/50 mx-3  border-stone-200  hover:shadow-lg shadow-xs"
-                aria-label="Toggle dark mode"
-                title="Toggle dark mode"
-              >
-                {isDark ? (
-                  <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
-                ) : (
-                  <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
-                )}
-              </button>
-            )}
-          </div>
-        </div>
-
-        <SidebarContext.Provider value={{ expanded }}>
-          <ul className={`flex-1 px-3 ${expanded ? "" : "mt-5"}`}>
-            {children}
-          </ul>
-        </SidebarContext.Provider>
-
-        <div className=" border-t border-b flex p-3 bg-stone-50 border-stone-300 dark:bg-slate-800/50 dark:border-slate-700">
-          <img
-            src="https://api.dicebear.com/9.x/micah/svg?seed=Liam"
-            alt=""
-            className="size-15 rounded-full bg-maroonCustom"
-          />
-
-          <div
-            className={`
-            flex justify-between items-center
-            overflow-hidden duration-200 transition-all
-            ${expanded ? "w-52 ml-3" : "w-0 ml-0"}
-            `}
-          >
-            <div className=" leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600 dark:text-slate-300">
-                johndoe@gmail.com
+          <div className="flex items-center gap-3">
+            {showExpandedContent && (
+              <span className="text-sm font-bold uppercase tracking-[0.2em] text-maroon-dark/80 dark:text-gold/80 md:hidden">
+                Menu
               </span>
-            </div>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={isDesktop ? onToggleExpanded : onCloseMobile}
+            className={`rounded-full bg-[#FCFBF2] p-2 shadow-lg transition-all hover:bg-gray-100 dark:bg-slate-800 dark:hover:bg-slate-700 ${
+              !showExpandedContent && isDesktop ? "mr-4" : ""
+            }`}
+            aria-label={
+              isDesktop
+                ? expanded
+                  ? "Collapse sidebar"
+                  : "Expand sidebar"
+                : "Close sidebar"
+            }
+            aria-expanded={isDesktop ? expanded : isMobileOpen}
+            aria-controls="workplace-supervisor-sidebar"
+          >
+            {isDesktop ? (
+              expanded ? (
+                <ArrowLeftToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+              ) : (
+                <ArrowRightToLine className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+              )
+            ) : (
+              <X className="h-4 w-4 text-gray-700 dark:text-slate-200" />
+            )}
+          </button>
+        </div>
+
+        <div>
+          <div
+            className={`flex items-center gap-2 text-3xl tracking-tighter text-gold transition-all duration-200 ${
+              showExpandedContent ? "mt-2" : "mt-4 justify-center"
+            }`}
+          >
+            {showExpandedContent ? "LOGIFY" : ""}
+          </div>
+          <div
+            className={`mt-1 text-[10px] font-bold uppercase tracking-[0.2em] text-gold/60 transition-all duration-200 ${
+              showExpandedContent ? "ml-10" : "hidden"
+            }`}
+          >
+            Workplace Supervisor Portal
+          </div>
+        </div>
+      </div>
+
+      <nav className="flex flex-1 flex-col gap-2">
+        {navLinks.map((link) => {
+          const Icon = link.icon;
+          const isActive = location.pathname === link.path;
+
+          return (
+            <Link
+              key={link.path}
+              to={link.path}
+              onClick={() => {
+                if (!isDesktop) {
+                  onCloseMobile();
+                }
+              }}
+              className={`group relative flex items-center rounded-xl font-semibold transition-all duration-200 ${
+                isActive
+                  ? "scale-[1.02] bg-maroonCustom text-white shadow-lg shadow-gold/20"
+                  : "text-black/70 hover:bg-black/5 hover:text-black dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
+              } ${
+                showExpandedContent
+                  ? "gap-4 px-4 py-3.5"
+                  : "justify-center px-3 py-3.5"
+              }`}
+              aria-current={isActive ? "page" : undefined}
+            >
+              <Icon
+                className={`text-xl transition-colors ${
+                  isActive ? "text-gold" : "text-gold group-hover:text-gold"
+                }`}
+                aria-hidden="true"
+                strokeWidth={2.5}
+              />
+
+              <span
+                className={`overflow-hidden text-sm tracking-tight transition-all duration-200 ${
+                  showExpandedContent
+                    ? "w-auto opacity-100"
+                    : "hidden w-0 opacity-0"
+                }`}
+              >
+                {link.name}
+              </span>
+
+              {isDesktop && !expanded && (
+                <span
+                  className="pointer-events-none absolute left-full top-1/2 ml-3 -translate-y-1/2 whitespace-nowrap rounded-md bg-maroonCustom px-3 py-1.5 text-xs font-semibold text-white opacity-0 shadow-lg transition-opacity duration-200 group-hover:opacity-100"
+                  role="tooltip"
+                >
+                  {link.name}
+                </span>
+              )}
+            </Link>
+          );
+        })}
+      </nav>
+
+      <div
+        className={`mt-auto border-t border-border bg-muted/30 dark:border-slate-700 dark:bg-slate-800/40 ${
+          showExpandedContent ? "p-6" : "p-4"
+        }`}
+      >
+        <div
+          className={`mb-4 flex items-center ${
+            showExpandedContent ? "gap-3" : "justify-center"
+          }`}
+        >
+          <Avatar className="h-10 w-10 border-2 border-primary/10">
+            <AvatarFallback className="bg-amber-500 font-bold text-white">
+              {isLoadingUser ? "..." : initials || "WS"}
+            </AvatarFallback>
+          </Avatar>
+
+          <div
+            className={`flex flex-col overflow-hidden transition-all duration-200 ${
+              showExpandedContent
+                ? "w-auto opacity-100"
+                : "hidden w-0 opacity-0"
+            }`}
+          >
+            <span className="max-w-30 truncate text-xs font-bold text-foreground">
+              {isLoadingUser ? "Loading..." : fullName}
+            </span>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-red-600">
+              {isLoadingUser ? "Loading..." : "Workplace Supervisor"}
+            </span>
           </div>
         </div>
 
-        {expanded ? (
-          <Button
-            variant="outline"
-            onClick={() => navigate("/dashboards")}
-            className="h-9 w-auto justify-start gap-2 border-border text-xs font-bold transition-colors hover:bg-background hover:text-maroon dark:border-slate-700 dark:hover:bg-slate-800/50 m-6 "
+        <Button
+          type="button"
+          onClick={handleSignOut}
+          variant="outline"
+          className={`h-9 border-primary/10 text-xs font-bold hover:border-destructive/20 hover:bg-destructive/5 hover:text-destructive ${
+            showExpandedContent
+              ? "w-full justify-start gap-2"
+              : "w-full justify-center px-0"
+          }`}
+        >
+          <LogOut className="h-3.5 w-3.5" />
+          <span
+            className={`overflow-hidden transition-all duration-200 ${
+              showExpandedContent
+                ? "w-auto opacity-100"
+                : "hidden w-0 opacity-0"
+            }`}
           >
-            <LogOut className="h-3.5 w-3.5" />
             Sign Out
-          </Button>
-        ) : (
-          <button
-            onClick={() => navigate("/dashboards")}
-            className="flex w-auto items-center justify-center border rounded-xl py-2 transition-colors hover:bg-background dark:hover:bg-slate-800/50 m-6 dark:border-slate-600"
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <LogOut className="h-4 w-4 text-gold dark:text-slate-300" />
-          </button>
-        )}
-      </nav>
+          </span>
+        </Button>
+      </div>
     </aside>
   );
 };
 
 Side_bar.propTypes = {
-  children: PropTypes.node.isRequired,
+  navLinks: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      path: PropTypes.string.isRequired,
+      icon: PropTypes.oneOfType([PropTypes.func, PropTypes.object]).isRequired,
+    }),
+  ).isRequired,
+  expanded: PropTypes.bool.isRequired,
+  isDesktop: PropTypes.bool.isRequired,
+  isMobileOpen: PropTypes.bool.isRequired,
+  onCloseMobile: PropTypes.func.isRequired,
+  onToggleExpanded: PropTypes.func.isRequired,
 };
 
 export default Side_bar;
-
-Side_bar.propTypes = {
-  children: PropTypes.node.isRequired,
-};
-
-export const SidebarItem = ({ icon, text, href }) => {
-  const { expanded } = React.useContext(SidebarContext);
-  const location = useLocation();
-
-  return (
-    <li
-      className={`
-      ${location.pathname === href ? "bg-maroonCustom text-white hover:shadow-lg dark:hover:border " : "hover:bg-red-50 text-gray-600 border border-stone-200  dark:hover:bg-slate-800/50 dark:text-slate-300 dark:border-slate-700 dark:hover:shadow-lg"}
-    relative flex items-center  hover:shadow-lg shadow-xs
-    font-medium rounded-md cursor-pointer  duration-200 transition-transform group
-     ${expanded ? "py-2 px-3 my-2" : "p-3 my-3 transition-all duration-200"}
-    `}
-    >
-      <Link
-        to={href}
-        className={`flex items-center w-full dark:text-slate-300 ${expanded ? "justify-start" : "justify-center"} transition-all duration-200  `}
-      >
-        {icon}
-        <span
-          className={`
-
-          transition-all  duration-200
-            ${expanded ? "overflow-hidden w-52 ml-3" : "w-0 ml-0 hidden"}
-            `}
-        >
-          {text}
-        </span>
-      </Link>
-
-      {!expanded && (
-        <div
-          className={`flex absolute left-full w-max rounded-lg bg-maroonCustom text-white text-sm px-2 py-1 ml-6 invisible -translate-x-3  opacity-20 group-hover:opacity-100 group-hover:visible group-hover:translate-x-0 transition-all duration-200 pointer-events-none`}
-        >
-          {text}
-        </div>
-      )}
-    </li>
-  );
-};
-
-SidebarItem.propTypes = {
-  icon: PropTypes.node.isRequired,
-  text: PropTypes.string.isRequired,
-  href: PropTypes.string.isRequired,
-};
