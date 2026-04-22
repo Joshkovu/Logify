@@ -357,9 +357,20 @@ const Dashboard = () => {
               </thead>
 
               <tbody className="divide-y divide-border/30">
+                {!isLoading && approvals.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan="6"
+                      className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-6"
+                    >
+                      No pending placement approvals right now.
+                    </td>
+                  </tr>
+                )}
+
                 {approvals.map((approval) => (
                   <tr
-                    key={approval.student}
+                    key={approval.id}
                     className="transition-colors hover:bg-muted/40"
                   >
                     <td className="px-4 py-5 sm:px-6">
@@ -393,7 +404,7 @@ const Dashboard = () => {
 
                     <td className="px-4 py-5 sm:px-6">
                       <button
-                        onClick={() => handleReviewApproval(approval)}
+                        type="button"
                         className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
                       >
                         Review
@@ -419,12 +430,18 @@ const Dashboard = () => {
         </div>
 
         <div className="space-y-4">
-          {activities.map((activity, index) => {
+          {!isLoading && activities.length === 0 && (
+            <p className="text-sm text-muted-foreground">
+              No recent supervision activity is available yet.
+            </p>
+          )}
+
+          {activities.map((activity) => {
             const isEvaluation = activity.type === "evaluation";
 
             return (
               <div
-                key={`${activity.title}-${index}`}
+                key={activity.id}
                 className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-muted p-4 transition-colors hover:bg-background sm:flex-row sm:items-center sm:gap-5 sm:p-5"
               >
                 <div
