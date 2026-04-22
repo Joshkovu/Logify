@@ -210,40 +210,58 @@ const Evaluation = () => {
     }));
   };
 
-  const handleSaveReview = () => {
+  const handleSaveReview = async () => {
     if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
       return;
     }
-    alert(`Review saved for ${selectedEvaluation.name}`);
+
+    setIsSaving(true);
+    setError("");
+
+    try {
+      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+        status: "submitted",
+      });
+      setSnapshot((current) => ({
+        ...current,
+        evaluations: current.evaluations.map((evaluation) =>
+          evaluation.id === selectedEvaluation.id
+            ? { ...evaluation, status: "submitted" }
+            : evaluation,
+        ),
+      }));
+    } catch (saveError) {
+      setError(saveError.message || "Unable to save this review.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
-  const handleAuthorizeRequest = () => {
+  const handleAuthorizeRequest = async () => {
     if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
       return;
     }
 
-    const authorizedStudent = {
-      ...selectedEvaluation,
-      category: "history",
-      status: "Authorized",
-      date: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-        year: "numeric",
-      }),
-    };
+    setIsSaving(true);
+    setError("");
 
-    setCompletedEvaluations((prev) => [authorizedStudent, ...prev]);
-
-    const remainingPending = pendingEvaluations.filter(
-      (item) => item.id !== selectedEvaluation.id,
-    );
-    setPendingEvaluations(remainingPending);
-
-    setSelectedEvaluationRef({
-      id: authorizedStudent.id,
-      category: "history",
-    });
+    try {
+      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+        status: "reviewed",
+      });
+      setSnapshot((current) => ({
+        ...current,
+        evaluations: current.evaluations.map((evaluation) =>
+          evaluation.id === selectedEvaluation.id
+            ? { ...evaluation, status: "reviewed" }
+            : evaluation,
+        ),
+      }));
+    } catch (saveError) {
+      setError(saveError.message || "Unable to authorize this evaluation.");
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const handleViewAuthorizedRecord = () => {
@@ -490,19 +508,21 @@ const Evaluation = () => {
                       <button
                         type="button"
                         onClick={handleSaveReview}
-                        className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon dark:text-slate-300"
+                        disabled={isSaving}
+                        className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300"
                       >
                         <Send size={18} />
-                        Save Review
+                        {isSaving ? "Saving..." : "Save Review"}
                       </button>
 
                       <button
                         type="button"
                         onClick={handleAuthorizeRequest}
-                        className="flex items-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-700"
+                        disabled={isSaving}
+                        className="flex items-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <CheckCircle2 size={18} />
-                        Authorize Request
+                        {isSaving ? "Authorizing..." : "Authorize Request"}
                       </button>
                     </>
                   ) : (
