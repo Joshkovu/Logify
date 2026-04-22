@@ -1,4 +1,49 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+
+jest.mock("../config/api", () => ({
+  api: {
+    auth: {
+      me: jest.fn(),
+    },
+    placements: {
+      getPlacements: jest.fn(),
+      createPlacement: jest.fn(),
+      patchPlacement: jest.fn(),
+      submitPlacement: jest.fn(),
+    },
+    evaluations: {
+      getEvaluations: jest.fn(),
+      getResults: jest.fn(),
+      getCriteria: jest.fn(),
+      getScores: jest.fn(),
+    },
+    logbook: {
+      getWeeklyLogs: jest.fn(),
+      getWeeklyLogHistory: jest.fn(),
+      getWeeklyLogReviews: jest.fn(),
+      createWeeklyLog: jest.fn(),
+      updateWeeklyLog: jest.fn(),
+      submitWeeklyLog: jest.fn(),
+      deleteWeeklyLog: jest.fn(),
+    },
+    organizations: {
+      getOrganization: jest.fn(),
+      getOrganizations: jest.fn(),
+    },
+    accounts: {
+      getAcademicSupervisor: jest.fn(),
+      getWorkplaceSupervisor: jest.fn(),
+    },
+    academics: {
+      getInstitution: jest.fn(),
+      getProgramme: jest.fn(),
+    },
+    registry: {
+      getStudent: jest.fn(),
+    },
+  },
+}));
+
 import Dashboard from "../pages/dashboards/WorkplaceSupervisor/components/dashboard/Dashboard";
 import AssignedInterns from "../pages/dashboards/WorkplaceSupervisor/pages/AssignedInterns";
 import PendingLogReview from "../pages/dashboards/WorkplaceSupervisor/pages/PendingLogReview";
