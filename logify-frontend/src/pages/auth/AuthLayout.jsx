@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
 
-const AuthLayout = ({ title, subtitle, children, footer }) => {
+const AuthLayout = ({ title, subtitle, children }) => {
   return (
     <div className="min-h-screen bg-[#FCFBF8] text-slate-900 dark:bg-slate-950 dark:text-slate-100">
       <div className="mx-auto flex min-h-screen w-full max-w-6xl flex-col px-6 py-10 md:px-10">
@@ -20,7 +20,7 @@ const AuthLayout = ({ title, subtitle, children, footer }) => {
           </Link>
         </header>
 
-        <div className="grid gap-8 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+        <div className="flex justify-center items-center w-full">
           <section className="rounded-3xl border border-border bg-white p-8 shadow-sm dark:border-slate-700 dark:bg-slate-900 sm:p-10">
             <h1 className="text-4xl font-black tracking-tight text-maroon-dark dark:text-gold sm:text-5xl">
               {title}
@@ -30,23 +30,6 @@ const AuthLayout = ({ title, subtitle, children, footer }) => {
             </p>
             <div className="mt-8">{children}</div>
           </section>
-
-          <aside className="rounded-3xl border border-gold/30 bg-gradient-to-br from-[#6f1d2a] to-[#2f0f2a] p-8 text-slate-100 shadow-xl sm:p-10">
-            <p className="text-[11px] font-black uppercase tracking-[0.32em] text-gold/80">
-              Secure Entry Experience
-            </p>
-            <h2 className="mt-4 text-3xl font-black leading-tight tracking-tight">
-              Built For Structured Internship Governance
-            </h2>
-            <p className="mt-4 text-sm leading-relaxed text-slate-200/90">
-              This flow separates new and returning users, keeps role boundaries
-              explicit, and prevents accidental access paths before approval.
-            </p>
-            <div className="mt-8 rounded-2xl border border-white/15 bg-white/10 p-5 text-xs leading-relaxed text-slate-200">
-              {footer ||
-                "Use a demo login from authStore seed users while backend integration is pending."}
-            </div>
-          </aside>
         </div>
       </div>
     </div>
