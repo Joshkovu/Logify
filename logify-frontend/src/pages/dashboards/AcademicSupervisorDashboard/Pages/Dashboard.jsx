@@ -1,78 +1,29 @@
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { User, CheckCircle2, ChevronRight } from "lucide-react";
-import { useEffect, useState } from "react";
-
-const summaryCards = [
-  { title: "Interns Supervised", value: "5", iconType: "interns" },
-  { title: "Pending Approvals", value: "2", iconType: "placements" },
-  { title: "Pending Evaluations", value: "1", iconType: "evaluations" },
-];
-
-const supervisedInterns = [
-  {
-    name: "Sarah Johnson",
-    company: "TechCorp Solutions Inc.",
-    course: "Software Engineering",
-    progress: 65,
-    week: "Week 8/12",
-  },
-  {
-    name: "Robert Kim",
-    company: "DataTech Analytics",
-    course: "Computer Science",
-    progress: 80,
-    week: "Week 10/12",
-  },
-  {
-    name: "Lisa Wang",
-    company: "CloudNet Systems",
-    course: "Information Technology",
-    progress: 45,
-    week: "Week 6/12",
-  },
-];
-
-const approvals = [
-  {
-    student: "David Chen",
-    org: "FinTech Corp",
-    role: "Software Development Position",
-    date: "Feb 23, 2026",
-    status: "Pending",
-  },
-  {
-    student: "Maria Garcia",
-    org: "InnovateTech",
-    role: "UI/UX Design Position",
-    date: "Feb 22, 2026",
-    status: "Pending",
-  },
-];
-
-const activities = [
-  {
-    title: "Completed Mid-Term Evaluation",
-    user: "Sarah Johnson",
-    desc: "Score: 85% - Excellent performance",
-    time: "3 days ago",
-    type: "evaluation",
-  },
-  {
-    title: "Approved Placement",
-    user: "Robert Kim",
-    desc: "DataTech Analytics - Data Science Position",
-    time: "5 days ago",
-    type: "placement",
-  },
-];
+import { useEffect, useMemo, useState } from "react";
+import {
+  formatDate,
+  formatRelativeTime,
+  getPlacementProgress,
+  getUserDisplayName,
+  loadAcademicSupervisorData,
+} from "../utils/academicSupervisorData";
 
 const sectionCardClassName =
   "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
-  const [isDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
+  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [snapshot, setSnapshot] = useState({
+    me: null,
+    placements: [],
+    weeklyLogs: [],
+    evaluations: [],
+    usersById: {},
+    organizationsById: {},
   });
 
   useEffect(() => {
@@ -87,9 +38,175 @@ const Dashboard = () => {
     }
   }, [isDark]);
 
-  const handleReviewApproval = (approval) => {
-    alert(`Reviewing approval for ${approval.student}`);
-  };
+  useEffect(() => {
+    const loadData = async () => {
+      setIsLoading(true);
+      setError("");
+
+      try {
+        const data = await loadAcademicSupervisorData();
+        setSnapshot({
+          me: data.me,
+          placements: data.placements,
+          weeklyLogs: data.weeklyLogs,
+          evaluations: data.evaluations,
+          usersById: data.usersById,
+          organizationsById: data.organizationsById,
+        });
+      } catch (loadError) {
+        setError(loadError.message || "Unable to load dashboard data.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const {
+    me,
+    placements,
+    weeklyLogs,
+    evaluations,
+    usersById,
+    organizationsById,
+  } = snapshot;
+
+  const pendingApprovals = useMemo(
+    () => placements.filter((placement) => placement.status === "submitted"),
+    [placements],
+  );
+
+  const pendingEvaluations = useMemo(
+    () =>
+      evaluations.filter((evaluation) =>
+        ["draft", "submitted"].includes(evaluation.status),
+      ),
+    [evaluations],
+  );
+
+  const summaryCards = useMemo(
+    () => [
+      {
+        title: "Interns Supervised",
+        value: isLoading ? "..." : String(placements.length),
+        iconType: "interns",
+      },
+      {
+        title: "Pending Approvals",
+        value: isLoading ? "..." : String(pendingApprovals.length),
+        iconType: "placements",
+      },
+      {
+        title: "Pending Evaluations",
+        value: isLoading ? "..." : String(pendingEvaluations.length),
+        iconType: "evaluations",
+      },
+    ],
+    [
+      isLoading,
+      pendingApprovals.length,
+      pendingEvaluations.length,
+      placements.length,
+    ],
+  );
+
+  const supervisedInterns = useMemo(
+    () =>
+      placements.slice(0, 5).map((placement) => {
+        const { progress, weekLabel } = getPlacementProgress(placement);
+        return {
+          id: placement.id,
+          name: getUserDisplayName(usersById[placement.intern], "Intern"),
+          company:
+            organizationsById[placement.organization]?.name ||
+            "Unknown organization",
+          course: placement.internship_title || "Placement unavailable",
+          progress,
+          week: weekLabel,
+        };
+      }),
+    [organizationsById, placements, usersById],
+  );
+
+  const approvals = useMemo(
+    () =>
+      pendingApprovals.map((placement) => ({
+        id: placement.id,
+        student: getUserDisplayName(usersById[placement.intern], "Intern"),
+        org:
+          organizationsById[placement.organization]?.name ||
+          "Unknown organization",
+        role: placement.internship_title || "Internship Placement",
+        date: formatDate(placement.submitted_at || placement.created_at),
+        status: "Pending",
+      })),
+    [organizationsById, pendingApprovals, usersById],
+  );
+
+  const activities = useMemo(() => {
+    const logActivities = weeklyLogs
+      .filter((log) => ["submitted", "approved"].includes(log.status))
+      .map((log) => {
+        const placement = placements.find((item) => item.id === log.placement);
+        return {
+          id: `log-${log.id}`,
+          title:
+            log.status === "approved"
+              ? "Weekly Log Updated"
+              : "Weekly Log Submitted",
+          user: placement
+            ? getUserDisplayName(usersById[placement.intern], "Intern")
+            : "Intern",
+          desc: `Week ${log.week_number || "?"} progress update`,
+          time: formatRelativeTime(log.submitted_at || log.updated_at),
+          sortDate: log.submitted_at || log.updated_at,
+          type: "evaluation",
+        };
+      });
+
+    const placementActivities = placements
+      .filter((placement) => placement.status === "approved")
+      .map((placement) => ({
+        id: `placement-${placement.id}`,
+        title: "Approved Placement",
+        user: getUserDisplayName(usersById[placement.intern], "Intern"),
+        desc: `${
+          organizationsById[placement.organization]?.name ||
+          "Unknown organization"
+        } - ${placement.internship_title || "Internship Placement"}`,
+        time: formatRelativeTime(placement.approved_at || placement.updated_at),
+        sortDate: placement.approved_at || placement.updated_at,
+        type: "placement",
+      }));
+
+    const evaluationActivities = evaluations
+      .filter((evaluation) => evaluation.status === "reviewed")
+      .map((evaluation) => {
+        const placement = placements.find(
+          (item) => item.id === evaluation.placement,
+        );
+        return {
+          id: `evaluation-${evaluation.id}`,
+          title: "Completed Evaluation",
+          user: placement
+            ? getUserDisplayName(usersById[placement.intern], "Intern")
+            : "Intern",
+          desc: `Score: ${Math.round(evaluation.total_score || 0)}%`,
+          time: formatRelativeTime(
+            evaluation.updated_at || evaluation.submitted_at,
+          ),
+          sortDate: evaluation.updated_at || evaluation.submitted_at,
+          type: "evaluation",
+        };
+      });
+
+    return [...logActivities, ...placementActivities, ...evaluationActivities]
+      .sort((a, b) => new Date(b.sortDate) - new Date(a.sortDate))
+      .slice(0, 5);
+  }, [evaluations, organizationsById, placements, usersById, weeklyLogs]);
+
+  const welcomeName = getUserDisplayName(me, "Supervisor");
 
   return (
     <div className="min-h-screen w-full bg-background px-4 py-6 font-sans text-foreground transition-colors duration-300 sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
@@ -106,9 +223,15 @@ const Dashboard = () => {
           Academic <span className="text-gold">Dashboard</span>
         </h1>
         <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
-          Welcome back, Dr. Roberts! Monitor student progress and manage
-          academic approvals with real-time statistics.
+          {isLoading
+            ? "Loading your supervision overview..."
+            : `Welcome back, ${welcomeName}! Monitor student progress and manage academic approvals with real-time statistics.`}
         </p>
+        {error && (
+          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+            {error}
+          </p>
+        )}
       </header>
 
       <section className="mb-8 grid grid-cols-1 gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-6 xl:grid-cols-3 xl:gap-8">
@@ -140,9 +263,15 @@ const Dashboard = () => {
           </div>
 
           <div className="space-y-4">
+            {!isLoading && supervisedInterns.length === 0 && (
+              <p className="text-sm text-muted-foreground">
+                No interns are currently assigned to your supervisor account.
+              </p>
+            )}
+
             {supervisedInterns.map((intern) => (
               <div
-                key={intern.name}
+                key={intern.id}
                 className="rounded-2xl border border-border bg-muted p-4 transition-all hover:scale-[1.005] sm:p-5"
               >
                 <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
