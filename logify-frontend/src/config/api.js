@@ -338,10 +338,16 @@ export const api = {
       }),
     submitWeeklyLog: (id) =>
       apiRequest(`/v1/logbook/submit_weekly_log/${id}/`, { method: "POST" }),
-    approveWeeklyLog: (id) =>
-      apiRequest(`/v1/logbook/approve_weekly_log/${id}/`, { method: "POST" }),
-    rejectWeeklyLog: (id) =>
-      apiRequest(`/v1/logbook/reject_weekly_log/${id}/`, { method: "POST" }),
+    approveWeeklyLog: (id, data = {}) =>
+      apiRequest(`/v1/logbook/approve_weekly_log/${id}/`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    rejectWeeklyLog: (id, data = {}) =>
+      apiRequest(`/v1/logbook/reject_weekly_log/${id}/`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     requestChangesWeeklyLog: (id, data) =>
       apiRequest(`/v1/logbook/request_changes_weekly_log/${id}/`, {
         method: "POST",
