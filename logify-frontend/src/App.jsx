@@ -15,6 +15,7 @@ import StudentDashboard from "./pages/dashboards/StudentDashboard/StudentDashboa
 import AdminDashboard from "./pages/dashboards/InternshipAdmin/AdminDashboard";
 import SupervisorDashboard from "./pages/dashboards/AcademicSupervisorDashboard/Pages/SupervisorDashboard";
 import WorkplaceSupervisorDashboard from "./pages/dashboards/WorkplaceSupervisor/pages/App3";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
@@ -36,14 +37,19 @@ function App() {
           <Route path="/404" element={<NotFoundPage />} />
           <Route path="/500" element={<ServerErrorPage />} />
 
-          {/* Dashboards with nested routing */}
-          <Route path="/student/*" element={<StudentDashboard />} />
-          <Route path="/admin/*" element={<AdminDashboard />} />
-          <Route path="/supervisor/*" element={<SupervisorDashboard />} />
-          <Route
-            path="/workplace-supervisor/*"
-            element={<WorkplaceSupervisorDashboard />}
-          />
+          {/* Dashboards with nested routing And Protected Routes */}
+          <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
+            <Route path="/student/*" element={<StudentDashboard />} />
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={["internship_admin"]} />}>
+            <Route path="/admin/*" element={<AdminDashboard />} />
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={["academic_supervisor"]} />}>
+            <Route path="/supervisor/*" element={<SupervisorDashboard />} />
+          </Route>
+          <Route element={<ProtectedRoute allowedRoles={["workplace_supervisor"]} />}>
+            <Route path="/workplace-supervisor/*" element={<WorkplaceSupervisorDashboard />} />
+          </Route>
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
