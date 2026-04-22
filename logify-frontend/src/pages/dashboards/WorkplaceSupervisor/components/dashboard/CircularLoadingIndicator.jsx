@@ -1,4 +1,4 @@
-
+import propTypes from 'prop-types';
 /**
  * CircularLoadingIndicator Component
  * @param {string} size - Tailwing sizing class (e.g., 'size-6', 'size-10', 'size-16')
@@ -45,6 +45,11 @@ const CircularLoadingIndicator = ({
       </div>
     </div>
   );
+};
+
+CircularLoadingIndicator.propTypes = {
+  size: propTypes.string,
+  color: propTypes.string,
 };
 
 export default CircularLoadingIndicator;

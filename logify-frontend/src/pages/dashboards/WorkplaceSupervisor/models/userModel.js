@@ -13,7 +13,6 @@ export class UserData {
 export const userRepository =  {
     async getUserData() {
         const userData = await api.auth.me();
-        console.log("Data from API:", userData);
         return new UserData(userData.email, userData.first_name, userData.last_name, userData.role);
     }
 

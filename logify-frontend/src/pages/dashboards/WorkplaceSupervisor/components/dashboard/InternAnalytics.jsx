@@ -1,5 +1,6 @@
 import { Users, Clock4, TrendingUp } from "lucide-react";
 import PropTypes from "prop-types";
+import { assignedInternsViewModel } from "../../viewmodels/AssignedInternsViewModel";
 
 const parameters = [
   {
@@ -48,6 +49,40 @@ const Card = ({ title, value, icon, description, color }) => {
 };
 
 const InternAnalytics = () => {
+    const { assignedInterns, loading, error } = assignedInternsViewModel();
+  
+    if (loading) {
+      return <p className="text-center text-gray-500 dark:text-slate-400">Loading analytics...</p>;
+    }
+  
+    if (error) {
+      return <p className="text-center text-red-500">Failed to load analytics: {error.message}</p>;
+    }
+  
+    const totalInterns = assignedInterns?.totalInterns ;
+  const parameters = [
+  {
+    title: "Assigned Interns",
+    value: totalInterns,
+    icon: <Users />,
+    description: "Currently supervising",
+    color: "black",
+  },
+  {
+    title: "Pending Reviews",
+    value: 12,
+    icon: <Clock4 />,
+    description: "Logs pending review",
+    color: "amber",
+  },
+  {
+    title: "Approved rate",
+    value: 85,
+    icon: <TrendingUp />,
+    description: "Of reviewd logs",
+    color: "green",
+  },
+];
   const paraItems = parameters.map((parameter) => (
     <Card
       key={parameter.title}

@@ -1,4 +1,4 @@
-import { userDataViewModel } from "../../viewmodels/userDataViewModel";
+import { userDataViewModel } from "../../viewmodels/UserDataViewModel";
 import CircularLoadingIndicator from "./CircularLoadingIndicator";
 import Grid from "./Grid";
 

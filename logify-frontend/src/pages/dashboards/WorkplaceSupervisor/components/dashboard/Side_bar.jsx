@@ -9,30 +9,32 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { LogOut } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-
+// import { useNavigate } from "react-router-dom";
+import { signOut } from "../../models/signOut";
+import { userDataViewModel } from "../../viewmodels/UserDataViewModel";
 
 const SidebarContext = React.createContext();
 
 const Side_bar = ({ children }) => {
   const [expanded, setExpanded] = React.useState(true);
-  const navigate = useNavigate();
+  const { handleSignOut } = signOut();
+  const {userData, loading, error} = userDataViewModel();
   const [isDark, setIsDark] = React.useState(() => {
     return localStorage.getItem("theme") === "dark";
   });
 
-    useEffect(() => {
-      const root = document.documentElement;
-  
-      if (isDark) {
-        root.classList.add("dark");
-        localStorage.setItem("theme", "dark");
-      } else {
-        root.classList.remove("dark");
-        localStorage.setItem("theme", "light");
-      }
-    }, [isDark]);
-  
+  useEffect(() => {
+    const root = document.documentElement;
+
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
   return (
     <aside className="h-screen flex">
       <nav className="h-full flex flex-col bg-white border-r border-stone-200 shadow-sm dark:bg-slate-900 dark:border-slate-700">
@@ -64,50 +66,56 @@ const Side_bar = ({ children }) => {
             className={`p-2  rounded-full bg-[#FCFBF2]  hover:bg-gray-100 ml-0.5 duration-200 transition-all shadow-lg dark:bg-slate-800/50 dark:hover:bg-slate-700/50 dark:border dark:border-slate-300 ${expanded ? "" : "ml-2"}`}
           >
             {expanded ? (
-              <ArrowLeftToLine size={20} className=" text-gray-700 dark:text-slate-200" />
+              <ArrowLeftToLine
+                size={20}
+                className=" text-gray-700 dark:text-slate-200"
+              />
             ) : (
-              <ArrowRightToLine size={20} className=" text-gray-700 dark:text-slate-200" />
+              <ArrowRightToLine
+                size={20}
+                className=" text-gray-700 dark:text-slate-200"
+              />
             )}
           </button>
         </div>
-        <div className="flex justify-between gap-3 mx-3">  
-        <p
-          className={`flex text-sm justify-start  font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
+        <div className="flex justify-between gap-3 mx-3">
+          <p
+            className={`flex text-sm justify-start  font-medium text-gray-500 py-2 overflow-hidden duration-200 transition-all
             ${expanded ? "w-52 " : "w-0 ml-0 hidden"} dark:text-slate-300`}
-        >
-          MAIN NAVIGATION
-        </p>
-        <div
-          className={` flex ${expanded ? "justify-between" : "justify-center"}`}
-        >
-          {expanded ? (
-            <Button
-              variant="outline"
-              onClick={() => setIsDark((prev) => !prev)}
-              className="h-9 w-full justify-start gap-2 border text-xs font-bold dark:border-slate-700 hover:shadow-lg shadow-xs  border-stone-200 "
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4" />
-              ) : (
-                <Moon className="h-4 w-4" />
-              )}
-              {isDark ? "Light Mode" : "Dark Mode"}
-            </Button>
-          ) : (
-            <button
-              onClick={() => setIsDark((prev) => !prev)}
-              className="flex h-10 w-10 items-center justify-center border rounded-xl transition-colors hover:bg-background dark:hover:bg-slate-800/50 mx-3  border-stone-200  hover:shadow-lg shadow-xs"
-              aria-label="Toggle dark mode"
-              title="Toggle dark mode"
-            >
-              {isDark ? (
-                <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
-              ) : (
-                <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
-              )}
-            </button>
-          )}
-        </div>
+          >
+            MAIN NAVIGATION
+          </p>
+          <div
+            className={` flex ${expanded ? "justify-between" : "justify-center"}`}
+          >
+            {expanded ? (
+              <Button
+                variant="outline"
+                onClick={() => setIsDark((prev) => !prev)}
+                className="h-9 w-full justify-start gap-2 border text-xs font-bold dark:border-slate-700 hover:shadow-lg shadow-xs  border-stone-200 "
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4" />
+                ) : (
+                  <Moon className="h-4 w-4" />
+                )}
+                {isDark ? "Light Mode" : "Dark Mode"}
+              </Button>
+            ) : (
+              <button
+                onClick={() => setIsDark((prev) => !prev)}
+                className="flex h-10 w-10 items-center justify-center border rounded-xl transition-colors hover:bg-background dark:hover:bg-slate-800/50 mx-3  border-stone-200  hover:shadow-lg shadow-xs"
+                aria-label="Toggle dark mode"
+                title="Toggle dark mode"
+              >
+                {isDark ? (
+                  <Sun className="h-4 w-4 text-gold dark:text-slate-300" />
+                ) : (
+                  <Moon className="h-4 w-4 text-gold dark:text-slate-300" />
+                )}
+              </button>
+            )}
+          </div>
         </div>
 
         <SidebarContext.Provider value={{ expanded }}>
@@ -130,19 +138,30 @@ const Side_bar = ({ children }) => {
             ${expanded ? "w-52 ml-3" : "w-0 ml-0"}
             `}
           >
-            <div className=" leading-4">
-              <h4 className="font-semibold">John Doe</h4>
-              <span className="text-xs text-gray-600 dark:text-slate-300">johndoe@gmail.com</span>
-            </div>
+            {loading ? (
+              <div className="animate-pulse">
+                <div className="h-4 bg-gray-400 rounded w-24 mb-2 opacity-25"></div>
+                <div className="h-3 bg-gray-400 rounded w-32 opacity-25"></div>
+              </div>
+            ) : error ? (
+              <p className="text-red-500 text-sm">Failed to load user data</p>
+            ) : userData ? (
+              <div className="leading-4">
+                <h4 className="font-semibold text-gray-900 dark:text-slate-200">
+                  {userData.first_name} {userData.last_name}
+                </h4>
+                <span className="text-xs text-gray-600 dark:text-slate-400">
+                  {userData.email}
+                </span>
+              </div>
+            ) : null}
           </div>
-          
         </div>
 
-        
-          {expanded ? (
+        {expanded ? (
           <Button
             variant="outline"
-            onClick={() => navigate("/dashboards")}
+            onClick={handleSignOut}
             className="h-9 w-auto justify-start gap-2 border-border text-xs font-bold transition-colors hover:bg-background hover:text-maroon dark:border-slate-700 dark:hover:bg-slate-800/50 m-6 "
           >
             <LogOut className="h-3.5 w-3.5" />
@@ -150,7 +169,7 @@ const Side_bar = ({ children }) => {
           </Button>
         ) : (
           <button
-            onClick={() => navigate("/dashboards")}
+            onClick={handleSignOut}
             className="flex w-auto items-center justify-center border rounded-xl py-2 transition-colors hover:bg-background dark:hover:bg-slate-800/50 m-6 dark:border-slate-600"
             aria-label="Sign out"
             title="Sign out"
@@ -158,7 +177,6 @@ const Side_bar = ({ children }) => {
             <LogOut className="h-4 w-4 text-gold dark:text-slate-300" />
           </button>
         )}
-        
       </nav>
     </aside>
   );
