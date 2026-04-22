@@ -142,13 +142,3 @@ class UserDetailView(APIView):
         user = self.get_object(pk)
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
-
-class AcademicSupervisorListView(ListAPIView):
-    permission_classes = [IsAuthenticated]
-    serializer_class = UserDetailSerializer
-
-    def get_queryset(self):
-        return User.objects.filter(role=User.ACADEMIC_SUPERVISOR, is_active=True).order_by(
-            "first_name", "last_name"
-        )
