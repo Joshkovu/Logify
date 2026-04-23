@@ -20,8 +20,11 @@ const icons = {
 };
 
 const MetricCard = ({ title, value, iconType }) => (
-  <div className="flex cursor-pointer flex-col gap-4 rounded-[12px] border border-border bg-white p-4 transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-900 sm:gap-5 sm:p-6">
-    <div className="mb-1 text-sm font-medium tracking-[0.18em] text-text-secondary opacity-60 dark:text-slate-300 sm:text-base">
+  <div className="flex cursor-pointer flex-col gap-4 rounded-[12px] border border-border bg-white p-4 transition-all duration-300 hover:scale-105 dark:border-slate-700 dark:bg-slate-900 sm:gap-5 sm:p-6 overflow-hidden">
+    <div
+      title={title}
+      className="mb-1 truncate text-sm font-medium tracking-[0.18em] text-text-secondary opacity-60 dark:text-slate-300 sm:text-base"
+    >
       {title
         .split(" ")
         .map(
@@ -30,7 +33,10 @@ const MetricCard = ({ title, value, iconType }) => (
         .join(" ")}
     </div>
     <div className="flex w-full items-center justify-between gap-4">
-      <div className="text-2xl font-black tracking-tight text-lime-600 dark:text-lime-400 sm:text-3xl">
+      <div
+        title={value}
+        className="truncate text-2xl font-black tracking-tight text-lime-600 dark:text-lime-400 sm:text-3xl"
+      >
         {value}
       </div>
       <div className="shrink-0 dark:text-slate-300 p-2 sm:p-3">
