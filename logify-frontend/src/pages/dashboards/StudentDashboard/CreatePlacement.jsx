@@ -21,13 +21,13 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
     e.preventDefault();
     setError("");
 
-    if (!formData.organization || formData.organization == "")
+    if (!formData.organization || formData.organization === "")
       return setError("Please select an organization.");
     if (!formData.internship_title)
       return setError("Please enter an internship title.");
     if (!formData.department_at_company)
       return setError("Please enter a department.");
-    if (!formData.work_mode || formData.work_mode == "")
+    if (!formData.work_mode || formData.work_mode === "")
       return setError("Please select a work mode.");
     if (!formData.start_date) return setError("Please select a start date.");
     if (!formData.end_date) return setError("Please select an end date.");
@@ -49,7 +49,7 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
       } else {
         result = await api.placements.createPlacement(payload);
       }
-      if (submitAction == "submit") {
+      if (submitAction === "submit") {
         await api.placements.submitPlacement(result.id);
       }
       onSuccess?.();
@@ -66,9 +66,8 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
       try {
         const data = await api.organizations.getOrganizations();
         setOrganizations(data);
-        console.log("successfully fetched organizations:", data);
-      } catch (err) {
-        console.error("Failed to fetch organizations: ", err);
+      } catch {
+        setOrganizations([]);
       }
     };
     fetchOrganizations();
@@ -89,7 +88,6 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
     setFormData((current) => ({ ...current, [name]: value }));
   };
 
-  console.log(formData);
   return (
     <div
       className="fixed flex inset-0 items-center justify-center z-100 bg-black/50 bg-op px-4 w-full h-full"
@@ -198,7 +196,7 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
               type="submit"
               disabled={isSubmitting}
             >
-              {isSubmitting && submitAction == "draft"
+              {isSubmitting && submitAction === "draft"
                 ? "Saving..."
                 : "Save Placement as Draft"}
             </button>
@@ -208,7 +206,7 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
               onClick={() => setSubmitAction("submit")}
               disabled={isSubmitting}
             >
-              {isSubmitting && submitAction == "submit"
+              {isSubmitting && submitAction === "submit"
                 ? "Submitting..."
                 : "Submit for Review"}
             </button>
