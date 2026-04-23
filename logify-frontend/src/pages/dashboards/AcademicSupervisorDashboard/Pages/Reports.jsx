@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
-import { TrendingUp, FileDown, Upload, X } from "lucide-react";
+import { TrendingUp, FileDown, Eye, X } from "lucide-react";
 import { Bar, Doughnut } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,7 +12,10 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { Button } from "../../../../components/ui/Button";
+import { api } from "../../../../config/api";
 import {
+  formatDate,
   formatDateRange,
   getPlacementProgress,
   getUserDisplayName,
@@ -29,11 +32,12 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const [showExportPanel, setShowExportPanel] = useState(false);
-  const [files, setFiles] = useState([]);
-  const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [reportError, setReportError] = useState("");
+  const [reportType, setReportType] = useState("summary");
+  const [activeReportId, setActiveReportId] = useState(null);
+  const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
   const [snapshot, setSnapshot] = useState({
@@ -104,6 +108,7 @@ const Reports = () => {
 
         return {
           id: placement.id,
+          studentId: placement.intern,
           name: getUserDisplayName(student, "Intern"),
           organization: organization?.name || "Unknown organization",
           progress:
@@ -121,6 +126,7 @@ const Reports = () => {
             result?.final_score || evaluation?.total_score || 0,
           ),
           dateRange: formatDateRange(placement.start_date, placement.end_date),
+          placementTitle: placement.internship_title || "Internship Placement",
         };
       }),
     [
@@ -184,38 +190,6 @@ const Reports = () => {
     (student) => student.status === "Pending",
   ).length;
 
-  const handleFilesChange = (e) => {
-    const selectedFiles = Array.from(e.target.files || []);
-    setFiles(selectedFiles);
-    setSubmitted(false);
-    setError("");
-  };
-
-  const removeFile = (indexToRemove) => {
-    const updatedFiles = files.filter((_, index) => index !== indexToRemove);
-    setFiles(updatedFiles);
-    setSubmitted(false);
-  };
-
-  const handleSubmitFiles = async () => {
-    if (files.length === 0) {
-      setError("Please upload at least one file before submitting.");
-      return;
-    }
-
-    setLoading(true);
-    setError("");
-
-    try {
-      setSubmitted(true);
-      setError(
-        "Files were prepared locally, but the backend does not currently expose a supervisor report upload endpoint.",
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleExportReport = async () => {
     setLoading(true);
     setError("");
@@ -244,6 +218,54 @@ const Reports = () => {
       window.URL.revokeObjectURL(url);
     } catch {
       setError("Failed to export report.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewReport = async (row) => {
+    setActiveReportId(row.id);
+    setReportError("");
+
+    try {
+      const report = await api.reports.getReport(row.studentId, {
+        report_type: reportType,
+      });
+      setSelectedReport({ row, data: report });
+    } catch (loadError) {
+      setReportError(
+        loadError.message || "Unable to load the selected report.",
+      );
+    } finally {
+      setActiveReportId(null);
+    }
+  };
+
+  const handleDownloadStudentReport = async (studentId) => {
+    setLoading(true);
+    setReportError("");
+
+    try {
+      const { blob, contentDisposition } = await api.reports.downloadReport(
+        studentId,
+        {
+          report_type: reportType,
+          export: "csv",
+        },
+      );
+      const fallbackName = `internship-report-${studentId}.csv`;
+      const filenameMatch = contentDisposition?.match(/filename="([^"]+)"/);
+      const filename = filenameMatch?.[1] || fallbackName;
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = filename;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    } catch (downloadError) {
+      setReportError(
+        downloadError.message || "Unable to download the selected report.",
+      );
     } finally {
       setLoading(false);
     }
@@ -372,7 +394,7 @@ const Reports = () => {
         </div>
 
         <button
-          onClick={() => setShowExportPanel(true)}
+          onClick={handleExportReport}
           className="flex w-full items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300 md:w-auto"
         >
           <FileDown size={18} />
@@ -380,101 +402,10 @@ const Reports = () => {
         </button>
       </header>
 
-      {showExportPanel && (
-        <section className="mb-8 rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:mb-12 lg:p-8 xl:p-10">
-          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
-                Upload Files and Export Report
-              </h2>
-              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300">
-                Upload the required files, submit them, then export the semester
-                report.
-              </p>
-            </div>
-
-            <button
-              onClick={() => setShowExportPanel(false)}
-              className="inline-flex items-center gap-2 self-start rounded-lg border border-border dark:border-slate-700 px-4 py-2 text-sm font-bold text-maroon-dark transition-colors hover:bg-background dark:text-slate-300 dark:hover:bg-slate-800/50"
-            >
-              <X size={16} />
-              Close
-            </button>
-          </div>
-
-          <div className="rounded-2xl border border-dashed border-border dark:border-slate-700/60 bg-background dark:bg-slate-800/50 p-4 sm:p-6">
-            <label className="mb-3 flex items-center gap-2 text-sm font-bold text-maroon-dark dark:text-white">
-              <Upload size={18} />
-              Upload files
-            </label>
-
-            <input
-              type="file"
-              multiple
-              onChange={handleFilesChange}
-              className="block w-full rounded-lg border border-border dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-sm text-text-secondary dark:text-slate-200 file:mr-4 file:rounded-md file:border-0 file:bg-[#7A1C1C] file:px-4 file:py-2 file:font-semibold file:text-white hover:file:bg-[#6B1818]"
-            />
-
-            {files.length > 0 && (
-              <div className="mt-4 rounded-2xl border border-border/30 bg-white dark:border-slate-700/30 dark:bg-slate-900 p-4">
-                <p className="mb-3 text-sm font-bold text-maroon-dark dark:text-white">
-                  Selected files
-                </p>
-
-                <div className="space-y-2">
-                  {files.map((file, index) => (
-                    <div
-                      key={`${file.name}-${index}`}
-                      className="flex flex-col gap-3 rounded-xl border border-border/30 dark:border-slate-700/30 bg-background dark:bg-slate-800/50 px-4 py-3 sm:flex-row sm:items-center sm:justify-between"
-                    >
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-maroon-dark dark:text-slate-100">
-                          {file.name}
-                        </p>
-                        <p className="text-xs text-text-secondary dark:text-slate-400">
-                          {(file.size / 1024).toFixed(1)} KB
-                        </p>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => removeFile(index)}
-                        className="self-start rounded-lg border border-border dark:border-slate-700 px-3 py-1 text-xs font-bold text-maroon-dark transition-colors hover:bg-background dark:text-slate-300 dark:hover:bg-slate-800 sm:self-auto"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {submitted && (
-              <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-700 dark:border-emerald-900 dark:bg-emerald-950/30 dark:text-emerald-300">
-                Files prepared successfully. You can now export the semester
-                report.
-              </div>
-            )}
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <button
-                onClick={handleSubmitFiles}
-                disabled={loading}
-                className="w-full rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-3 text-sm font-bold text-white transition-colors hover:bg-emerald-700 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
-              >
-                {loading ? "Processing..." : "Submit Files"}
-              </button>
-
-              <button
-                onClick={handleExportReport}
-                disabled={loading}
-                className="w-full rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300 sm:w-auto"
-              >
-                {loading ? "Processing..." : "Export Report"}
-              </button>
-            </div>
-          </div>
-        </section>
+      {reportError && (
+        <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-900/60 dark:bg-amber-950/30 dark:text-amber-300">
+          {reportError}
+        </div>
       )}
 
       <section className="mb-8 grid grid-cols-1 gap-4 sm:mb-10 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4 xl:gap-8">
@@ -490,13 +421,26 @@ const Reports = () => {
 
       <section className="mb-8 grid grid-cols-1 gap-6 lg:mb-12 lg:grid-cols-3 lg:gap-8">
         <div className="rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-[1.005] sm:p-6 lg:col-span-2 lg:p-8 xl:p-10">
-          <div className="mb-6 flex items-center gap-3">
-            <div className="rounded-xl bg-gold/10 p-2 text-gold dark:text-slate-300">
-              <TrendingUp size={20} />
+          <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl bg-gold/10 p-2 text-gold dark:text-slate-300">
+                <TrendingUp size={20} />
+              </div>
+              <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
+                Performance Overview
+              </h2>
             </div>
-            <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
-              Performance Overview
-            </h2>
+
+            <select
+              value={reportType}
+              onChange={(event) => setReportType(event.target.value)}
+              className="rounded-lg border border-border dark:border-slate-700 bg-background dark:bg-slate-800 px-4 py-2 text-sm text-text-primary dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-gold"
+            >
+              <option value="summary">Summary Reports</option>
+              <option value="mid-term">Mid-Term Reports</option>
+              <option value="final">Final Reports</option>
+              <option value="evaluation">Evaluation Reports</option>
+            </select>
           </div>
 
           <div className="h-64 rounded-2xl border border-border/30 dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4">
@@ -555,6 +499,9 @@ const Reports = () => {
                 <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-8 sm:py-5">
                   Status
                 </th>
+                <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-8 sm:py-5">
+                  Report
+                </th>
               </tr>
             </thead>
 
@@ -606,13 +553,25 @@ const Reports = () => {
                       {student.status}
                     </span>
                   </td>
+
+                  <td className="px-4 py-5 sm:px-8 sm:py-6">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleViewReport(student)}
+                      disabled={activeReportId === student.id}
+                    >
+                      {activeReportId === student.id ? "Loading..." : "View"}
+                    </Button>
+                  </td>
                 </tr>
               ))}
 
               {!isLoading && reportRows.length === 0 && (
                 <tr>
                   <td
-                    colSpan="5"
+                    colSpan="6"
                     className="px-8 py-8 text-center text-sm text-muted-foreground"
                   >
                     No supervised intern analytics are available yet.
@@ -623,6 +582,141 @@ const Reports = () => {
           </table>
         </div>
       </section>
+
+      {selectedReport ? (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-4xl rounded-2xl border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-xl">
+            <div className="mb-6 flex items-start justify-between gap-4">
+              <div>
+                <h3 className="text-2xl font-bold text-maroon dark:text-slate-100">
+                  {selectedReport.row.name}
+                </h3>
+                <p className="mt-1 text-sm text-text-secondary dark:text-slate-400">
+                  {selectedReport.row.placementTitle} {"|"}{" "}
+                  {selectedReport.row.organization}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleDownloadStudentReport(selectedReport.row.studentId)
+                  }
+                  className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon dark:text-slate-300"
+                >
+                  <FileDown size={16} />
+                  Download CSV
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedReport(null)}
+                  className="inline-flex items-center gap-2 rounded-lg border border-border dark:border-slate-700 px-4 py-2 text-sm font-bold text-maroon-dark transition-colors hover:bg-background dark:text-slate-300 dark:hover:bg-slate-800/50"
+                >
+                  <X size={16} />
+                  Close
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4">
+                <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                  Report Type
+                </div>
+                <div className="mt-2 text-sm text-text-primary dark:text-slate-100">
+                  {selectedReport.data.report_type}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4">
+                <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                  Internship Period
+                </div>
+                <div className="mt-2 text-sm text-text-primary dark:text-slate-100">
+                  {formatDate(selectedReport.data.internship_start)} to{" "}
+                  {formatDate(selectedReport.data.internship_end)}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4 sm:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                  Summary Stats
+                </div>
+                <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-5">
+                  {[
+                    [
+                      "Total Weeks",
+                      selectedReport.data.summary_stats?.total_weeks,
+                    ],
+                    [
+                      "First Week",
+                      selectedReport.data.summary_stats?.first_week,
+                    ],
+                    ["Last Week", selectedReport.data.summary_stats?.last_week],
+                    [
+                      "Approved Logs",
+                      selectedReport.data.summary_stats?.approved_logs,
+                    ],
+                    [
+                      "Pending Logs",
+                      selectedReport.data.summary_stats?.pending_logs,
+                    ],
+                  ].map(([label, value]) => (
+                    <div
+                      key={label}
+                      className="rounded-lg bg-white px-3 py-2 dark:bg-slate-900"
+                    >
+                      <div className="text-xs uppercase tracking-wider text-text-secondary dark:text-slate-400">
+                        {label}
+                      </div>
+                      <div className="mt-1 font-semibold text-text-primary dark:text-slate-100">
+                        {value ?? "--"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4 sm:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                  Placement Info
+                </div>
+                <pre className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-primary dark:text-slate-100">
+                  {selectedReport.data.placement_info ||
+                    "No placement details available."}
+                </pre>
+              </div>
+
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4 sm:col-span-2">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                    Weekly Logs Bundle
+                  </div>
+                  <div className="inline-flex items-center gap-2 text-xs font-semibold text-gold dark:text-slate-300">
+                    <Eye size={14} />
+                    Academic supervisor view
+                  </div>
+                </div>
+                <pre className="mt-2 max-h-64 overflow-auto whitespace-pre-wrap text-sm leading-relaxed text-text-primary dark:text-slate-100">
+                  {selectedReport.data.logs ||
+                    "No weekly log summary available."}
+                </pre>
+              </div>
+
+              <div className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800 p-4 sm:col-span-2">
+                <div className="text-xs font-bold uppercase tracking-widest text-text-secondary dark:text-slate-400">
+                  Workplace Supervisor Comments
+                </div>
+                <div className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-text-primary dark:text-slate-100">
+                  {selectedReport.data.supervisor_comments ||
+                    "No workplace supervisor comments were included in this report."}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 };
