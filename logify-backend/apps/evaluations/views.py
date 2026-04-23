@@ -45,9 +45,9 @@ class IsFinalResultsWriteAllowed(permissions.BasePermission):
             return False
         if request.method in permissions.SAFE_METHODS:
             return True
-        return IsAcademicSupervisor().has_permission(request, view) or IsInternshipAdmin().has_permission(
+        return IsAcademicSupervisor().has_permission(
             request, view
-        )
+        ) or IsInternshipAdmin().has_permission(request, view)
 
 
 class EvaluationRubricsViewSet(viewsets.ModelViewSet):
