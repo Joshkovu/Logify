@@ -32,7 +32,6 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [reportError, setReportError] = useState("");
   const [reportType, setReportType] = useState("summary");
@@ -191,7 +190,6 @@ const Reports = () => {
   ).length;
 
   const handleExportReport = async () => {
-    setLoading(true);
     setError("");
 
     try {
@@ -218,8 +216,6 @@ const Reports = () => {
       window.URL.revokeObjectURL(url);
     } catch {
       setError("Failed to export report.");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -242,7 +238,6 @@ const Reports = () => {
   };
 
   const handleDownloadStudentReport = async (studentId) => {
-    setLoading(true);
     setReportError("");
 
     try {
@@ -266,8 +261,6 @@ const Reports = () => {
       setReportError(
         downloadError.message || "Unable to download the selected report.",
       );
-    } finally {
-      setLoading(false);
     }
   };
 
