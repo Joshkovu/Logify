@@ -45,6 +45,17 @@ const validateStudentForm = (formData) => {
     errors.yearOfStudy = "Year of study cannot be longer than 7 years";
   }
 
+  if (!formData.intakeYear.trim()) {
+    errors.intakeYear = "Intake year is required.";
+  } else if (!Number.isInteger(Number(formData.intakeYear))) {
+    errors.intakeYear = "Intake year must contain only numbers.";
+  } else if (
+    Number(formData.intakeYear) < 1900 ||
+    Number(formData.intakeYear) > 2100
+  ) {
+    errors.intakeYear = "Please enter a valid year.";
+  }
+
   if (!formData.password) {
     errors.password = "Password is required.";
   } else if (formData.password.length < 8) {
@@ -71,6 +82,7 @@ const StudentSignupPage = () => {
     department: "",
     programme: "",
     yearOfStudy: "",
+    intakeYear: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
@@ -168,6 +180,7 @@ const StudentSignupPage = () => {
       institution_id: formData.institution,
       programme_id: formData.programme,
       year_of_study: Number(formData.yearOfStudy),
+      intake_year: Number(formData.intakeYear),
     };
 
     setIsSubmitting(true);
@@ -308,6 +321,24 @@ const StudentSignupPage = () => {
             {fieldErrors.yearOfStudy && (
               <p className="mt-1 text-xs text-red-600">
                 {fieldErrors.yearOfStudy}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Intake Year
+            </label>
+            <input
+              name="intakeYear"
+              value={formData.intakeYear}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              placeholder="e.g. 2022"
+            />
+            {fieldErrors.intakeYear && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.intakeYear}
               </p>
             )}
           </div>
