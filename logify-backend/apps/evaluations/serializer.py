@@ -130,7 +130,10 @@ class EvaluationsSerializer(serializers.ModelSerializer):
         if not placement or not rubric or not evaluator:
             raise serializers.ValidationError("Placement, rubric, and evaluator are required.")
 
-        if rubric.institution_id != placement.institution_id or rubric.programme_id != placement.programme_id:
+        if (
+            rubric.institution_id != placement.institution_id
+            or rubric.programme_id != placement.programme_id
+        ):
             raise serializers.ValidationError(
                 "The selected rubric does not belong to the placement's institution/programme."
             )
@@ -145,18 +148,14 @@ class EvaluationsSerializer(serializers.ModelSerializer):
 
         if user is not None and getattr(user, "is_authenticated", False):
             if evaluator != user and not user.is_superuser and user.role != "internship_admin":
-                raise serializers.ValidationError("You can only create or update your own evaluations.")
-            if (
-                user.role == "academic_supervisor"
-                and placement.academic_supervisor_id != user.id
-            ):
+                raise serializers.ValidationError(
+                    "You can only create or update your own evaluations."
+                )
+            if user.role == "academic_supervisor" and placement.academic_supervisor_id != user.id:
                 raise serializers.ValidationError(
                     "You are not assigned as the academic supervisor for this placement."
                 )
-            if (
-                user.role == "workplace_supervisor"
-                and placement.workplace_supervisor_id != user.id
-            ):
+            if user.role == "workplace_supervisor" and placement.workplace_supervisor_id != user.id:
                 raise serializers.ValidationError(
                     "You are not assigned as the workplace supervisor for this placement."
                 )
@@ -215,9 +214,7 @@ class EvaluationScoresSerializer(serializers.ModelSerializer):
                     "The selected criterion does not belong to this evaluation's rubric."
                 )
 
-            exists_qs = EvaluationScores.objects.filter(
-                evaluation=evaluation, criterion=criterion
-            )
+            exists_qs = EvaluationScores.objects.filter(evaluation=evaluation, criterion=criterion)
             if instance is not None:
                 exists_qs = exists_qs.exclude(pk=instance.pk)
             exists = exists_qs.exists()
@@ -285,9 +282,7 @@ class FinalResultsSerializer(serializers.ModelSerializer):
         if self.instance is not None:
             duplicate_qs = duplicate_qs.exclude(pk=self.instance.pk)
         if duplicate_qs.exists():
-            raise serializers.ValidationError(
-                "A final result already exists for this placement."
-            )
+            raise serializers.ValidationError("A final result already exists for this placement.")
         return data
 
     def _compute_logbook_score(self, placement):
