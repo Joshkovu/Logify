@@ -314,7 +314,12 @@ const Profile = () => {
                 <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-semibold truncate">{item.value}</p>
+                <p
+                  className="text-md font-semibold truncate"
+                  title={item.value}
+                >
+                  {item.value}
+                </p>
               </div>
             ))}
           </div>
