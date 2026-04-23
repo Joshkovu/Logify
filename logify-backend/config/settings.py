@@ -156,7 +156,7 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-FRONTEND_ORIGINS = os.getenv("FRONTEND_ORIGINS", "https://8d94f6c5.logify-frontend.pages.dev")
+FRONTEND_ORIGINS = os.getenv("FRONTEND_ORIGINS", "https://logify-frontend.pages.dev")
 CORS_ALLOWED_ORIGINS = [origin.strip() for origin in FRONTEND_ORIGINS.split(",") if origin.strip()]
 if os.getenv("DEBUG", "").lower() in {"1", "true", "yes", "on"}:
     for origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
