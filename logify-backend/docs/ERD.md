@@ -27,23 +27,6 @@ programmes {
 }
 
 %% =========================
-%%  REGISTRY
-%% =========================
-student_registry {
-    int id
-    int institution_id
-    int programme_id
-    int student_number
-    text webmail
-    int year_of_study
-    int intake_year
-    text status
-    boolean is_claimed
-    datetime claimed_at
-    datetime created_at
-}
-
-%% =========================
 %%  USERS & STAFF
 %% =========================
 users {
@@ -56,8 +39,9 @@ users {
     text role
     text institution_id
     text programme_id
-    text student_registry_id
     int student_number
+    int year_of_study
+    int intake_year
     text first_name
     text last_name
     text phone
@@ -250,8 +234,7 @@ internship_reports {
 %% =========================
 institutions ||--o{ departments : has
 departments ||--o{ programmes : has
-institutions ||--o{ student_registry : owns
-programmes ||--o{ student_registry : includes
+
 institutions ||--o{ users : has
 departments ||--o{ staff_profiles : has_staff
 users ||--|| staff_profiles : profile
