@@ -2,7 +2,7 @@ from datetime import date
 
 from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import User
-from apps.logbook.models import WeeklyLogs
+from apps.logbook.models import SupervisorReviews, WeeklyLogs
 from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
 from apps.reports.models import InternshipReport
@@ -128,6 +128,12 @@ class TestInternshipReportAPI(APITestCase):
             learnings="Learned about Z",
             status="submitted",
         )
+        SupervisorReviews.objects.create(
+            weekly_log=self.weekly_log,
+            supervisor=self.workplace_supervisor,
+            decision="approved",
+            comment="Solid first week.",
+        )
 
     def test_report_type_filtering(self):
 
@@ -177,3 +183,29 @@ class TestInternshipReportAPI(APITestCase):
             "2024-01-01",
         )
         self.assertIn("Week 1:", response.data["logs"])  # type: ignore
+
+    def test_academic_supervisor_can_access_student_report(self):
+        url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
+        self.client.force_authenticate(user=self.academic_supervisor)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["student_id"], self.user.id)  # type: ignore
+        self.assertIn("Solid first week.", response.data["supervisor_comments"])  # type: ignore
+        self.assertEqual(response.data["summary_stats"]["approved_logs"], 0)  # type: ignore
+
+    def test_unrelated_student_cannot_access_report(self):
+        unrelated_student = User.objects.create_user(
+            email="outsider@example.com",
+            password="password",
+            role=User.STUDENT,
+            first_name="Outside",
+            last_name="User",
+        )
+        url = reverse("weekly_logs_report", kwargs={"student_id": self.user.id})
+        self.client.force_authenticate(user=unrelated_student)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
