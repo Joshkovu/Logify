@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
+import { Key, Save, Settings, X } from "lucide-react";
 
 import {
   formatDate,
   loadWorkplaceSupervisorData,
 } from "../utils/workplaceSupervisorData";
+import { api } from "../../../../config/api";
 
 const Profile = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -11,6 +13,22 @@ const Profile = () => {
   const [me, setMe] = useState(null);
   const [placements, setPlacements] = useState([]);
   const [weeklyLogs, setWeeklyLogs] = useState([]);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [editForm, setEditForm] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    phone: "",
+    title: "",
+  });
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,6 +39,13 @@ const Profile = () => {
         setMe(snapshot.me);
         setPlacements(snapshot.placements);
         setWeeklyLogs(snapshot.weeklyLogs);
+        setEditForm({
+          firstName: snapshot.me?.first_name || "",
+          lastName: snapshot.me?.last_name || "",
+          email: snapshot.me?.email || "",
+          phone: snapshot.me?.phone || "",
+          title: snapshot.me?.staff_profile?.title || "",
+        });
       } catch (loadError) {
         setError(loadError.message || "Unable to load profile details.");
       } finally {
@@ -46,6 +71,92 @@ const Profile = () => {
     ).length;
     return Math.round((approvedCount / reviewedLogsCount) * 100);
   }, [weeklyLogs, reviewedLogsCount]);
+
+  const handleEditInputChange = (field, value) => {
+    setEditForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const handlePasswordInputChange = (field, value) => {
+    setPasswordForm((current) => ({ ...current, [field]: value }));
+  };
+
+  const handleSaveProfile = async () => {
+    setError("");
+
+    if (
+      !editForm.firstName.trim() ||
+      !editForm.lastName.trim() ||
+      !editForm.email.trim()
+    ) {
+      setError("First name, last name, and email are required.");
+      return;
+    }
+
+    setIsSavingProfile(true);
+    try {
+      const updated = await api.auth.updateMe({
+        first_name: editForm.firstName.trim(),
+        last_name: editForm.lastName.trim(),
+        email: editForm.email.trim(),
+        phone: editForm.phone.trim(),
+        title: editForm.title.trim(),
+      });
+      setMe(updated);
+      setEditForm({
+        firstName: updated.first_name || "",
+        lastName: updated.last_name || "",
+        email: updated.email || "",
+        phone: updated.phone || "",
+        title: updated.staff_profile?.title || "",
+      });
+      setShowEditModal(false);
+    } catch (saveError) {
+      setError(saveError.message || "Unable to update your profile.");
+    } finally {
+      setIsSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async () => {
+    setError("");
+
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
+      setError("All password fields are required.");
+      return;
+    }
+
+    if (passwordForm.newPassword.length < 8) {
+      setError("New password must be at least 8 characters long.");
+      return;
+    }
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setError("New password and confirm password do not match.");
+      return;
+    }
+
+    setIsUpdatingPassword(true);
+    try {
+      await api.auth.changePassword({
+        current_password: passwordForm.currentPassword,
+        new_password: passwordForm.newPassword,
+      });
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setShowPasswordModal(false);
+    } catch (passwordError) {
+      setError(passwordError.message || "Unable to update your password.");
+    } finally {
+      setIsUpdatingPassword(false);
+    }
+  };
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans transition-colors duration-300 dark:bg-slate-950 lg:px-10">
@@ -134,6 +245,25 @@ const Profile = () => {
             </p>
           </div>
         )}
+
+        {!isLoading && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon"
+            >
+              <Settings size={16} />
+              Edit Profile
+            </button>
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon"
+            >
+              <Key size={16} />
+              Change Password
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="mt-8 rounded-lg border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
@@ -168,6 +298,158 @@ const Profile = () => {
           ))}
         </div>
       </section>
+
+      {showEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-xl rounded-[12px] border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-black text-maroon-dark dark:text-white">
+                Edit Profile
+              </h2>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50"
+              >
+                <X size={20} className="text-maroon-dark dark:text-slate-300" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <input
+                type="text"
+                value={editForm.firstName}
+                onChange={(e) =>
+                  handleEditInputChange("firstName", e.target.value)
+                }
+                placeholder="First Name"
+                className="rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.lastName}
+                onChange={(e) =>
+                  handleEditInputChange("lastName", e.target.value)
+                }
+                placeholder="Last Name"
+                className="rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="email"
+                value={editForm.email}
+                onChange={(e) => handleEditInputChange("email", e.target.value)}
+                placeholder="Email"
+                className="rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.phone}
+                onChange={(e) => handleEditInputChange("phone", e.target.value)}
+                placeholder="Phone"
+                className="rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="text"
+                value={me?.staff_profile?.department_name || ""}
+                disabled
+                placeholder="Department"
+                className="rounded-xl border border-border bg-background p-3 opacity-70 outline-none dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="text"
+                value={editForm.title}
+                onChange={(e) => handleEditInputChange("title", e.target.value)}
+                placeholder="Title"
+                className="rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+            </div>
+
+            <p className="mt-4 text-xs text-text-secondary dark:text-slate-400">
+              Department is managed centrally and is read-only here.
+            </p>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="rounded-lg border border-border px-4 py-3 text-sm font-bold text-maroon-dark transition-colors hover:bg-background dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800/50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveProfile}
+                disabled={isSavingProfile}
+                className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon"
+              >
+                <Save size={16} />
+                {isSavingProfile ? "Saving..." : "Save Changes"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPasswordModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
+          <div className="w-full max-w-lg rounded-[12px] border border-border bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-black text-maroon-dark dark:text-white">
+                Change Password
+              </h2>
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="rounded-lg p-2 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800/50"
+              >
+                <X size={20} className="text-maroon-dark dark:text-slate-300" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <input
+                type="password"
+                value={passwordForm.currentPassword}
+                onChange={(e) =>
+                  handlePasswordInputChange("currentPassword", e.target.value)
+                }
+                placeholder="Current password"
+                className="w-full rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="password"
+                value={passwordForm.newPassword}
+                onChange={(e) =>
+                  handlePasswordInputChange("newPassword", e.target.value)
+                }
+                placeholder="New password"
+                className="w-full rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+              <input
+                type="password"
+                value={passwordForm.confirmPassword}
+                onChange={(e) =>
+                  handlePasswordInputChange("confirmPassword", e.target.value)
+                }
+                placeholder="Confirm new password"
+                className="w-full rounded-xl border border-border bg-background p-3 outline-none transition-colors focus:border-gold dark:border-slate-700 dark:bg-slate-800/50 dark:text-white"
+              />
+            </div>
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                onClick={() => setShowPasswordModal(false)}
+                className="rounded-lg border border-border px-4 py-3 text-sm font-bold text-maroon-dark transition-colors hover:bg-background dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800/50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleChangePassword}
+                disabled={isUpdatingPassword}
+                className="rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon"
+              >
+                {isUpdatingPassword ? "Updating..." : "Update Password"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

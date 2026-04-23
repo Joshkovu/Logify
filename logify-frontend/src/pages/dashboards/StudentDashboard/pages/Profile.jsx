@@ -44,24 +44,29 @@ const Profile = () => {
     if (!originalData) return;
 
     const patchData = Object.keys(formData).reduce((acc, key) => {
-      if (formData[key] != originalData[key] && formData[key] !== "") {
+      if (formData[key] !== originalData[key] && formData[key] !== "") {
         acc[key] = formData[key];
       }
       return acc;
     }, {});
 
     if (Object.keys(patchData).length === 0) {
-      console.log("No changes detected.");
-      return;
+      return true;
     }
 
     try {
-      console.log("Patching profile with:", patchData);
+      const authPatchData = {};
+      if (patchData.first_name) authPatchData.first_name = patchData.first_name;
+      if (patchData.last_name) authPatchData.last_name = patchData.last_name;
+      if (patchData.email) authPatchData.email = patchData.email;
+      if (patchData.student_number) {
+        authPatchData.student_number = Number(patchData.student_number);
+      }
 
-      await api.registry.patchStudent(
-        personalInformation.student_registry_id,
-        patchData,
-      );
+      if (Object.keys(authPatchData).length > 0) {
+        await api.auth.updateMe(authPatchData);
+      }
+
       const freshData = await api.auth.me();
 
       setPersonalInformation(freshData);
@@ -74,9 +79,10 @@ const Profile = () => {
       });
 
       alert("Profile updated successfully!");
-    } catch (err) {
-      console.error("Failed to update profile:", err);
+      return true;
+    } catch {
       alert("Error updating profile. Please try again.");
+      return false;
     }
   };
 
@@ -85,8 +91,8 @@ const Profile = () => {
       try {
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setPlacementData(null);
       }
     };
     fetchPlacementData();
@@ -100,10 +106,9 @@ const Profile = () => {
           const data = await api.accounts.getAcademicSupervisor(
             placementData.academic_supervisor,
           );
-          console.log("academic: ", data);
           setAcademicSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get academic supervisor: ", err);
+        } catch {
+          setAcademicSupervisorData(null);
         } finally {
           setIsLoadingAcademicSupervisorData(false);
         }
@@ -120,10 +125,9 @@ const Profile = () => {
           const data = await api.accounts.getWorkplaceSupervisor(
             placementData.workplace_supervisor,
           );
-          console.log("workplace: ", data);
           setWorkplaceSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get workplace supervisor: ", err);
+        } catch {
+          setWorkplaceSupervisorData(null);
         } finally {
           setIsLoadingWorkplaceSupervisorData(false);
         }
@@ -163,8 +167,8 @@ const Profile = () => {
             personalInformation.student_registry_id,
           );
           setRegistryData(data);
-        } catch (err) {
-          console.error("Registry fetch error:", err);
+        } catch {
+          setRegistryData(null);
         } finally {
           setIsLoadingRegistry(false);
         }
@@ -185,23 +189,13 @@ const Profile = () => {
 
         let programme = null;
         if (personalInformation.programme_id) {
-          console.log(
-            "Fetching Programme for ID:",
-            personalInformation.programme_id,
-          );
           try {
             programme = await api.academics.getProgramme(
               personalInformation.programme_id,
             );
-            console.log("Programme:", programme);
-          } catch (err) {
-            console.error("Programme fetch error:", err);
+          } catch {
+            programme = null;
           }
-        } else {
-          console.warn(
-            "No programme_id found in personalInformation:",
-            personalInformation,
-          );
         }
 
         let registry = null;
@@ -210,8 +204,8 @@ const Profile = () => {
             registry = await api.registry.getStudent(
               personalInformation.student_registry_id,
             );
-          } catch (err) {
-            console.error("Registry fetch error:", err);
+          } catch {
+            registry = null;
           }
         }
 
@@ -224,8 +218,6 @@ const Profile = () => {
     };
     fetchAcademicInformation();
   }, [personalInformation]);
-
-  console.log("Original data", originalData);
 
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">

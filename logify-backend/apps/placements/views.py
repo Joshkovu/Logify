@@ -8,7 +8,7 @@ from apps.accounts.permissions import (
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
-from rest_framework.exceptions import NotFound, ValidationError
+from rest_framework.exceptions import NotFound, PermissionDenied, ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -64,13 +64,26 @@ class InternshipPlacementDetailView(APIView):
         except InternshipPlacements.DoesNotExist:
             raise NotFound("Placement not found.")
 
+    def _ensure_can_access(self, request, placement):
+        if request.user.is_superuser or request.user.role == User.INTERNSHIP_ADMIN:
+            return
+        if placement.intern_id == request.user.id:
+            return
+        if placement.academic_supervisor_id == request.user.id:
+            return
+        if placement.workplace_supervisor_id == request.user.id:
+            return
+        raise PermissionDenied("You do not have permission to access this placement.")
+
     def get(self, request, pk):
         placement = self.get_object(pk)
+        self._ensure_can_access(request, placement)
         serializer = InternshipPlacementsSerializer(placement)
         return Response(serializer.data)
 
     def put(self, request, pk):
         placement = self.get_object(pk)
+        self._ensure_can_access(request, placement)
         self._check_locked(placement)
         serializer = InternshipPlacementsSerializer(placement, data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -79,6 +92,7 @@ class InternshipPlacementDetailView(APIView):
 
     def patch(self, request, pk):
         placement = self.get_object(pk)
+        self._ensure_can_access(request, placement)
         self._check_locked(placement)
         serializer = InternshipPlacementsSerializer(placement, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
@@ -87,6 +101,7 @@ class InternshipPlacementDetailView(APIView):
 
     def delete(self, request, pk):
         placement = self.get_object(pk)
+        self._ensure_can_access(request, placement)
         placement.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -204,7 +219,7 @@ class PlacementRejectView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement rejected."),
             )
-        return Response(self.get_serializer(placement).data)  # type: ignore
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:
@@ -242,7 +257,7 @@ class PlacementActivateView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement activated."),
             )
-        return Response(self.get_serializer(placement).data)  # type: ignore
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:
@@ -282,7 +297,7 @@ class PlacementCompleteView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Internship completed."),
             )
-        return Response(self.get_serializer(placement).data)  # type: ignore
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:
@@ -320,7 +335,7 @@ class PlacementCancelView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement cancelled."),
             )
-        return Response(self.get_serializer(placement).data)  # type: ignore
+        return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
         try:

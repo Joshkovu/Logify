@@ -17,8 +17,7 @@ const WeeklyLogs = () => {
       setIsLoadingLogs(true);
       const data = await api.logbook.getWeeklyLogHistory();
       setWeeklyLogList(data.weekly_logs ?? []);
-    } catch (err) {
-      console.error("Failed to fetch weekly logs:", err);
+    } catch {
       setWeeklyLogList([]);
     } finally {
       setIsLoadingLogs(false);
@@ -31,8 +30,8 @@ const WeeklyLogs = () => {
         setIsLoadingPlacement(true);
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setPlacementData(null);
       } finally {
         setIsLoadingPlacement(false);
       }
@@ -41,7 +40,6 @@ const WeeklyLogs = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchWeeklyLogs();
   }, [fetchWeeklyLogs]);
 
@@ -77,7 +75,7 @@ const WeeklyLogs = () => {
       iconType: "placements",
     },
   ];
-  console.log("weekly log list", weeklyLogList);
+
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
       <header className="mb-12 flex justify-between items-start">
