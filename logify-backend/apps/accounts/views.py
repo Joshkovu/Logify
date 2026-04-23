@@ -12,6 +12,8 @@ from .models import SupervisorApplication, User
 from .permissions import IsInternshipAdmin
 from .serializers import (
     AdminSignupSerializer,
+    ChangePasswordSerializer,
+    MeUpdateSerializer,
     SupervisorApplicationSerializer,
     SupervisorSignupSerializer,
     UserDetailSerializer,
@@ -94,6 +96,26 @@ class MeView(APIView):
     def get(self, request):
         serializer = UserDetailSerializer(request.user)
         return Response(serializer.data)
+
+    def patch(self, request):
+        serializer = MeUpdateSerializer(request.user, data=request.data, partial=True)
+        if serializer.is_valid():
+            user = serializer.save()
+            return Response(UserDetailSerializer(user).data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request):
+        serializer = ChangePasswordSerializer(data=request.data, context={"request": request})
+        if serializer.is_valid():
+            serializer.save()
+            return Response(
+                {"message": "Password updated successfully."}, status=status.HTTP_200_OK
+            )
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LogoutView(APIView):
