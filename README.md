@@ -1,437 +1,235 @@
-## Logify – Internship Logging & Evaluation System
+<div align="center">
+  <h1 align="center">Logify</h1>
+  <p align="center">
+    <strong>A Full-Stack Internship Logging & Evaluation System</strong>
+    <br />
+    <a href="#about-the-project"><strong>Explore the docs »</strong></a>
+    <br />
+    <br />
+    <a href="#getting-started">Getting Started</a>
+    ·
+    <a href="#testing">Testing</a>
+    ·
+    <a href="#contribution-guidelines">Contributing</a>
+  </p>
+</div>
 
-Logify is a full-stack Internship Logging & Evaluation System built with:
+<div align="center">
 
-1. Backend: Django (Python)
+[![Python](https://img.shields.io/badge/Python-3.11+-blue.svg?logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-6.0+-092E20.svg?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![React](https://img.shields.io/badge/React-18-61DAFB.svg?logo=react&logoColor=black)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-5.0-646CFF.svg?logo=vite&logoColor=white)](https://vitejs.dev/)
+[![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
-2. Frontend: React (Vite + pnpm)
+</div>
 
-3. Code Quality: pre-commit (Black, isort, Flake8, ESLint, Prettier)
+<details>
+  <summary>Table of Contents</summary>
+  <ol>
+    <li><a href="#about-the-project">About The Project</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#architecture--tech-stack">Architecture & Tech Stack</a></li>
+    <li>
+      <a href="#getting-started">Getting Started</a>
+      <ul>
+        <li><a href="#prerequisites">Prerequisites</a></li>
+        <li><a href="#backend-setup-django">Backend Setup</a></li>
+        <li><a href="#frontend-setup-react--vite">Frontend Setup</a></li>
+      </ul>
+    </li>
+    <li><a href="#testing">Testing</a></li>
+    <li><a href="#code-quality--standards">Code Quality & Standards</a></li>
+    <li><a href="#contribution-guidelines">Contribution Guidelines</a></li>
+    <li><a href="#future-roadmap">Future Roadmap</a></li>
+  </ol>
+</details>
 
-4. CI: GitHub Actions (Windows + Ubuntu)
+## About The Project
 
-This project is structured to enforce code quality, consistency, and collaboration standards across contributors.
+Logify is a comprehensive platform designed to bridge the gap between universities, organizations, and students during the internship period. Built with scalability and a SaaS future in mind, Logify streamlines the entire internship lifecycle.
 
-# Project Vision
+### Features
+* **Interns**: Seamlessly log daily and weekly activities, upload attachments, and track internship progress.
+* **Supervisors**: Review, approve, and evaluate intern performance using structured evaluation rubrics.
+* **Administrators**: Manage placements, institutions, academic departments, and oversee system compliance.
+* **Reporting**: Comprehensive data export and analytical reports on internship outcomes.
 
-Logify is designed to:
+## Architecture & Tech Stack
 
-- Allow interns to log daily/weekly activities
+The project is structured as a monorepo containing both the backend API and the frontend client.
 
-- Allow supervisors to review and evaluate performance
-
-- Track internship progress over time
-
-- Provide structured reporting and evaluation metrics
-
-- This system is built to scale into a full SaaS platform.
-
-# Getting Started
-```bash
-git clone https://github.com/Joshkovu/Logify.git
-```
-# Project Architecture
 ```bash
 logify/
+├── logify-backend/        # Django backend API
+│   ├── config/            # Core Django settings
+│   ├── apps/              # Pluggable Django applications
+│   └── manage.py
 │
-├── logify-backend/        # Django backend
-│   ├── config/            # Django project settings
-│   ├── manage.py
+├── logify-frontend/       # React client
+│   ├── src/               # React components and pages
+│   ├── tailwind.config.cjs# Tailwind styling
+│   └── vite.config.js     # Vite bundler configuration
 │
-├── logify-frontend/       # React frontend (Vite)
-│   ├── src/
-│   ├── eslint.config.js
-│
-├── .github/workflows/     # CI pipeline
-├── .pre-commit-config.yaml
-├── .flake8
+├── .github/workflows/     # CI/CD pipelines
+├── .pre-commit-config.yaml# Pre-commit hooks definition
 └── README.md
 ```
-# Prerequisites
 
-All contributors must install:
+### Built With
+* **Backend**: [Django](https://www.djangoproject.com/) + [Django REST Framework](https://www.django-rest-framework.org/)
+* **Frontend**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Tailwind CSS](https://tailwindcss.com/)
+* **Database**: [PostgreSQL](https://www.postgresql.org/)
+* **Tooling**: `pnpm`, `pre-commit`, `pytest`, `eslint`
 
-1. Python (3.11+ recommended)
+## Getting Started
 
-Download from:
-https://python.org
+Follow these instructions to get a local copy up and running for development.
 
-Verify:
-```bash
-python --version
-```
-2. Node.js (LTS recommended – v20)
+### Prerequisites
 
-Download from:
-https://nodejs.org
+All contributors must install the following:
 
-Verify:
-```bash
-node -v
-```
-3. pnpm (Package Manager)
-
-We use pnpm, not npm.
-
-Enable via Corepack:
-```bash
-corepack enable
-corepack prepare pnpm@latest --activate
-```
-Verify:
-```bash
-pnpm -v
-```
-4. Git
-
-https://git-scm.com
-
-# Backend Setup (Django)
-
-From the repo root:
-```bash
-cd logify-backend
-Create Virtual Environment
-python -m venv .venv
-```
-Activate:
-
-Windows
-```bash
-.\.venv\Scripts\Activate.ps1
-```
-Mac/Linux
-```bash
-source .venv/bin/activate
-Install Dependencies
-pip install -r requirements.txt
-```
-If development dependencies exist:
-```bash
-pip install -r requirements-dev.txt
-// Run Migrations
-python manage.py migrate
-// Run Development Server
-python manage.py runserver
-```
-Backend runs at:
-
-http://127.0.0.1:8000/
-
-# Frontend Setup (React + Vite)
-
-From repo root:
-```bash
-cd logify-frontend
-```
-Install dependencies:
-```bash
-pnpm install
-```
-Run dev server:
-```bash
-pnpm run dev
-```
-Frontend runs at:
-
-http://localhost:5173
-
-# Environment Variables
-
-Backend uses environment variables for sensitive values.
-
-Create:
-
-logify-backend/.env
-
-Example:
-```bash
-DJANGO_SECRET_KEY=your-secret-key
-```
-Never commit .env files.
-
-# Code Quality & Standards
-
-This project enforces strict code quality rules.
-
-We use:
-
-1. Backend
-
-2. Black (formatting)
-
-3. isort (import sorting)
-
-4. Flake8 (linting)
-
-5. Frontend
-
-6. ESLint
-
-7. Prettier
-
-8. Git Hook Automation
-
-All checks run automatically using pre-commit.
-
-# Pre-commit Setup (Required)
-
-From repo root:
-```bash
-python -m venv .venv
-.\.venv\Scripts\Activate.ps1
-pip install pre-commit
-pre-commit install
-```
-Run manually:
-```bash
-pre-commit run --all-files
-```
-If pre-commit modifies files, stage and commit again.
-
-# Continuous Integration (CI)
-
-GitHub Actions automatically runs on:
-
-- Push to main
-
-- Pull Requests
-
-CI runs on:
-
-- Ubuntu
-
-- Windows
-
-Checks performed:
-
-- Django system check
-
-- pytest (if tests exist)
-
-- Black / isort / flake8
-
-- ESLint
-
-- Prettier
-
-All PRs must pass CI before merging.
-
-# Running Backend Tests with Docker Testcontainers
-
-To run Django backend tests in isolation (without using a live database), the project uses [testcontainers](https://testcontainers-python.readthedocs.io/en/latest/) to spin up a temporary PostgreSQL Docker container for each test session.
-
-## Requirements
-- Docker must be installed and running on your machine.
-- Python 3.12+ and virtualenv recommended.
-
-## Setup Steps
-1. **Install dependencies:**
+1. **Python** (3.11+ recommended) - [Download](https://python.org)
+2. **Node.js** (LTS recommended, v20+) - [Download](https://nodejs.org)
+3. **pnpm** (Package Manager) - Enable via corepack:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
-   pip install -r logify-backend/requirements-dev.txt
-   pip install psycopg2-binary
+   corepack enable
+   corepack prepare pnpm@latest --activate
    ```
-2. **Ensure Docker is running.**
+4. **Docker** - Required for running isolated database tests.
 
-3. **Run tests:**
-# Make sure your python environment is activated then run the command below
+### Backend Setup (Django)
+
+1. Navigate to the backend directory:
    ```bash
-   ./run_tests_with_container.sh
+   cd logify-backend
    ```
-   This will automatically start a PostgreSQL Docker container for the test database. No live or production database will be touched.
-
-## What the team needs to add for tests to pass:
-- The following must be present in `logify-backend/requirements-dev.txt`:
-  - `pytest`
-  - `pytest-django`
-  - `testcontainers`
-  - `djangorestframework`
-  - `psycopg2-binary` (install separately if not present)
-- The file `logify-backend/conftest.py` must contain the testcontainers setup (see codebase for example).
-- Docker must be running locally.
-
-## Troubleshooting
-- If you see import errors for `testcontainers.postgres`, ensure you have installed `testcontainers` and `psycopg2-binary` in your virtual environment.
-- If tests fail with database errors, ensure Docker is running and no other process is using the test database port.
-- If you see errors about the Python interpreter, make sure VS Code or your terminal is using the correct virtual environment.
-
-# Contribution Guidelines
-# Test Procedures
-
-There are two main ways to run backend tests for Logify:
-
-## 1. Using Docker Testcontainers (Recommended)
-
-This method uses [testcontainers](https://testcontainers-python.readthedocs.io/en/latest/) to automatically spin up a temporary PostgreSQL Docker container for each test session.
-
-**Steps:**
-1. Ensure Docker is installed and running.
-2. Create and activate a Python virtual environment:
+2. Create and activate a virtual environment:
    ```bash
-   python3 -m venv venv
-   source venv/bin/activate
+   # Windows
+   python -m venv .venv
+   .\.venv\Scripts\Activate.ps1
+
+   # Mac/Linux
+   python3 -m venv .venv
+   source .venv/bin/activate
    ```
 3. Install dependencies:
    ```bash
-   pip install -r logify-backend/requirements-dev.txt
-   pip install psycopg2-binary
+   pip install -r requirements.txt
+   pip install -r requirements-dev.txt
    ```
-4. Run tests:
+4. Configure Environment Variables:
+   Create a `.env` file in `logify-backend/` (do not commit this file):
+   ```env
+   DJANGO_SECRET_KEY=your-super-secret-key
+   DEBUG=True
+   POSTGRES_DB=logify
+   POSTGRES_USER=postgres
+   POSTGRES_PASSWORD=postgres
+   POSTGRES_HOST=localhost
+   POSTGRES_PORT=5432
+   ```
+5. Apply migrations and start the server:
    ```bash
-   pytest logify-backend
+   python manage.py migrate
+   python manage.py runserver
    ```
-   This will start a PostgreSQL Docker container for the test database. No live or production database will be touched.
+   *The API will be available at `http://127.0.0.1:8000/`*
 
-**Requirements:**
-- Docker running locally
-- The following in `logify-backend/requirements-dev.txt`:
-  - `pytest`, `pytest-django`, `testcontainers`, `djangorestframework`, `psycopg2-binary`
-- `logify-backend/conftest.py` must contain the testcontainers setup
+### Frontend Setup (React + Vite)
 
-**Troubleshooting:**
-- If you see import errors for `testcontainers.postgres`, ensure you have installed `testcontainers` and `psycopg2-binary` in your virtual environment.
-- If tests fail with database errors, ensure Docker is running and no other process is using the test database port.
-- If you see errors about the Python interpreter, make sure your terminal or VS Code is using the correct virtual environment.
+1. Navigate to the frontend directory:
+   ```bash
+   cd logify-frontend
+   ```
+2. Install dependencies via `pnpm`:
+   ```bash
+   pnpm install
+   ```
+3. Start the development server:
+   ```bash
+   pnpm run dev
+   ```
+   *The application will be available at `http://localhost:5173/`*
 
-## 2. Using the Provided Shell Script
+## Testing
 
-You can also run tests using the helper script:
+Logify uses `pytest` and `testcontainers` for robust, isolated backend testing.
 
+> [!IMPORTANT]
+> Ensure Docker is running on your machine before running tests. Testcontainers will automatically spin up a temporary PostgreSQL instance.
+
+**Run tests via shell script:**
 ```bash
 ./run_tests_with_container.sh
 ```
 
-This script will:
-- Find a free port
-- Start a temporary PostgreSQL Docker container
-- Export the necessary environment variables
-- Run `pytest logify-backend`
-- Clean up the container after tests finish
-
-## 3. Pytest Configuration
-
-The `pytest.ini` file configures pytest for the Django backend:
-
-```
-[pytest]
-DJANGO_SETTINGS_MODULE = config.settings
-python_files = test_*.py
-addopts = --maxfail=1 --disable-warnings
-pythonpath = logify-backend
-```
-
-This ensures tests are discovered and run correctly in the backend directory.
-
-Branching Strategy
+**Run tests manually:**
 ```bash
-main → protected production branch
-
-dev → integration branch
-
-feature branches → feature/feature-name
+cd logify-backend
+pytest
 ```
-Example:
+*No live or production databases are touched during testing.*
+
+## Code Quality & Standards
+
+This project enforces strict code quality rules via **pre-commit** hooks.
+
+**Backend Tooling**: Black (formatting), isort (imports), Flake8 (linting)
+**Frontend Tooling**: ESLint, Prettier
+
+### Pre-commit Setup (Required)
+Before making your first commit, install the Git hooks:
 ```bash
-git checkout -b feature/intern-model
-Commit Message Convention
+pip install pre-commit
+pre-commit install
 ```
-Use structured commit messages:
-```bash
-feat: add intern model
-fix: resolve login validation bug
-chore: configure CI pipeline
-refactor: improve auth service logic
-```
-
-# Before Opening a PR
-
-Make sure:
+You can manually run checks against all files:
 ```bash
 pre-commit run --all-files
 ```
-Everything must pass.
 
-# Testing (Backend)
+## Contribution Guidelines
 
-Run:
-```bash
-pytest
-```
-Future contributors should:
+We prioritize clean architecture, code clarity, and test-driven maintainability.
 
-- Write tests for models
+### Branching Strategy
+* `main` → Protected production branch
+* `dev` → Integration and testing branch
+* `feature/feature-name` → Feature development branches
 
-- Write tests for views
+### Commit Message Convention
+Please use structured, semantic commit messages:
+* `feat:` for new features (e.g., `feat: add intern model`)
+* `fix:` for bug fixes (e.g., `fix: resolve login validation bug`)
+* `chore:` for maintenance (e.g., `chore: configure CI pipeline`)
+* `refactor:` for code restructuring
 
-- Avoid merging untested business logic
+### Pull Request Process
+1. Ensure your branch is up to date with `dev`.
+2. Verify all `pre-commit` hooks pass locally.
+3. Ensure all tests (`pytest`) pass successfully.
+4. Open a PR outlining your changes, referencing any relevant issues.
 
-# Security Practices
+*All PRs must pass GitHub Actions CI checks before they can be merged.*
 
-- No hardcoded secrets
+## Security Practices
+* **No hardcoded secrets**: Always use environment variables.
+* **Validate all input**: Rely on DRF serializers for incoming data.
+* **Never commit `.env` files**: Ensure they remain in `.gitignore`.
 
-- Use environment variables
+## Completed Milestones
 
-- No committing .env
+- [x] JWT Authentication flows
+- [x] Role-based Access Control (Intern / Supervisor / Admin)
+- [x] Dynamic Evaluation Scoring Engine
+- [x] Administrative Dashboard & Placements Tracking
 
-- Validate all user input
+## Future Roadmap
 
-- Follow Django security best practices
-
-# Future Roadmap
-
-1. Authentication system (JWT)
-
-2. Role-based permissions (Intern / Supervisor / Admin)
-
-3. Evaluation scoring engine
-
-4. Reporting dashboard
-
-5. Dockerization
-
-6. Production deployment
-
-# Why This Structure Matters
-
-This project enforces:
-
-- Consistent formatting across contributors
-
-- Automatic linting before commits
-
-- Cross-platform compatibility (Windows + Linux)
-
-- Clean CI validation before merging
-
-This ensures:
-
-- No broken builds
-
-- No style conflicts
-
-- Professional codebase standards
-
-
-# Final Note for Contributors
-
-If something breaks:
-
-1. Check pre-commit
-
-2. Check lint errors
-
-3. Check CI logs
-
-4. Ask in Issues with full error output
-
-We prioritize:
-
-- Clean architecture
-
-- Code clarity
-
-- Maintainability
-
-- Scalability
+- [ ] Complete Dockerization (Docker Compose for entire stack)
+- [ ] Automated Production Deployment pipelines (Render / Fly.io / Vercel)
+- [ ] Advanced PDF Export generation for final internship reports
+- [ ] Email & SMS Notification integrations
