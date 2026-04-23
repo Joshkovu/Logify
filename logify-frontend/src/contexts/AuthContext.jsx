@@ -132,11 +132,11 @@ const AuthProvider = ({ children }) => {
       }
     };
 
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email, password, redirectTo = null) => {
     try {
       setIsLoadingUser(true);
       const response = await api.auth.login({ email, password });
