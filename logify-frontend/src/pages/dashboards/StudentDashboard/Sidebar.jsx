@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home,
   Briefcase,
@@ -16,7 +16,7 @@ import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
 import { useWindowSize } from "./StudentDashboard";
 import PropTypes from "prop-types";
-import { api } from "../../../config/api";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 const navLinks = [
   { name: "Dashboard", path: "/student", icon: Home },
@@ -32,27 +32,10 @@ const navLinks = [
 
 const Sidebar = ({ onClose }) => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const isMobile = useWindowSize() < 768;
   const collapsed = isMobile ? false : isCollapsed;
-  const [userData, setUserData] = useState(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
-
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        setIsLoadingUser(true);
-        const data = await api.auth.me();
-        setUserData(data);
-      } catch (err) {
-        console.error("Unable to fetch user data: ", err);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-    fetchUserData();
-  }, []);
+  const { user, isLoadingUser, logout } = useContext(AuthContext);
 
   return (
     <aside
@@ -108,7 +91,7 @@ const Sidebar = ({ onClose }) => {
                     : "hover:bg-gray-200 text-black/70 hover:text-black dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
                 }
               `}
-              onClick={onClose}
+              onClick={() => onClose?.()}
               tabIndex={0}
               aria-current={isActive ? "page" : undefined}
             >
@@ -134,16 +117,16 @@ const Sidebar = ({ onClose }) => {
         <div className="flex items-center gap-3 mb-4">
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 text-white font-bold">
-              {userData?.first_name?.[0]}
-              {userData?.last_name?.[0]}
+              {user?.first_name?.[0]}
+              {user?.last_name?.[0]}
             </AvatarFallback>
           </Avatar>
           <div className={`${collapsed ? "hidden" : ""} flex flex-col`}>
             <span className="text-xs font-bold text-foreground truncate max-w-30">
               {isLoadingUser
                 ? "Loading..."
-                : userData
-                  ? `${userData?.first_name} ${userData?.last_name}`
+                : user
+                  ? `${user?.first_name} ${user?.last_name}`
                   : "Error"}
             </span>
             <span className="text-[10px] font-bold text-red-600 uppercase tracking-wider">
@@ -154,7 +137,7 @@ const Sidebar = ({ onClose }) => {
         <Button
           variant="outline"
           className="w-full justify-start gap-2 h-9 text-xs font-bold border-primary/10 hover:bg-destructive/5 hover:text-destructive hover:border-destructive/20"
-          onClick={() => navigate("/")}
+          onClick={() => logout("/")}
         >
           <LogOut className="h-3.5 w-3.5" />
           <p className={`${collapsed ? "hidden" : ""}`}>Sign Out</p>
@@ -165,6 +148,6 @@ const Sidebar = ({ onClose }) => {
 };
 
 Sidebar.propTypes = {
-  onClose: PropTypes.bool.isRequired,
+  onClose: PropTypes.func,
 };
 export default Sidebar;
