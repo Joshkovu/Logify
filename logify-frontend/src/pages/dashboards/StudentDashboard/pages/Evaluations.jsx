@@ -1,116 +1,155 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import { api } from "../../../../config/api";
+
+const formatPercentage = (value) => {
+  if (value === null || value === undefined || value === "") {
+    return "--";
+  }
+
+  const numericValue = Number(value);
+  if (Number.isNaN(numericValue)) {
+    return "--";
+  }
+
+  return `${numericValue}%`;
+};
+
 const Evaluations = () => {
   const [evaluationData, setEvaluationData] = useState(null);
-  const [isLoadingEvaluationData, setIsLoadingEvaluationData] = useState(true);
+  const [finalResult, setFinalResult] = useState(null);
   const [evaluationCriteria, setEvaluationCriteria] = useState([]);
+  const [evaluationCriteriaScores, setEvaluationCriteriaScores] = useState([]);
+  const [academicSupervisor, setAcademicSupervisor] = useState(null);
+  const [isLoadingEvaluationData, setIsLoadingEvaluationData] = useState(true);
+  const [isLoadingFinalResult, setIsLoadingFinalResult] = useState(true);
   const [isLoadingEvaluationCriteria, setIsLoadingEvaluationCriteria] =
     useState(false);
-  const [evaluationCriteriaScores, setEvaluationCriteriaScores] = useState([]);
   const [
     isLoadingEvaluationCriteriaScores,
     setIsLoadingEvaluationCriteriaScores,
   ] = useState(false);
-  const [finalResult, setFinalResult] = useState(null);
-  const [isLoadingFinalResult, setIsLoadingFinalResult] = useState(true);
-  const [academicSupervisor, setAcademicSupervisor] = useState(null);
   const [isLoadingAcademicSupervisor, setIsLoadingAcademicSupervisor] =
-    useState(null);
+    useState(false);
 
   useEffect(() => {
-    const fetchEvaluationData = async () => {
+    const loadPrimaryEvaluationData = async () => {
+      setIsLoadingEvaluationData(true);
+      setIsLoadingFinalResult(true);
+
       try {
-        setIsLoadingEvaluationData(true);
-        const data = await api.evaluations.getEvaluations();
-        setEvaluationData(data[0]);
-        console.log("Evaluation Data: ", data);
-      } catch (err) {
-        console.error("Failed to fetch Evaluation Data: ", err.message);
+        const [evaluationsResponse, resultsResponse] = await Promise.all([
+          api.evaluations.getEvaluations(),
+          api.evaluations.getResults(),
+        ]);
+
+        setEvaluationData(evaluationsResponse?.[0] ?? null);
+        setFinalResult(resultsResponse?.[0] ?? null);
+      } catch {
+        setEvaluationData(null);
+        setFinalResult(null);
       } finally {
         setIsLoadingEvaluationData(false);
-      }
-    };
-    fetchEvaluationData();
-  }, []);
-  useEffect(() => {
-    const fetchFinalResult = async () => {
-      try {
-        setIsLoadingFinalResult(true);
-        const data = await api.evaluations.getResults();
-        setFinalResult(data[0]);
-        console.log("Final Result: ", data);
-      } catch (err) {
-        console.error("Failed to fetch Final Result: ", err.message);
-      } finally {
         setIsLoadingFinalResult(false);
       }
     };
-    fetchFinalResult();
+
+    loadPrimaryEvaluationData();
   }, []);
 
   useEffect(() => {
-    if (evaluationData) {
-      const fetchAcademicSupervisor = async () => {
-        try {
-          setIsLoadingAcademicSupervisor(true);
-          const data = await api.accounts.getAcademicSupervisor(
-            evaluationData.evaluator,
-          );
-          setAcademicSupervisor(data);
-          console.log("Academic sup: ", data);
-        } catch (err) {
-          console.error("Failed to fetch academic sup: ", err.message);
-        } finally {
-          setIsLoadingAcademicSupervisor(false);
-        }
-      };
-      fetchAcademicSupervisor();
+    if (!evaluationData?.evaluator) {
+      setAcademicSupervisor(null);
+      setIsLoadingAcademicSupervisor(false);
+      return;
     }
-  }, [evaluationData]);
-  useEffect(() => {
-    if (evaluationData) {
-      const fetchEvaluationCriteria = async () => {
-        try {
-          setIsLoadingEvaluationCriteria(true);
-          const data = await api.evaluations.getCriteria();
-          const filtered = data.filter(
-            (c) => c.rubric === evaluationData.rubric,
-          );
-          console.log("filtered criteria: ", filtered);
-          setEvaluationCriteria(filtered);
-        } catch (err) {
-          console.error("Failed to fetch Eval Crit: ", err.message);
-        } finally {
-          setIsLoadingEvaluationCriteria(false);
-        }
-      };
-      fetchEvaluationCriteria();
-    }
-  }, [evaluationData]);
-  useEffect(() => {
-    if (evaluationData) {
-      const fetchEvaluationCriteriaScores = async () => {
-        try {
-          setIsLoadingEvaluationCriteriaScores(true);
-          const data = await api.evaluations.getScores();
-          const filtered = data.filter(
-            (s) => Number(s.evaluation) === Number(evaluationData.id),
-          );
-          setEvaluationCriteriaScores(filtered);
-        } catch (err) {
-          console.error("Failed to fetch Eval Crit Scores: ", err.message);
-        } finally {
-          setIsLoadingEvaluationCriteriaScores(false);
-        }
-      };
-      fetchEvaluationCriteriaScores();
-    }
+
+    const fetchAcademicSupervisor = async () => {
+      try {
+        setIsLoadingAcademicSupervisor(true);
+        const data = await api.accounts.getAcademicSupervisor(
+          evaluationData.evaluator,
+        );
+        setAcademicSupervisor(data);
+      } catch {
+        setAcademicSupervisor(null);
+      } finally {
+        setIsLoadingAcademicSupervisor(false);
+      }
+    };
+
+    fetchAcademicSupervisor();
   }, [evaluationData]);
 
-  console.log("criteria loading:", isLoadingEvaluationCriteria);
-  console.log("scores loading:", isLoadingEvaluationCriteriaScores);
-  console.log("criteria length:", evaluationCriteria.length);
-  console.log("scores length:", evaluationCriteriaScores.length);
+  useEffect(() => {
+    if (!evaluationData?.rubric) {
+      setEvaluationCriteria([]);
+      setEvaluationCriteriaScores([]);
+      setIsLoadingEvaluationCriteria(false);
+      setIsLoadingEvaluationCriteriaScores(false);
+      return;
+    }
+
+    const fetchBreakdownData = async () => {
+      try {
+        setIsLoadingEvaluationCriteria(true);
+        setIsLoadingEvaluationCriteriaScores(true);
+
+        const [criteriaResponse, scoresResponse] = await Promise.all([
+          api.evaluations.getCriteria(),
+          api.evaluations.getScores(),
+        ]);
+
+        const filteredCriteria = (criteriaResponse ?? []).filter(
+          (criterion) => criterion.rubric === evaluationData.rubric,
+        );
+        const filteredScores = (scoresResponse ?? []).filter(
+          (score) => Number(score.evaluation) === Number(evaluationData.id),
+        );
+
+        setEvaluationCriteria(filteredCriteria);
+        setEvaluationCriteriaScores(filteredScores);
+      } catch {
+        setEvaluationCriteria([]);
+        setEvaluationCriteriaScores([]);
+      } finally {
+        setIsLoadingEvaluationCriteria(false);
+        setIsLoadingEvaluationCriteriaScores(false);
+      }
+    };
+
+    fetchBreakdownData();
+  }, [evaluationData]);
+
+  const scoreBreakdown = useMemo(
+    () =>
+      evaluationCriteria.map((criterion) => {
+        const scoreObj = evaluationCriteriaScores.find(
+          (score) => score.criterion === criterion.id,
+        );
+        const scoreValue = Number(scoreObj?.score ?? 0);
+        const maxScore = Number(criterion.max_score ?? 100);
+        const barWidth =
+          maxScore > 0
+            ? Math.max(
+                0,
+                Math.min(100, Math.round((scoreValue / maxScore) * 100)),
+              )
+            : Math.max(0, Math.min(100, scoreValue));
+
+        return {
+          ...criterion,
+          scoreValue,
+          barWidth,
+        };
+      }),
+    [evaluationCriteria, evaluationCriteriaScores],
+  );
+
+  const academicRemarks =
+    finalResult?.remarks || "Academic remarks unavailable";
+  const workplaceFeedback =
+    finalResult?.workplace_feedback || "Workplace feedback unavailable";
 
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
@@ -138,7 +177,7 @@ const Evaluations = () => {
 
             {isLoadingEvaluationData ? (
               <p>Loading...</p>
-            ) : !isLoadingEvaluationData && evaluationData ? (
+            ) : evaluationData ? (
               <div className="grid grid-cols-1 gap-4">
                 <div className="flex items-center gap-6 p-6 bg-background/50 rounded-[12px] border border-border/30 transition-colors">
                   <div className="flex-1">
@@ -146,16 +185,20 @@ const Evaluations = () => {
                       Final Evaluation
                     </h3>
                     <p className="text-sm text-text-secondary mt-1">
-                      Evaluator: {academicSupervisor?.first_name}{" "}
-                      {academicSupervisor?.last_name}
+                      Evaluator:{" "}
+                      {isLoadingAcademicSupervisor
+                        ? "Loading..."
+                        : academicSupervisor
+                          ? `${academicSupervisor.first_name} ${academicSupervisor.last_name}`
+                          : "Unavailable"}
                     </p>
                   </div>
                   <div className="text-right">
                     <div className="text-2xl font-black text-text-secondary/40">
-                      {evaluationData?.total_score}%
+                      {formatPercentage(evaluationData.total_score)}
                     </div>
                     <div className="text-[10px] uppercase font-bold text-amber-600 tracking-widest mt-1">
-                      {evaluationData?.status}
+                      {evaluationData.status}
                     </div>
                   </div>
                 </div>
@@ -180,51 +223,47 @@ const Evaluations = () => {
               {isLoadingEvaluationCriteria ||
               isLoadingEvaluationCriteriaScores ? (
                 <p>Loading...</p>
-              ) : !isLoadingEvaluationCriteria &&
-                !isLoadingEvaluationCriteriaScores &&
-                evaluationCriteria.length > 0 &&
-                evaluationCriteriaScores.length > 0 ? (
+              ) : scoreBreakdown.length > 0 ? (
                 <div className="space-y-6">
-                  {evaluationCriteria.map((item, i) => {
-                    const scoreObj = evaluationCriteriaScores.find(
-                      (s) => s.criterion === item.id,
-                    );
-                    const score = scoreObj?.score ?? 0;
-                    return (
-                      <div
-                        className="px-3 pt-3 bg-background/50 rounded-[12px] transition-colors"
-                        key={i}
-                      >
-                        <div className="flex justify-between items-end mb-2">
-                          <div>
-                            <span className="text-sm font-bold text-maroon-dark">
-                              {item.name}
-                            </span>
-                            <span className="text-[10px] text-text-secondary/60 ml-2 uppercase tracking-tighter">
-                              ({item.weight_percent}% Weight)
-                            </span>
-                          </div>
-                          <span className="text-sm font-black text-gold">
-                            {score}%
+                  {scoreBreakdown.map((item) => (
+                    <div
+                      className="px-3 pt-3 bg-background/50 rounded-[12px] transition-colors"
+                      key={item.id}
+                    >
+                      <div className="flex justify-between items-end mb-2">
+                        <div>
+                          <span className="text-sm font-bold text-maroon-dark">
+                            {item.name}
+                          </span>
+                          <span className="text-[10px] text-text-secondary/60 ml-2 uppercase tracking-tighter">
+                            ({item.weight_percent}% Weight)
                           </span>
                         </div>
-                        <div className="h-2 w-full bg-gold/10 rounded-full overflow-hidden"></div>
+                        <span className="text-sm font-black text-gold">
+                          {item.scoreValue}%
+                        </span>
                       </div>
-                    );
-                  })}
+                      <div className="h-2 w-full bg-gold/10 rounded-full overflow-hidden">
+                        <div
+                          className="h-full rounded-full bg-gold transition-all duration-500"
+                          style={{ width: `${item.barWidth}%` }}
+                        />
+                      </div>
+                    </div>
+                  ))}
 
                   <div className="pt-6 border-t border-border mt-8 flex justify-between items-center">
                     <span className="text-lg font-black text-maroon-dark">
                       Overall Performance
                     </span>
                     <span className="text-3xl font-black text-gold">
-                      {evaluationData?.total_score}%
+                      {formatPercentage(evaluationData?.total_score)}
                     </span>
                   </div>
                 </div>
               ) : (
                 <p>Score breakdown unavailable</p>
-              )}{" "}
+              )}
             </div>
           </section>
 
@@ -240,7 +279,7 @@ const Evaluations = () => {
               </div>
               {isLoadingFinalResult ? (
                 <p>Loading...</p>
-              ) : !isLoadingFinalResult && finalResult ? (
+              ) : finalResult ? (
                 <div className="grid grid-cols-1 gap-4">
                   <div className="flex items-center gap-6 p-4 bg-background/50 rounded-[12px] transition-colors">
                     <div className="flex-1 text-sm font-bold text-maroon-dark">
@@ -248,7 +287,7 @@ const Evaluations = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-black text-gold">
-                        {finalResult?.academic_score}%
+                        {formatPercentage(finalResult.academic_score)}
                       </div>
                     </div>
                   </div>
@@ -258,7 +297,7 @@ const Evaluations = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-sm font-black text-gold">
-                        {finalResult?.logbook_score}%
+                        {formatPercentage(finalResult.logbook_score)}
                       </div>
                     </div>
                   </div>
@@ -268,7 +307,7 @@ const Evaluations = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-3xl font-black text-text-secondary/40">
-                        {finalResult?.final_score}%
+                        {formatPercentage(finalResult.final_score)}
                       </div>
                     </div>
                   </div>
@@ -278,14 +317,36 @@ const Evaluations = () => {
                     </div>
                     <div className="text-right">
                       <div className="text-3xl font-black text-text-secondary/40">
-                        {finalResult?.final_grade}
+                        {finalResult.final_grade}
                       </div>
                     </div>
                   </div>
                 </div>
               ) : (
                 <p>Final results unavailable</p>
-              )}{" "}
+              )}
+            </div>
+          </section>
+
+          <section>
+            <div className="dark:bg-slate-900 bg-white rounded-[12px] p-10 border border-border h-full">
+              <div className="mb-8">
+                <h2 className="text-2xl font-black text-maroon-dark tracking-tight">
+                  Academic Remarks
+                </h2>
+                <p className="text-text-secondary text-md mt-1">
+                  Feedback recorded by your academic supervisor
+                </p>
+              </div>
+              {isLoadingFinalResult ? (
+                <p>Loading...</p>
+              ) : finalResult ? (
+                <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 text-text-secondary leading-relaxed">
+                  {academicRemarks}
+                </div>
+              ) : (
+                <p>Academic remarks unavailable</p>
+              )}
             </div>
           </section>
 
@@ -299,17 +360,14 @@ const Evaluations = () => {
                   Comments from your place of internship
                 </p>
               </div>
-              {isLoadingAcademicSupervisor || isLoadingFinalResult ? (
+              {isLoadingFinalResult ? (
                 <p>Loading...</p>
-              ) : !isLoadingAcademicSupervisor &&
-                !isLoadingFinalResult &&
-                academicSupervisor &&
-                finalResult ? (
+              ) : finalResult ? (
                 <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 italic text-text-secondary leading-relaxed relative">
                   <span className="absolute top-4 left-4 text-4xl text-gold/20 font-serif">
                     &quot;
                   </span>
-                  {finalResult?.workplace_feedback}
+                  {workplaceFeedback}
                   <div className="mt-8 not-italic flex items-center gap-4">
                     <div className="h-10 w-10 rounded-full bg-maroonCustom flex items-center justify-center text-white font-bold text-xs">
                       {academicSupervisor?.first_name?.[0]}
@@ -321,14 +379,14 @@ const Evaluations = () => {
                         {academicSupervisor?.last_name}
                       </p>
                       <p className="text-[10px] uppercase font-bold text-text-secondary/60 tracking-widest">
-                        Evaluator
+                        Academic Supervisor
                       </p>
                     </div>
                   </div>
                 </div>
               ) : (
                 <p>Workplace feedback unavailable</p>
-              )}{" "}
+              )}
             </div>
           </section>
         </div>

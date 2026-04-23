@@ -1,13 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import PropTypes from "prop-types";
 const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
-  const [formData, setFormData] = useState({
-    first_name: personalInformation?.first_name || "",
-    last_name: personalInformation?.last_name || "",
-    email: personalInformation?.email || "",
-    student_number: personalInformation?.student_number || "",
-  });
-
   useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
@@ -18,15 +11,26 @@ const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
 
   if (!isOpen) return null;
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const initialFormData = {
+    first_name: personalInformation?.first_name || "",
+    last_name: personalInformation?.last_name || "",
+    email: personalInformation?.email || "",
+    student_number: personalInformation?.student_number || "",
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onUpdate(formData);
-    onClose();
+    const data = new FormData(e.currentTarget);
+    const payload = {
+      first_name: (data.get("first_name") || "").toString(),
+      last_name: (data.get("last_name") || "").toString(),
+      email: (data.get("email") || "").toString(),
+      student_number: (data.get("student_number") || "").toString(),
+    };
+    const wasSuccessful = await onUpdate(payload);
+    if (wasSuccessful) {
+      onClose();
+    }
   };
 
   return (
@@ -48,23 +52,20 @@ const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
           <p className="dark:text-white text-black font-semibold">First Name</p>
           <input
             name="first_name"
-            value={formData.first_name}
-            onChange={handleChange}
+            defaultValue={initialFormData.first_name}
             className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
           />
           <p className="dark:text-white text-black font-semibold">Last Name</p>
           <input
             name="last_name"
-            value={formData.last_name}
-            onChange={handleChange}
+            defaultValue={initialFormData.last_name}
             className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
           />
           <p className="dark:text-white text-black font-semibold">Webmail</p>
           <input
             type="email"
             name="email"
-            value={formData.email}
-            onChange={handleChange}
+            defaultValue={initialFormData.email}
             className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
           />
           <p className="dark:text-white text-black font-semibold">
@@ -72,8 +73,7 @@ const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
           </p>
           <input
             name="student_number"
-            value={formData.student_number}
-            onChange={handleChange}
+            defaultValue={initialFormData.student_number}
             className="mt-2 w-full border border-gray-200 rounded-lg p-1.5"
           />
           <section className="mt-4 w-full flex gap-2 justify-end">

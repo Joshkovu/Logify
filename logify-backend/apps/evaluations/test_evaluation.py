@@ -17,6 +17,7 @@ from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+from django.urls import reverse
 from rest_framework.test import APITestCase
 
 
@@ -236,6 +237,22 @@ class TestEvaluationViewSet(APITestCase):
         response = self.client.delete(f"/api/v1/evaluations/evaluations/{self.evaluation.id}/")  # type: ignore
         self.assertEqual(response.status_code, 204)
 
+    def test_create_evaluation_uses_authenticated_user_as_evaluator(self):
+        response = self.client.post(
+            "/api/v1/evaluations/evaluations/",
+            {
+                "placement": self.placement.id,  # type: ignore
+                "rubric": self.rubric.id,  # type: ignore
+                "evaluator": 999999,
+                "evaluator_type": "student",
+                "total_score": 90.0,
+            },
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["evaluator"], self.user.id)  # type: ignore
+        self.assertEqual(response.data["evaluator_type"], self.user.role)  # type: ignore
+
 
 class TestEvaluationCriteriaViewSet(APITestCase):
     def setUp(self):
@@ -396,6 +413,7 @@ class TestEvaluationScoresViewSet(APITestCase):
         self.client.force_authenticate(user=self.student)
         response = self.client.get("/api/v1/evaluations/scores/")
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)  # type: ignore
 
     def test_student_cannot_create_score(self):
         self.client.force_authenticate(user=self.student)
@@ -408,4 +426,162 @@ class TestEvaluationScoresViewSet(APITestCase):
                 "comment": "Comment",
             },
         )
+        self.assertEqual(response.status_code, 403)
+
+    def test_scores_can_be_filtered_by_evaluation(self):
+        self.client.force_authenticate(user=self.academic_supervisor)
+        response = self.client.get(f"/api/v1/evaluations/scores/?evaluation={self.evaluation.id}")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 1)  # type: ignore
+
+    def test_score_updates_recalculate_evaluation_total(self):
+        self.client.force_authenticate(user=self.academic_supervisor)
+        response = self.client.patch(
+            f"/api/v1/evaluations/scores/{self.score.id}/",
+            {"score": 10},
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.evaluation.refresh_from_db()
+        self.assertEqual(self.evaluation.total_score, 50.0)
+
+
+class TestFinalResultsViewSet(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.student = User.objects.create_user(
+            email="student-final@example.com",
+            password="testpassword",
+            first_name="Student",
+            last_name="User",
+            role="student",
+        )
+        self.academic_supervisor = User.objects.create_user(
+            email="academic-final@example.com",
+            password="testpassword",
+            first_name="Academic",
+            last_name="Supervisor",
+            role="academic_supervisor",
+        )
+        self.workplace_supervisor = User.objects.create_user(
+            email="workplace-final@example.com",
+            password="testpassword",
+            first_name="Workplace",
+            last_name="Supervisor",
+            role="workplace_supervisor",
+        )
+
+        self.institution = Institutions.objects.create(
+            name="Final Test University", email_domain="final.test.edu"
+        )
+        self.department = Departments.objects.create(
+            institution=self.institution, name="Engineering"
+        )
+        self.programme = Programmes.objects.create(
+            department=self.department, name="Computer Science", level="BSc", duration_years=4
+        )
+        self.organization = Organizations.objects.create(
+            name="Final Test Org",
+            industry="Tech",
+            city="Test City",
+            address="123 Test St",
+            contact_email="org@example.com",
+            contact_phone="1234567890",
+        )
+        self.placement = InternshipPlacements.objects.create(
+            intern=self.student,
+            institution=self.institution,
+            programme=self.programme,
+            organization=self.organization,
+            workplace_supervisor=self.workplace_supervisor,
+            academic_supervisor=self.academic_supervisor,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 12, 31),
+            work_mode="On-site",
+            internship_title="Software Engineering Intern",
+            department_at_company="IT",
+            status="completed",
+        )
+        self.rubric = EvaluationRubrics.objects.create(
+            institution=self.institution,
+            programme=self.programme,
+            name="Final Rubric",
+            is_current=True,
+        )
+        self.criteria = EvaluationCriteria.objects.create(
+            rubric=self.rubric,
+            name="Technical Delivery",
+            description="Technical work quality",
+            max_score=10,
+            weight_percent=100.0,
+            evaluator_type="academic_supervisor",
+        )
+        self.evaluation = Evaluations.objects.create(
+            placement=self.placement,
+            rubric=self.rubric,
+            evaluator=self.academic_supervisor,
+            evaluator_type="academic_supervisor",
+            status="reviewed",
+            total_score=0,
+        )
+        self.score = EvaluationScores.objects.create(
+            evaluation=self.evaluation,
+            criterion=self.criteria,
+            score=8,
+            comment="Strong performance.",
+        )
+        from apps.logbook.models import WeeklyLogs
+
+        WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=1,
+            week_start_date=date(2024, 1, 1),
+            week_end_date=date(2024, 1, 7),
+            activities="Week one work",
+            challenges="None",
+            learnings="APIs",
+            status="approved",
+        )
+        WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=2,
+            week_start_date=date(2024, 1, 8),
+            week_end_date=date(2024, 1, 14),
+            activities="Week two work",
+            challenges="Minor blockers",
+            learnings="Testing",
+            status="submitted",
+        )
+
+    def test_academic_supervisor_can_create_computed_final_result(self):
+        self.client.force_authenticate(user=self.academic_supervisor)
+        response = self.client.post(
+            reverse("results-list"),
+            {
+                "placement": self.placement.id,
+                "rubric": self.rubric.id,
+                "workplace_feedback": "Consistent contribution across the internship.",
+                "remarks": "Ready for final academic sign-off.",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["academic_score"], 80.0)  # type: ignore
+        self.assertEqual(response.data["logbook_score"], 50.0)  # type: ignore
+        self.assertEqual(response.data["final_score"], 71.0)  # type: ignore
+        self.assertEqual(response.data["final_grade"], "B")  # type: ignore
+
+    def test_workplace_supervisor_cannot_create_final_result(self):
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("results-list"),
+            {
+                "placement": self.placement.id,
+                "rubric": self.rubric.id,
+            },
+            format="json",
+        )
+
         self.assertEqual(response.status_code, 403)

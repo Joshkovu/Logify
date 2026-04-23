@@ -1,7 +1,7 @@
 import { Clock, MapPin, Building2, User, Phone, Mail } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 import CreatePlacement from "../CreatePlacement";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../../../../config/api";
 
 const InternshipPlacement = () => {
@@ -23,15 +23,15 @@ const InternshipPlacement = () => {
       setIsLoadingPlacement(true);
       const data = await api.placements.getPlacements();
       if (data.length > 0) setExistingPlacement(data[0]);
-    } catch (err) {
-      console.error("Failed to fetch placement:", err);
+      else setExistingPlacement(null);
+    } catch {
+      setExistingPlacement(null);
     } finally {
       setIsLoadingPlacement(false);
     }
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchPlacement();
   }, [fetchPlacement]);
 
@@ -43,10 +43,9 @@ const InternshipPlacement = () => {
           const data = await api.accounts.getAcademicSupervisor(
             existingPlacement.academic_supervisor,
           );
-          console.log("academic: ", data);
           setAcademicSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get academic supervisor: ", err);
+        } catch {
+          setAcademicSupervisorData(null);
         } finally {
           setIsLoadingAcademicSupervisorData(false);
         }
@@ -63,10 +62,9 @@ const InternshipPlacement = () => {
           const data = await api.accounts.getWorkplaceSupervisor(
             existingPlacement.workplace_supervisor,
           );
-          console.log("workplace: ", data);
           setWorkplaceSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get workplace supervisor: ", err);
+        } catch {
+          setWorkplaceSupervisorData(null);
         } finally {
           setIsLoadingWorkplaceSupervisorData(false);
         }
@@ -84,9 +82,8 @@ const InternshipPlacement = () => {
             existingPlacement?.organization,
           );
           setOrganizationData(data);
-          console.log("fetched organization data", data);
-        } catch (err) {
-          console.log(err.message);
+        } catch {
+          setOrganizationData(null);
         } finally {
           setIsLoadingOrganization(false);
         }
@@ -132,6 +129,73 @@ const InternshipPlacement = () => {
   const placementStatusCapitalized = (word) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
+  const placementTimeline = useMemo(() => {
+    if (!existingPlacement) {
+      return [];
+    }
+
+    const timeline = [];
+
+    if (existingPlacement.created_at) {
+      timeline.push({
+        title: "Placement Draft Saved",
+        desc: "Your internship placement record was created.",
+        time: existingPlacement.created_at,
+      });
+    }
+
+    if (existingPlacement.submitted_at) {
+      timeline.push({
+        title: "Placement Submitted",
+        desc: "You submitted your placement details for review.",
+        time: existingPlacement.submitted_at,
+      });
+    }
+
+    if (existingPlacement.approved_at) {
+      timeline.push({
+        title: "Placement Approved",
+        desc: "Your academic supervisor approved the placement.",
+        time: existingPlacement.approved_at,
+      });
+    }
+
+    if (
+      ["active", "completed"].includes(existingPlacement.status) &&
+      existingPlacement.start_date
+    ) {
+      timeline.push({
+        title: "Internship Started",
+        desc: "Your internship is now in progress.",
+        time: existingPlacement.start_date,
+      });
+    }
+
+    if (
+      ["rejected", "cancelled"].includes(existingPlacement.status) &&
+      existingPlacement.updated_at
+    ) {
+      timeline.push({
+        title: `Placement ${placementStatusCapitalized(existingPlacement.status)}`,
+        desc: "The placement workflow ended before internship completion.",
+        time: existingPlacement.updated_at,
+      });
+    }
+
+    if (
+      existingPlacement.status === "completed" &&
+      existingPlacement.end_date
+    ) {
+      timeline.push({
+        title: "Internship Completed",
+        desc: "Your placement reached its planned completion date.",
+        time: existingPlacement.end_date,
+      });
+    }
+
+    return timeline.sort((a, b) => new Date(b.time) - new Date(a.time));
+  }, [existingPlacement]);
+
   const metrics = [
     {
       title: "Placement Status",
@@ -389,23 +453,13 @@ const InternshipPlacement = () => {
           </div>
 
           <div className="space-y-4">
-            {[
-              {
-                title: "Internship Started",
-                desc: "Your internship has officially begun at TechCorp Solutions Inc.",
-                time: "2 days ago",
-              },
-              {
-                title: "Placement Approved",
-                desc: "Dr. Emily Roberts approved your internship placement",
-                time: "4 days ago",
-              },
-              {
-                title: "Placement Submitted",
-                desc: "You submitted your placement details for review",
-                time: "1 week ago",
-              },
-            ].map((activity, i) => (
+            {placementTimeline.length === 0 && (
+              <div className="rounded-[12px] border border-border/30 bg-background/50 p-5 text-sm text-text-secondary">
+                Placement milestones will appear here once your submission moves
+                through review.
+              </div>
+            )}
+            {placementTimeline.map((activity, i) => (
               <div
                 key={i}
                 className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
@@ -422,7 +476,7 @@ const InternshipPlacement = () => {
                   </p>
                 </div>
                 <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
-                  {activity.time}
+                  {new Date(activity.time).toLocaleDateString()}
                 </div>
               </div>
             ))}

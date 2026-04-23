@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import LandingPage from "./pages/LandingPage";
+
 import TutorialPage from "./pages/TutorialPage";
 import AuthEntryPage from "./pages/AuthEntryPage";
 import LoginPage from "./pages/LoginPage";
@@ -23,10 +23,9 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Main Landing Page */}
-          <Route path="/landing-page" element={<LandingPage />} />
+          <Route path="/" element={<TutorialPage />} />
 
           {/* Auth and onboarding pages */}
-          <Route path="/" element={<TutorialPage />} />
           <Route path="/auth" element={<AuthEntryPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupRolePage />} />

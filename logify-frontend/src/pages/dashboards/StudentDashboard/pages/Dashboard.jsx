@@ -1,6 +1,6 @@
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { api } from "../../../../config/api";
 
 const Dashboard = () => {
@@ -26,8 +26,8 @@ const Dashboard = () => {
       try {
         const data = await api.auth.me();
         setUserData(data);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setUserData(null);
       }
     };
     fetchUserData();
@@ -39,9 +39,8 @@ const Dashboard = () => {
         setIsLoadingFinalResult(true);
         const data = await api.evaluations.getResults();
         setFinalResult(data[0]);
-        console.log("Final Result: ", data);
-      } catch (err) {
-        console.error("Failed to fetch Final Result: ", err.message);
+      } catch {
+        setFinalResult(null);
       } finally {
         setIsLoadingFinalResult(false);
       }
@@ -55,8 +54,8 @@ const Dashboard = () => {
         setIsLoadingLogs(true);
         const data = await api.logbook.getWeeklyLogs();
         setWeeklyLogData(data.weekly_logs ?? []);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setWeeklyLogData([]);
       } finally {
         setIsLoadingLogs(false);
       }
@@ -70,8 +69,8 @@ const Dashboard = () => {
         setIsLoadingPlacement(true);
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setPlacementData(null);
       } finally {
         setIsLoadingPlacement(false);
       }
@@ -88,9 +87,8 @@ const Dashboard = () => {
             placementData?.organization,
           );
           setOrganizationData(data);
-          console.log("fetched org data");
-        } catch (err) {
-          console.error(err);
+        } catch {
+          setOrganizationData(null);
         } finally {
           setIsLoadingOrganization(false);
         }
@@ -107,10 +105,9 @@ const Dashboard = () => {
           const data = await api.accounts.getAcademicSupervisor(
             placementData.academic_supervisor,
           );
-          console.log("academic: ", data);
           setAcademicSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get academic supervisor: ", err);
+        } catch {
+          setAcademicSupervisorData(null);
         } finally {
           setIsLoadingAcademicSupervisorData(false);
         }
@@ -127,10 +124,9 @@ const Dashboard = () => {
           const data = await api.accounts.getWorkplaceSupervisor(
             placementData.workplace_supervisor,
           );
-          console.log("workplace: ", data);
           setWorkplaceSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get workplace supervisor: ", err);
+        } catch {
+          setWorkplaceSupervisorData(null);
         } finally {
           setIsLoadingWorkplaceSupervisorData(false);
         }
@@ -143,6 +139,96 @@ const Dashboard = () => {
     firstName: userData?.first_name,
     lastName: userData?.last_name,
   };
+
+  const placementTimeline = useMemo(() => {
+    if (!placementData) {
+      return [];
+    }
+
+    const events = [];
+
+    if (placementData.created_at) {
+      events.push({
+        title: "Placement Draft Saved",
+        desc: "Your placement record was created and is ready for review.",
+        time: placementData.created_at,
+      });
+    }
+
+    if (placementData.submitted_at) {
+      events.push({
+        title: "Placement Submitted",
+        desc: "Your internship placement was submitted for academic approval.",
+        time: placementData.submitted_at,
+      });
+    }
+
+    if (placementData.approved_at) {
+      events.push({
+        title: "Placement Approved",
+        desc: "Your academic supervisor approved the placement.",
+        time: placementData.approved_at,
+      });
+    }
+
+    if (
+      ["active", "completed"].includes(placementData.status) &&
+      placementData.start_date
+    ) {
+      events.push({
+        title: "Internship Started",
+        desc: "Your internship placement moved into the active phase.",
+        time: placementData.start_date,
+      });
+    }
+
+    if (placementData.status === "completed" && placementData.end_date) {
+      events.push({
+        title: "Internship Completed",
+        desc: "Your placement reached its scheduled end date.",
+        time: placementData.end_date,
+      });
+    }
+
+    return events;
+  }, [placementData]);
+
+  const recentActivity = useMemo(() => {
+    const logActivities =
+      weeklyLogData?.map((log) => ({
+        title: `Week ${log.week_number} Log ${log.status === "approved" ? "Approved" : log.status === "submitted" ? "Submitted" : "Updated"}`,
+        desc:
+          log.status === "approved"
+            ? "Your workplace supervisor approved this weekly submission."
+            : log.status === "submitted"
+              ? "Your weekly log was submitted to your workplace supervisor."
+              : `Current status: ${log.status}.`,
+        time: log.submitted_at || log.updated_at || log.created_at,
+      })) ?? [];
+
+    const resultActivities = finalResult
+      ? [
+          {
+            title: "Final Result Available",
+            desc: `Your current final score is ${finalResult.final_score ?? "unavailable"}%.`,
+            time:
+              finalResult.computed_at ||
+              finalResult.updated_at ||
+              placementData?.updated_at,
+          },
+        ]
+      : [];
+
+    return [...logActivities, ...placementTimeline, ...resultActivities]
+      .filter((activity) => activity.time)
+      .sort((a, b) => new Date(b.time) - new Date(a.time))
+      .slice(0, 5);
+  }, [
+    finalResult,
+    placementData?.updated_at,
+    placementTimeline,
+    weeklyLogData,
+  ]);
 
   const placementStatusCapitalized = (word) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
@@ -288,23 +374,13 @@ const Dashboard = () => {
             </div>
 
             <div className="space-y-4">
-              {[
-                {
-                  title: "Week 8 Log Approved",
-                  desc: "Your weekly log has been reviewed and approved by Michael Chen",
-                  time: "2 days ago",
-                },
-                {
-                  title: "Week 8 Log Submitted",
-                  desc: "Successfully submitted your weekly log for review",
-                  time: "4 days ago",
-                },
-                {
-                  title: "Week 7 Log Approved",
-                  desc: "Your weekly log has been reviewed and approved",
-                  time: "1 week ago",
-                },
-              ].map((activity, i) => (
+              {recentActivity.length === 0 && (
+                <div className="rounded-[12px] border border-border/30 bg-background/50 p-5 text-sm text-text-secondary">
+                  No recent activity yet. Once you submit logs and move through
+                  the placement workflow, updates will show here.
+                </div>
+              )}
+              {recentActivity.map((activity, i) => (
                 <div
                   key={i}
                   className="flex items-center gap-6 p-5 bg-background/50 rounded-[12px] border border-border/30 hover:bg-background transition-colors"
@@ -321,7 +397,7 @@ const Dashboard = () => {
                     </p>
                   </div>
                   <div className="text-md font-bold text-text-secondary/50 uppercase tracking-tighter">
-                    {activity.time}
+                    {new Date(activity.time).toLocaleDateString()}
                   </div>
                 </div>
               ))}

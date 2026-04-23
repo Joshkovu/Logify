@@ -126,3 +126,17 @@ class PlacementWorkflowTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.data)
+
+    def test_other_student_cannot_view_unassigned_placement(self):
+        other_student = User.objects.create_user(
+            email=f"other-student@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Other",
+            last_name="Student",
+            role=User.STUDENT,
+        )
+        self.client.force_authenticate(user=other_student)
+
+        response = self.client.get(self.detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
