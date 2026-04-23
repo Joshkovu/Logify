@@ -156,7 +156,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-CORS_ALLOWED_ORIGINS = ["https://logifypro.netlify.app"]
+FRONTEND_ORIGINS = os.getenv("FRONTEND_ORIGINS", "https://8d94f6c5.logify-frontend.pages.dev")
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in FRONTEND_ORIGINS.split(",") if origin.strip()]
+if os.getenv("DEBUG", "").lower() in {"1", "true", "yes", "on"}:
+    for origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
+        if origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(origin)
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
