@@ -93,54 +93,51 @@ const apiRequest = async (
       ...options.headers,
     },
   };
-  try {
-    const response = await fetch(url, config);
-    if (!response.ok) {
-      const errorData = await response.text();
+  const response = await fetch(url, config);
+  if (!response.ok) {
+    const errorData = await response.text();
 
-      if (
-        response.status === 401 &&
-        retryOnAuthFailure &&
-        session?.refreshToken
-      ) {
-        try {
-          const nextSession = await refreshSession();
-          if (nextSession?.token) {
-            return apiRequest(
-              endpoint,
-              {
-                ...options,
-                headers: {
-                  ...getAuthHeaders(nextSession),
-                  ...options.headers,
-                },
-              },
-              false,
-            );
-          }
-        } catch {
-          // Continue to the parsed error handling below.
-        }
-      }
-
-      if (response.status === 401) {
-        clearSession();
-      }
-
-      let errorMessage = `HTTP ${response.status}`;
+    if (
+      response.status === 401 &&
+      retryOnAuthFailure &&
+      session?.refreshToken
+    ) {
       try {
-        const parsed = JSON.parse(errorData);
-        errorMessage = parsed.detail || parsed.message || errorData;
+        const nextSession = await refreshSession();
+        if (nextSession?.token) {
+          return apiRequest(
+            endpoint,
+            {
+              ...options,
+              headers: {
+                ...getAuthHeaders(nextSession),
+                ...options.headers,
+              },
+            },
+            false,
+          );
+        }
       } catch {
-        errorMessage = errorData;
+        // Continue to the parsed error handling below.
       }
-      throw new Error(errorMessage);
     }
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
-  } catch (err) {
-    throw err;
+
+    if (response.status === 401) {
+      clearSession();
+    }
+
+    let errorMessage = `HTTP ${response.status}`;
+    try {
+      const parsed = JSON.parse(errorData);
+      errorMessage = parsed.detail || parsed.message || errorData;
+    } catch {
+      errorMessage = errorData;
+    }
+    throw new Error(errorMessage);
   }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 };
 
 const apiDownload = async (
