@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
+import PropTypes from "prop-types";
 
 jest.mock("../config/api.js", () => ({
   SESSION_CLEARED_EVENT: "logify:session-cleared",
@@ -31,6 +32,13 @@ jest.mock("../pages/auth/AuthLayout", () => {
       </div>
     );
   }
+
+  AuthLayoutMock.propTypes = {
+    title: PropTypes.node,
+    subtitle: PropTypes.node,
+    footer: PropTypes.node,
+    children: PropTypes.node,
+  };
 
   AuthLayoutMock.displayName = "AuthLayoutMock";
 
