@@ -1,6 +1,6 @@
 import pytest  # type: ignore
 from apps.academics.models import Departments, Institutions, Programmes
-from apps.accounts.models import SupervisorApplication
+from apps.accounts.models import StaffProfiles, SupervisorApplication
 from apps.registry.models import StudentRegistry
 from django.contrib.auth import get_user_model
 from rest_framework import status
@@ -276,3 +276,76 @@ class TestAuthMe:
         assert response.status_code == status.HTTP_200_OK
         assert response.data["email"] == "me@test.com"
         assert response.data["role"] == User.INTERNSHIP_ADMIN  # type: ignore
+
+    def test_patch_me_updates_user_profile(self, api_client):
+        user = User.objects.create_user(
+            email="profile@test.com",
+            first_name="Old",
+            last_name="Name",
+            phone="0700000000",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            password="securepassword123",
+        )
+        department = Departments.objects.create(
+            institution=Institutions.objects.create(name="Makerere"),
+            name="Computer Science",
+        )
+        StaffProfiles.objects.create(
+            user=user,
+            staff_number="AS-1",
+            department=department,
+            title="Lecturer",
+        )
+        api_client.force_authenticate(user=user)
+
+        response = api_client.patch(
+            "/api/v1/auth/me/",
+            {
+                "first_name": "Updated",
+                "last_name": "Supervisor",
+                "phone": "0700111222",
+                "title": "Senior Lecturer",
+            },
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+        user.refresh_from_db()
+        assert user.first_name == "Updated"
+        assert user.last_name == "Supervisor"
+        assert user.phone == "0700111222"
+        assert user.staffprofiles.title == "Senior Lecturer"
+
+    def test_change_password_requires_current_password_and_updates_login(self, api_client):
+        user = User.objects.create_user(
+            email="password@test.com",
+            first_name="Password",
+            last_name="Owner",
+            role=User.STUDENT,  # type: ignore
+            password="oldpassword123",
+        )
+        api_client.force_authenticate(user=user)
+
+        response = api_client.post(
+            "/api/v1/auth/change-password/",
+            {
+                "current_password": "oldpassword123",
+                "new_password": "newpassword123",
+            },
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_200_OK
+
+        api_client.force_authenticate(user=None)
+        failed_login = api_client.post(
+            "/api/v1/auth/login/",
+            {"email": "password@test.com", "password": "oldpassword123"},
+        )
+        assert failed_login.status_code == status.HTTP_401_UNAUTHORIZED
+
+        login_response = api_client.post(
+            "/api/v1/auth/login/",
+            {"email": "password@test.com", "password": "newpassword123"},
+        )
+        assert login_response.status_code == status.HTTP_200_OK
