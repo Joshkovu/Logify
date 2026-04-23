@@ -1,4 +1,4 @@
-from apps.registry.views import StudentAuthViewSet
+from apps.accounts.student_views import StudentAuthViewSet
 from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView  # type: ignore
 

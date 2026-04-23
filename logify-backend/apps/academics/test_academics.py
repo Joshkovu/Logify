@@ -453,11 +453,23 @@ class TestInstitutionDepartmentsListView(APITestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_unauthenticated_cannot_list_institution_departments(self):
+    def test_unauthenticated_can_list_institution_departments(self):
         response = self.client.get(
             reverse("institution-departments-list", args=[self.institution.pk])
         )
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        names = [dept["name"] for dept in response.data]
+        self.assertIn("Department A", names)
+        self.assertIn("Department B", names)
+
+    def test_unauthenticated_can_list_other_institution_departments(self):
+        response = self.client.get(
+            reverse("institution-departments-list", args=[self.other_institution.pk])
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "Department C")
 
 
 class TestProgrammesListView(APITestCase):
@@ -695,11 +707,18 @@ class TestDepartmentProgrammesListView(APITestCase):
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_workplace_supervisor_cannot_list_department_programmes(self):
-        self.client.force_authenticate(user=self.workplace_supervisor)
+    def test_unauthenticated_can_list_department_programmes(self):
         response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
+        names = [prog["name"] for prog in response.data]
+        self.assertIn("Programme A", names)
+        self.assertIn("Programme B", names)
 
-    def test_unauthenticated_cannot_list_department_programmes(self):
-        response = self.client.get(reverse("department-programmes-list", args=[self.department.pk]))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+    def test_unauthenticated_can_list_other_department_programmes(self):
+        response = self.client.get(
+            reverse("department-programmes-list", args=[self.other_department.pk])
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertEqual(response.data[0]["name"], "Programme C")

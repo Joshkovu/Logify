@@ -45,9 +45,6 @@ jest.mock("../config/api", () => ({
       getInstitution: jest.fn(),
       getProgramme: jest.fn(),
     },
-    registry: {
-      getStudent: jest.fn(),
-    },
   },
 }));
 
@@ -73,7 +70,6 @@ beforeEach(() => {
   api.accounts.getWorkplaceSupervisor.mockResolvedValue(null);
   api.academics.getInstitution.mockResolvedValue(null);
   api.academics.getProgramme.mockResolvedValue(null);
-  api.registry.getStudent.mockResolvedValue(null);
 });
 
 describe("Student dashboard", () => {
@@ -228,9 +224,8 @@ describe("Student profile", () => {
       last_name: "Doe",
       email: "johndoe@gmail.com",
       student_number: "1234567890",
-      student_registry_id: 1,
+      year_of_study: 3,
     });
-    api.registry.getStudent.mockResolvedValue({ id: 1, year_of_study: 3 });
 
     render(<Profile />);
     expect(await screen.findByText("Year 3")).toBeInTheDocument();
