@@ -124,7 +124,19 @@ const AuthProvider = ({ children }) => {
       window.removeEventListener(SESSION_CLEARED_EVENT, handleSessionCleared);
   }, []);
 
-  const login = async (email, password, redirectTo = null) => {
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === SESSION_STORAGE_KEY) {
+        const newSession = getStoredSession();
+        setSession(newSession);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const login = async (email, password) => {
     try {
       setIsLoadingUser(true);
       const response = await api.auth.login({ email, password });
