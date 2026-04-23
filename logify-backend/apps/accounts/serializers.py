@@ -137,8 +137,9 @@ class UserDetailSerializer(serializers.ModelSerializer):
             "phone",
             "institution_id",
             "programme_id",
-            "student_registry_id",
             "student_number",
+            "year_of_study",
+            "intake_year",
             "is_active",
             "staff_profile",
         )
@@ -161,7 +162,6 @@ class MeUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         title = validated_data.pop("title", None)
-        student_number = validated_data.get("student_number")
 
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
@@ -171,29 +171,6 @@ class MeUpdateSerializer(serializers.ModelSerializer):
             staff_profile = instance.staffprofiles
             staff_profile.title = title
             staff_profile.save(update_fields=["title"])
-
-        if instance.role == User.STUDENT and instance.student_registry_id:
-            try:
-                from apps.registry.models import StudentRegistry
-
-                registry_record = StudentRegistry.objects.get(pk=instance.student_registry_id)
-                updates = []
-                if "first_name" in validated_data:
-                    registry_record.first_name = validated_data["first_name"]
-                    updates.append("first_name")
-                if "last_name" in validated_data:
-                    registry_record.last_name = validated_data["last_name"]
-                    updates.append("last_name")
-                if "email" in validated_data:
-                    registry_record.webmail = validated_data["email"]
-                    updates.append("webmail")
-                if student_number is not None:
-                    registry_record.student_number = student_number
-                    updates.append("student_number")
-                if updates:
-                    registry_record.save(update_fields=updates)
-            except Exception:
-                pass
 
         return instance
 
