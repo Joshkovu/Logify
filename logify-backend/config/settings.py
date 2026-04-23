@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.academics.apps.AcademicsConfig",
     "apps.evaluations.apps.EvaluationsConfig",
-    "apps.registry.apps.RegistryConfig",
     "apps.organizations.apps.OrganizationsConfig",
     "apps.placements.apps.PlacementsConfig",
     "apps.logbook.apps.LogbookConfig",
