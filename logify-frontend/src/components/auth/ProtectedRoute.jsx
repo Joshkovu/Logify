@@ -1,12 +1,13 @@
 import { useContext } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthContext";
 import PropTypes from "prop-types";
 
 const ProtectedRoute = ({ allowedRoles }) => {
   const { user, isAuthenticated, isLoadingUser } = useContext(AuthContext);
+  const location = useLocation();
 
-  if (isLoadingUser)
+  if (isLoadingUser || (isAuthenticated && !user))
     return (
       <div className="bg-amber-50 dark:bg-slate-950 h-screen flex items-center justify-center w-full">
         <div className="flex items-center justify-center">
@@ -47,7 +48,21 @@ const ProtectedRoute = ({ allowedRoles }) => {
       </div>
     );
 
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (!isAuthenticated) {
+    return (
+      <Navigate
+        to="/login"
+        replace
+        state={{
+          from: {
+            pathname: location.pathname,
+            search: location.search,
+            hash: location.hash,
+          },
+        }}
+      />
+    );
+  }
 
   const isAuthorized = allowedRoles.includes(user.role);
 
