@@ -32,7 +32,6 @@ const InternshipPlacement = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchPlacement();
   }, [fetchPlacement]);
 
