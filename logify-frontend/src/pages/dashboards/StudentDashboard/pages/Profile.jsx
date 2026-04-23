@@ -22,12 +22,10 @@ const Profile = () => {
   const [personalInformation, setPersonalInformation] = useState(null);
   const [academicInformation, setAcademicInformation] = useState(null);
   const [originalData, setOriginalData] = useState(null);
-  const [registryData, setRegistryData] = useState(null);
 
   const [errorI, setErrorI] = useState(null);
   const [errorP, setErrorP] = useState(null);
   const [isLoadingPersonal, setIsLoadingPersonal] = useState(true);
-  const [isLoadingRegistry, setIsLoadingRegistry] = useState(false);
   const [isLoadingAcademic, setIsLoadingAcademic] = useState(false);
 
   const [placementData, setPlacementData] = useState(null);
@@ -159,26 +157,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (!personalInformation) return;
-    const fetchRegistryInformation = async () => {
-      if (personalInformation.student_registry_id) {
-        try {
-          setIsLoadingRegistry(true);
-          const data = await api.registry.getStudent(
-            personalInformation.student_registry_id,
-          );
-          setRegistryData(data);
-        } catch {
-          setRegistryData(null);
-        } finally {
-          setIsLoadingRegistry(false);
-        }
-      }
-    };
-    fetchRegistryInformation();
-  }, [personalInformation]);
-
-  useEffect(() => {
-    if (!personalInformation) return;
     if (!personalInformation.institution_id) return;
     const fetchAcademicInformation = async () => {
       try {
@@ -198,18 +176,7 @@ const Profile = () => {
           }
         }
 
-        let registry = null;
-        if (personalInformation.student_registry_id) {
-          try {
-            registry = await api.registry.getStudent(
-              personalInformation.student_registry_id,
-            );
-          } catch {
-            registry = null;
-          }
-        }
-
-        setAcademicInformation({ institution, programme, registry });
+        setAcademicInformation({ institution, programme });
       } catch (err) {
         setErrorI(err);
       } finally {
@@ -347,7 +314,12 @@ const Profile = () => {
                 <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-semibold truncate">{item.value}</p>
+                <p
+                  className="text-md font-semibold truncate"
+                  title={item.value}
+                >
+                  {item.value}
+                </p>
               </div>
             ))}
           </div>
@@ -387,10 +359,10 @@ const Profile = () => {
               },
               {
                 label: "Year Level",
-                value: isLoadingRegistry
+                value: isLoadingPersonal
                   ? "Loading..."
-                  : registryData?.year_of_study
-                    ? `Year ${registryData.year_of_study}`
+                  : personalInformation?.year_of_study
+                    ? `Year ${personalInformation.year_of_study}`
                     : "Not available",
                 icon: Calendar,
               },

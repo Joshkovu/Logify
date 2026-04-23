@@ -12,6 +12,24 @@ const SESSION_STORAGE_KEY = "logify-auth-session";
 const SESSION_CLEARED_EVENT = "logify:session-cleared";
 let refreshPromise = null;
 
+const getErrorMessage = (parsedError, fallbackText) => {
+  if (!parsedError) return fallbackText;
+  if (typeof parsedError === "string") return parsedError;
+  if (parsedError.detail) return parsedError.detail;
+  if (parsedError.message) return parsedError.message;
+  if (parsedError.error) return parsedError.error;
+
+  const firstValue = Object.values(parsedError)[0];
+  if (Array.isArray(firstValue) && firstValue.length > 0) {
+    return firstValue[0];
+  }
+  if (typeof firstValue === "string") {
+    return firstValue;
+  }
+
+  return fallbackText;
+};
+
 const getSession = () => {
   const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
   if (!raw) return null;
@@ -129,7 +147,7 @@ const apiRequest = async (
     let errorMessage = `HTTP ${response.status}`;
     try {
       const parsed = JSON.parse(errorData);
-      errorMessage = parsed.detail || parsed.message || errorData;
+      errorMessage = getErrorMessage(parsed, errorData);
     } catch {
       errorMessage = errorData;
     }
