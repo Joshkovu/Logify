@@ -9,6 +9,15 @@ const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
   });
 
   useEffect(() => {
+    setFormData({
+      first_name: personalInformation?.first_name || "",
+      last_name: personalInformation?.last_name || "",
+      email: personalInformation?.email || "",
+      student_number: personalInformation?.student_number || "",
+    });
+  }, [personalInformation, isOpen]);
+
+  useEffect(() => {
     const handleEsc = (e) => {
       if (e.key === "Escape") onClose();
     };
@@ -23,10 +32,12 @@ const EditProfile = ({ isOpen, onClose, personalInformation, onUpdate }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onUpdate(formData);
-    onClose();
+    const wasSuccessful = await onUpdate(formData);
+    if (wasSuccessful) {
+      onClose();
+    }
   };
 
   return (
