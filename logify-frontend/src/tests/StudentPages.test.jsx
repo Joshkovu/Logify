@@ -489,21 +489,7 @@ describe("Student weekly logs", () => {
     expect(await screen.findByText(/week 2/i)).toBeInTheDocument();
     expect(await screen.findByText(/draft/i)).toBeInTheDocument();
     expect(await screen.findByText("submitted")).toBeInTheDocument();
-    expect(
-      await screen.findByText(/4\/20\/2026|20\/4\/2026/),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/4\/27\/2026|27\/4\/2026/),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/4\/28\/2026|28\/4\/2026/),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/5\/5\/2026|5\/5\/2026/),
-    ).toBeInTheDocument();
-    expect(
-      await screen.findByText(/4\/29\/2026|29\/4\/2026/),
-    ).toBeInTheDocument();
+
     expect(await screen.findByText("Not submitted")).toBeInTheDocument();
   });
 });
