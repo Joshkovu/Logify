@@ -144,6 +144,82 @@ class UserDetailSerializer(serializers.ModelSerializer):
         )
 
 
+class MeUpdateSerializer(serializers.ModelSerializer):
+    title = serializers.CharField(write_only=True, required=False, allow_blank=True)
+    student_number = serializers.IntegerField(required=False)
+
+    class Meta:
+        model = User
+        fields = ("email", "first_name", "last_name", "phone", "title", "student_number")
+
+    def validate_email(self, value):
+        user = self.instance
+        existing = User.objects.exclude(pk=user.pk).filter(email=value).exists()
+        if existing:
+            raise serializers.ValidationError("A user with this email already exists.")
+        return value
+
+    def update(self, instance, validated_data):
+        title = validated_data.pop("title", None)
+        student_number = validated_data.get("student_number")
+
+        for attr, value in validated_data.items():
+            setattr(instance, attr, value)
+        instance.save()
+
+        if title is not None and hasattr(instance, "staffprofiles"):
+            staff_profile = instance.staffprofiles
+            staff_profile.title = title
+            staff_profile.save(update_fields=["title"])
+
+        if instance.role == User.STUDENT and instance.student_registry_id:
+            try:
+                from apps.registry.models import StudentRegistry
+
+                registry_record = StudentRegistry.objects.get(pk=instance.student_registry_id)
+                updates = []
+                if "first_name" in validated_data:
+                    registry_record.first_name = validated_data["first_name"]
+                    updates.append("first_name")
+                if "last_name" in validated_data:
+                    registry_record.last_name = validated_data["last_name"]
+                    updates.append("last_name")
+                if "email" in validated_data:
+                    registry_record.webmail = validated_data["email"]
+                    updates.append("webmail")
+                if student_number is not None:
+                    registry_record.student_number = student_number
+                    updates.append("student_number")
+                if updates:
+                    registry_record.save(update_fields=updates)
+            except Exception:
+                pass
+
+        return instance
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+
+    def validate_current_password(self, value):
+        user = self.context["request"].user
+        if not user.check_password(value):
+            raise serializers.ValidationError("Current password is incorrect.")
+        return value
+
+    def validate_new_password(self, value):
+        if value.strip() != value:
+            raise serializers.ValidationError("New password cannot start or end with spaces.")
+        return value
+
+    def save(self, **kwargs):
+        user = self.context["request"].user
+        user.set_password(self.validated_data["new_password"])
+        user.save(update_fields=["password"])
+        return user
+
+
 class SupervisorApplicationSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source="user.email", read_only=True)
     first_name = serializers.CharField(source="user.first_name", read_only=True)
