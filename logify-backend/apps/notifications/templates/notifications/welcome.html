@@ -1,0 +1,10 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<h1>Welcome to Logify</h1>
+<p>Thank you for joining Logify. You can now log in to your account.</p>
+<p><strong>Your email:</strong> {{ user.email }}</p>
+<p>You can now log in using your email and password <a href="{{ settings.FRONTEND_ORIGINS }}">here</a>.</p>
+<br>
+<p>Best regards,<br>Logify Team</p>
+{% endblock %}
