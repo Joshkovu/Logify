@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<h1>Welcome to Logify</h1>
+<p>Thank you for joining Logify. Your application has been received.</p>
+<p><strong>Your email:</strong> {{ user.email }}</p>
+<p>Please await approval from a system administrator before logging in.</p>
+<br>
+<p>Best regards,<br>Logify Team</p>
+{% endblock %}
