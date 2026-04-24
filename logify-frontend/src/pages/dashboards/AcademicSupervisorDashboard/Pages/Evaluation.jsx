@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import {
   Clock,
@@ -276,6 +277,7 @@ const Evaluation = () => {
             : evaluation,
         ),
       }));
+      toast.success("Review saved successfully!");
     } catch (saveError) {
       setError(saveError.message || "Unable to save this review.");
     } finally {
@@ -314,6 +316,7 @@ const Evaluation = () => {
           [selectedEvaluation.placementId]: result,
         },
       }));
+      toast.success("Evaluation authorized successfully!");
     } catch (saveError) {
       setError(saveError.message || "Unable to authorize this evaluation.");
     } finally {
@@ -334,6 +337,7 @@ const Evaluation = () => {
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <ToastContainer position="top-right" />
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR
