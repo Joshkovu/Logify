@@ -11,7 +11,7 @@ import {
 } from "../utils/academicSupervisorData";
 
 const sectionCardClassName =
-  "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+  "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
   const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
@@ -209,7 +209,7 @@ const Dashboard = () => {
   const welcomeName = getUserDisplayName(me, "Supervisor");
 
   return (
-    <div className="min-h-screen w-full bg-background px-4 py-6 font-sans text-foreground transition-colors duration-300 sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR
@@ -222,15 +222,15 @@ const Dashboard = () => {
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Academic <span className="text-gold">Dashboard</span>
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
           {isLoading
             ? "Loading your supervision overview..."
             : `Welcome back, ${welcomeName}! Monitor student progress and manage academic approvals with real-time statistics.`}
         </p>
         {error && (
-          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+          <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
             {error}
-          </p>
+          </div>
         )}
       </header>
 
@@ -252,7 +252,7 @@ const Dashboard = () => {
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Supervised Interns
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
                 Students currently under your mentorship
               </p>
             </div>
@@ -321,7 +321,7 @@ const Dashboard = () => {
               <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
                 Pending Approvals
               </h2>
-              <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+              <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
                 Review and authorize new internship site requests
               </p>
             </div>
@@ -424,7 +424,7 @@ const Dashboard = () => {
           <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-white sm:text-2xl">
             Recent Supervision Activity
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground sm:text-base">
+          <p className="mt-1 text-sm text-text-secondary dark:text-slate-300 sm:text-base">
             Chronological log of your recent interactions and approvals
           </p>
         </div>
@@ -442,19 +442,19 @@ const Dashboard = () => {
             return (
               <div
                 key={activity.id}
-                className="flex flex-col items-start gap-3 rounded-2xl border border-border bg-muted p-4 transition-colors hover:bg-background sm:flex-row sm:items-center sm:gap-5 sm:p-5"
+                className="flex flex-col items-start gap-3 rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 transition-colors hover:bg-background dark:hover:bg-slate-800 sm:flex-row sm:items-center sm:gap-5 sm:p-5"
               >
                 <div
-                  className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${
+                  className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${
                     isEvaluation
                       ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300"
                       : "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                   }`}
                 >
                   {isEvaluation ? (
-                    <CheckCircle2 size={22} />
+                    <CheckCircle2 size={24} />
                   ) : (
-                    <User size={22} />
+                    <User size={24} />
                   )}
                 </div>
 
@@ -465,12 +465,12 @@ const Dashboard = () => {
                       {activity.user}
                     </span>
                   </h3>
-                  <p className="mt-0.5 text-sm text-muted-foreground">
+                  <p className="mt-0.5 text-sm text-text-secondary dark:text-slate-300">
                     {activity.desc}
                   </p>
                 </div>
 
-                <div className="text-xs font-bold uppercase tracking-wide text-muted-foreground/60 sm:text-sm">
+                <div className="text-xs font-bold uppercase tracking-wide text-text-secondary/50 dark:text-slate-400 sm:text-sm">
                   {activity.time}
                 </div>
               </div>
