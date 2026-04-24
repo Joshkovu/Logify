@@ -6,11 +6,12 @@ from apps.accounts.permissions import (
 )
 from django.utils import timezone
 from rest_framework import status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.permissions import BasePermission, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import SupervisorReviews, WeeklyLogs
+from .models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 from .serializer import SupervisorReviewsSerializer, WeeklyLogsSerializer
 
 # Create your views here.
@@ -31,8 +32,15 @@ class CreateWeeklyLogAPIView(APIView):
     def post(self, request):
         serializer = WeeklyLogsSerializer(data=request.data)
         if serializer.is_valid():
+            placement = request.user.internship_placements.filter(status="active").first()
+            if placement is None:
+                return Response(
+                    {"error": "You need an active placement before creating weekly logs."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
             weekly_log = serializer.save(
-                placement=request.user.internship_placements.first(), status="draft"
+                placement=placement,
+                status="draft",
             )
             return Response(
                 {
@@ -50,13 +58,13 @@ class CreateWeeklyLogAPIView(APIView):
 class UpdateWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsStudent]
 
-    def put(self, request, log_id):
+    def _update(self, request, log_id, partial=False):
         try:
             weekly_log = WeeklyLogs.objects.get(id=log_id, placement__intern=request.user)
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
 
-        serializer = WeeklyLogsSerializer(weekly_log, data=request.data, partial=True)
+        serializer = WeeklyLogsSerializer(weekly_log, data=request.data, partial=partial)
         if not serializer.is_valid():
             return Response(
                 {"error": "Invalid data", "details": serializer.errors},
@@ -76,6 +84,12 @@ class UpdateWeeklyLogAPIView(APIView):
             status=status.HTTP_200_OK,
         )
 
+    def put(self, request, log_id):
+        return self._update(request, log_id, partial=True)
+
+    def patch(self, request, log_id):
+        return self._update(request, log_id, partial=True)
+
 
 class SubmitWeeklyLogAPIView(APIView):
     permission_classes = [IsAuthenticated, IsStudent]
@@ -92,9 +106,17 @@ class SubmitWeeklyLogAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        old_status = weekly_log.status
         weekly_log.status = "submitted"
         weekly_log.submitted_at = timezone.now()
         weekly_log.save()
+        WeeklyLogStatusHistory.objects.create(
+            weekly_log=weekly_log,
+            from_status=old_status,
+            to_status="submitted",
+            changed_by=request.user,
+            comment=request.data.get("comment", "Weekly log submitted."),
+        )
 
         return Response(
             {
@@ -122,12 +144,20 @@ class ApproveWeeklyLogAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        old_status = weekly_log.status
         weekly_log.status = "approved"
         weekly_log.save()
 
         comment = request.data.get("comment", "Good work!")
         SupervisorReviews.objects.create(
             weekly_log=weekly_log, supervisor=request.user, decision="approved", comment=comment
+        )
+        WeeklyLogStatusHistory.objects.create(
+            weekly_log=weekly_log,
+            from_status=old_status,
+            to_status="approved",
+            changed_by=request.user,
+            comment=comment,
         )
 
         return Response(
@@ -156,12 +186,20 @@ class RejectWeeklyLogAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        old_status = weekly_log.status
         weekly_log.status = "rejected"
         weekly_log.save()
 
         comment = request.data.get("comment", "Needs improvement.")
         SupervisorReviews.objects.create(
             weekly_log=weekly_log, supervisor=request.user, decision="rejected", comment=comment
+        )
+        WeeklyLogStatusHistory.objects.create(
+            weekly_log=weekly_log,
+            from_status=old_status,
+            to_status="rejected",
+            changed_by=request.user,
+            comment=comment,
         )
 
         return Response(
@@ -190,6 +228,7 @@ class RequestChangesWeeklyLogAPIView(APIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
+        old_status = weekly_log.status
         weekly_log.status = "changes_requested"
         weekly_log.save()
 
@@ -198,6 +237,13 @@ class RequestChangesWeeklyLogAPIView(APIView):
             weekly_log=weekly_log,
             supervisor=request.user,
             decision="changes_requested",
+            comment=comment,
+        )
+        WeeklyLogStatusHistory.objects.create(
+            weekly_log=weekly_log,
+            from_status=old_status,
+            to_status="changes_requested",
+            changed_by=request.user,
             comment=comment,
         )
 
@@ -321,6 +367,19 @@ class GetSupervisorReviewsAPIView(APIView):
             weekly_log = WeeklyLogs.objects.get(id=log_id)
         except WeeklyLogs.DoesNotExist:
             return Response({"error": "Weekly log not found"}, status=status.HTTP_404_NOT_FOUND)
+
+        if request.user.role == User.STUDENT and weekly_log.placement.intern_id != request.user.id:
+            raise PermissionDenied("You do not have permission to view these reviews.")
+        if (
+            request.user.role == User.WORKPLACE_SUPERVISOR
+            and weekly_log.placement.workplace_supervisor_id != request.user.id
+        ):
+            raise PermissionDenied("You do not have permission to view these reviews.")
+        if (
+            request.user.role == User.ACADEMIC_SUPERVISOR
+            and weekly_log.placement.academic_supervisor_id != request.user.id
+        ):
+            raise PermissionDenied("You do not have permission to view these reviews.")
 
         reviews = SupervisorReviews.objects.filter(weekly_log=weekly_log)
         serializer = SupervisorReviewsSerializer(reviews, many=True)

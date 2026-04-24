@@ -12,6 +12,24 @@ const SESSION_STORAGE_KEY = "logify-auth-session";
 const SESSION_CLEARED_EVENT = "logify:session-cleared";
 let refreshPromise = null;
 
+const getErrorMessage = (parsedError, fallbackText) => {
+  if (!parsedError) return fallbackText;
+  if (typeof parsedError === "string") return parsedError;
+  if (parsedError.detail) return parsedError.detail;
+  if (parsedError.message) return parsedError.message;
+  if (parsedError.error) return parsedError.error;
+
+  const firstValue = Object.values(parsedError)[0];
+  if (Array.isArray(firstValue) && firstValue.length > 0) {
+    return firstValue[0];
+  }
+  if (typeof firstValue === "string") {
+    return firstValue;
+  }
+
+  return fallbackText;
+};
+
 const getSession = () => {
   const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
   if (!raw) return null;
@@ -93,55 +111,101 @@ const apiRequest = async (
       ...options.headers,
     },
   };
-  try {
-    const response = await fetch(url, config);
-    if (!response.ok) {
-      const errorData = await response.text();
+  const response = await fetch(url, config);
+  if (!response.ok) {
+    const errorData = await response.text();
 
-      if (
-        response.status === 401 &&
-        retryOnAuthFailure &&
-        session?.refreshToken
-      ) {
-        try {
-          const nextSession = await refreshSession();
-          if (nextSession?.token) {
-            return apiRequest(
-              endpoint,
-              {
-                ...options,
-                headers: {
-                  ...getAuthHeaders(nextSession),
-                  ...options.headers,
-                },
-              },
-              false,
-            );
-          }
-        } catch {
-          // Continue to the parsed error handling below.
-        }
-      }
-
-      if (response.status === 401) {
-        clearSession();
-      }
-
-      let errorMessage = `HTTP ${response.status}`;
+    if (
+      response.status === 401 &&
+      retryOnAuthFailure &&
+      session?.refreshToken
+    ) {
       try {
-        const parsed = JSON.parse(errorData);
-        errorMessage = parsed.detail || parsed.message || errorData;
+        const nextSession = await refreshSession();
+        if (nextSession?.token) {
+          return apiRequest(
+            endpoint,
+            {
+              ...options,
+              headers: {
+                ...getAuthHeaders(nextSession),
+                ...options.headers,
+              },
+            },
+            false,
+          );
+        }
       } catch {
-        errorMessage = errorData;
+        // Continue to the parsed error handling below.
       }
-      throw new Error(errorMessage);
     }
-    const text = await response.text();
-    return text ? JSON.parse(text) : null;
-  } catch (err) {
-    console.error("API request failed:", err);
-    throw err;
+
+    if (response.status === 401) {
+      clearSession();
+    }
+
+    let errorMessage = `HTTP ${response.status}`;
+    try {
+      const parsed = JSON.parse(errorData);
+      errorMessage = getErrorMessage(parsed, errorData);
+    } catch {
+      errorMessage = errorData;
+    }
+    throw new Error(errorMessage);
   }
+
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
+};
+
+const apiDownload = async (
+  endpoint,
+  options = {},
+  retryOnAuthFailure = true,
+) => {
+  const url = `${API_BASE_URL}${endpoint}`;
+  const session = getSession();
+  const config = {
+    ...options,
+    headers: {
+      ...getAuthHeaders(session),
+      ...options.headers,
+    },
+  };
+
+  const response = await fetch(url, config);
+
+  if (response.status === 401 && retryOnAuthFailure && session?.refreshToken) {
+    try {
+      const nextSession = await refreshSession();
+      if (nextSession?.token) {
+        return apiDownload(
+          endpoint,
+          {
+            ...options,
+            headers: {
+              ...getAuthHeaders(nextSession),
+              ...options.headers,
+            },
+          },
+          false,
+        );
+      }
+    } catch {
+      clearSession();
+    }
+  }
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || `HTTP ${response.status}`);
+  }
+
+  return {
+    blob: await response.blob(),
+    contentType: response.headers.get("Content-Type"),
+    contentDisposition: response.headers.get("Content-Disposition"),
+  };
 };
 
 export { SESSION_CLEARED_EVENT };
@@ -164,6 +228,16 @@ export const api = {
         body: JSON.stringify(data),
       }),
     me: () => apiRequest("/v1/auth/me/"),
+    updateMe: (data) =>
+      apiRequest("/v1/auth/me/", {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    changePassword: (data) =>
+      apiRequest("/v1/auth/change-password/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
     adminSignup: (data) =>
       apiRequest("/v1/auth/admin/signup/", {
         method: "POST",
@@ -395,11 +469,31 @@ export const api = {
       const endpoint = `/v1/reports/weekly_logs_report/${studentId}/${queryString ? "?" + queryString : ""}`;
       return apiRequest(endpoint);
     },
+    downloadReport: (studentId, params = {}) => {
+      const queryString = new URLSearchParams(params).toString();
+      const endpoint = `/v1/reports/weekly_logs_report/${studentId}/${queryString ? "?" + queryString : ""}`;
+      return apiDownload(endpoint);
+    },
   },
 
   evaluations: {
     getResults: () => apiRequest("/v1/evaluations/results/"),
     getResult: (id) => apiRequest(`/v1/evaluations/results/${id}/`),
+    createResult: (data) =>
+      apiRequest("/v1/evaluations/results/", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    updateResult: (id, data) =>
+      apiRequest(`/v1/evaluations/results/${id}/`, {
+        method: "PUT",
+        body: JSON.stringify(data),
+      }),
+    patchResult: (id, data) =>
+      apiRequest(`/v1/evaluations/results/${id}/`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
 
     getRubrics: () => apiRequest("/v1/evaluations/rubrics/"),
     getRubric: (id) => apiRequest(`/v1/evaluations/rubrics/${id}/`),

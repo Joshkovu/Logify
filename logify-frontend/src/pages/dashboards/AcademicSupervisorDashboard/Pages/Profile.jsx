@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import {
   User,
@@ -20,6 +21,7 @@ import {
   getUserDisplayName,
   loadAcademicSupervisorData,
 } from "../utils/academicSupervisorData";
+import { api } from "../../../../config/api";
 
 const Profile = () => {
   const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
@@ -46,6 +48,8 @@ const Profile = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSecurityModal, setShowSecurityModal] = useState(false);
   const [editForm, setEditForm] = useState(profile);
+  const [isSavingProfile, setIsSavingProfile] = useState(false);
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
     newPassword: "",
@@ -206,41 +210,93 @@ const Profile = () => {
   };
 
   const handleSaveProfile = () => {
-    setShowEditModal(false);
-    setError(
-      "Profile updates are not currently supported by the backend for academic supervisors.",
-    );
+    const saveProfile = async () => {
+      setError("");
+
+      if (
+        !editForm.firstName.trim() ||
+        !editForm.lastName.trim() ||
+        !editForm.email.trim()
+      ) {
+        setError("First name, last name, and email are required.");
+        return;
+      }
+
+      setIsSavingProfile(true);
+      try {
+        const updated = await api.auth.updateMe({
+          first_name: editForm.firstName.trim(),
+          last_name: editForm.lastName.trim(),
+          email: editForm.email.trim(),
+          phone: editForm.officePhone.trim(),
+          title: editForm.position.trim(),
+        });
+
+        setProfile((current) => ({
+          ...current,
+          firstName: updated.first_name || current.firstName,
+          lastName: updated.last_name || current.lastName,
+          email: updated.email || current.email,
+          officePhone: updated.phone || "",
+          position: updated.staff_profile?.title || editForm.position.trim(),
+          department:
+            updated.staff_profile?.department_name || current.department,
+        }));
+        setShowEditModal(false);
+        toast.success("Profile updated successfully!");
+      } catch (saveError) {
+        setError(saveError.message || "Unable to update your profile.");
+      } finally {
+        setIsSavingProfile(false);
+      }
+    };
+
+    saveProfile();
   };
 
   const handlePasswordChange = () => {
-    if (
-      !passwordForm.currentPassword ||
-      !passwordForm.newPassword ||
-      !passwordForm.confirmPassword
-    ) {
-      setError("Please fill in all password fields.");
-      return;
-    }
+    const changePassword = async () => {
+      if (
+        !passwordForm.currentPassword ||
+        !passwordForm.newPassword ||
+        !passwordForm.confirmPassword
+      ) {
+        setError("Please fill in all password fields.");
+        return;
+      }
 
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setError("New password and confirm password do not match.");
-      return;
-    }
+      if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+        setError("New password and confirm password do not match.");
+        return;
+      }
 
-    if (passwordForm.newPassword.length < 6) {
-      setError("New password must be at least 6 characters long.");
-      return;
-    }
+      if (passwordForm.newPassword.length < 8) {
+        setError("New password must be at least 8 characters long.");
+        return;
+      }
 
-    setShowSecurityModal(false);
-    setPasswordForm({
-      currentPassword: "",
-      newPassword: "",
-      confirmPassword: "",
-    });
-    setError(
-      "Password changes are not currently supported by the backend for academic supervisors.",
-    );
+      setIsUpdatingPassword(true);
+      setError("");
+      try {
+        await api.auth.changePassword({
+          current_password: passwordForm.currentPassword,
+          new_password: passwordForm.newPassword,
+        });
+        setShowSecurityModal(false);
+        setPasswordForm({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+        toast.success("Password updated successfully!");
+      } catch (passwordError) {
+        setError(passwordError.message || "Unable to update password.");
+      } finally {
+        setIsUpdatingPassword(false);
+      }
+    };
+
+    changePassword();
   };
 
   const handleEditInputChange = (field, value) => {
@@ -269,6 +325,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <ToastContainer position="top-right" />
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR
@@ -497,19 +554,15 @@ const Profile = () => {
               <input
                 type="text"
                 value={editForm.university}
-                onChange={(e) =>
-                  handleEditInputChange("university", e.target.value)
-                }
                 placeholder="University"
+                disabled
                 className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
                 value={editForm.department}
-                onChange={(e) =>
-                  handleEditInputChange("department", e.target.value)
-                }
                 placeholder="Department"
+                disabled
                 className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
@@ -524,31 +577,30 @@ const Profile = () => {
               <input
                 type="text"
                 value={editForm.officeLocation}
-                onChange={(e) =>
-                  handleEditInputChange("officeLocation", e.target.value)
-                }
                 placeholder="Office Location"
+                disabled
                 className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white"
               />
               <input
                 type="text"
                 value={editForm.specialization}
-                onChange={(e) =>
-                  handleEditInputChange("specialization", e.target.value)
-                }
                 placeholder="Specialization"
+                disabled
                 className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white md:col-span-2"
               />
               <input
                 type="text"
                 value={editForm.yearsAtUniversity}
-                onChange={(e) =>
-                  handleEditInputChange("yearsAtUniversity", e.target.value)
-                }
                 placeholder="Years at University"
+                disabled
                 className="rounded-xl border border-border dark:border-slate-700 bg-background dark:bg-slate-800/50 p-3 outline-none transition-colors focus:border-gold dark:text-white md:col-span-2"
               />
             </div>
+
+            <p className="mt-4 text-xs text-text-secondary dark:text-slate-400">
+              University, department, office location, specialization, and
+              years-at-university fields are currently read-only in Logify.
+            </p>
 
             <div className="mt-6 flex justify-end gap-3">
               <button
@@ -559,10 +611,11 @@ const Profile = () => {
               </button>
               <button
                 onClick={handleSaveProfile}
+                disabled={isSavingProfile}
                 className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
                 <Save size={16} />
-                Save Changes
+                {isSavingProfile ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </div>
@@ -655,9 +708,10 @@ const Profile = () => {
               </button>
               <button
                 onClick={handlePasswordChange}
+                disabled={isUpdatingPassword}
                 className="rounded-lg border border-gold/10 bg-gold/5 px-4 py-3 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300"
               >
-                Update Password
+                {isUpdatingPassword ? "Updating..." : "Update Password"}
               </button>
             </div>
           </div>

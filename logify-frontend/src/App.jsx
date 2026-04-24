@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
-import LandingPage from "./pages/LandingPage";
+
 import TutorialPage from "./pages/TutorialPage";
 import AuthEntryPage from "./pages/AuthEntryPage";
 import LoginPage from "./pages/LoginPage";
@@ -23,10 +23,9 @@ function App() {
       <AuthProvider>
         <Routes>
           {/* Main Landing Page */}
-          <Route path="/landing-page" element={<LandingPage />} />
+          <Route path="/" element={<TutorialPage />} />
 
           {/* Auth and onboarding pages */}
-          <Route path="/" element={<TutorialPage />} />
           <Route path="/auth" element={<AuthEntryPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupRolePage />} />
@@ -41,14 +40,23 @@ function App() {
           <Route element={<ProtectedRoute allowedRoles={["student"]} />}>
             <Route path="/student/*" element={<StudentDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["internship_admin"]} />}>
+          <Route
+            element={<ProtectedRoute allowedRoles={["internship_admin"]} />}
+          >
             <Route path="/admin/*" element={<AdminDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["academic_supervisor"]} />}>
+          <Route
+            element={<ProtectedRoute allowedRoles={["academic_supervisor"]} />}
+          >
             <Route path="/supervisor/*" element={<SupervisorDashboard />} />
           </Route>
-          <Route element={<ProtectedRoute allowedRoles={["workplace_supervisor"]} />}>
-            <Route path="/workplace-supervisor/*" element={<WorkplaceSupervisorDashboard />} />
+          <Route
+            element={<ProtectedRoute allowedRoles={["workplace_supervisor"]} />}
+          >
+            <Route
+              path="/workplace-supervisor/*"
+              element={<WorkplaceSupervisorDashboard />}
+            />
           </Route>
 
           <Route path="*" element={<NotFoundPage />} />

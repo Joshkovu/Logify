@@ -54,6 +54,16 @@ const Sidebar = ({
   };
   const userData = user;
   const isLoading = isLoadingUser;
+  const fullName = userData
+    ? `${userData.first_name || ""} ${userData.last_name || ""}`.trim()
+    : "";
+  const initials = fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((token) => token[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <aside
@@ -194,14 +204,7 @@ const Sidebar = ({
         >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-amber-500 font-bold text-white">
-              {isLoading
-                ? "..."
-                : userData?.name
-                  ? userData.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                  : "AU"}
+              {isLoading ? "..." : initials || "AU"}
             </AvatarFallback>
           </Avatar>
 
@@ -213,14 +216,14 @@ const Sidebar = ({
             }`}
           >
             <span className="max-w-30 truncate text-xs font-bold text-foreground">
-              {isLoading ? "Loading..." : userData?.name || "Admin User"}
+              {isLoading ? "Loading..." : fullName || "Admin User"}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-red-600">
               {isLoading
                 ? "Loading..."
-                : userData?.role === "Internship Admin"
-                  ? "Super Admin"
-                  : ""}
+                : userData?.role === "internship_admin"
+                  ? "Internship Admin"
+                  : "Admin"}
             </span>
           </div>
         </div>

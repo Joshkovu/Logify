@@ -43,6 +43,13 @@ const toSession = (response) => ({
   tokenType: "Bearer",
 });
 
+const clearAuthState = ({ setSession, setUser, setIsLoadingUser }) => {
+  clearStoredSession();
+  setSession(null);
+  setUser(null);
+  setIsLoadingUser(false);
+};
+
 const toSupervisorPayload = (data) => {
   const trimmedName = data.fullName?.trim() || "";
   const [firstName = "", ...rest] = trimmedName.split(/\s+/);
@@ -95,11 +102,8 @@ const AuthProvider = ({ children }) => {
       try {
         const currentUser = await api.auth.me();
         setUser(currentUser);
-      } catch (error) {
-        console.error("Failed to load authenticated user:", error);
-        setSession(null);
-        setUser(null);
-        clearStoredSession();
+      } catch {
+        clearAuthState({ setSession, setUser, setIsLoadingUser });
       } finally {
         setIsLoadingUser(false);
       }
@@ -120,8 +124,21 @@ const AuthProvider = ({ children }) => {
       window.removeEventListener(SESSION_CLEARED_EVENT, handleSessionCleared);
   }, []);
 
-  const login = async (email, password) => {
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === SESSION_STORAGE_KEY) {
+        const newSession = getStoredSession();
+        setSession(newSession);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
+
+  const login = async (email, password, redirectTo = null) => {
     try {
+      setIsLoadingUser(true);
       const response = await api.auth.login({ email, password });
       const nextSession = toSession(response);
 
@@ -131,18 +148,21 @@ const AuthProvider = ({ children }) => {
       const currentUser = await api.auth.me();
       setUser(currentUser);
 
-      navigate(getRedirectPath(currentUser?.role));
+      navigate(redirectTo || getRedirectPath(currentUser?.role), {
+        replace: true,
+      });
       return currentUser;
     } catch (error) {
-      clearStoredSession();
-      setSession(null);
-      setUser(null);
+      clearAuthState({ setSession, setUser, setIsLoadingUser });
       throw new Error(error.message || "Login failed. Please try again.");
+    } finally {
+      setIsLoadingUser(false);
     }
   };
 
   const studentSignup = async (data) => {
     try {
+      setIsLoadingUser(true);
       const response = await api.auth.studentSignup(data);
       const nextSession = toSession(response);
 
@@ -152,10 +172,13 @@ const AuthProvider = ({ children }) => {
       const currentUser = await api.auth.me();
       setUser(currentUser);
 
-      navigate(getRedirectPath(currentUser?.role));
+      navigate(getRedirectPath(currentUser?.role), { replace: true });
       return currentUser;
     } catch (error) {
+      clearAuthState({ setSession, setUser, setIsLoadingUser });
       throw new Error(error.message || "Signup failed. Please try again.");
+    } finally {
+      setIsLoadingUser(false);
     }
   };
 
@@ -182,13 +205,9 @@ const AuthProvider = ({ children }) => {
       if (refreshToken) {
         await api.auth.logout({ refresh: refreshToken });
       }
-    } catch (error) {
-      console.error("Logout request failed:", error);
     } finally {
-      setSession(null);
-      setUser(null);
-      clearStoredSession();
-      navigate(redirectTo);
+      clearAuthState({ setSession, setUser, setIsLoadingUser });
+      navigate(redirectTo, { replace: true });
     }
   };
 

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { ToastContainer } from "react-toastify";
 import { Routes, Route } from "react-router-dom";
 import { Menu } from "lucide-react";
 
@@ -69,6 +70,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50 transition-colors duration-300 dark:bg-slate-950">
+      <ToastContainer position="top-right" />
       {!isDesktop && (
         <div
           className={`fixed inset-0 z-30 bg-black/50 transition-opacity duration-300 ${

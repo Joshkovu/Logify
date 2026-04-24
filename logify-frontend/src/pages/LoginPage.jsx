@@ -11,6 +11,7 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const location = useLocation();
   const signupSuccess = location.state?.signupSuccess || "";
+  const requestedRoute = location.state?.from;
   const { login } = useContext(AuthContext);
 
   const onChange = (event) => {
@@ -30,7 +31,10 @@ const LoginPage = () => {
     setIsSubmitting(true);
 
     try {
-      await login(formData.email.trim(), formData.password);
+      const redirectTo = requestedRoute
+        ? `${requestedRoute.pathname || ""}${requestedRoute.search || ""}${requestedRoute.hash || ""}`
+        : null;
+      await login(formData.email.trim(), formData.password, redirectTo);
     } catch (loginError) {
       setError(loginError.message || "Unable to log in.");
     } finally {
@@ -42,8 +46,8 @@ const LoginPage = () => {
     <GuestOnlyRoute>
       <AuthLayout
         title="Login"
-        subtitle="Secure login for returning users. This flow is token-ready for future JWT backend integration."
-        footer="Demo accounts available: student@students.mak.ac.ug, internship.admin@mak.ac.ug, academic.supervisor@mak.ac.ug."
+        subtitle="Secure login for returning users. You will be redirected back to your workspace after authentication."
+        footer="Use the account credentials assigned to you by your institution or internship office."
       >
         <form onSubmit={onSubmit} className="space-y-5">
           {signupSuccess && (

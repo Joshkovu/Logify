@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Home,
   CheckSquare,
@@ -12,6 +12,7 @@ import {
 
 import { Button } from "../../../components/ui/Button";
 import { Avatar, AvatarFallback } from "../../../components/ui/Avatar";
+import { AuthContext } from "../../../contexts/AuthContext";
 
 const navLinks = [
   { name: "Dashboard", path: "/supervisor", icon: Home },
@@ -27,23 +28,18 @@ const navLinks = [
 
 const Sidebar = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const [isExpanded, setIsExpanded] = useState(true);
-  const [isDark] = useState(() => {
-    return localStorage.getItem("theme") === "dark";
-  });
-
-  useEffect(() => {
-    const root = document.documentElement;
-
-    if (isDark) {
-      root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [isDark]);
+  const { logout, user, isLoadingUser } = useContext(AuthContext);
+  const fullName = user
+    ? `${user.first_name || ""} ${user.last_name || ""}`.trim()
+    : "Supervisor User";
+  const initials = fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((token) => token[0])
+    .join("")
+    .toUpperCase();
 
   return (
     <aside
@@ -166,7 +162,7 @@ const Sidebar = () => {
         >
           <Avatar className="h-10 w-10 border-2 border-primary/10">
             <AvatarFallback className="bg-[#7A1C1C] font-bold text-white">
-              ER
+              {isLoadingUser ? "..." : initials || "AS"}
             </AvatarFallback>
           </Avatar>
 
@@ -176,17 +172,17 @@ const Sidebar = () => {
             }`}
           >
             <span className="max-w-30 truncate text-xs font-bold text-foreground dark:text-white">
-              Dr. Emily Roberts
+              {isLoadingUser ? "Loading..." : fullName}
             </span>
             <span className="text-[10px] font-bold uppercase tracking-wider text-red-600 dark:text-gold/70">
-              Supervisor
+              {isLoadingUser ? "Loading..." : "Academic Supervisor"}
             </span>
           </div>
         </div>
 
         <Button
           variant="outline"
-          onClick={() => navigate("/dashboards")}
+          onClick={() => logout("/")}
           className={`h-9 border-primary/10 text-xs font-bold hover:border-destructive/20 hover:bg-destructive/5 hover:text-destructive dark:border-slate-700 ${
             isExpanded
               ? "w-full justify-start gap-2"

@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
+import { toast } from "react-toastify";
 import {
   Check,
   RefreshCcw,
@@ -50,23 +51,28 @@ const Supervisors = () => {
   const [error, setError] = useState("");
   const [activeReviewId, setActiveReviewId] = useState(null);
 
-  const loadApplications = async () => {
+  const loadApplications = useCallback(async () => {
     setIsLoading(true);
     setError("");
 
     try {
       const response = await api.accounts.getSupervisorApplications();
       setApplications(Array.isArray(response) ? response : []);
-    } catch (loadError) {
-      setError(loadError.message || "Unable to load supervisor applications.");
+    } catch {
+      setError("Unable to load supervisor applications.");
     } finally {
       setIsLoading(false);
     }
+  }, []);
+
+  const handleRefresh = async () => {
+    await loadApplications();
+    toast.success("Applications refreshed");
   };
 
   useEffect(() => {
     loadApplications();
-  }, []);
+  }, [loadApplications]);
 
   const handleReview = async (applicationId, action) => {
     setActiveReviewId(applicationId);
@@ -75,7 +81,13 @@ const Supervisors = () => {
     try {
       await api.accounts.reviewSupervisorApplication(applicationId, action);
       await loadApplications();
+      toast.success(
+        action === "approve"
+          ? "Supervisor application approved!"
+          : "Supervisor application rejected.",
+      );
     } catch (reviewError) {
+      toast.error(reviewError.message || "Unable to review application.");
       setError(reviewError.message || "Unable to review application.");
     } finally {
       setActiveReviewId(null);
@@ -110,7 +122,7 @@ const Supervisors = () => {
         <Button
           type="button"
           variant="outline"
-          onClick={loadApplications}
+          onClick={handleRefresh}
           disabled={isLoading}
           className="border-border bg-white text-maroon-dark hover:bg-gold/10 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
         >

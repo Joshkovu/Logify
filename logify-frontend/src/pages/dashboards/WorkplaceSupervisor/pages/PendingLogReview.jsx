@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 
 import { api } from "../../../../config/api";
 import {
@@ -82,6 +83,14 @@ const PendingLogReview = () => {
 
       setComment("");
       await loadData();
+
+      if (action === "approve") {
+        toast.success("Weekly log approved successfully!");
+      } else if (action === "request_changes") {
+        toast.success("Changes requested successfully!");
+      } else {
+        toast.success("Weekly log rejected successfully!");
+      }
     } catch (reviewError) {
       setError(reviewError.message || "Unable to submit review.");
     } finally {
@@ -91,6 +100,7 @@ const PendingLogReview = () => {
 
   return (
     <div className="min-h-screen w-full overflow-y-auto bg-[#FCFBF8] p-8 transition-all dark:bg-slate-950 lg:p-12">
+      <ToastContainer position="top-right" />
       <h1 className="text-3xl font-bold">Pending Log Reviews</h1>
       <h2 className="mt-1 text-lg font-light text-gray-600 dark:text-slate-400">
         Review submitted weekly logs and provide feedback.

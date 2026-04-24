@@ -1,10 +1,26 @@
+import { useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "../../../../components/ui/Button";
 import { Switch } from "../../../../components/ui/Switch";
 import { Input } from "../../../../components/ui/Input";
 
 const Settings = () => {
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleSave = () => {
+    setIsSaving(true);
+    setTimeout(() => {
+      setIsSaving(false);
+      toast.success("Settings saved successfully!");
+    }, 800);
+  };
+
+  const handleReset = () => {
+    toast.info("Settings reset to defaults.");
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <header className="mb-8">
         <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
           System Settings
@@ -115,9 +131,15 @@ const Settings = () => {
         </div>
       </section>
       <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <Button variant="outline">Reset to Defaults</Button>
-        <Button className="bg-maroonCustom hover:bg-maroon-dark text-white">
-          Save Changes
+        <Button variant="outline" onClick={handleReset}>
+          Reset to Defaults
+        </Button>
+        <Button
+          className="bg-maroonCustom hover:bg-maroon-dark text-white"
+          onClick={handleSave}
+          disabled={isSaving}
+        >
+          {isSaving ? "Saving..." : "Save Changes"}
         </Button>
       </div>
     </div>

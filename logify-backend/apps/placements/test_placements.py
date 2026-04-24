@@ -72,6 +72,10 @@ class PlacementWorkflowTests(APITestCase):
             duration_years=3,
         )
 
+        self.intern.institution_id = str(self.institution.id)
+        self.intern.programme_id = str(self.programme.id)
+        self.intern.save()
+
         self.placement = InternshipPlacements.objects.create(
             intern=self.intern,
             institution=self.institution,
@@ -126,3 +130,101 @@ class PlacementWorkflowTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIn("error", response.data)
+
+    def test_other_student_cannot_view_unassigned_placement(self):
+        other_student = User.objects.create_user(
+            email=f"other-student@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Other",
+            last_name="Student",
+            role=User.STUDENT,
+        )
+        self.client.force_authenticate(user=other_student)
+
+        response = self.client.get(self.detail_url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_student_can_create_placement_with_supervisors_matched_by_email(self):
+        self.client.force_authenticate(user=self.intern)
+
+        response = self.client.post(
+            reverse("placement-list-create"),
+            {
+                "organization": self.organization.id,
+                "internship_title": "Platform Engineering Intern",
+                "department_at_company": "Engineering",
+                "work_mode": "onsite",
+                "start_date": timezone.now().date(),
+                "end_date": (timezone.now() + timedelta(days=60)).date(),
+                "workplace_supervisor_email": self.workplace_supervisor.email,
+                "academic_supervisor_email": self.academic_supervisor.email,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_placement = InternshipPlacements.objects.get(id=response.data["id"])
+        self.assertEqual(created_placement.intern, self.intern)
+        self.assertEqual(created_placement.workplace_supervisor, self.workplace_supervisor)
+        self.assertEqual(created_placement.academic_supervisor, self.academic_supervisor)
+
+    def test_student_can_create_placement_with_new_organization_details(self):
+        self.client.force_authenticate(user=self.intern)
+
+        response = self.client.post(
+            reverse("placement-list-create"),
+            {
+                "organization_details": {
+                    "name": "Startup Labs",
+                    "industry": "Research",
+                    "city": "Entebbe",
+                    "address": "42 Science Avenue",
+                    "contact_email": "contact@startuplabs.example",
+                    "contact_phone": "+256700000000",
+                },
+                "internship_title": "Innovation Intern",
+                "department_at_company": "R&D",
+                "work_mode": "remote",
+                "start_date": timezone.now().date(),
+                "end_date": (timezone.now() + timedelta(days=60)).date(),
+                "workplace_supervisor_email": self.workplace_supervisor.email,
+                "academic_supervisor_email": self.academic_supervisor.email,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        created_placement = InternshipPlacements.objects.get(id=response.data["id"])
+        self.assertEqual(created_placement.intern, self.intern)
+        self.assertEqual(created_placement.organization.name, "Startup Labs")
+        self.assertEqual(
+            created_placement.organization.contact_email, "contact@startuplabs.example"
+        )
+        self.assertEqual(created_placement.workplace_supervisor, self.workplace_supervisor)
+        self.assertEqual(created_placement.academic_supervisor, self.academic_supervisor)
+
+    def test_student_cannot_create_placement_when_supervisor_email_does_not_exist(self):
+        self.client.force_authenticate(user=self.intern)
+        initial_count = InternshipPlacements.objects.count()
+
+        response = self.client.post(
+            reverse("placement-list-create"),
+            {
+                "organization": self.organization.id,
+                "internship_title": "Platform Engineering Intern",
+                "department_at_company": "Engineering",
+                "work_mode": "onsite",
+                "start_date": timezone.now().date(),
+                "end_date": (timezone.now() + timedelta(days=60)).date(),
+                "workplace_supervisor_email": "missing-workplace@example.com",
+                "academic_supervisor_email": self.academic_supervisor.email,
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["workplace_supervisor_email"][0], "Workplace supervisor does not exist."
+        )
+        self.assertEqual(InternshipPlacements.objects.count(), initial_count)

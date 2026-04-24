@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 import { isNumber } from "chart.js/helpers";
-const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
+const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onAction }) => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -20,23 +20,24 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
 
   useEffect(() => {
     const fetchReviewData = async () => {
+      if (!weeklyLog?.id) {
+        setReviewData(null);
+        setIsLoading(false);
+        return;
+      }
+
       try {
         setIsLoading(true);
         const data = await api.logbook.getWeeklyLogReviews(weeklyLog.id);
         setReviewData(data.reviews[0]);
-        console.log("data", data);
-        console.log("review", data.reviews[0].comment);
-      } catch (err) {
+      } catch {
         setReviewData(null);
-        console.error(err.message);
       } finally {
         setIsLoading(false);
       }
     };
     fetchReviewData();
   }, [weeklyLog]);
-
-  console.log("review data", reviewData);
 
   useEffect(() => {
     if (weeklyLog) {
@@ -60,7 +61,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
     }
   }, [weeklyLog, isOpen]);
   const [submitAction, setSubmitAction] = useState("draft");
-  console.log(weeklyLog);
+
   const onSubmit = async (e) => {
     e.preventDefault();
     setError("");
@@ -104,9 +105,9 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
       learnings: formData.learnings.trim(),
     };
 
-    if (submitAction == "submit") {
+    if (submitAction === "submit") {
       setIsSubmitting(true);
-    } else if (submitAction == "draft") {
+    } else if (submitAction === "draft") {
       setIsSaving(true);
     } else {
       setIsDeleting(true);
@@ -119,21 +120,29 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
       } else {
         result = await api.logbook.createWeeklyLog(payload);
       }
-      if (submitAction == "submit") {
+      if (submitAction === "submit") {
         const logId = weeklyLog?.id ?? result.weekly_log.id ?? result.id;
         await api.logbook.submitWeeklyLog(logId, result);
-      } else if (submitAction == "delete") {
+      } else if (submitAction === "delete") {
         const logId = weeklyLog?.id ?? result.weekly_log.id ?? result.id;
         await api.logbook.deleteWeeklyLog(logId, result);
       }
-      onSuccess?.();
+      if (submitAction === "submit") {
+        onAction?.("submitted");
+      } else if (submitAction === "delete") {
+        onAction?.("deleted");
+      } else if (weeklyLog) {
+        onAction?.("edited");
+      } else {
+        onAction?.("created");
+      }
       onClose();
     } catch (err) {
       setError(err.message);
     } finally {
-      if (submitAction == "submit") {
+      if (submitAction === "submit") {
         setIsSubmitting(false);
-      } else if (submitAction == "draft") {
+      } else if (submitAction === "draft") {
         setIsSaving(false);
       } else {
         setIsDeleting(false);
@@ -287,7 +296,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
           null}
 
           <section className="mt-4 w-full flex gap-2 justify-end">
-            {(!weeklyLog || weeklyLog?.status.toLowerCase() == "draft") && (
+            {(!weeklyLog || weeklyLog?.status.toLowerCase() === "draft") && (
               <>
                 <button
                   disabled={isSubmitting || isSaving || isDeleting}
@@ -315,7 +324,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
                 </button>
               </>
             )}
-            {weeklyLog?.status.toLowerCase() == "draft" && (
+            {weeklyLog?.status.toLowerCase() === "draft" && (
               <button
                 disabled={isSubmitting || isSaving || isDeleting}
                 onClick={() => setSubmitAction("delete")}
@@ -345,7 +354,7 @@ CreateWeeklyLog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   weeklyLog: PropTypes.object,
-  onSuccess: PropTypes.func,
+  onAction: PropTypes.func,
 };
 
 export default CreateWeeklyLog;

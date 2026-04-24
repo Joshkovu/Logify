@@ -22,12 +22,10 @@ const Profile = () => {
   const [personalInformation, setPersonalInformation] = useState(null);
   const [academicInformation, setAcademicInformation] = useState(null);
   const [originalData, setOriginalData] = useState(null);
-  const [registryData, setRegistryData] = useState(null);
 
   const [errorI, setErrorI] = useState(null);
   const [errorP, setErrorP] = useState(null);
   const [isLoadingPersonal, setIsLoadingPersonal] = useState(true);
-  const [isLoadingRegistry, setIsLoadingRegistry] = useState(false);
   const [isLoadingAcademic, setIsLoadingAcademic] = useState(false);
 
   const [placementData, setPlacementData] = useState(null);
@@ -44,24 +42,29 @@ const Profile = () => {
     if (!originalData) return;
 
     const patchData = Object.keys(formData).reduce((acc, key) => {
-      if (formData[key] != originalData[key] && formData[key] !== "") {
+      if (formData[key] !== originalData[key] && formData[key] !== "") {
         acc[key] = formData[key];
       }
       return acc;
     }, {});
 
     if (Object.keys(patchData).length === 0) {
-      console.log("No changes detected.");
-      return;
+      return true;
     }
 
     try {
-      console.log("Patching profile with:", patchData);
+      const authPatchData = {};
+      if (patchData.first_name) authPatchData.first_name = patchData.first_name;
+      if (patchData.last_name) authPatchData.last_name = patchData.last_name;
+      if (patchData.email) authPatchData.email = patchData.email;
+      if (patchData.student_number) {
+        authPatchData.student_number = Number(patchData.student_number);
+      }
 
-      await api.registry.patchStudent(
-        personalInformation.student_registry_id,
-        patchData,
-      );
+      if (Object.keys(authPatchData).length > 0) {
+        await api.auth.updateMe(authPatchData);
+      }
+
       const freshData = await api.auth.me();
 
       setPersonalInformation(freshData);
@@ -74,9 +77,10 @@ const Profile = () => {
       });
 
       alert("Profile updated successfully!");
-    } catch (err) {
-      console.error("Failed to update profile:", err);
+      return true;
+    } catch {
       alert("Error updating profile. Please try again.");
+      return false;
     }
   };
 
@@ -85,8 +89,8 @@ const Profile = () => {
       try {
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setPlacementData(null);
       }
     };
     fetchPlacementData();
@@ -100,10 +104,9 @@ const Profile = () => {
           const data = await api.accounts.getAcademicSupervisor(
             placementData.academic_supervisor,
           );
-          console.log("academic: ", data);
           setAcademicSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get academic supervisor: ", err);
+        } catch {
+          setAcademicSupervisorData(null);
         } finally {
           setIsLoadingAcademicSupervisorData(false);
         }
@@ -120,10 +123,9 @@ const Profile = () => {
           const data = await api.accounts.getWorkplaceSupervisor(
             placementData.workplace_supervisor,
           );
-          console.log("workplace: ", data);
           setWorkplaceSupervisorData(data);
-        } catch (err) {
-          console.error("failed to get workplace supervisor: ", err);
+        } catch {
+          setWorkplaceSupervisorData(null);
         } finally {
           setIsLoadingWorkplaceSupervisorData(false);
         }
@@ -155,26 +157,6 @@ const Profile = () => {
 
   useEffect(() => {
     if (!personalInformation) return;
-    const fetchRegistryInformation = async () => {
-      if (personalInformation.student_registry_id) {
-        try {
-          setIsLoadingRegistry(true);
-          const data = await api.registry.getStudent(
-            personalInformation.student_registry_id,
-          );
-          setRegistryData(data);
-        } catch (err) {
-          console.error("Registry fetch error:", err);
-        } finally {
-          setIsLoadingRegistry(false);
-        }
-      }
-    };
-    fetchRegistryInformation();
-  }, [personalInformation]);
-
-  useEffect(() => {
-    if (!personalInformation) return;
     if (!personalInformation.institution_id) return;
     const fetchAcademicInformation = async () => {
       try {
@@ -185,37 +167,16 @@ const Profile = () => {
 
         let programme = null;
         if (personalInformation.programme_id) {
-          console.log(
-            "Fetching Programme for ID:",
-            personalInformation.programme_id,
-          );
           try {
             programme = await api.academics.getProgramme(
               personalInformation.programme_id,
             );
-            console.log("Programme:", programme);
-          } catch (err) {
-            console.error("Programme fetch error:", err);
-          }
-        } else {
-          console.warn(
-            "No programme_id found in personalInformation:",
-            personalInformation,
-          );
-        }
-
-        let registry = null;
-        if (personalInformation.student_registry_id) {
-          try {
-            registry = await api.registry.getStudent(
-              personalInformation.student_registry_id,
-            );
-          } catch (err) {
-            console.error("Registry fetch error:", err);
+          } catch {
+            programme = null;
           }
         }
 
-        setAcademicInformation({ institution, programme, registry });
+        setAcademicInformation({ institution, programme });
       } catch (err) {
         setErrorI(err);
       } finally {
@@ -224,8 +185,6 @@ const Profile = () => {
     };
     fetchAcademicInformation();
   }, [personalInformation]);
-
-  console.log("Original data", originalData);
 
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
@@ -355,7 +314,12 @@ const Profile = () => {
                 <p className="text-[11px] uppercase font-black text-text-secondary/40 tracking-widest mb-1">
                   {item.label}
                 </p>
-                <p className="text-md font-semibold truncate">{item.value}</p>
+                <p
+                  className="text-md font-semibold truncate"
+                  title={item.value}
+                >
+                  {item.value}
+                </p>
               </div>
             ))}
           </div>
@@ -395,10 +359,10 @@ const Profile = () => {
               },
               {
                 label: "Year Level",
-                value: isLoadingRegistry
+                value: isLoadingPersonal
                   ? "Loading..."
-                  : registryData?.year_of_study
-                    ? `Year ${registryData.year_of_study}`
+                  : personalInformation?.year_of_study
+                    ? `Year ${personalInformation.year_of_study}`
                     : "Not available",
                 icon: Calendar,
               },

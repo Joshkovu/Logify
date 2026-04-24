@@ -1,6 +1,6 @@
 from apps.academics.models import Departments, Institutions, Programmes
 from apps.accounts.models import User
-from apps.logbook.models import WeeklyLogs
+from apps.logbook.models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
 from django.urls import reverse
@@ -196,6 +196,69 @@ class TestLogbook(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIn("reviews", response.json())
         self.assertEqual(response.json()["success"], "Reviews retrieved successfully")
+
+    def test_submit_and_approve_create_status_history(self):
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=2,
+            week_start_date="2024-01-08",
+            week_end_date="2024-01-14",
+            activities="Worked on project Y",
+            challenges="Faced issue Z",
+            learnings="Learned about APIs",
+            status="draft",
+        )
+
+        self.client.force_authenticate(user=self.student_user)
+        submit_response = self.client.post(
+            reverse("submit_weekly_log", kwargs={"log_id": weekly_log.id})
+        )
+        self.assertEqual(submit_response.status_code, status.HTTP_200_OK)
+        self.assertTrue(
+            WeeklyLogStatusHistory.objects.filter(
+                weekly_log=weekly_log, to_status="submitted"
+            ).exists()
+        )
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        approve_response = self.client.post(
+            reverse("approve_weekly_log", kwargs={"log_id": weekly_log.id}),
+            {"comment": "Looks good"},
+            content_type="application/json",
+        )
+        self.assertEqual(approve_response.status_code, status.HTTP_200_OK)
+        self.assertTrue(
+            WeeklyLogStatusHistory.objects.filter(
+                weekly_log=weekly_log, to_status="approved"
+            ).exists()
+        )
+        self.assertTrue(
+            SupervisorReviews.objects.filter(weekly_log=weekly_log, decision="approved").exists()
+        )
+
+    def test_student_cannot_view_other_students_reviews(self):
+        other_student = User.objects.create_user(
+            email="student2@example.com",
+            password="password",
+            role=User.STUDENT,
+            first_name="Another",
+            last_name="Student",
+        )
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=3,
+            week_start_date="2024-01-15",
+            week_end_date="2024-01-21",
+            activities="Worked on project Z",
+            challenges="None",
+            learnings="Learned testing",
+            status="approved",
+        )
+
+        self.client.force_authenticate(user=other_student)
+        response = self.client.get(reverse("weekly_log_reviews", kwargs={"log_id": weekly_log.id}))
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_get_reviews_for_nonexisten_log_returns_404(self):
         self.client.force_authenticate(user=self.student_user)

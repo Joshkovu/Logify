@@ -3,6 +3,7 @@ import { api } from "../../../../config/api";
 import CreateWeeklyLog from "../CreateWeeklyLog";
 import { Eye, FilePlus } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
+import { ToastContainer, toast } from "react-toastify";
 
 const WeeklyLogs = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,8 +18,7 @@ const WeeklyLogs = () => {
       setIsLoadingLogs(true);
       const data = await api.logbook.getWeeklyLogHistory();
       setWeeklyLogList(data.weekly_logs ?? []);
-    } catch (err) {
-      console.error("Failed to fetch weekly logs:", err);
+    } catch {
       setWeeklyLogList([]);
     } finally {
       setIsLoadingLogs(false);
@@ -31,8 +31,8 @@ const WeeklyLogs = () => {
         setIsLoadingPlacement(true);
         const data = await api.placements.getPlacements();
         setPlacementData(data[0]);
-      } catch (err) {
-        console.error(err.message);
+      } catch {
+        setPlacementData(null);
       } finally {
         setIsLoadingPlacement(false);
       }
@@ -41,7 +41,6 @@ const WeeklyLogs = () => {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     fetchWeeklyLogs();
   }, [fetchWeeklyLogs]);
 
@@ -77,9 +76,40 @@ const WeeklyLogs = () => {
       iconType: "placements",
     },
   ];
-  console.log("weekly log list", weeklyLogList);
+
+  const creationSuccessNotification = () =>
+    toast.success("Weekly log created successfully!");
+  const deletionSuccessNotification = () =>
+    toast.success("Weekly log deleted successfully!");
+  const editSuccessNotification = () =>
+    toast.success("Weekly log edited successfully!");
+  const submissionSuccessNotification = () =>
+    toast.success("Weekly log submitted successfully!");
+
+  const handleLogAction = useCallback(
+    (action) => {
+      fetchWeeklyLogs();
+      switch (action) {
+        case "created":
+          creationSuccessNotification();
+          break;
+        case "edited":
+          editSuccessNotification();
+          break;
+        case "submitted":
+          submissionSuccessNotification();
+          break;
+        case "deleted":
+          deletionSuccessNotification();
+          break;
+      }
+    },
+    [fetchWeeklyLogs],
+  );
+
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      <ToastContainer position="top-right" />
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
@@ -111,7 +141,7 @@ const WeeklyLogs = () => {
               setIsModalOpen(false);
               setSelectedLog(null);
             }}
-            onSuccess={fetchWeeklyLogs}
+            onAction={handleLogAction}
             weeklyLog={selectedLog}
           />
         </div>

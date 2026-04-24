@@ -29,6 +29,10 @@ const validateStudentForm = (formData) => {
     errors.institution = "Institution is required.";
   }
 
+  if (!formData.department) {
+    errors.department = "Department is required.";
+  }
+
   if (!formData.programme) {
     errors.programme = "Programme is required.";
   }
@@ -39,6 +43,17 @@ const validateStudentForm = (formData) => {
     errors.yearOfStudy = "Year of study must contain only numbers.";
   } else if (Number(formData.yearOfStudy) > 7) {
     errors.yearOfStudy = "Year of study cannot be longer than 7 years";
+  }
+
+  if (!formData.intakeYear.trim()) {
+    errors.intakeYear = "Intake year is required.";
+  } else if (!Number.isInteger(Number(formData.intakeYear))) {
+    errors.intakeYear = "Intake year must contain only numbers.";
+  } else if (
+    Number(formData.intakeYear) < 1900 ||
+    Number(formData.intakeYear) > 2100
+  ) {
+    errors.intakeYear = "Please enter a valid year.";
   }
 
   if (!formData.password) {
@@ -64,13 +79,16 @@ const StudentSignupPage = () => {
     confirmPassword: "",
     studentNumber: "",
     institution: "",
+    department: "",
     programme: "",
     yearOfStudy: "",
+    intakeYear: "",
   });
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [institutions, setInstitutions] = useState([]);
+  const [departments, setDepartments] = useState([]);
   const [programmes, setProgrammes] = useState([]);
 
   useEffect(() => {
@@ -87,17 +105,55 @@ const StudentSignupPage = () => {
   }, []);
 
   useEffect(() => {
-    const fetchProgrammes = async () => {
-      try {
-        const data = await api.academics.getProgrammes();
-        setProgrammes(data);
-      } catch (err) {
-        console.error("Failed to fetch programmes:", err);
-      }
-    };
+    if (formData.institution) {
+      const fetchDepartments = async () => {
+        try {
+          const data = await api.academics.getInstitutionDepartments(
+            formData.institution,
+          );
+          setDepartments(data);
+          setFormData((current) => ({
+            ...current,
+            department: "",
+            programme: "",
+          }));
+          setProgrammes([]);
+        } catch (err) {
+          console.error("Failed to fetch departments:", err);
+          setDepartments([]);
+        }
+      };
 
-    fetchProgrammes();
-  }, []);
+      fetchDepartments();
+    } else {
+      setDepartments([]);
+      setProgrammes([]);
+    }
+  }, [formData.institution]);
+
+  useEffect(() => {
+    if (formData.department) {
+      const fetchProgrammes = async () => {
+        try {
+          const data = await api.academics.getDepartmentProgrammes(
+            formData.department,
+          );
+          setProgrammes(data);
+          setFormData((current) => ({
+            ...current,
+            programme: "",
+          }));
+        } catch (err) {
+          console.error("Failed to fetch programmes:", err);
+          setProgrammes([]);
+        }
+      };
+
+      fetchProgrammes();
+    } else {
+      setProgrammes([]);
+    }
+  }, [formData.department]);
 
   const { studentSignup } = useContext(AuthContext);
 
@@ -124,6 +180,7 @@ const StudentSignupPage = () => {
       institution_id: formData.institution,
       programme_id: formData.programme,
       year_of_study: Number(formData.yearOfStudy),
+      intake_year: Number(formData.intakeYear),
     };
 
     setIsSubmitting(true);
@@ -194,15 +251,49 @@ const StudentSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Department
+            </label>
+            <select
+              name="department"
+              value={formData.department}
+              onChange={onChange}
+              disabled={!formData.institution}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold disabled:bg-gray-100 disabled:text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:disabled:bg-slate-700"
+            >
+              <option value="">
+                {!formData.institution
+                  ? "Select institution first"
+                  : "Select your Department"}
+              </option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.department && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.department}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               Programme
             </label>
             <select
               name="programme"
               value={formData.programme}
               onChange={onChange}
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              disabled={!formData.department}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold disabled:bg-gray-100 disabled:text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:disabled:bg-slate-700"
             >
-              <option value="">Select your Programme</option>
+              <option value="">
+                {!formData.department
+                  ? "Select department first"
+                  : "Select your Programme"}
+              </option>
               {programmes.map((prog) => (
                 <option key={prog.id} value={prog.id}>
                   {prog.name}
@@ -230,6 +321,24 @@ const StudentSignupPage = () => {
             {fieldErrors.yearOfStudy && (
               <p className="mt-1 text-xs text-red-600">
                 {fieldErrors.yearOfStudy}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Intake Year
+            </label>
+            <input
+              name="intakeYear"
+              value={formData.intakeYear}
+              onChange={onChange}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              placeholder="e.g. 2022"
+            />
+            {fieldErrors.intakeYear && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.intakeYear}
               </p>
             )}
           </div>

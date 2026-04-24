@@ -60,7 +60,6 @@ INSTALLED_APPS = [
     "apps.accounts.apps.AccountsConfig",
     "apps.academics.apps.AcademicsConfig",
     "apps.evaluations.apps.EvaluationsConfig",
-    "apps.registry.apps.RegistryConfig",
     "apps.organizations.apps.OrganizationsConfig",
     "apps.placements.apps.PlacementsConfig",
     "apps.logbook.apps.LogbookConfig",
@@ -156,9 +155,12 @@ USE_TZ = True
 
 STATIC_URL = "static/"
 
-CORS_ALLOWED_ORIGINS = [
-    origin.strip() for origin in os.getenv("FRONTEND_ORIGINS", "").split(",") if origin.strip()
-]
+FRONTEND_ORIGINS = os.getenv("FRONTEND_ORIGINS", "https://logify-frontend.pages.dev")
+CORS_ALLOWED_ORIGINS = [origin.strip() for origin in FRONTEND_ORIGINS.split(",") if origin.strip()]
+if os.getenv("DEBUG", "").lower() in {"1", "true", "yes", "on"}:
+    for origin in ("http://localhost:3000", "http://127.0.0.1:3000"):
+        if origin not in CORS_ALLOWED_ORIGINS:
+            CORS_ALLOWED_ORIGINS.append(origin)
 
 # REST Framework Configuration
 REST_FRAMEWORK = {
