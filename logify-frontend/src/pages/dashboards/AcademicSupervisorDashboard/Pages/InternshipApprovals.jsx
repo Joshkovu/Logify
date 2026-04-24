@@ -196,15 +196,16 @@ const InternshipApprovals = () => {
   };
 
   const pageCard =
-    "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
+    "rounded-[12px] border border-border dark:border-slate-700 bg-white dark:bg-slate-900 p-4 transition-all hover:scale-102 sm:p-6 lg:p-8 xl:p-10";
 
-  const infoCard = "rounded-2xl border border-border bg-muted p-4 sm:p-6";
+  const infoCard =
+    "rounded-2xl border border-border dark:border-slate-700/30 bg-background dark:bg-slate-800/50 p-4 sm:p-6";
 
   const sectionLabel =
-    "text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/60";
+    "text-[10px] font-bold uppercase tracking-[0.2em] text-text-secondary/50 dark:text-slate-400";
 
   return (
-    <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+    <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR
@@ -217,14 +218,14 @@ const InternshipApprovals = () => {
         <h1 className="mb-3 text-3xl font-black tracking-tighter text-maroon-dark dark:text-white sm:text-4xl lg:text-5xl">
           Internship <span className="text-gold">Approvals</span>
         </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg">
+        <p className="max-w-2xl text-sm leading-relaxed text-text-secondary/80 dark:text-slate-300 sm:text-base lg:text-lg">
           Review and authorize student internship placement requests for the
           current semester.
         </p>
         {error && (
-          <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
+          <div className="mt-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
             {error}
-          </p>
+          </div>
         )}
       </header>
 
@@ -266,7 +267,7 @@ const InternshipApprovals = () => {
                       </div>
                     </div>
 
-                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-text-secondary dark:text-slate-300 sm:text-sm">
                       Reg: {item.regNo} &bull; {item.program}
                     </p>
 
@@ -293,7 +294,7 @@ const InternshipApprovals = () => {
                     {item.organization}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
+                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
                     <MapPin size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm leading-relaxed">{item.address}</p>
                   </div>
@@ -311,7 +312,7 @@ const InternshipApprovals = () => {
                     {item.position}
                   </p>
 
-                  <div className="mt-4 flex items-start gap-3 text-muted-foreground">
+                  <div className="mt-4 flex items-start gap-3 text-text-secondary dark:text-slate-300">
                     <Calendar size={16} className="mt-0.5 shrink-0" />
                     <p className="text-sm leading-relaxed">{item.duration}</p>
                   </div>
@@ -330,12 +331,12 @@ const InternshipApprovals = () => {
                   </p>
 
                   <div className="mt-4 space-y-3">
-                    <div className="flex items-center gap-3 text-muted-foreground">
+                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
                       <Mail size={16} className="shrink-0" />
                       <p className="text-sm break-all">{item.email}</p>
                     </div>
 
-                    <div className="flex items-center gap-3 text-muted-foreground">
+                    <div className="flex items-center gap-3 text-text-secondary dark:text-slate-300">
                       <Phone size={16} className="shrink-0" />
                       <p className="text-sm">{item.phone}</p>
                     </div>
