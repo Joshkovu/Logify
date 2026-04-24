@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   Table,
   TableHead,
@@ -7,7 +8,7 @@ import {
   TableCell,
   TableHeaderCell,
 } from "../../../../components/ui/table";
-import { Plus, Edit, Trash2, Eye, Download, AlertTriangle } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Download } from "lucide-react";
 import { Button } from "../../../../components/ui/Button";
 import { api } from "../../../../config/api";
 
@@ -37,7 +38,6 @@ const Institutions = () => {
   const [search, setSearch] = useState("");
   const [selectedInstitution, setSelectedInstitution] = useState(null);
   const [showProfile, setShowProfile] = useState(false);
-  const [notification, setNotification] = useState("");
   const [activeStat, setActiveStat] = useState("Total Organizations");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -122,7 +122,7 @@ const Institutions = () => {
 
   const handleStatClick = (stat) => {
     setActiveStat(stat);
-    setNotification(`Filtered by ${stat}`);
+    toast.info(`Filtered by ${stat}`);
   };
 
   const handleExport = () => {
@@ -163,7 +163,7 @@ const Institutions = () => {
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    setNotification("Exported organizations as CSV.");
+    toast.success("Exported organizations as CSV.");
   };
 
   const handleViewProfile = (org) => {
@@ -216,10 +216,10 @@ const Institutions = () => {
     try {
       if (editingInstitution) {
         await api.organizations.updateOrganization(editingInstitution.id, form);
-        setNotification("Institution updated successfully.");
+        toast.success("Institution updated successfully.");
       } else {
         await api.organizations.createOrganization(form);
-        setNotification("Institution added successfully.");
+        toast.success("Institution added successfully.");
       }
 
       setShowForm(false);
@@ -227,6 +227,7 @@ const Institutions = () => {
       setForm(emptyForm);
       await loadData();
     } catch (submitError) {
+      toast.error(submitError.message || "Failed to save institution.");
       setError(submitError.message || "Unable to save institution.");
     } finally {
       setSubmitting(false);
@@ -239,12 +240,13 @@ const Institutions = () => {
 
     try {
       await api.organizations.deleteOrganization(org.id);
-      setNotification(`${org.name} deleted successfully.`);
+      toast.success(`${org.name} deleted successfully.`);
       if (selectedInstitution?.id === org.id) {
         handleCloseProfile();
       }
       await loadData();
     } catch (deleteError) {
+      toast.error(deleteError.message || "Failed to delete institution.");
       setError(deleteError.message || "Unable to delete institution.");
     } finally {
       setDeletingId(null);
@@ -253,19 +255,6 @@ const Institutions = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 xl:px-12">
-      {notification && (
-        <div className="mb-4 flex flex-col gap-2 rounded border-l-4 border-yellow-500 bg-yellow-100 dark:bg-yellow-900/30 px-4 py-3 text-yellow-800 dark:text-yellow-200 sm:flex-row sm:items-center">
-          <AlertTriangle className="h-5 w-5 text-yellow-600 dark:text-yellow-300" />
-          <span>{notification}</span>
-          <button
-            onClick={() => setNotification("")}
-            className="text-left text-yellow-700 dark:text-yellow-300 hover:underline sm:ml-auto"
-          >
-            Dismiss
-          </button>
-        </div>
-      )}
-
       <header className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-start">
         <div>
           <h1 className="mb-2 text-3xl font-extrabold tracking-tight text-maroon dark:text-slate-300 sm:text-4xl">
