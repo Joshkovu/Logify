@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import { Key, Save, Settings, X } from "lucide-react";
 
 import {
@@ -110,6 +111,7 @@ const Profile = () => {
         title: updated.staff_profile?.title || "",
       });
       setShowEditModal(false);
+      toast.success("Profile updated successfully!");
     } catch (saveError) {
       setError(saveError.message || "Unable to update your profile.");
     } finally {
@@ -151,6 +153,7 @@ const Profile = () => {
         confirmPassword: "",
       });
       setShowPasswordModal(false);
+      toast.success("Password updated successfully!");
     } catch (passwordError) {
       setError(passwordError.message || "Unable to update your password.");
     } finally {
@@ -160,6 +163,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] px-6 py-8 font-sans transition-colors duration-300 dark:bg-slate-950 lg:px-10">
+      <ToastContainer position="top-right" />
       <header className="mb-8">
         <h1 className="text-4xl font-black tracking-tight text-maroon-dark dark:text-white">
           Workplace Supervisor Profile

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import {
   User,
@@ -242,6 +243,7 @@ const Profile = () => {
             updated.staff_profile?.department_name || current.department,
         }));
         setShowEditModal(false);
+        toast.success("Profile updated successfully!");
       } catch (saveError) {
         setError(saveError.message || "Unable to update your profile.");
       } finally {
@@ -286,6 +288,7 @@ const Profile = () => {
           newPassword: "",
           confirmPassword: "",
         });
+        toast.success("Password updated successfully!");
       } catch (passwordError) {
         setError(passwordError.message || "Unable to update password.");
       } finally {
@@ -322,6 +325,7 @@ const Profile = () => {
 
   return (
     <div className="min-h-screen w-full bg-[#FCFBF8] transition-colors duration-300 dark:bg-slate-950 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10">
+      <ToastContainer position="top-right" />
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR

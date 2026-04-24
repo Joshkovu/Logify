@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Clock } from "lucide-react";
 import MetricCard from "../../../../components/ui/MetricCard";
 import { api } from "../../../../config/api";
@@ -350,7 +351,10 @@ const Dashboard = () => {
             <h2 className="text-xl font-black tracking-tight text-maroon-dark dark:text-slate-300 sm:text-2xl">
               Recent System Activity
             </h2>
-            <button className="w-full rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-xs font-bold text-gold transition-colors hover:text-maroon dark:text-slate-300 sm:w-auto">
+            <button
+              onClick={() => toast.info("Activity log history coming soon!")}
+              className="w-full rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-xs font-bold text-gold transition-colors hover:text-maroon dark:text-slate-300 sm:w-auto"
+            >
               View All logs
             </button>
           </div>

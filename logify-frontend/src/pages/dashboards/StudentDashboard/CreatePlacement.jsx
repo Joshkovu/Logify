@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 
-const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
+const CreatePlacement = ({ isOpen, onClose, placement = null, onAction }) => {
   const [formData, setFormData] = useState({
     organization: placement?.organization ?? "",
     organization_source: placement?.organization ? "existing" : "new",
@@ -25,6 +25,35 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
   const [organizations, setOrganizations] = useState([]);
   const [error, setError] = useState("");
   const [submitAction, setSubmitAction] = useState("draft");
+
+  useEffect(() => {
+    if (!placement) return;
+    const fetchSupervisorEmails = async () => {
+      try {
+        if (placement.workplace_supervisor) {
+          const ws = await api.accounts.getWorkplaceSupervisor(
+            placement.workplace_supervisor,
+          );
+          setFormData((prev) => ({
+            ...prev,
+            workplace_supervisor_email: ws?.email ?? "",
+          }));
+        }
+        if (placement.academic_supervisor) {
+          const as_ = await api.accounts.getAcademicSupervisor(
+            placement.academic_supervisor,
+          );
+          setFormData((prev) => ({
+            ...prev,
+            academic_supervisor_email: as_?.email ?? "",
+          }));
+        }
+      } catch {
+        // Silently ignore supervisor email fetch failures
+      }
+    };
+    fetchSupervisorEmails();
+  }, [placement]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -94,8 +123,12 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
       }
       if (submitAction === "submit") {
         await api.placements.submitPlacement(result.id);
+        onAction?.("submitted");
+      } else if (placement) {
+        onAction?.("edited");
+      } else {
+        onAction?.("created");
       }
-      onSuccess?.();
       onClose();
     } catch (err) {
       setError(err.message || "Failed to create placement. Please try again.");
@@ -379,7 +412,7 @@ CreatePlacement.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   placement: PropTypes.object,
-  onSuccess: PropTypes.func,
+  onAction: PropTypes.func,
 };
 
 export default CreatePlacement;

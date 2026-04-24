@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import {
   Table,
   TableHead,
@@ -147,53 +148,58 @@ const Reports = () => {
       setLoading(true);
       setError("");
 
-      const [
-        studentsResult,
-        placementsResult,
-        evaluationsResult,
-        resultsResult,
-      ] = await Promise.allSettled([
-        api.registry.getStudents(),
-        api.placements.getPlacements(),
-        api.evaluations.getEvaluations(),
-        api.evaluations.getResults(),
-      ]);
-
-      if (!isMounted) return;
-
-      setStudents(
-        studentsResult.status === "fulfilled"
-          ? normalizeCollection(studentsResult.value, "students")
-          : [],
-      );
-      setPlacements(
-        placementsResult.status === "fulfilled"
-          ? normalizeCollection(placementsResult.value, "placements")
-          : [],
-      );
-      setEvaluations(
-        evaluationsResult.status === "fulfilled"
-          ? normalizeCollection(evaluationsResult.value, "evaluations")
-          : [],
-      );
-      setResults(
-        resultsResult.status === "fulfilled"
-          ? normalizeCollection(resultsResult.value, "results")
-          : [],
-      );
-
-      if (
-        [
+      try {
+        const [
           studentsResult,
           placementsResult,
           evaluationsResult,
           resultsResult,
-        ].every((result) => result.status === "rejected")
-      ) {
-        setError("Unable to load reporting analytics right now.");
-      }
+        ] = await Promise.allSettled([
+          api.registry.getStudents(),
+          api.placements.getPlacements(),
+          api.evaluations.getEvaluations(),
+          api.evaluations.getResults(),
+        ]);
 
-      setLoading(false);
+        if (!isMounted) return;
+
+        setStudents(
+          studentsResult.status === "fulfilled"
+            ? normalizeCollection(studentsResult.value, "students")
+            : [],
+        );
+        setPlacements(
+          placementsResult.status === "fulfilled"
+            ? normalizeCollection(placementsResult.value, "placements")
+            : [],
+        );
+        setEvaluations(
+          evaluationsResult.status === "fulfilled"
+            ? normalizeCollection(evaluationsResult.value, "evaluations")
+            : [],
+        );
+        setResults(
+          resultsResult.status === "fulfilled"
+            ? normalizeCollection(resultsResult.value, "results")
+            : [],
+        );
+
+        if (
+          [
+            studentsResult,
+            placementsResult,
+            evaluationsResult,
+            resultsResult,
+          ].every((result) => result.status === "rejected")
+        ) {
+          setError("Unable to load reporting analytics right now.");
+        }
+      } catch {
+        toast.error("Failed to load reporting data.");
+        setError("Unable to load reporting analytics right now.");
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
@@ -246,6 +252,7 @@ const Reports = () => {
 
       return {
         id: placement.id,
+        placementId: placement.id,
         studentId: student?.id,
         studentName: toDisplayName(student || {}),
         studentNumber: student?.student_number || "--",
@@ -421,6 +428,7 @@ const Reports = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    toast.success("Report exported successfully!");
   };
 
   const handleViewReport = async (row) => {
@@ -434,9 +442,9 @@ const Reports = () => {
 
     try {
       const report = await api.reports.getReport(row.studentId, {
-        report_type: reportType,
+        placementId: row.placementId,
       });
-
+      toast.success(`Report for ${row.studentName} generated.`);
       setSelectedReport({
         row,
         data: report,

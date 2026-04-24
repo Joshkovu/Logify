@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
 import MetricCard from "../../../../components/ui/MetricCard";
 import {
@@ -116,7 +117,10 @@ const InternshipApprovals = () => {
   );
 
   const approvedApprovals = useMemo(
-    () => mappedApprovals.filter((item) => item.status === "approved"),
+    () =>
+      mappedApprovals.filter(
+        (item) => item.status === "active" || item.status === "approved",
+      ),
     [mappedApprovals],
   );
 
@@ -167,15 +171,25 @@ const InternshipApprovals = () => {
     }));
   };
 
+  const approveSuccessNotification = () =>
+    toast.success("Placement approved and activated successfully!");
+  const declineSuccessNotification = () =>
+    toast.success("Placement declined successfully!");
+
   const handleApprove = async (item) => {
     setActionId(item.id);
     setError("");
 
     try {
-      const response = await api.placements.approvePlacement(item.id);
-      updatePlacementStatus(item.id, "approved", response || {});
+      const response1 = await api.placements.approvePlacement(item.id);
+      updatePlacementStatus(item.id, "approved", response1 || {});
+      const response2 = await api.placements.activatePlacement(item.id);
+      updatePlacementStatus(item.id, "active", response2 || {});
+      approveSuccessNotification();
     } catch (actionError) {
-      setError(actionError.message || "Unable to approve this request.");
+      setError(
+        actionError.message || "Unable to approve and activate this request.",
+      );
     } finally {
       setActionId(null);
     }
@@ -188,6 +202,7 @@ const InternshipApprovals = () => {
     try {
       const response = await api.placements.rejectPlacement(item.id);
       updatePlacementStatus(item.id, "rejected", response || {});
+      declineSuccessNotification();
     } catch (actionError) {
       setError(actionError.message || "Unable to decline this request.");
     } finally {
@@ -205,6 +220,7 @@ const InternshipApprovals = () => {
 
   return (
     <div className="min-h-screen w-full bg-background text-foreground transition-colors duration-300 px-4 py-6 font-sans sm:px-6 sm:py-8 lg:px-10 lg:py-10 xl:px-12">
+      <ToastContainer position="top-right" />
       <div className="mb-5 -mx-4 flex items-center justify-between border-b border-border px-4 pb-1.5 sm:-mx-6 sm:px-6 lg:-mx-10 lg:px-10 xl:-mx-12 xl:px-12">
         <h1 className="text-sm font-bold uppercase tracking-[0.18em] text-black/70 dark:text-slate-300 sm:text-base">
           LOGIFY ACADEMIC SUPERVISOR

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 import { isNumber } from "chart.js/helpers";
-const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
+const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onAction }) => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -127,7 +127,15 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
         const logId = weeklyLog?.id ?? result.weekly_log.id ?? result.id;
         await api.logbook.deleteWeeklyLog(logId, result);
       }
-      onSuccess?.();
+      if (submitAction === "submit") {
+        onAction?.("submitted");
+      } else if (submitAction === "delete") {
+        onAction?.("deleted");
+      } else if (weeklyLog) {
+        onAction?.("edited");
+      } else {
+        onAction?.("created");
+      }
       onClose();
     } catch (err) {
       setError(err.message);
@@ -346,7 +354,7 @@ CreateWeeklyLog.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   weeklyLog: PropTypes.object,
-  onSuccess: PropTypes.func,
+  onAction: PropTypes.func,
 };
 
 export default CreateWeeklyLog;

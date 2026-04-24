@@ -3,6 +3,7 @@ import MetricCard from "../../../../components/ui/MetricCard";
 import CreatePlacement from "../CreatePlacement";
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { api } from "../../../../config/api";
+import { ToastContainer, toast } from "react-toastify";
 
 const InternshipPlacement = () => {
   const [isPlacementModalOpen, setIsPlacementModalOpen] = useState(false);
@@ -234,8 +235,35 @@ const InternshipPlacement = () => {
       iconType: "reviews",
     },
   ];
+
+  const creationSuccessNotification = () =>
+    toast.success("Placement created successfully!");
+  const editSuccessNotification = () =>
+    toast.success("Placement edited successfully!");
+  const submissionSuccessNotification = () =>
+    toast.success("Placement submitted successfully!");
+
+  const handlePlacementAction = useCallback(
+    (action) => {
+      fetchPlacement();
+      switch (action) {
+        case "created":
+          creationSuccessNotification();
+          break;
+        case "edited":
+          editSuccessNotification();
+          break;
+        case "submitted":
+          submissionSuccessNotification();
+          break;
+      }
+    },
+    [fetchPlacement],
+  );
+
   return (
     <div className="dark:bg-slate-950 min-h-screen w-full bg-[#FCFBF8] px-12 py-10 font-sans">
+      <ToastContainer position="top-right" />
       <header className="mb-12 flex justify-between items-start">
         <div>
           <h1 className="text-5xl font-black text-maroon-dark mb-3 tracking-tighter">
@@ -265,7 +293,7 @@ const InternshipPlacement = () => {
           isOpen={isPlacementModalOpen}
           onClose={() => setIsPlacementModalOpen(false)}
           placement={existingPlacement ?? null}
-          onSuccess={fetchPlacement}
+          onAction={handlePlacementAction}
         />
       </header>
 
