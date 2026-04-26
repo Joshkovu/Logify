@@ -1,3 +1,4 @@
+from apps.notifications.emails import send_logify_email
 from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -26,7 +27,13 @@ class AdminSignupView(APIView):
     def post(self, request):
         serializer = AdminSignupSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            send_logify_email(
+                subject="Logify - Internship Admin Account",
+                template_name="notifications/welcome.html",
+                context={"user": user},
+                recipient_list=[user.email],
+            )
             return Response(
                 {"message": "Internship admin account created successfully."},
                 status=status.HTTP_201_CREATED,
@@ -40,7 +47,13 @@ class SupervisorSignupView(APIView):
     def post(self, request):
         serializer = SupervisorSignupSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            user = serializer.save()
+            send_logify_email(
+                subject="Logify - Supervisor Account Application",
+                template_name="notifications/supervisor_signup.html",
+                context={"user": user},
+                recipient_list=[user.email],
+            )
 
             return Response(
                 {"message": "Application received. Your account is inactive until approved."},
@@ -59,11 +72,15 @@ class SupervisorApprovalView(APIView):
         if action == "approve":
             application.status = "approved"
             application.save()
-
             user = application.user
             user.is_active = True
             user.save()
-
+            send_logify_email(
+                subject="Logify - Supervisor Account Application Approved",
+                template_name="notifications/supervisor_approval.html",
+                context={"user": user},
+                recipient_list=[user.email],
+            )
             return Response({"message": "Supervisor approved and account activated."})
 
         elif action == "reject":

@@ -1,0 +1,10 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<h1>Account Approved!</h1>
+<p>Great news! Your supervisor account for Logify has been approved.</p>
+<p>You can now log in using your email ({{ user.email }}) and password.</p>
+<p><a href="{{ settings.FRONTEND_ORIGINS }}">Click here to Login</a></p>
+<br>
+<p>Best regards,<br>Logify Team</p>
+{% endblock %}

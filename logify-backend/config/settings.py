@@ -64,6 +64,7 @@ INSTALLED_APPS = [
     "apps.placements.apps.PlacementsConfig",
     "apps.logbook.apps.LogbookConfig",
     "apps.reports.apps.ReportsConfig",
+    "apps.notifications.apps.NotificationsConfig",
     "rest_framework",
     "rest_framework_simplejwt.token_blacklist",
 ]
@@ -182,3 +183,12 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "user_id",
 }
+
+# Email Configuration
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = os.getenv("EMAIL_HOST", "smtp.gmail.com")
+EMAIL_PORT = int(os.getenv("EMAIL_PORT", 587))
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS", "True").lower() == "true"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
+DEFAULT_FROM_EMAIL = os.getenv("DEFAULT_FROM_EMAIL", "Logify <noreply@logify.com>")

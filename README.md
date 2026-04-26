@@ -24,36 +24,34 @@
 
 </div>
 
-<details>
-  <summary>Table of Contents</summary>
+---
+
+<details open>
+  <summary><strong>Table of Contents</strong></summary>
   <ol>
     <li><a href="#about-the-project">About The Project</a></li>
-    <li><a href="#features">Features</a></li>
     <li><a href="#architecture--tech-stack">Architecture & Tech Stack</a></li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#backend-setup-django">Backend Setup</a></li>
-        <li><a href="#frontend-setup-react--vite">Frontend Setup</a></li>
-      </ul>
-    </li>
+    <li><a href="#erd--workflow-design">ERD & Workflow Design</a></li>
+    <li><a href="#getting-started">Getting Started</a></li>
     <li><a href="#testing">Testing</a></li>
     <li><a href="#code-quality--standards">Code Quality & Standards</a></li>
     <li><a href="#contribution-guidelines">Contribution Guidelines</a></li>
-    <li><a href="#future-roadmap">Future Roadmap</a></li>
   </ol>
 </details>
+
+---
 
 ## About The Project
 
 Logify is a comprehensive platform designed to bridge the gap between universities, organizations, and students during the internship period. Built with scalability and a SaaS future in mind, Logify streamlines the entire internship lifecycle.
 
 ### Features
-* **Interns**: Seamlessly log daily and weekly activities, upload attachments, and track internship progress.
-* **Supervisors**: Review, approve, and evaluate intern performance using structured evaluation rubrics.
-* **Administrators**: Manage placements, institutions, academic departments, and oversee system compliance.
-* **Reporting**: Comprehensive data export and analytical reports on internship outcomes.
+- **Interns**: Seamlessly log daily and weekly activities, upload attachments, and track internship progress.
+- **Supervisors**: Review, approve, and evaluate intern performance using structured evaluation rubrics.
+- **Administrators**: Manage placements, institutions, academic departments, and oversee system compliance.
+- **Reporting**: Comprehensive data export and analytical reports on internship outcomes.
+
+---
 
 ## Architecture & Tech Stack
 
@@ -68,44 +66,68 @@ logify/
 │
 ├── logify-frontend/       # React client
 │   ├── src/               # React components and pages
-│   ├── tailwind.config.cjs# Tailwind styling
+│   ├── tailwind.config.cjs # Tailwind styling
 │   └── vite.config.js     # Vite bundler configuration
 │
 ├── .github/workflows/     # CI/CD pipelines
-├── .pre-commit-config.yaml# Pre-commit hooks definition
+├── .pre-commit-config.yaml # Pre-commit hooks definition
 └── README.md
 ```
 
 ### Built With
-* **Backend**: [Django](https://www.djangoproject.com/) + [Django REST Framework](https://www.django-rest-framework.org/)
-* **Frontend**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Tailwind CSS](https://tailwindcss.com/)
-* **Database**: [PostgreSQL](https://www.postgresql.org/)
-* **Tooling**: `pnpm`, `pre-commit`, `pytest`, `eslint`
+- **Backend**: [Django](https://www.djangoproject.com/) + [Django REST Framework](https://www.django-rest-framework.org/)
+- **Frontend**: [React](https://reactjs.org/) + [Vite](https://vitejs.dev/) + [Tailwind CSS](https://tailwindcss.com/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/)
+- **Tooling**: `pnpm`, `pre-commit`, `pytest`, `eslint`, `make`
+
+---
+
+## ERD & Workflow Design
+
+The database schema and system workflow design can be found in the project documentation:
+- **Source File**: [logify-backend/docs/ERD.md](logify-backend/docs/ERD.md)
+
+---
 
 ## Getting Started
 
-Follow these instructions to get a local copy up and running for development.
+Follow these step-by-step instructions to get a local copy up and running for development.
 
-### Prerequisites
+### 1. Clone the Repository
 
-All contributors must install the following:
+```bash
+git clone https://github.com/Joshkovu/Logify.git
+cd Logify
+```
 
-1. **Python** (3.11+ recommended) - [Download](https://python.org)
-2. **Node.js** (LTS recommended, v20+) - [Download](https://nodejs.org)
-3. **pnpm** (Package Manager) - Enable via corepack:
-   ```bash
-   corepack enable
-   corepack prepare pnpm@latest --activate
-   ```
-4. **Docker** - Required for running isolated database tests.
+### 2. Prerequisites
 
-### Backend Setup (Django)
+Ensure you have the following installed on your local machine:
+- [Python 3.11+](https://python.org)
+- [Node.js v20+ (LTS)](https://nodejs.org)
+- [Docker](https://www.docker.com/) *(Required for running isolated database tests)*
+- [Make](https://www.gnu.org/software/make/) *(Required for running tests and automation scripts)*
 
-1. Navigate to the backend directory:
+**Enable pnpm (if not already installed):**
+```bash
+corepack enable
+corepack prepare pnpm@latest --activate
+```
+
+### 3. Backend Setup (Django)
+
+The backend API is built using Django and requires a virtual environment.
+
+<details>
+<summary><b>Click to expand backend setup instructions</b></summary>
+<br>
+
+1. **Navigate to the backend directory:**
    ```bash
    cd logify-backend
    ```
-2. Create and activate a virtual environment:
+
+2. **Create and activate a virtual environment:**
    ```bash
    # Windows
    python -m venv .venv
@@ -115,12 +137,14 @@ All contributors must install the following:
    python3 -m venv .venv
    source .venv/bin/activate
    ```
-3. Install dependencies:
+
+3. **Install Python dependencies:**
    ```bash
    pip install -r requirements.txt
    pip install -r requirements-dev.txt
    ```
-4. Configure Environment Variables:
+
+4. **Configure Environment Variables:**
    Create a `.env` file in `logify-backend/` (do not commit this file):
    ```env
    DJANGO_SECRET_KEY=your-super-secret-key
@@ -131,54 +155,71 @@ All contributors must install the following:
    POSTGRES_HOST=localhost
    POSTGRES_PORT=5432
    ```
-5. Apply migrations and start the server:
+
+5. **Apply database migrations & run the server:**
    ```bash
    python manage.py migrate
    python manage.py runserver
    ```
-   *The API will be available at `http://127.0.0.1:8000/`*
+   > The API will be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-### Frontend Setup (React + Vite)
+</details>
 
-1. Navigate to the frontend directory:
+### 4. Frontend Setup (React + Vite)
+
+The frontend client is built with React and Vite.
+
+<details>
+<summary><b>Click to expand frontend setup instructions</b></summary>
+<br>
+
+1. **Navigate to the frontend directory:**
    ```bash
    cd logify-frontend
    ```
-2. Install dependencies via `pnpm`:
+
+2. **Install node dependencies:**
    ```bash
    pnpm install
    ```
-3. Start the development server:
+
+3. **Start the development server:**
    ```bash
    pnpm run dev
    ```
-   *The application will be available at `http://localhost:5173/`*
+   > The application will be available at [http://localhost:5173/](http://localhost:5173/)
+
+</details>
+
+---
 
 ## Testing
 
-Logify uses `pytest` and `testcontainers` for robust, isolated backend testing.
+Logify uses `make` to orchestrate tests and quality checks.
 
 > [!IMPORTANT]
-> Ensure Docker is running on your machine before running tests. Testcontainers will automatically spin up a temporary PostgreSQL instance.
+> Ensure **Docker** and **Make** are installed on your system. Docker is required for isolated PostgreSQL instances during testing.
 
-**Run tests via shell script:**
+**Run all tests:**
 ```bash
-./run_tests_with_container.sh
+make test
 ```
 
-**Run tests manually:**
+**Manual test execution:**
 ```bash
 cd logify-backend
 pytest
 ```
-*No live or production databases are touched during testing.*
+*(Note: No live or production databases are touched during testing.)*
+
+---
 
 ## Code Quality & Standards
 
 This project enforces strict code quality rules via **pre-commit** hooks.
 
-**Backend Tooling**: Black (formatting), isort (imports), Flake8 (linting)
-**Frontend Tooling**: ESLint, Prettier
+- **Backend Tooling**: Black (formatting), isort (imports), Flake8 (linting)
+- **Frontend Tooling**: ESLint, Prettier
 
 ### Pre-commit Setup (Required)
 Before making your first commit, install the Git hooks:
@@ -186,26 +227,28 @@ Before making your first commit, install the Git hooks:
 pip install pre-commit
 pre-commit install
 ```
-You can manually run checks against all files:
+You can manually run checks against all files at any time:
 ```bash
 pre-commit run --all-files
 ```
+
+---
 
 ## Contribution Guidelines
 
 We prioritize clean architecture, code clarity, and test-driven maintainability.
 
 ### Branching Strategy
-* `main` → Protected production branch
-* `dev` → Integration and testing branch
-* `feature/feature-name` → Feature development branches
+- `main` → Protected production branch
+- `dev` → Integration and testing branch
+- `feature/feature-name` → Feature development branches
 
 ### Commit Message Convention
 Please use structured, semantic commit messages:
-* `feat:` for new features (e.g., `feat: add intern model`)
-* `fix:` for bug fixes (e.g., `fix: resolve login validation bug`)
-* `chore:` for maintenance (e.g., `chore: configure CI pipeline`)
-* `refactor:` for code restructuring
+- `feat:` for new features (e.g., `feat: add intern model`)
+- `fix:` for bug fixes (e.g., `fix: resolve login validation bug`)
+- `chore:` for maintenance (e.g., `chore: configure CI pipeline`)
+- `refactor:` for code restructuring
 
 ### Pull Request Process
 1. Ensure your branch is up to date with `dev`.
@@ -213,12 +256,15 @@ Please use structured, semantic commit messages:
 3. Ensure all tests (`pytest`) pass successfully.
 4. Open a PR outlining your changes, referencing any relevant issues.
 
-*All PRs must pass GitHub Actions CI checks before they can be merged.*
+> [!WARNING]
+> All PRs must pass GitHub Actions CI checks before they can be merged.
 
-## Security Practices
-* **No hardcoded secrets**: Always use environment variables.
-* **Validate all input**: Rely on DRF serializers for incoming data.
-* **Never commit `.env` files**: Ensure they remain in `.gitignore`.
+### Security Practices
+- **No hardcoded secrets**: Always use environment variables.
+- **Validate all input**: Rely on DRF serializers for incoming data.
+- **Never commit `.env` files**: Ensure they remain in `.gitignore`.
+
+---
 
 ## Completed Milestones
 
@@ -226,10 +272,3 @@ Please use structured, semantic commit messages:
 - [x] Role-based Access Control (Intern / Supervisor / Admin)
 - [x] Dynamic Evaluation Scoring Engine
 - [x] Administrative Dashboard & Placements Tracking
-
-## Future Roadmap
-
-- [ ] Complete Dockerization (Docker Compose for entire stack)
-- [ ] Automated Production Deployment pipelines (Render / Fly.io / Vercel)
-- [ ] Advanced PDF Export generation for final internship reports
-- [ ] Email & SMS Notification integrations
