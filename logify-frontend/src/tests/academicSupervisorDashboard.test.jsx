@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import Dashboard from "../pages/dashboards/AcademicSupervisorDashboard/Pages/Dashboard";
 
 jest.mock("../config/api", () => ({
@@ -49,6 +49,18 @@ jest.mock("../components/ui/MetricCard", () => {
 });
 
 const { api } = jest.requireMock("../config/api");
+
+const waitForDashboardEffectsToSettle = async () => {
+  await waitFor(() => {
+    expect(api.auth.me).toHaveBeenCalled();
+    expect(api.placements.getPlacements).toHaveBeenCalled();
+    expect(api.logbook.getWeeklyLogs).toHaveBeenCalled();
+    expect(api.evaluations.getEvaluations).toHaveBeenCalled();
+    expect(api.evaluations.getScores).toHaveBeenCalled();
+    expect(api.evaluations.getCriteria).toHaveBeenCalled();
+    expect(api.evaluations.getResults).toHaveBeenCalled();
+  });
+};
 
 const setupSuccessfulResponses = ({
   placements = [
@@ -129,6 +141,7 @@ test("renders academic supervisor data from the backend responses", async () => 
   setupSuccessfulResponses();
 
   render(<Dashboard />);
+  await waitForDashboardEffectsToSettle();
 
   expect(
     await screen.findByText(/welcome back, emily roberts!/i),
@@ -151,6 +164,7 @@ test("renders empty states when the supervisor has no assigned data", async () =
   });
 
   render(<Dashboard />);
+  await waitForDashboardEffectsToSettle();
 
   expect(
     await screen.findByText(/no interns are currently assigned/i),
@@ -175,6 +189,7 @@ test("shows an error message when dashboard loading fails", async () => {
   api.evaluations.getResults.mockResolvedValue([]);
 
   render(<Dashboard />);
+  await waitForDashboardEffectsToSettle();
 
   expect(await screen.findByText(/backend unavailable/i)).toBeInTheDocument();
 });

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
 jest.mock("../config/api", () => ({
   api: {
@@ -142,6 +142,12 @@ const mockSnapshot = {
   },
 };
 
+const waitForWorkplaceDashboardEffectsToSettle = async () => {
+  await waitFor(() => {
+    expect(loadWorkplaceSupervisorData).toHaveBeenCalled();
+  });
+};
+
 describe("Workplace supervisor pages", () => {
   beforeEach(() => {
     jest.clearAllMocks();
@@ -155,6 +161,7 @@ describe("Workplace supervisor pages", () => {
 
   test("renders dashboard overview cards", async () => {
     render(<Dashboard />);
+    await waitForWorkplaceDashboardEffectsToSettle();
 
     expect(
       await screen.findByRole("heading", { level: 1, name: "Dashboard" }),
