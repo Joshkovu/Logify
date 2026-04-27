@@ -55,16 +55,25 @@ const toSupervisorPayload = (data) => {
   const [firstName = "", ...rest] = trimmedName.split(/\s+/);
   const lastName = rest.join(" ");
 
-  return {
+  const basePayload = {
     email: data.email,
     password: data.password,
     role: data.role,
     first_name: data.firstName ?? firstName,
     last_name: data.lastName ?? lastName,
-    phone: data.phone,
     college_id: Number(data.college),
-    staff_number: data.staffNumber,
-    title: data.title,
+  };
+
+  if (data.role === "academic_supervisor") {
+    return {
+      ...basePayload,
+      department_id: Number(data.department),
+    };
+  }
+
+  return {
+    ...basePayload,
+    organization_name: data.organization,
   };
 };
 

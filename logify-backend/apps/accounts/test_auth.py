@@ -121,6 +121,7 @@ class TestSupervisorAuth:
     def test_supervisor_signup_and_approval(self, api_client, setup_college_data):
         institution = setup_college_data["institution"]
         college = setup_college_data["college_a"]
+        department = Departments.objects.create(college=college, name="Computer Science")
 
         response = api_client.post(
             "/api/v1/auth/supervisor/signup/",
@@ -132,6 +133,7 @@ class TestSupervisorAuth:
                 "role": User.ACADEMIC_SUPERVISOR,  # type: ignore
                 "phone": "0700000000",
                 "college_id": college.id,
+                "department_id": department.id,
             },
         )
         assert response.status_code == status.HTTP_201_CREATED
@@ -173,6 +175,23 @@ class TestSupervisorAuth:
         )
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
+
+    def test_workplace_supervisor_signup_requires_valid_organization(self, api_client, setup_college_data):
+        college = setup_college_data["college_a"]
+
+        response = api_client.post(
+            "/api/v1/auth/supervisor/signup/",
+            {
+                "email": "workplace.supervisor@test.com",
+                "password": "securepassword123",
+                "first_name": "Wendy",
+                "last_name": "Place",
+                "role": User.WORKPLACE_SUPERVISOR,  # type: ignore
+                "college_id": college.id,
+            },
+        )
+        assert response.status_code == status.HTTP_400_BAD_REQUEST
+        assert "organization_name" in response.data
 
     def test_admin_can_list_supervisor_applications(self, api_client, setup_college_data):
         institution = setup_college_data["institution"]
