@@ -9,8 +9,9 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Departments, Institutions, Programmes
+from .models import Colleges, Departments, Institutions, Programmes
 from .serializer import (
+    CollegesSerializer,
     DepartmentsSerializer,
     InstitutionsSerializer,
     ProgrammesSerializer,
@@ -48,21 +49,21 @@ def get_accessible_department_ids(user):
 
     if user.role == User.STUDENT:
         return Departments.objects.filter(
-            institution_id__in=InternshipPlacements.objects.filter(intern=user).values_list(
+            college__institution_id__in=InternshipPlacements.objects.filter(intern=user).values_list(
                 "institution_id", flat=True
             )
         ).values_list("id", flat=True)
 
     if user.role == User.WORKPLACE_SUPERVISOR:
         return Departments.objects.filter(
-            institution_id__in=InternshipPlacements.objects.filter(
+            college__institution_id__in=InternshipPlacements.objects.filter(
                 workplace_supervisor=user
-            ).values_list("institution_id", flat=True)
+			).values_list("institution_id", flat=True)
         ).values_list("id", flat=True)
 
     if user.role == User.ACADEMIC_SUPERVISOR:
         return Departments.objects.filter(
-            institution_id__in=InternshipPlacements.objects.filter(
+            college__institution_id__in=InternshipPlacements.objects.filter(
                 academic_supervisor=user
             ).values_list("institution_id", flat=True)
         ).values_list("id", flat=True)
@@ -176,6 +177,85 @@ class InstitutionsDetailView(APIView):
             raise NotFound("Institution not found.")
 
 
+class CollegesListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request):
+        colleges = Colleges.objects.all()
+        serializer = CollegesSerializer(colleges, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        if (
+            request.user.role == User.INTERNSHIP_ADMIN
+            or request.user.is_superuser
+        ):
+            serializer = CollegesSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(
+                {"error": "College data is invalid", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"error": "Only Internship Admins can create colleges."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+
+class CollegesDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk):
+        college = self.get_object(pk)
+        serializer = CollegesSerializer(college)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
+            college = self.get_object(pk)
+            serializer = CollegesSerializer(college, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(
+                {"error": "College update data is invalid", "details": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        return Response(
+            {"error": "Only Internship Admins can update colleges."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def delete(self, request, pk):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
+            college = self.get_object(pk)
+            college.delete()
+            return Response(
+                {"message": "College deleted successfully"}, status=status.HTTP_200_OK
+            )
+        return Response(
+            {"error": "Only Internship Admins can delete colleges."},
+            status=status.HTTP_403_FORBIDDEN,
+        )
+
+    def get_object(self, pk):
+        try:
+            return Colleges.objects.get(pk=pk)
+        except Colleges.DoesNotExist:
+            raise NotFound("College not found.")
+
+
+class InstitutionCollegesListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, institution_id):
+        colleges = Colleges.objects.filter(institution_id=institution_id)
+        serializer = CollegesSerializer(colleges, many=True)
+        return Response(serializer.data)
+
+
 class DepartmentsListView(APIView):
     permission_classes = [AllowAny]
 
@@ -269,7 +349,16 @@ class InstitutionDepartmentsListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request, institution_id):
-        departments = Departments.objects.filter(institution_id=institution_id)
+        departments = Departments.objects.filter(college__institution_id=institution_id)
+        serializer = DepartmentsSerializer(departments, many=True)
+        return Response(serializer.data)
+
+
+class CollegeDepartmentsListView(APIView):
+    permission_classes = [AllowAny]
+
+    def get(self, request, college_id):
+        departments = Departments.objects.filter(college_id=college_id)
         serializer = DepartmentsSerializer(departments, many=True)
         return Response(serializer.data)
 
