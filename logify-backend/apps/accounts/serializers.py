@@ -164,7 +164,8 @@ class AdminSignupSerializer(serializers.ModelSerializer):
         return value
 
     def create(self, validated_data):
-        from apps.academics.models import Colleges
+        from apps.academics.models import Colleges, Departments
+        from apps.accounts.models import StaffProfiles
 
         password = validated_data.pop("password")
         college_id = validated_data.pop("college_id")
@@ -180,6 +181,18 @@ class AdminSignupSerializer(serializers.ModelSerializer):
         )
         user.set_password(password)
         user.save()
+
+        # Internship admins require a StaffProfile linked to a department
+        # in their college to establish their college scope.
+        department = Departments.objects.filter(college=college).first()
+        if department:
+            StaffProfiles.objects.create(
+                user=user,
+                staff_number=f"ADM-{user.id}",
+                department=department,
+                title="Internship Administrator",
+            )
+
         return user
 
 
