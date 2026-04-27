@@ -349,7 +349,7 @@ class TestAdminAuth:
 
 @pytest.mark.django_db
 class TestStudentRegistryScope:
-    def test_admin_lists_only_students_in_their_institution(self, api_client):
+    def test_admin_without_college_profile_cannot_list_students(self, api_client):
         institution_a = Institutions.objects.create(name="Institution A")
         institution_b = Institutions.objects.create(name="Institution B")
 
@@ -383,8 +383,7 @@ class TestStudentRegistryScope:
         response = api_client.get("/api/v1/registry/students/")
 
         assert response.status_code == status.HTTP_200_OK
-        assert len(response.data) == 1
-        assert response.data[0]["id"] == student_in_scope.id
+        assert len(response.data) == 0
 
     def test_admin_with_college_only_sees_students_in_the_same_college(
         self, api_client, setup_college_data
@@ -464,6 +463,114 @@ class TestStudentRegistryScope:
         response = api_client.get("/api/v1/registry/students/")
 
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+@pytest.mark.django_db
+class TestSupervisorScope:
+    def test_admin_lists_only_supervisors_in_own_college_scope(self, api_client, setup_college_data):
+        institution = setup_college_data["institution"]
+        college_a = setup_college_data["college_a"]
+        college_b = setup_college_data["college_b"]
+
+        department_a = Departments.objects.create(college=college_a, name="Engineering")
+        department_b = Departments.objects.create(college=college_b, name="Science")
+
+        in_scope_supervisor = User.objects.create_user(
+            email="supervisor.a@test.com",
+            password="securepassword123",
+            first_name="In",
+            last_name="Scope",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=in_scope_supervisor,
+            staff_number="SUP-A",
+            department=department_a,
+            title="Lecturer",
+        )
+
+        out_of_scope_supervisor = User.objects.create_user(
+            email="supervisor.b@test.com",
+            password="securepassword123",
+            first_name="Out",
+            last_name="Scope",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=out_of_scope_supervisor,
+            staff_number="SUP-B",
+            department=department_b,
+            title="Lecturer",
+        )
+
+        admin = User.objects.create_user(
+            email="admin.scope@test.com",
+            password="adminpassword",
+            first_name="College",
+            last_name="Admin",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin,
+            staff_number="ADM-A",
+            department=department_a,
+            title="Admin",
+        )
+
+        api_client.force_authenticate(user=admin)
+        response = api_client.get("/api/v1/accounts/supervisors/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+        assert response.data[0]["id"] == in_scope_supervisor.id
+
+    def test_admin_cannot_use_college_filter_to_access_other_college_supervisors(
+        self, api_client, setup_college_data
+    ):
+        institution = setup_college_data["institution"]
+        college_a = setup_college_data["college_a"]
+        college_b = setup_college_data["college_b"]
+
+        department_a = Departments.objects.create(college=college_a, name="Engineering")
+
+        supervisor_a = User.objects.create_user(
+            email="supervisor.filter@test.com",
+            password="securepassword123",
+            first_name="Filter",
+            last_name="Scope",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=supervisor_a,
+            staff_number="SUP-F",
+            department=department_a,
+            title="Lecturer",
+        )
+
+        admin = User.objects.create_user(
+            email="admin.filter@test.com",
+            password="adminpassword",
+            first_name="College",
+            last_name="Admin",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin,
+            staff_number="ADM-F",
+            department=department_a,
+            title="Admin",
+        )
+
+        api_client.force_authenticate(user=admin)
+        response = api_client.get(f"/api/v1/accounts/supervisors/?college_id={college_b.id}")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert response.data == []
 
 
 @pytest.mark.django_db

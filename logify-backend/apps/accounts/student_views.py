@@ -1,4 +1,8 @@
-from apps.accounts.access import get_user_college_id, get_user_institution_id
+from apps.accounts.access import (
+    get_programme_ids_for_college,
+    get_user_college_id,
+    get_user_institution_id,
+)
 from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.accounts.serializers import UserDetailSerializer
@@ -34,18 +38,22 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
             if institution_id is None:
                 return User.objects.none()
 
+            admin_college_id = get_user_college_id(user)
+            if admin_college_id is None:
+                return User.objects.none()
+
             queryset = User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
 
-            admin_college_id = get_user_college_id(user)
-            if admin_college_id:
-                queryset = queryset.filter(
-                    programme_id__in=self._get_programme_ids_for_college(admin_college_id)
-                )
+            queryset = queryset.filter(
+                programme_id__in=get_programme_ids_for_college(admin_college_id)
+            )
 
             college_id = self.request.query_params.get("college_id")
             if college_id:
+                if str(college_id) != str(admin_college_id):
+                    return User.objects.none()
                 queryset = queryset.filter(
-                    programme_id__in=self._get_programme_ids_for_college(college_id)
+                    programme_id__in=get_programme_ids_for_college(admin_college_id)
                 )
 
             return queryset
@@ -54,14 +62,6 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
             return User.objects.filter(role=User.STUDENT, id=user.id)
 
         return User.objects.none()
-
-    def _get_programme_ids_for_college(self, college_id):
-        from apps.academics.models import Programmes
-
-        ids = Programmes.objects.filter(department__college_id=college_id).values_list(
-            "id", flat=True
-        )
-        return [str(i) for i in ids]
 
     def get_object(self):
         obj = super().get_object()
@@ -79,10 +79,12 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
                 raise PermissionDenied("You can only access students in your institution.")
 
             admin_college_id = get_user_college_id(self.request.user)
-            if admin_college_id:
-                allowed_programme_ids = self._get_programme_ids_for_college(admin_college_id)
-                if str(obj.programme_id) not in allowed_programme_ids:
-                    raise PermissionDenied("You can only access students in your college.")
+            if admin_college_id is None:
+                raise PermissionDenied("Your account must be assigned to a college.")
+
+            allowed_programme_ids = get_programme_ids_for_college(admin_college_id)
+            if str(obj.programme_id) not in allowed_programme_ids:
+                raise PermissionDenied("You can only access students in your college.")
             return obj
 
         raise PermissionDenied("You do not have permission to access this record.")
