@@ -1,0 +1,15 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<p>Hello {{ supervisor_name }},</p>
+<p><strong>{{ student_name }}</strong> has submitted a weekly log for review.</p>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p><strong>Week Range:</strong> {{ week_range }}</p>
+    <p><strong>Submission Date:</strong> {{ submission_date }}</p>
+</div>
+
+<p>Please log in to the portal to review the entries and provide your feedback.</p>
+
+<a href="{{ dashboard_url }}" class="button">Review Logbook</a>
+{% endblock %}

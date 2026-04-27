@@ -4,6 +4,7 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
+from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import PermissionDenied
@@ -13,6 +14,7 @@ from rest_framework.views import APIView
 
 from .models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 from .serializer import SupervisorReviewsSerializer, WeeklyLogsSerializer
+from apps.notifications.emails import send_logify_email
 
 # Create your views here.
 
@@ -118,6 +120,23 @@ class SubmitWeeklyLogAPIView(APIView):
             comment=request.data.get("comment", "Weekly log submitted."),
         )
 
+        # Send notification to workplace supervisor
+        supervisor = weekly_log.placement.workplace_supervisor
+        student = weekly_log.placement.intern
+        context = {
+            "student_name": f"{student.first_name} {student.last_name}",
+            "supervisor_name": f"{supervisor.first_name} {supervisor.last_name}",
+            "week_range": f"{weekly_log.week_start_date} to {weekly_log.week_end_date}",
+            "submission_date": weekly_log.submitted_at.strftime("%B %d, %Y") if weekly_log.submitted_at else "",
+            "dashboard_url": f"{settings.FRONTEND_URL}/logbook",
+        }
+        send_logify_email(
+            subject=f"New Weekly Log Submission - Week {weekly_log.week_number}",
+            template_name="notifications/logbook_submitted.html",
+            context=context,
+            recipient_list=[supervisor.email],
+        )
+
         return Response(
             {
                 "success": "Weekly log submitted successfully",
@@ -160,6 +179,22 @@ class ApproveWeeklyLogAPIView(APIView):
             comment=comment,
         )
 
+        # Send notification to student
+        student = weekly_log.placement.intern
+        supervisor = request.user
+        context = {
+            "student_name": f"{student.first_name} {student.last_name}",
+            "supervisor_name": f"{supervisor.first_name} {supervisor.last_name}",
+            "week_range": f"{weekly_log.week_start_date} to {weekly_log.week_end_date}",
+            "dashboard_url": f"{settings.FRONTEND_URL}/logbook",
+        }
+        send_logify_email(
+            subject=f"Weekly Log Approved - Week {weekly_log.week_number}",
+            template_name="notifications/logbook_approved.html",
+            context=context,
+            recipient_list=[student.email],
+        )
+
         return Response(
             {
                 "success": "Weekly log approved successfully",
@@ -167,6 +202,8 @@ class ApproveWeeklyLogAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
+    
+    
 
 
 class RejectWeeklyLogAPIView(APIView):
@@ -200,6 +237,23 @@ class RejectWeeklyLogAPIView(APIView):
             to_status="rejected",
             changed_by=request.user,
             comment=comment,
+        )
+
+        # Send notification to student
+        student = weekly_log.placement.intern
+        supervisor = request.user
+        context = {
+            "student_name": f"{student.first_name} {student.last_name}",
+            "supervisor_name": f"{supervisor.first_name} {supervisor.last_name}",
+            "week_range": f"{weekly_log.week_start_date} to {weekly_log.week_end_date}",
+            "reason": comment,
+            "dashboard_url": f"{settings.FRONTEND_URL}/logbook",
+        }
+        send_logify_email(
+            subject=f"Weekly Log Rejected - Week {weekly_log.week_number}",
+            template_name="notifications/logbook_rejected.html",
+            context=context,
+            recipient_list=[student.email],
         )
 
         return Response(
@@ -245,6 +299,23 @@ class RequestChangesWeeklyLogAPIView(APIView):
             to_status="changes_requested",
             changed_by=request.user,
             comment=comment,
+        )
+
+        # Send notification to student
+        student = weekly_log.placement.intern
+        supervisor = request.user
+        context = {
+            "student_name": f"{student.first_name} {student.last_name}",
+            "supervisor_name": f"{supervisor.first_name} {supervisor.last_name}",
+            "week_range": f"{weekly_log.week_start_date} to {weekly_log.week_end_date}",
+            "comment": comment,
+            "dashboard_url": f"{settings.FRONTEND_URL}/logbook",
+        }
+        send_logify_email(
+            subject=f"Changes Requested - Week {weekly_log.week_number} Weekly Log",
+            template_name="notifications/logbook_changes_requested.html",
+            context=context,
+            recipient_list=[student.email],
         )
 
         return Response(

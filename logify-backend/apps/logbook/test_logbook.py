@@ -6,6 +6,7 @@ from apps.placements.models import InternshipPlacements
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from unittest.mock import patch
 
 # Create your tests here.
 
@@ -268,3 +269,156 @@ class TestLogbook(APITestCase):
     def test_unauthenticated_cannot_get_reviews(self):
         response = self.client.get(reverse("weekly_log_reviews", kwargs={"log_id": 99999}))
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    @patch("apps.logbook.views.send_logify_email")
+    def test_submit_weekly_log_sends_notification_to_supervisor(self, mock_send_email):
+        """Test that submitting a weekly log sends notification to workplace supervisor"""
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=4,
+            week_start_date="2024-01-22",
+            week_end_date="2024-01-28",
+            activities="Worked on project A",
+            challenges="Faced issue B",
+            learnings="Learned about C",
+            status="draft",
+        )
+
+        self.client.force_authenticate(user=self.student_user)
+        response = self.client.post(
+            reverse("submit_weekly_log", kwargs={"log_id": weekly_log.id})
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify send_logify_email was called
+        mock_send_email.assert_called_once()
+        call_args = mock_send_email.call_args
+
+        # Verify correct recipient (supervisor email)
+        self.assertEqual(call_args[1]["recipient_list"][0], self.workplace_supervisor.email)
+        # Verify correct template
+        self.assertEqual(call_args[1]["template_name"], "notifications/logbook_submitted.html")
+        # Verify context contains necessary fields
+        context = call_args[1]["context"]
+        self.assertIn("student_name", context)
+        self.assertIn("supervisor_name", context)
+        self.assertIn("week_range", context)
+        self.assertIn("submission_date", context)
+        self.assertIn("dashboard_url", context)
+        self.assertEqual(context["student_name"], f"{self.student_user.first_name} {self.student_user.last_name}")
+        self.assertEqual(context["supervisor_name"], f"{self.workplace_supervisor.first_name} {self.workplace_supervisor.last_name}")
+
+    @patch("apps.logbook.views.send_logify_email")
+    def test_approve_weekly_log_sends_notification_to_student(self, mock_send_email):
+        """Test that approving a weekly log sends notification to student"""
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=5,
+            week_start_date="2024-01-29",
+            week_end_date="2024-02-04",
+            activities="Worked on project X",
+            challenges="Faced issue Y",
+            learnings="Learned about Z",
+            status="submitted",
+        )
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("approve_weekly_log", kwargs={"log_id": weekly_log.id}),
+            {"comment": "Excellent work!"},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify send_logify_email was called
+        mock_send_email.assert_called_once()
+        call_args = mock_send_email.call_args
+
+        # Verify correct recipient (student email)
+        self.assertEqual(call_args[1]["recipient_list"][0], self.student_user.email)
+        # Verify correct template
+        self.assertEqual(call_args[1]["template_name"], "notifications/logbook_approved.html")
+        # Verify context contains necessary fields
+        context = call_args[1]["context"]
+        self.assertIn("student_name", context)
+        self.assertIn("supervisor_name", context)
+        self.assertIn("week_range", context)
+        self.assertIn("dashboard_url", context)
+        self.assertEqual(context["student_name"], f"{self.student_user.first_name} {self.student_user.last_name}")
+
+    @patch("apps.logbook.views.send_logify_email")
+    def test_reject_weekly_log_sends_notification_to_student(self, mock_send_email):
+        """Test that rejecting a weekly log sends notification to student"""
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=6,
+            week_start_date="2024-02-05",
+            week_end_date="2024-02-11",
+            activities="Worked on project P",
+            challenges="Faced issue Q",
+            learnings="Learned about R",
+            status="submitted",
+        )
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("reject_weekly_log", kwargs={"log_id": weekly_log.id}),
+            {"comment": "Please provide more details on challenges faced."},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify send_logify_email was called
+        mock_send_email.assert_called_once()
+        call_args = mock_send_email.call_args
+
+        # Verify correct recipient (student email)
+        self.assertEqual(call_args[1]["recipient_list"][0], self.student_user.email)
+        # Verify correct template
+        self.assertEqual(call_args[1]["template_name"], "notifications/logbook_rejected.html")
+        # Verify context contains necessary fields
+        context = call_args[1]["context"]
+        self.assertIn("student_name", context)
+        self.assertIn("week_range", context)
+        self.assertIn("reason", context)
+        self.assertIn("dashboard_url", context)
+        self.assertEqual(context["reason"], "Please provide more details on challenges faced.")
+
+    @patch("apps.logbook.views.send_logify_email")
+    def test_request_changes_sends_notification_to_student(self, mock_send_email):
+        """Test that requesting changes sends notification to student"""
+        weekly_log = WeeklyLogs.objects.create(
+            placement=self.placement,
+            week_number=7,
+            week_start_date="2024-02-12",
+            week_end_date="2024-02-18",
+            activities="Worked on project M",
+            challenges="Faced issue N",
+            learnings="Learned about O",
+            status="submitted",
+        )
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        response = self.client.post(
+            reverse("request_changes_weekly_log", kwargs={"log_id": weekly_log.id}),
+            {"comment": "Please review the feedback provided and make the necessary adjustments."},
+            content_type="application/json",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Verify send_logify_email was called
+        mock_send_email.assert_called_once()
+        call_args = mock_send_email.call_args
+
+        # Verify correct recipient (student email)
+        self.assertEqual(call_args[1]["recipient_list"][0], self.student_user.email)
+        # Verify correct template
+        self.assertEqual(call_args[1]["template_name"], "notifications/logbook_changes_requested.html")
+        # Verify context contains necessary fields
+        context = call_args[1]["context"]
+        self.assertIn("student_name", context)
+        self.assertIn("supervisor_name", context)
+        self.assertIn("week_range", context)
+        self.assertIn("comment", context)
+        self.assertIn("dashboard_url", context)
+        self.assertEqual(context["comment"], "Please review the feedback provided and make the necessary adjustments.")

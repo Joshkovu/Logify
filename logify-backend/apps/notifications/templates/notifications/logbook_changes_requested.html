@@ -1,0 +1,15 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<p>Hi {{ student_name }},</p>
+<p>Your supervisor, {{ supervisor_name }}, has requested changes to your weekly log for <strong>{{ week_range }}</strong>.</p>
+
+<div style="background-color: #fff3e0; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #ef6c00;">
+    <p><strong>Supervisor Comments:</strong></p>
+    <p>{{ comment }}</p>
+</div>
+
+<p>Please update your log based on this feedback and resubmit it for approval.</p>
+
+<a href="{{ dashboard_url }}" class="button">Edit Weekly Log</a>
+{% endblock %}
