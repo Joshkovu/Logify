@@ -1,6 +1,7 @@
 from datetime import timedelta
 
 from apps.academics.models import Colleges, Departments
+from apps.accounts.models import StaffProfiles
 from apps.placements.models import (
     Institutions,
     InternshipPlacements,
@@ -232,3 +233,101 @@ class PlacementWorkflowTests(APITestCase):
             response.data["workplace_supervisor_email"][0], "Workplace supervisor does not exist."
         )
         self.assertEqual(InternshipPlacements.objects.count(), initial_count)
+
+    def test_admin_lists_only_placements_in_own_college_scope(self):
+        other_college = Colleges.objects.create(
+            institution=self.institution,
+            name="College of Natural Sciences",
+        )
+        other_department = Departments.objects.create(
+            college=other_college,
+            name="Physics",
+        )
+        other_programme = Programmes.objects.create(
+            department=other_department,
+            name="Physics",
+            level="advanced",
+            duration_years=3,
+        )
+
+        other_intern = User.objects.create_user(
+            email=f"intern2@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Second",
+            last_name="Intern",
+            role=User.STUDENT,
+            institution_id=str(self.institution.id),
+            programme_id=str(other_programme.id),
+        )
+        other_academic_supervisor = User.objects.create_user(
+            email=f"asupervisor2@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Other",
+            last_name="Academic",
+            role=User.ACADEMIC_SUPERVISOR,
+            institution_id=str(self.institution.id),
+        )
+        other_workplace_supervisor = User.objects.create_user(
+            email=f"wsupervisor2@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Other",
+            last_name="Workplace",
+            role=User.WORKPLACE_SUPERVISOR,
+            institution_id=str(self.institution.id),
+        )
+        other_placement = InternshipPlacements.objects.create(
+            intern=other_intern,
+            institution=self.institution,
+            programme=other_programme,
+            organization=self.organization,
+            workplace_supervisor=other_workplace_supervisor,
+            academic_supervisor=other_academic_supervisor,
+            start_date=timezone.now().date(),
+            end_date=(timezone.now() + timedelta(days=90)).date(),
+            work_mode="mode",
+            internship_title="Physics Intern",
+            department_at_company="Research",
+            status="draft",
+        )
+
+        admin_a = User.objects.create_user(
+            email=f"admin.a@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Admin",
+            last_name="A",
+            role=User.INTERNSHIP_ADMIN,
+            institution_id=str(self.institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin_a,
+            staff_number="ADM-A",
+            department=self.department,
+            title="College Admin",
+        )
+
+        admin_b = User.objects.create_user(
+            email=f"admin.b@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            first_name="Admin",
+            last_name="B",
+            role=User.INTERNSHIP_ADMIN,
+            institution_id=str(self.institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin_b,
+            staff_number="ADM-B",
+            department=other_department,
+            title="College Admin",
+        )
+
+        self.client.force_authenticate(user=admin_a)
+        response_a = self.client.get(reverse("placement-list-create"))
+        self.assertEqual(response_a.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_a.data), 1)
+        self.assertEqual(response_a.data[0]["id"], self.placement.id)
+
+        self.client.force_authenticate(user=admin_b)
+        response_b = self.client.get(reverse("placement-list-create"))
+        self.assertEqual(response_b.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response_b.data), 1)
+        self.assertEqual(response_b.data[0]["id"], other_placement.id)

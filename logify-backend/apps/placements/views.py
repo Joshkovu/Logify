@@ -5,6 +5,11 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
+from apps.accounts.access import (
+    get_programme_ids_for_college,
+    get_user_college_id,
+    get_user_institution_id,
+)
 from apps.notifications.emails import send_logify_email
 from django.db import transaction
 from django.utils import timezone
@@ -39,7 +44,15 @@ class InternshipPlacementListCreateView(APIView):
         elif request.user.role == User.WORKPLACE_SUPERVISOR:
             placements = InternshipPlacements.objects.filter(workplace_supervisor=request.user)
         else:  # Admin
-            placements = InternshipPlacements.objects.all()
+            institution_id = get_user_institution_id(request.user)
+            admin_college_id = get_user_college_id(request.user)
+            if institution_id is None or admin_college_id is None:
+                placements = InternshipPlacements.objects.none()
+            else:
+                placements = InternshipPlacements.objects.filter(
+                    institution_id=institution_id,
+                    programme_id__in=get_programme_ids_for_college(admin_college_id),
+                )
 
         serializer = InternshipPlacementsSerializer(placements, many=True)
         return Response(serializer.data)
@@ -78,8 +91,21 @@ class InternshipPlacementDetailView(APIView):
             raise NotFound("Placement not found.")
 
     def _ensure_can_access(self, request, placement):
-        if request.user.is_superuser or request.user.role == User.INTERNSHIP_ADMIN:
+        if request.user.is_superuser:
             return
+        if request.user.role == User.INTERNSHIP_ADMIN:
+            institution_id = get_user_institution_id(request.user)
+            admin_college_id = get_user_college_id(request.user)
+            if institution_id is None or admin_college_id is None:
+                raise PermissionDenied("Your account must be assigned to a college.")
+
+            allowed_programme_ids = get_programme_ids_for_college(admin_college_id)
+            if (
+                str(placement.institution_id) == str(institution_id)
+                and str(placement.programme_id) in allowed_programme_ids
+            ):
+                return
+            raise PermissionDenied("You do not have permission to access this placement.")
         if placement.intern_id == request.user.id:
             return
         if placement.academic_supervisor_id == request.user.id:
