@@ -10,7 +10,13 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
 from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 
-from .access import get_user_institution_id, is_user_in_institution
+from .access import (
+    get_programme_ids_for_college,
+    get_user_college_id,
+    get_user_institution_id,
+    is_user_in_admin_college_scope,
+    is_user_in_institution,
+)
 from .models import SupervisorApplication, User
 from .permissions import IsInternshipAdmin
 from .serializers import (
@@ -145,12 +151,30 @@ class SupervisorListView(ListAPIView):
         user = self.request.user
         if not user.is_superuser:
             institution_id = get_user_institution_id(user)
-            if institution_id is None:
+            admin_college_id = get_user_college_id(user)
+            if institution_id is None or admin_college_id is None:
                 return User.objects.none()
-            queryset = queryset.filter(institution_id=str(institution_id))
+
+            academic_supervisors = queryset.filter(
+                role=User.ACADEMIC_SUPERVISOR,
+                institution_id=str(institution_id),
+                staffprofiles__department__college_id=admin_college_id,
+            )
+            workplace_supervisors = queryset.filter(
+                role=User.WORKPLACE_SUPERVISOR,
+                workplace_supervisor__institution_id=institution_id,
+                workplace_supervisor__programme_id__in=get_programme_ids_for_college(
+                    admin_college_id
+                ),
+            )
+            queryset = (academic_supervisors | workplace_supervisors).distinct()
 
         college_id = self.request.query_params.get("college_id")
         if college_id:
+            if not user.is_superuser:
+                admin_college_id = get_user_college_id(user)
+                if admin_college_id is None or str(college_id) != str(admin_college_id):
+                    return User.objects.none()
             queryset = queryset.filter(staffprofiles__department__college_id=college_id)
 
         return queryset
@@ -230,6 +254,13 @@ class UserDetailView(APIView):
         institution_id = get_user_institution_id(requester)
         if institution_id is None or not is_user_in_institution(target, institution_id):
             raise PermissionDenied("You can only access users in your institution.")
+
+        admin_college_id = get_user_college_id(requester)
+        if admin_college_id is None:
+            raise PermissionDenied("Your account must be assigned to a college.")
+
+        if not is_user_in_admin_college_scope(target, admin_college_id, institution_id):
+            raise PermissionDenied("You can only access users in your college scope.")
 
         return target
 
