@@ -386,6 +386,71 @@ class TestStudentRegistryScope:
         assert len(response.data) == 1
         assert response.data[0]["id"] == student_in_scope.id
 
+    def test_admin_with_college_only_sees_students_in_the_same_college(
+        self, api_client, setup_college_data
+    ):
+        institution = setup_college_data["institution"]
+        college_a = setup_college_data["college_a"]
+        college_b = setup_college_data["college_b"]
+
+        department_a = Departments.objects.create(college=college_a, name="Engineering")
+        department_b = Departments.objects.create(college=college_b, name="Science")
+        programme_a = Programmes.objects.create(
+            name="Computer Science",
+            department=department_a,
+            level="BSc",
+            duration_years=4,
+        )
+        programme_b = Programmes.objects.create(
+            name="Physics",
+            department=department_b,
+            level="BSc",
+            duration_years=4,
+        )
+
+        student_in_scope = User.objects.create_user(
+            email="student.a@test.com",
+            password="securepassword123",
+            first_name="Student",
+            last_name="A",
+            role=User.STUDENT,  # type: ignore
+            institution_id=str(institution.id),
+            programme_id=str(programme_a.id),
+        )
+        student_out_of_scope = User.objects.create_user(
+            email="student.b@test.com",
+            password="securepassword123",
+            first_name="Student",
+            last_name="B",
+            role=User.STUDENT,  # type: ignore
+            institution_id=str(institution.id),
+            programme_id=str(programme_b.id),
+        )
+
+        admin = User.objects.create_user(
+            email="admin.college@test.com",
+            password="adminpassword",
+            first_name="College",
+            last_name="Admin",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin,
+            staff_number="A123",
+            department=department_a,
+            title="College Admin",
+        )
+        api_client.force_authenticate(user=admin)
+
+        list_response = api_client.get("/api/v1/registry/students/")
+        assert list_response.status_code == status.HTTP_200_OK
+        assert len(list_response.data) == 1
+        assert list_response.data[0]["id"] == student_in_scope.id
+
+        detail_response = api_client.get(f"/api/v1/registry/students/{student_out_of_scope.id}/")
+        assert detail_response.status_code == status.HTTP_404_NOT_FOUND
+
     def test_non_admin_cannot_list_student_registry(self, api_client):
         supervisor = User.objects.create_user(
             email="supervisor.registry@test.com",

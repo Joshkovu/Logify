@@ -27,3 +27,11 @@ def is_user_in_institution(user: User, institution_id: int) -> bool:
         return user.staffprofiles.department.college.institution_id == institution_id
     except StaffProfiles.DoesNotExist:
         return False
+
+
+def get_user_college_id(user: User) -> Optional[int]:
+    """Resolve a user's college when they have a staff profile attached."""
+    try:
+        return int(user.staffprofiles.department.college_id)
+    except (StaffProfiles.DoesNotExist, TypeError, ValueError, AttributeError):
+        return None

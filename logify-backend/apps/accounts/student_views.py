@@ -1,4 +1,4 @@
-from apps.accounts.access import get_user_institution_id
+from apps.accounts.access import get_user_college_id, get_user_institution_id
 from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.accounts.serializers import UserDetailSerializer
@@ -36,6 +36,12 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
 
             queryset = User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
 
+            admin_college_id = get_user_college_id(user)
+            if admin_college_id:
+                queryset = queryset.filter(
+                    programme_id__in=self._get_programme_ids_for_college(admin_college_id)
+                )
+
             college_id = self.request.query_params.get("college_id")
             if college_id:
                 queryset = queryset.filter(
@@ -71,6 +77,12 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
             institution_id = get_user_institution_id(self.request.user)
             if institution_id is None or str(obj.institution_id) != str(institution_id):
                 raise PermissionDenied("You can only access students in your institution.")
+
+            admin_college_id = get_user_college_id(self.request.user)
+            if admin_college_id:
+                allowed_programme_ids = self._get_programme_ids_for_college(admin_college_id)
+                if str(obj.programme_id) not in allowed_programme_ids:
+                    raise PermissionDenied("You can only access students in your college.")
             return obj
 
         raise PermissionDenied("You do not have permission to access this record.")
