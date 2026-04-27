@@ -5,8 +5,6 @@ from .views import (
     InternshipPlacementListCreateView,
     PlacementActivateView,
     PlacementApproveView,
-    PlacementAssignAcademicSupervisorView,
-    PlacementAssignWorkplaceSupervisorView,
     PlacementCancelView,
     PlacementCompleteView,
     PlacementRejectView,
@@ -26,14 +24,4 @@ urlpatterns = [
         "placements/<int:pk>/complete/", PlacementCompleteView.as_view(), name="placement-complete"
     ),
     path("placements/<int:pk>/cancel/", PlacementCancelView.as_view(), name="placement-cancel"),
-    path(
-        "placements/<int:pk>/assign-academic-supervisor/",
-        PlacementAssignAcademicSupervisorView.as_view(),
-        name="placement-assign-academic-supervisor",
-    ),
-    path(
-        "placements/<int:pk>/assign-workplace-supervisor/",
-        PlacementAssignWorkplaceSupervisorView.as_view(),
-        name="placement-assign-workplace-supervisor",
-    ),
 ]

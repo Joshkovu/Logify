@@ -389,17 +389,6 @@ export const api = {
       }),
     cancelPlacement: (id) =>
       apiRequest(`/v1/placements/placements/${id}/cancel/`, { method: "POST" }),
-
-    assignAcademicSupervisor: (id, data) =>
-      apiRequest(
-        `/v1/placements/placements/${id}/assign-academic-supervisor/`,
-        { method: "POST", body: JSON.stringify(data) },
-      ),
-    assignWorkplaceSupervisor: (id, data) =>
-      apiRequest(
-        `/v1/placements/placements/${id}/assign-workplace-supervisor/`,
-        { method: "POST", body: JSON.stringify(data) },
-      ),
   },
 
   logbook: {

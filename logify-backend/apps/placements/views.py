@@ -5,6 +5,7 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
+from apps.notifications.emails import send_logify_email
 from django.db import transaction
 from django.utils import timezone
 from rest_framework import permissions, status
@@ -46,10 +47,22 @@ class InternshipPlacementListCreateView(APIView):
     def post(self, request):
         serializer = InternshipPlacementsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save(
+        placement = serializer.save(
             intern=request.user,
             institution_id=request.user.institution_id,
             programme_id=request.user.programme_id,
+        )
+        send_logify_email(
+            subject="Logify - Internship Placement",
+            template_name="notifications/placement_workplace_supervisor_assigned.html",
+            context={},
+            recipient_list=[placement.workplace_supervisor.email],
+        )
+        send_logify_email(
+            subject="Logify - Internship Placement",
+            template_name="notifications/placement_academic_supervisor_assigned.html",
+            context={},
+            recipient_list=[placement.academic_supervisor.email],
         )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -142,6 +155,12 @@ class PlacementSubmitView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement submitted."),
             )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_submitted.html",
+                context={},
+                recipient_list=[placement.intern.email],
+            )
         return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
@@ -179,6 +198,12 @@ class PlacementApproveView(APIView):
                 to_status="approved",
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
+            )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_approved.html",
+                context={},
+                recipient_list=[placement.intern.email],
             )
 
         return Response(InternshipPlacementsSerializer(placement).data)
@@ -219,6 +244,13 @@ class PlacementRejectView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement rejected."),
             )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_rejected.html",
+                context={},
+                recipient_list=[placement.intern.email],
+            )
+
         return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
@@ -257,6 +289,13 @@ class PlacementActivateView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement activated."),
             )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_active.html",
+                context={},
+                recipient_list=[placement.intern.email],
+            )
+
         return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
@@ -297,6 +336,13 @@ class PlacementCompleteView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Internship completed."),
             )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_completed.html",
+                context={},
+                recipient_list=[placement.intern.email],
+            )
+
         return Response(InternshipPlacementsSerializer(placement).data)
 
     def get_object(self, pk):
@@ -335,49 +381,14 @@ class PlacementCancelView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement cancelled."),
             )
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_cancelled.html",
+                context={},
+                recipient_list=[placement.intern.email],
+            )
+
         return Response(InternshipPlacementsSerializer(placement).data)
-
-    def get_object(self, pk):
-        try:
-            return InternshipPlacements.objects.get(pk=pk)
-        except InternshipPlacements.DoesNotExist:
-            raise NotFound("Placement not found")
-
-
-class PlacementAssignAcademicSupervisorView(APIView):
-    permission_classes = [IsInternshipAdmin]
-
-    def post(self, request, pk):
-        placement = self.get_object(pk)
-        user_id = request.data.get("user_id")
-
-        if not user_id:
-            return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-        placement.academic_supervisor_id = user_id  # type: ignore
-        placement.save()
-
-        return Response({"message": "Academic supervisor assigned successfully."})
-
-    def get_object(self, pk):
-        try:
-            return InternshipPlacements.objects.get(pk=pk)
-        except InternshipPlacements.DoesNotExist:
-            raise NotFound("Placement not found")
-
-
-class PlacementAssignWorkplaceSupervisorView(APIView):
-    permission_classes = [IsInternshipAdmin]
-
-    def post(self, request, pk):
-        placement = self.get_object(pk)
-        user_id = request.data.get("user_id")
-
-        if not user_id:
-            return Response({"error": "user_id is required."}, status=status.HTTP_400_BAD_REQUEST)
-        placement.workplace_supervisor_id = user_id  # type: ignore
-        placement.save()
-
-        return Response({"message": "Workplace supervisor assigned successfully."})
 
     def get_object(self, pk):
         try:
