@@ -1,11 +1,17 @@
 from rest_framework import serializers
 
-from .models import Departments, Institutions, Programmes
+from .models import Colleges, Departments, Institutions, Programmes
 
 
 class InstitutionsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Institutions
+        fields = "__all__"
+
+
+class CollegesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Colleges
         fields = "__all__"
 
 
