@@ -29,6 +29,10 @@ const validateStudentForm = (formData) => {
     errors.institution = "Institution is required.";
   }
 
+  if (!formData.college) {
+    errors.college = "College is required.";
+  }
+
   if (!formData.department) {
     errors.department = "Department is required.";
   }
@@ -79,6 +83,7 @@ const StudentSignupPage = () => {
     confirmPassword: "",
     studentNumber: "",
     institution: "",
+    college: "",
     department: "",
     programme: "",
     yearOfStudy: "",
@@ -88,6 +93,7 @@ const StudentSignupPage = () => {
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [institutions, setInstitutions] = useState([]);
+  const [colleges, setColleges] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [programmes, setProgrammes] = useState([]);
 
@@ -106,10 +112,40 @@ const StudentSignupPage = () => {
 
   useEffect(() => {
     if (formData.institution) {
+      const fetchColleges = async () => {
+        try {
+          const data = await api.academics.getInstitutionColleges(
+            formData.institution,
+          );
+          setColleges(data);
+          setFormData((current) => ({
+            ...current,
+            college: "",
+            department: "",
+            programme: "",
+          }));
+          setDepartments([]);
+          setProgrammes([]);
+        } catch (err) {
+          console.error("Failed to fetch colleges:", err);
+          setColleges([]);
+        }
+      };
+
+      fetchColleges();
+    } else {
+      setColleges([]);
+      setDepartments([]);
+      setProgrammes([]);
+    }
+  }, [formData.institution]);
+
+  useEffect(() => {
+    if (formData.college) {
       const fetchDepartments = async () => {
         try {
-          const data = await api.academics.getInstitutionDepartments(
-            formData.institution,
+          const data = await api.academics.getCollegeDepartments(
+            formData.college,
           );
           setDepartments(data);
           setFormData((current) => ({
@@ -129,7 +165,7 @@ const StudentSignupPage = () => {
       setDepartments([]);
       setProgrammes([]);
     }
-  }, [formData.institution]);
+  }, [formData.college]);
 
   useEffect(() => {
     if (formData.department) {
@@ -251,11 +287,11 @@ const StudentSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Department
+              College
             </label>
             <select
-              name="department"
-              value={formData.department}
+              name="college"
+              value={formData.college}
               onChange={onChange}
               disabled={!formData.institution}
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold disabled:bg-gray-100 disabled:text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:disabled:bg-slate-700"
@@ -263,6 +299,35 @@ const StudentSignupPage = () => {
               <option value="">
                 {!formData.institution
                   ? "Select institution first"
+                  : "Select your College"}
+              </option>
+              {colleges.map((college) => (
+                <option key={college.id} value={college.id}>
+                  {college.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.college && (
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.college}
+              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Department
+            </label>
+            <select
+              name="department"
+              value={formData.department}
+              onChange={onChange}
+              disabled={!formData.college}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold disabled:bg-gray-100 disabled:text-gray-500 dark:border-slate-700 dark:bg-slate-800 dark:disabled:bg-slate-700"
+            >
+              <option value="">
+                {!formData.college
+                  ? "Select college first"
                   : "Select your Department"}
               </option>
               {departments.map((dept) => (
