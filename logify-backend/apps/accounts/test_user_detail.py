@@ -18,17 +18,36 @@ def make_user(email, role, **kwargs):
 
 class TestUserDetailView(APITestCase):
     def setUp(self):
-        self.academic_supervisor = make_user("as@test.com", User.ACADEMIC_SUPERVISOR)
-        self.student = make_user("student@test.com", User.STUDENT)
-        self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN)
+        self.academic_supervisor = make_user(
+            "as@test.com", User.ACADEMIC_SUPERVISOR, institution_id="2"
+        )
+        self.student = make_user("student@test.com", User.STUDENT, institution_id="1")
+        self.same_scope_student = make_user(
+            "same.scope@student.com", User.STUDENT, institution_id="1"
+        )
+        self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN, institution_id="1")
 
-    def test_authenticated_can_list_user_by_pk(self):
+    def test_non_admin_cannot_view_other_user_by_pk(self):
         self.client.force_authenticate(user=self.student)
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
         )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_admin_can_view_user_in_same_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.same_scope_student.pk})
+        )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["email"], "as@test.com")
+        self.assertEqual(response.data["email"], "same.scope@student.com")
+
+    def test_admin_cannot_view_user_in_other_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_unauthenticated_cannot_list_user_by_pk(self):
         response = self.client.get(
@@ -43,9 +62,18 @@ class TestUserDetailView(APITestCase):
 
     def test_admin_can_delete_user_by_pk(self):
         self.client.force_authenticate(user=self.admin)
-        response = self.client.delete(reverse("user-detail", kwargs={"pk": self.student.pk}))
+        response = self.client.delete(
+            reverse("user-detail", kwargs={"pk": self.same_scope_student.pk})
+        )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(User.objects.filter(pk=self.student.pk).exists())
+        self.assertFalse(User.objects.filter(pk=self.same_scope_student.pk).exists())
+
+    def test_admin_cannot_delete_user_in_other_institution(self):
+        self.client.force_authenticate(user=self.admin)
+        response = self.client.delete(
+            reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
+        )
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
     def test_non_admin_cannot_delete_user_by_pk(self):
         self.client.force_authenticate(user=self.student)

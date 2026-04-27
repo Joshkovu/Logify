@@ -1,5 +1,5 @@
 # from django.test import TestCase
-from apps.academics.models import Departments, Institutions, Programmes
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.accounts.models import User
 from apps.organizations.models import Organizations
 from apps.placements.models import InternshipPlacements
@@ -118,11 +118,15 @@ class TestInstitutionsDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
+        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
         self.department = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         self.programme = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
@@ -215,8 +219,14 @@ class TestDepartmentsListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        Departments.objects.create(institution=self.institution, name="Department A")
-        Departments.objects.create(institution=self.institution, name="Department B")
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
+        Departments.objects.create(college=self.college, name="Department A")
+        Departments.objects.create(college=self.college, name="Department B")
         self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN)
         self.student = make_user("student@test.com", User.STUDENT)
 
@@ -232,16 +242,17 @@ class TestDepartmentsListView(APITestCase):
         response = self.client.get(reverse("departments-list"))
         self.assertEqual(response.data, [])
 
-    def test_unauthenticated_cannot_list_departments(self):
+    def test_unauthenticated_can_list_departments(self):
         response = self.client.get(reverse("departments-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
     def test_admin_can_create_department(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.post(
             reverse("departments-list"),
             {
-                "institution": self.institution.pk,
+                "college": self.college.pk,
                 "name": "Department C",
             },
             format="json",
@@ -249,7 +260,7 @@ class TestDepartmentsListView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(
             Departments.objects.filter(
-                institution=self.institution.pk,
+                college=self.college.pk,
                 name="Department C",
             ).exists()
         )
@@ -259,7 +270,7 @@ class TestDepartmentsListView(APITestCase):
         response = self.client.post(
             reverse("departments-list"),
             {
-                "institution": self.institution.pk,
+                "college": self.college.pk,
                 "name": "Department C",
             },
             format="json",
@@ -267,7 +278,7 @@ class TestDepartmentsListView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertTrue(
             Departments.objects.filter(
-                institution=self.institution.pk,
+                college=self.college.pk,
                 name="Department C",
             ).exists()
         )
@@ -277,7 +288,7 @@ class TestDepartmentsListView(APITestCase):
         response = self.client.post(
             reverse("departments-list"),
             {
-                "institution": self.institution.pk,
+                "college": self.college.pk,
                 "name": "Department C",
             },
             format="json",
@@ -290,14 +301,18 @@ class TestDepartmentsDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
+        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
         self.department = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         self.other_department = Departments.objects.create(
-            institution=self.other_institution, name="Department B"
+            college=self.other_college, name="Department B"
         )
         self.programme = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
@@ -348,7 +363,7 @@ class TestDepartmentsDetailView(APITestCase):
         response = self.client.put(
             reverse("departments-detail", args=[self.department.pk]),
             {
-                "institution": self.institution.pk,
+                "college": self.college.pk,
                 "name": "Updated Department",
             },
             format="json",
@@ -356,7 +371,7 @@ class TestDepartmentsDetailView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.department.refresh_from_db()
         self.assertEqual(self.department.name, "Updated Department")
-        self.assertEqual(self.department.institution, self.institution)
+        self.assertEqual(self.department.college.institution, self.institution)
 
     def test_admin_can_patch_department(self):
         self.client.force_authenticate(user=self.admin)
@@ -383,16 +398,20 @@ class TestInstitutionDepartmentsListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
+        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
         self.department_a = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         self.department_b = Departments.objects.create(
-            institution=self.institution, name="Department B"
+            college=self.college, name="Department B"
         )
-        Departments.objects.create(institution=self.other_institution, name="Department C")
+        Departments.objects.create(college=self.other_college, name="Department C")
         self.programme = Programmes.objects.create(
             department=self.department_a, name="Programme A", level="Level A", duration_years=3
         )
@@ -479,8 +498,11 @@ class TestProgrammesListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.department = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
@@ -564,8 +586,11 @@ class TestProgrammesDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.department = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         self.programme = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
@@ -654,14 +679,18 @@ class TestDepartmentProgrammesListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
+        self.college = Colleges.objects.create(
+            institution=self.institution, name="College A"
+        )
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
+        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
         self.department = Departments.objects.create(
-            institution=self.institution, name="Department A"
+            college=self.college, name="Department A"
         )
         self.other_department = Departments.objects.create(
-            institution=self.other_institution, name="Department B"
+            college=self.other_college, name="Department B"
         )
         self.programme_a = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3

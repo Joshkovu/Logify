@@ -1,9 +1,13 @@
 from django.urls import path
 
 from .views import (
+    CollegeDepartmentsListView,
+    CollegesDetailView,
+    CollegesListView,
     DepartmentProgrammesListView,
     DepartmentsDetailView,
     DepartmentsListView,
+    InstitutionCollegesListView,
     InstitutionDepartmentsListView,
     InstitutionsDetailView,
     InstitutionsListView,
@@ -18,11 +22,23 @@ urlpatterns = [
         InstitutionsDetailView.as_view(),
         name="institutions-detail",
     ),
+    path("colleges/", CollegesListView.as_view(), name="colleges-list"),
+    path("colleges/<int:pk>/", CollegesDetailView.as_view(), name="colleges-detail"),
+    path(
+        "institutions/<int:institution_id>/colleges/",
+        InstitutionCollegesListView.as_view(),
+        name="institution-colleges-list",
+    ),
     path("departments/", DepartmentsListView.as_view(), name="departments-list"),
     path(
         "departments/<int:pk>/",
         DepartmentsDetailView.as_view(),
         name="departments-detail",
+    ),
+    path(
+        "colleges/<int:college_id>/departments/",
+        CollegeDepartmentsListView.as_view(),
+        name="college-departments-list",
     ),
     path(
         "institutions/<int:institution_id>/departments/",

@@ -1,6 +1,6 @@
 from datetime import date
 
-from apps.academics.models import Departments, Institutions, Programmes
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.evaluations.models import (
     EvaluationCriteria,
     EvaluationRubrics,
@@ -51,9 +51,8 @@ class TestEvaluation(TestCase):
         self.institution = Institutions.objects.create(
             name="Test University", email_domain="test.edu"
         )
-        self.department = Departments.objects.create(
-            institution=self.institution, name="Engineering"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
@@ -159,9 +158,8 @@ class TestEvaluationViewSet(APITestCase):
         self.institution = Institutions.objects.create(
             name="Test University", email_domain="test.edu"
         )
-        self.department = Departments.objects.create(
-            institution=self.institution, name="Engineering"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
@@ -267,10 +265,8 @@ class TestEvaluationCriteriaViewSet(APITestCase):
         self.institution = Institutions.objects.create(
             name="Test University", email_domain="test.edu"
         )
-        self.department = Departments.objects.create(
-            institution=self.institution, name="Engineering"
-        )
-
+        self.college = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
@@ -341,9 +337,8 @@ class TestEvaluationScoresViewSet(APITestCase):
         self.institution = Institutions.objects.create(
             name="Test University", email_domain="test.edu"
         )
-        self.department = Departments.objects.create(
-            institution=self.institution, name="Engineering"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
@@ -475,9 +470,8 @@ class TestFinalResultsViewSet(APITestCase):
         self.institution = Institutions.objects.create(
             name="Final Test University", email_domain="final.test.edu"
         )
-        self.department = Departments.objects.create(
-            institution=self.institution, name="Engineering"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )

@@ -11,9 +11,15 @@ institutions {
     boolean is_active
     datetime created_at
 }
-departments {
+colleges {
     int id
     int institution_id
+    text name
+    datetime created_at
+}
+departments {
+    int id
+    int college_id
     text name
     datetime created_at
 }
@@ -232,7 +238,8 @@ internship_reports {
 %% =========================
 %%  RELATIONSHIPS
 %% =========================
-institutions ||--o{ departments : has
+institutions ||--o{ colleges : has
+colleges ||--o{ departments : has
 departments ||--o{ programmes : has
 
 institutions ||--o{ users : has

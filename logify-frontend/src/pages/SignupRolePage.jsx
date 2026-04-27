@@ -29,18 +29,34 @@ const SignupRolePage = () => {
           </Link>
 
           <Link
-            to="/signup/supervisor"
+            to="/signup/supervisor?role=academic_supervisor"
             className="rounded-2xl border border-border bg-[#fffdf9] p-6 transition-colors hover:bg-gold/10 dark:border-slate-700 dark:bg-slate-800"
           >
             <div className="inline-flex rounded-xl bg-maroonCustom p-3 text-white">
               <Building2 className="h-5 w-5" />
             </div>
             <h2 className="mt-4 text-2xl font-black tracking-tight text-maroon-dark dark:text-gold">
-              Supervisor
+              Academic Supervisor
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
-              Choose Academic Supervisor or Workplace Supervisor, then submit
-              for approval.
+              University staff overseeing student internships from an academic
+              perspective.
+            </p>
+          </Link>
+
+          <Link
+            to="/signup/supervisor?role=workplace_supervisor"
+            className="rounded-2xl border border-border bg-[#fffdf9] p-6 transition-colors hover:bg-gold/10 dark:border-slate-700 dark:bg-slate-800"
+          >
+            <div className="inline-flex rounded-xl bg-maroonCustom p-3 text-white">
+              <Building2 className="h-5 w-5" />
+            </div>
+            <h2 className="mt-4 text-2xl font-black tracking-tight text-maroon-dark dark:text-gold">
+              Workplace Supervisor
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-text-secondary dark:text-slate-300">
+              On-site mentors supervising student progress at their internship
+              placement.
             </p>
           </Link>
         </div>

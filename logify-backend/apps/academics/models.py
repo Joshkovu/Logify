@@ -19,14 +19,17 @@ class Institutions(models.Model):
         return self.name
 
 
-# text id
-#     text institution_id
-#     text name
-#     integer created_at
+class Colleges(models.Model):
+    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.name
 
 
 class Departments(models.Model):
-    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
+    college = models.ForeignKey(Colleges, on_delete=models.CASCADE, null=True)
     name = models.CharField(max_length=255)
     created_at = models.DateTimeField(auto_now_add=True)
 

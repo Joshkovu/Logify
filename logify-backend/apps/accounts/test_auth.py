@@ -1,5 +1,5 @@
 import pytest  # type: ignore
-from apps.academics.models import Departments, Institutions, Programmes
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.accounts.models import StaffProfiles, SupervisorApplication
 from django.contrib.auth import get_user_model
 from rest_framework import status
@@ -16,13 +16,26 @@ def api_client():
 @pytest.fixture
 def setup_data(db):
     institution = Institutions.objects.create(name="Test University")
-    department = Departments.objects.create(institution=institution, name="Engineering")
+    college = Colleges.objects.create(institution=institution, name="Test College")
+    department = Departments.objects.create(college=college, name="Engineering")
     programme = Programmes.objects.create(
         name="Computer Science", department=department, level="BSc", duration_years=4
     )
     return {
         "institution": institution,
         "programme": programme,
+    }
+
+
+@pytest.fixture
+def setup_college_data(db):
+    institution = Institutions.objects.create(name="Institution For Colleges", email_domain="@test.com")
+    college_a = Colleges.objects.create(institution=institution, name="College A")
+    college_b = Colleges.objects.create(institution=institution, name="College B")
+    return {
+        "institution": institution,
+        "college_a": college_a,
+        "college_b": college_b,
     }
 
 
@@ -103,7 +116,10 @@ class TestStudentAuth:
 
 @pytest.mark.django_db
 class TestSupervisorAuth:
-    def test_supervisor_signup_and_approval(self, api_client):
+    def test_supervisor_signup_and_approval(self, api_client, setup_college_data):
+        institution = setup_college_data["institution"]
+        college = setup_college_data["college_a"]
+
         response = api_client.post(
             "/api/v1/auth/supervisor/signup/",
             {
@@ -113,6 +129,7 @@ class TestSupervisorAuth:
                 "last_name": "Doe",
                 "role": User.ACADEMIC_SUPERVISOR,  # type: ignore
                 "phone": "0700000000",
+                "college_id": college.id,
             },
         )
         assert response.status_code == status.HTTP_201_CREATED
@@ -133,6 +150,7 @@ class TestSupervisorAuth:
             role=User.INTERNSHIP_ADMIN,  # type: ignore
             first_name="Internship",
             last_name="Admin",
+            institution_id=str(institution.id),
         )
         api_client.force_authenticate(user=admin)
         app = SupervisorApplication.objects.get(user=user)
@@ -154,13 +172,16 @@ class TestSupervisorAuth:
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
 
-    def test_admin_can_list_supervisor_applications(self, api_client):
+    def test_admin_can_list_supervisor_applications(self, api_client, setup_college_data):
+        institution = setup_college_data["institution"]
+
         pending_user = User.objects.create_user(
             email="pending.supervisor@test.com",
             password="securepassword123",
             role=User.WORKPLACE_SUPERVISOR,  # type: ignore
             first_name="Pending",
             last_name="Supervisor",
+            institution_id=str(institution.id),
             is_active=False,
         )
         SupervisorApplication.objects.create(user=pending_user, status="pending")
@@ -171,6 +192,7 @@ class TestSupervisorAuth:
             role=User.ACADEMIC_SUPERVISOR,  # type: ignore
             first_name="Approved",
             last_name="Supervisor",
+            institution_id=str(institution.id),
             is_active=True,
         )
         SupervisorApplication.objects.create(user=approved_user, status="approved")
@@ -181,6 +203,7 @@ class TestSupervisorAuth:
             role=User.INTERNSHIP_ADMIN,  # type: ignore
             first_name="Internship",
             last_name="Admin",
+            institution_id=str(institution.id),
         )
         api_client.force_authenticate(user=admin)
 
@@ -199,10 +222,99 @@ class TestSupervisorAuth:
         assert len(pending_response.data) == 1
         assert pending_response.data[0]["status"] == "pending"
 
+    def test_admin_lists_only_same_institution_supervisor_applications(self, api_client):
+        institution_a = Institutions.objects.create(name="Institution A")
+        institution_b = Institutions.objects.create(name="Institution B")
+
+        scoped_supervisor = User.objects.create_user(
+            email="scoped.supervisor@test.com",
+            password="securepassword123",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            first_name="Scoped",
+            last_name="Supervisor",
+            institution_id=str(institution_a.id),
+            is_active=False,
+        )
+        SupervisorApplication.objects.create(user=scoped_supervisor, status="pending")
+
+        other_supervisor = User.objects.create_user(
+            email="other.institution.supervisor@test.com",
+            password="securepassword123",
+            role=User.WORKPLACE_SUPERVISOR,  # type: ignore
+            first_name="Other",
+            last_name="Supervisor",
+            institution_id=str(institution_b.id),
+            is_active=False,
+        )
+        SupervisorApplication.objects.create(user=other_supervisor, status="pending")
+
+        scoped_admin = User.objects.create_user(
+            email="scoped.admin@test.com",
+            password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            first_name="Scoped",
+            last_name="Admin",
+            institution_id=str(institution_a.id),
+        )
+        api_client.force_authenticate(user=scoped_admin)
+
+        response = api_client.get("/api/v1/accounts/supervisor/applications/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+        assert response.data[0]["email"] == "scoped.supervisor@test.com"
+
+    def test_admin_cannot_approve_supervisor_from_other_institution(self, api_client):
+        institution_a = Institutions.objects.create(name="Scoped Admin Institution")
+        institution_b = Institutions.objects.create(name="Other Institution")
+        college_root_b = Colleges.objects.create(institution=institution_b, name="College Root B")
+        college_b = Departments.objects.create(college=college_root_b, name="College B")
+
+        supervisor = User.objects.create_user(
+            email="other.supervisor@test.com",
+            password="securepassword123",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+            first_name="Other",
+            last_name="Supervisor",
+            institution_id=str(institution_b.id),
+            is_active=False,
+        )
+        application = SupervisorApplication.objects.create(user=supervisor, status="pending")
+        StaffProfiles.objects.create(
+            user=supervisor,
+            staff_number="SUP001",
+            department=college_b,
+            title="Supervisor",
+        )
+
+        admin = User.objects.create_user(
+            email="scoped.admin@test.com",
+            password="adminpassword",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            first_name="Scoped",
+            last_name="Admin",
+            institution_id=str(institution_a.id),
+        )
+        api_client.force_authenticate(user=admin)
+
+        response = api_client.post(
+            f"/api/v1/accounts/supervisor/approve/{application.id}/",
+            {"action": "approve"},
+        )
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+        application.refresh_from_db()
+        supervisor.refresh_from_db()
+        assert application.status == "pending"
+        assert supervisor.is_active is False
+
 
 @pytest.mark.django_db
 class TestAdminAuth:
-    def test_admin_signup_and_login(self, api_client):
+    def test_admin_signup_and_login(self, api_client, setup_college_data):
+        institution = setup_college_data["institution"]
+        college = setup_college_data["college_a"]
+
         signup_response = api_client.post(
             "/api/v1/auth/admin/signup/",
             {
@@ -211,6 +323,7 @@ class TestAdminAuth:
                 "first_name": "Internship",
                 "last_name": "Admin",
                 "phone": "0700000000",
+                "college_id": college.id,
             },
         )
 
@@ -220,6 +333,7 @@ class TestAdminAuth:
         assert user.role == User.INTERNSHIP_ADMIN  # type: ignore
         assert user.is_active
         assert user.is_staff
+        assert user.institution_id == str(institution.id)
 
         login_response = api_client.post(
             "/api/v1/auth/login/",
@@ -229,6 +343,60 @@ class TestAdminAuth:
         assert login_response.status_code == status.HTTP_200_OK
         assert "access" in login_response.data
         assert "refresh" in login_response.data
+
+
+@pytest.mark.django_db
+class TestStudentRegistryScope:
+    def test_admin_lists_only_students_in_their_institution(self, api_client):
+        institution_a = Institutions.objects.create(name="Institution A")
+        institution_b = Institutions.objects.create(name="Institution B")
+
+        student_in_scope = User.objects.create_user(
+            email="student.a@test.com",
+            password="securepassword123",
+            first_name="Student",
+            last_name="A",
+            role=User.STUDENT,  # type: ignore
+            institution_id=str(institution_a.id),
+        )
+        User.objects.create_user(
+            email="student.b@test.com",
+            password="securepassword123",
+            first_name="Student",
+            last_name="B",
+            role=User.STUDENT,  # type: ignore
+            institution_id=str(institution_b.id),
+        )
+
+        admin = User.objects.create_user(
+            email="admin.a@test.com",
+            password="adminpassword",
+            first_name="Institution",
+            last_name="Admin",
+            role=User.INTERNSHIP_ADMIN,  # type: ignore
+            institution_id=str(institution_a.id),
+        )
+        api_client.force_authenticate(user=admin)
+
+        response = api_client.get("/api/v1/registry/students/")
+
+        assert response.status_code == status.HTTP_200_OK
+        assert len(response.data) == 1
+        assert response.data[0]["id"] == student_in_scope.id
+
+    def test_non_admin_cannot_list_student_registry(self, api_client):
+        supervisor = User.objects.create_user(
+            email="supervisor.registry@test.com",
+            password="securepassword123",
+            first_name="Registry",
+            last_name="Supervisor",
+            role=User.ACADEMIC_SUPERVISOR,  # type: ignore
+        )
+        api_client.force_authenticate(user=supervisor)
+
+        response = api_client.get("/api/v1/registry/students/")
+
+        assert response.status_code == status.HTTP_403_FORBIDDEN
 
 
 @pytest.mark.django_db
@@ -257,8 +425,10 @@ class TestAuthMe:
             role=User.ACADEMIC_SUPERVISOR,  # type: ignore
             password="securepassword123",
         )
+        institution = Institutions.objects.create(name="Test Institution")
+        college = Colleges.objects.create(institution=institution, name="Test College")
         department = Departments.objects.create(
-            institution=Institutions.objects.create(name="Makerere"),
+            college=college,
             name="Computer Science",
         )
         StaffProfiles.objects.create(

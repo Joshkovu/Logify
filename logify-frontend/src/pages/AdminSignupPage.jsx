@@ -1,7 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { api } from "../config/api.js";
 import { AuthContext } from "../contexts/AuthContext";
+import AuthActionButton from "../components/ui/AuthActionButton";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
@@ -18,6 +20,18 @@ const validateAdminSignup = (formData) => {
 
   if (!formData.email.trim()) {
     errors.email = "Institutional email is required.";
+  }
+
+  if (!formData.institution) {
+    errors.institution = "Institution is required.";
+  }
+
+  if (!formData.college) {
+    errors.college = "College is required.";
+  }
+
+  if (!formData.department) {
+    errors.department = "Department is required.";
   }
 
   if (!formData.password) {
@@ -41,12 +55,81 @@ const AdminSignupPage = () => {
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
+    institution: "",
+    college: "",
+    department: "",
     password: "",
     confirmPassword: "",
   });
+
+  const [institutions, setInstitutions] = useState([]);
+  const [colleges, setColleges] = useState([]);
+  const [departments, setDepartments] = useState([]);
+
+  const [isLoadingInstitutions, setIsLoadingInstitutions] = useState(true);
+  const [isLoadingColleges, setIsLoadingColleges] = useState(false);
+  const [isLoadingDepartments, setIsLoadingDepartments] = useState(false);
+
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchInstitutions = async () => {
+      try {
+        const data = await api.academics.getInstitutions();
+        setInstitutions(Array.isArray(data) ? data : []);
+      } catch {
+        setInstitutions([]);
+        setError("Unable to load institutions right now.");
+      } finally {
+        setIsLoadingInstitutions(false);
+      }
+    };
+
+    fetchInstitutions();
+  }, []);
+
+  useEffect(() => {
+    if (formData.institution) {
+      const fetchColleges = async () => {
+        setIsLoadingColleges(true);
+        try {
+          const data = await api.academics.getInstitutionColleges(formData.institution);
+          setColleges(Array.isArray(data) ? data : []);
+          setFormData((prev) => ({ ...prev, college: "", department: "" }));
+        } catch {
+          setColleges([]);
+        } finally {
+          setIsLoadingColleges(false);
+        }
+      };
+      fetchColleges();
+    } else {
+      setColleges([]);
+      setDepartments([]);
+    }
+  }, [formData.institution]);
+
+  useEffect(() => {
+    if (formData.college) {
+      const fetchDepartments = async () => {
+        setIsLoadingDepartments(true);
+        try {
+          const data = await api.academics.getCollegeDepartments(formData.college);
+          setDepartments(Array.isArray(data) ? data : []);
+          setFormData((prev) => ({ ...prev, department: "" }));
+        } catch {
+          setDepartments([]);
+        } finally {
+          setIsLoadingDepartments(false);
+        }
+      };
+      fetchDepartments();
+    } else {
+      setDepartments([]);
+    }
+  }, [formData.college]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -67,7 +150,11 @@ const AdminSignupPage = () => {
     setIsSubmitting(true);
 
     try {
-      await adminSignUp(formData);
+      const payload = {
+        ...formData,
+        college_id: Number(formData.department),
+      };
+      await adminSignUp(payload);
       navigate("/login", {
         replace: true,
         state: {
@@ -125,6 +212,81 @@ const AdminSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Institution
+            </label>
+            <select
+              name="institution"
+              value={formData.institution}
+              onChange={onChange}
+              disabled={isLoadingInstitutions || isSubmitting}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">
+                {isLoadingInstitutions ? "Loading..." : "Select institution"}
+              </option>
+              {institutions.map((inst) => (
+                <option key={inst.id} value={inst.id}>
+                  {inst.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.institution && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.institution}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              College
+            </label>
+            <select
+              name="college"
+              value={formData.college}
+              onChange={onChange}
+              disabled={!formData.institution || isLoadingColleges || isSubmitting}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">
+                {!formData.institution ? "Select institution first" : isLoadingColleges ? "Loading..." : "Select college"}
+              </option>
+              {colleges.map((college) => (
+                <option key={college.id} value={college.id}>
+                  {college.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.college && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              Department
+            </label>
+            <select
+              name="department"
+              value={formData.department}
+              onChange={onChange}
+              disabled={!formData.college || isLoadingDepartments || isSubmitting}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">
+                {!formData.college ? "Select college first" : isLoadingDepartments ? "Loading..." : "Select department"}
+              </option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>
+                  {dept.name}
+                </option>
+              ))}
+            </select>
+            {fieldErrors.department && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.department}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               Password
             </label>
             <input
@@ -167,18 +329,21 @@ const AdminSignupPage = () => {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSubmitting ? "Creating Account..." : "Create Admin Account"}
-          </button>
+          <AuthActionButton
+            isLoading={isSubmitting}
+            idleLabel="Create Admin Account"
+            loadingLabel="Creating Account..."
+            loadingSteps={[
+              "Validating your information.",
+              "Setting up your administrator access.",
+              "Finalizing your login-ready workspace.",
+            ]}
+          />
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
             Looking for Supervisor signup?{" "}
             <Link
-              to="/signup/supervisor"
+              to="/signup"
               className="font-bold text-maroonCustom hover:text-gold"
             >
               Switch role
