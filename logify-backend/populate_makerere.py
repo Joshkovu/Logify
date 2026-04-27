@@ -4,7 +4,7 @@ import django
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'config.settings')
 django.setup()
 
-from apps.academics.models import Institutions, Colleges, Departments
+from apps.academics.models import Institutions, Colleges, Departments, Programmes
 
 def populate():
     # 1. Get or create Makerere Institution
@@ -67,10 +67,22 @@ def populate():
             name=college_name
         )
         for dept_name in departments:
-            Departments.objects.get_or_create(
+            department, _ = Departments.objects.get_or_create(
                 college=college,
                 name=dept_name
             )
+
+            # Ensure each department has at least one programme for signup flows.
+            if not Programmes.objects.filter(department=department).exists():
+                programme_name = f"Bachelors in {dept_name.replace('Department of ', '')}".strip()
+                Programmes.objects.get_or_create(
+                    department=department,
+                    name=programme_name,
+                    defaults={
+                        "level": "Undergraduate",
+                        "duration_years": 4,
+                    },
+                )
 
     print("Makerere University data populated successfully.")
 

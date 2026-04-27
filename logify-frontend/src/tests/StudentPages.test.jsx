@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { api } from "../config/api";
 import Dashboard from "../pages/dashboards/StudentDashboard/pages/Dashboard";
 import Evaluations from "../pages/dashboards/StudentDashboard/pages/Evaluations";
@@ -72,9 +72,19 @@ beforeEach(() => {
   api.academics.getProgramme.mockResolvedValue(null);
 });
 
+const waitForStudentDashboardEffectsToSettle = async () => {
+  await waitFor(() => {
+    expect(api.auth.me).toHaveBeenCalled();
+    expect(api.placements.getPlacements).toHaveBeenCalled();
+    expect(api.evaluations.getResults).toHaveBeenCalled();
+    expect(api.logbook.getWeeklyLogs).toHaveBeenCalled();
+  });
+};
+
 describe("Student dashboard", () => {
   test("renders page and shows user first name", async () => {
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/john/i)).toBeInTheDocument();
   });
 
@@ -84,6 +94,7 @@ describe("Student dashboard", () => {
     ]);
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/internship title/i)).toBeInTheDocument();
   });
 
@@ -97,6 +108,7 @@ describe("Student dashboard", () => {
     });
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/organization a/i)).toBeInTheDocument();
   });
 
@@ -111,6 +123,7 @@ describe("Student dashboard", () => {
     });
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/workplace1/i)).toBeInTheDocument();
     expect(await screen.findByText(/supervisor1/i)).toBeInTheDocument();
   });
@@ -126,6 +139,7 @@ describe("Student dashboard", () => {
     });
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/academic1/i)).toBeInTheDocument();
     expect(await screen.findByText(/supervisor1/i)).toBeInTheDocument();
   });
@@ -136,6 +150,7 @@ describe("Student dashboard", () => {
     ]);
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/2026-04-21/i)).toBeInTheDocument();
   });
 
@@ -145,6 +160,7 @@ describe("Student dashboard", () => {
     ]);
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/2026-04-21/i)).toBeInTheDocument();
   });
 
@@ -152,6 +168,7 @@ describe("Student dashboard", () => {
     api.placements.getPlacements.mockResolvedValue([{ status: "draft" }]);
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/draft/i)).toBeInTheDocument();
   });
 
@@ -159,6 +176,7 @@ describe("Student dashboard", () => {
     api.logbook.getWeeklyLogs.mockResolvedValue({ weekly_logs: [{}, {}, {}] });
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/3/i)).toBeInTheDocument();
   });
 
@@ -166,6 +184,7 @@ describe("Student dashboard", () => {
     api.evaluations.getResults.mockResolvedValue([{ final_score: 67 }]);
 
     render(<Dashboard />);
+    await waitForStudentDashboardEffectsToSettle();
     expect(await screen.findByText(/67/i)).toBeInTheDocument();
   });
 });
