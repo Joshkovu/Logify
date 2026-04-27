@@ -62,8 +62,8 @@ const toSupervisorPayload = (data) => {
     first_name: data.firstName ?? firstName,
     last_name: data.lastName ?? lastName,
     phone: data.phone,
+    college_id: Number(data.college),
     staff_number: data.staffNumber,
-    department: data.department,
     title: data.title,
   };
 };
@@ -79,6 +79,7 @@ const toAdminPayload = (data) => {
     first_name: data.firstName ?? firstName,
     last_name: data.lastName ?? lastName,
     phone: data.phone,
+    college_id: Number(data.college),
   };
 };
 

@@ -1,7 +1,9 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
+import { api } from "../config/api.js";
 import { AuthContext } from "../contexts/AuthContext";
+import AuthActionButton from "../components/ui/AuthActionButton";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
@@ -22,6 +24,10 @@ const validateSupervisorSignup = (formData) => {
 
   if (!formData.role) {
     errors.role = "Select supervisor type.";
+  }
+
+  if (!formData.college) {
+    errors.college = "College is required.";
   }
 
   if (!formData.password) {
@@ -46,12 +52,32 @@ const SupervisorSignupPage = () => {
     fullName: "",
     email: "",
     role: "",
+    college: "",
     password: "",
     confirmPassword: "",
   });
+  const [colleges, setColleges] = useState([]);
+  const [isLoadingColleges, setIsLoadingColleges] = useState(true);
   const [fieldErrors, setFieldErrors] = useState({});
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchColleges = async () => {
+      try {
+        // Load available colleges (departments) for signup.
+        const data = await api.academics.getDepartments();
+        setColleges(Array.isArray(data) ? data : []);
+      } catch {
+        setColleges([]);
+        setError("Unable to load colleges right now.");
+      } finally {
+        setIsLoadingColleges(false);
+      }
+    };
+
+    fetchColleges();
+  }, []);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -150,6 +176,36 @@ const SupervisorSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+              College
+            </label>
+            <select
+              name="college"
+              value={formData.college}
+              onChange={onChange}
+              disabled={isLoadingColleges || isSubmitting}
+              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+            >
+              <option value="">
+                {isLoadingColleges ? "Loading colleges..." : "Select college"}
+              </option>
+              {colleges.map((college) => (
+                <option key={college.id} value={college.id}>
+                  {college.name}
+                </option>
+              ))}
+            </select>
+            <p className="mt-2 text-xs text-text-secondary dark:text-slate-400">
+              {isLoadingColleges
+                ? "Loading colleges so we can connect you to the right academic unit."
+                : `${colleges.length} college${colleges.length === 1 ? "" : "s"} ready to choose from.`}
+            </p>
+            {fieldErrors.college && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               Password
             </label>
             <input
@@ -192,13 +248,16 @@ const SupervisorSignupPage = () => {
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full rounded-xl bg-maroonCustom px-6 py-3 text-sm font-bold uppercase tracking-wider text-white transition-transform hover:scale-[1.01] disabled:cursor-not-allowed disabled:opacity-70"
-          >
-            {isSubmitting ? "Submitting..." : "Submit For Approval"}
-          </button>
+          <AuthActionButton
+            isLoading={isSubmitting}
+            idleLabel="Submit For Approval"
+            loadingLabel="Submitting..."
+            loadingSteps={[
+              "Checking your supervisor details and selected role.",
+              "Preparing your approval request for the internship admin.",
+              "Saving your signup and routing it for review.",
+            ]}
+          />
 
           <p className="text-center text-sm text-text-secondary dark:text-slate-300">
             Need admin path?{" "}

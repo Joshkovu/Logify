@@ -3,6 +3,17 @@ import { BrowserRouter } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import AdminSignupPage from "../pages/AdminSignupPage";
 
+jest.mock("../config/api.js", () => ({
+  api: {
+    academics: {
+      getDepartments: jest.fn().mockResolvedValue([
+        { id: 1, name: "College A" },
+        { id: 2, name: "College B" },
+      ]),
+    },
+  },
+}));
+
 jest.mock("../contexts/AuthContext", () => {
   const { createContext } = jest.requireActual("react");
   return {
@@ -53,6 +64,9 @@ test("submits valid form and calls adminSignUp", async () => {
   });
   fireEvent.change(screen.getByPlaceholderText(/name@institution\.ac\.ug/i), {
     target: { value: "jane@institution.ac.ug" },
+  });
+  fireEvent.change(await screen.findByRole("combobox"), {
+    target: { value: "1" },
   });
   fireEvent.change(screen.getByPlaceholderText(/at least 8 characters/i), {
     target: { value: "password123" },
