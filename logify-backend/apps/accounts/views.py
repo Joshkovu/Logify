@@ -126,6 +126,33 @@ class SupervisorApplicationListView(ListAPIView):
         if status_filter:
             queryset = queryset.filter(status=status_filter)
 
+        college_id = self.request.query_params.get("college_id")
+        if college_id:
+            queryset = queryset.filter(user__staffprofiles__department__college_id=college_id)
+
+        return queryset
+
+
+class SupervisorListView(ListAPIView):
+    permission_classes = [IsAuthenticated, IsInternshipAdmin]
+    serializer_class = UserDetailSerializer
+
+    def get_queryset(self):
+        queryset = User.objects.filter(
+            role__in=[User.ACADEMIC_SUPERVISOR, User.WORKPLACE_SUPERVISOR]
+        ).select_related("staffprofiles", "staffprofiles__department")
+
+        user = self.request.user
+        if not user.is_superuser:
+            institution_id = get_user_institution_id(user)
+            if institution_id is None:
+                return User.objects.none()
+            queryset = queryset.filter(institution_id=str(institution_id))
+
+        college_id = self.request.query_params.get("college_id")
+        if college_id:
+            queryset = queryset.filter(staffprofiles__department__college_id=college_id)
+
         return queryset
 
 
