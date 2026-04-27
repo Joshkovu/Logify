@@ -29,7 +29,7 @@ const roles = [
     desc: "Reviews workplace performance.",
     icon: Building2,
     signupAllowed: true,
-    signupPath: "/signup/supervisor",
+    signupPath: "/signup/supervisor?role=workplace_supervisor",
   },
   {
     id: "academic_supervisor",
@@ -37,7 +37,7 @@ const roles = [
     desc: "Validates academics & tracking.",
     icon: Shield,
     signupAllowed: true,
-    signupPath: "/signup/supervisor",
+    signupPath: "/signup/supervisor?role=academic_supervisor",
   },
   {
     id: "internship_admin",

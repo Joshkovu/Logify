@@ -49,8 +49,8 @@ class StaffProfilesSerializer(serializers.ModelSerializer):
 class SupervisorSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     college_id = serializers.IntegerField(write_only=True)
-    staff_number = serializers.CharField(write_only=True, required=False)
-    title = serializers.CharField(write_only=True, required=False)
+    department_id = serializers.IntegerField(write_only=True, required=False)
+    organization_name = serializers.CharField(write_only=True, required=False, allow_blank=True)
 
     class Meta:
         model = User
@@ -62,8 +62,8 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             "role",
             "phone",
             "college_id",
-            "staff_number",
-            "title",
+            "department_id",
+            "organization_name",
         )
 
     def validate_role(self, value):
@@ -78,16 +78,49 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid college selected.")
         return value
 
+    def validate(self, attrs):
+        from apps.academics.models import Departments
+
+        attrs = super().validate(attrs)
+        role = attrs.get("role")
+        college_id = attrs.get("college_id")
+        department_id = attrs.get("department_id")
+        organization_name = (attrs.get("organization_name") or "").strip()
+
+        if role == User.ACADEMIC_SUPERVISOR:
+            if not department_id:
+                raise serializers.ValidationError(
+                    {"department_id": ["Department is required for academic supervisors."]}
+                )
+            try:
+                department = Departments.objects.select_related("college").get(id=department_id)
+            except Departments.DoesNotExist:
+                raise serializers.ValidationError({"department_id": ["Invalid department selected."]})
+
+            if int(department.college_id) != int(college_id):
+                raise serializers.ValidationError(
+                    {"department_id": ["Department must belong to the selected college."]}
+                )
+
+        if role == User.WORKPLACE_SUPERVISOR:
+            if not organization_name:
+                raise serializers.ValidationError(
+                    {"organization_name": ["Organization is required for workplace supervisors."]}
+                )
+            attrs["organization_name"] = organization_name
+
+        return attrs
+
     def create(self, validated_data):
         from apps.academics.models import Colleges
 
         from .models import SupervisorApplication
 
         password = validated_data.pop("password")
-        role = validated_data.pop("role", None)
+        role = validated_data.pop("role")
         college_id = validated_data.pop("college_id")
-        staff_number = validated_data.pop("staff_number", None)
-        title = validated_data.pop("title", None)
+        department_id = validated_data.pop("department_id", None)
+        validated_data.pop("organization_name", None)
 
         college = Colleges.objects.get(id=college_id)
         institution_id = college.institution_id
@@ -97,17 +130,19 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             is_active=False, institution_id=str(institution_id), **validated_data
         )
         user.set_password(password)
-        if role is not None:  # type: ignore
-            user.role = role  # type: ignore
+        user.role = role
         user.save()
 
         # Create SupervisorApplication
         SupervisorApplication.objects.create(user=user)
 
-        # Link staff profile to the selected college when profile fields are provided.
-        if staff_number and title:
+        # Academic supervisors get a staff profile linked to their department.
+        if role == User.ACADEMIC_SUPERVISOR and department_id:
             StaffProfiles.objects.create(
-                user=user, staff_number=staff_number, department=college, title=title
+                user=user,
+                staff_number=f"AS-{user.id}",
+                department_id=department_id,
+                title="Academic Supervisor",
             )
 
         return user

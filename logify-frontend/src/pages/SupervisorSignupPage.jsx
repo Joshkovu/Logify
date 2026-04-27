@@ -11,6 +11,12 @@ const validateSupervisorSignup = (formData) => {
   const errors = {};
   const trimmedFullName = formData.fullName.trim();
   const nameParts = trimmedFullName.split(/\s+/).filter(Boolean);
+  const isAcademic = formData.role === "academic_supervisor";
+  const isWorkplace = formData.role === "workplace_supervisor";
+
+  if (!isAcademic && !isWorkplace) {
+    errors.role = "Invalid supervisor role selected.";
+  }
 
   if (!trimmedFullName) {
     errors.fullName = "Full name is required.";
@@ -22,16 +28,22 @@ const validateSupervisorSignup = (formData) => {
     errors.email = "Email is required.";
   }
 
-  if (!formData.institution) {
+  if (isAcademic && !formData.institution) {
     errors.institution = "Institution is required.";
   }
 
   if (!formData.college) {
-    errors.college = "College is required.";
+    errors.college = isAcademic
+      ? "College is required."
+      : "College of student is required.";
   }
 
-  if (!formData.department) {
+  if (isAcademic && !formData.department) {
     errors.department = "Department is required.";
+  }
+
+  if (isWorkplace && !formData.organization) {
+    errors.organization = "Organization is required.";
   }
 
   if (!formData.password) {
@@ -55,7 +67,12 @@ const SupervisorSignupPage = () => {
   const { supervisorSignUp } = useContext(AuthContext);
 
   const queryParams = new URLSearchParams(location.search);
-  const initialRole = queryParams.get("role") || "";
+  const roleFromQuery = queryParams.get("role");
+  const initialRole =
+    roleFromQuery === "academic_supervisor" ||
+    roleFromQuery === "workplace_supervisor"
+      ? roleFromQuery
+      : "academic_supervisor";
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -64,9 +81,12 @@ const SupervisorSignupPage = () => {
     institution: "",
     college: "",
     department: "",
+    organization: "",
     password: "",
     confirmPassword: "",
   });
+
+  const isAcademic = formData.role === "academic_supervisor";
 
   const [institutions, setInstitutions] = useState([]);
   const [colleges, setColleges] = useState([]);
@@ -97,7 +117,7 @@ const SupervisorSignupPage = () => {
   }, []);
 
   useEffect(() => {
-    if (formData.institution) {
+    if (formData.role === "academic_supervisor" && formData.institution) {
       const fetchColleges = async () => {
         setIsLoadingColleges(true);
         try {
@@ -113,14 +133,28 @@ const SupervisorSignupPage = () => {
         }
       };
       fetchColleges();
+    } else if (formData.role === "workplace_supervisor") {
+      const fetchColleges = async () => {
+        setIsLoadingColleges(true);
+        try {
+          const data = await api.academics.getColleges();
+          setColleges(Array.isArray(data) ? data : []);
+          setFormData((prev) => ({ ...prev, college: "" }));
+        } catch {
+          setColleges([]);
+        } finally {
+          setIsLoadingColleges(false);
+        }
+      };
+      fetchColleges();
     } else {
       setColleges([]);
       setDepartments([]);
     }
-  }, [formData.institution]);
+  }, [formData.institution, formData.role]);
 
   useEffect(() => {
-    if (formData.college) {
+    if (formData.role === "academic_supervisor" && formData.college) {
       const fetchDepartments = async () => {
         setIsLoadingDepartments(true);
         try {
@@ -139,7 +173,7 @@ const SupervisorSignupPage = () => {
     } else {
       setDepartments([]);
     }
-  }, [formData.college]);
+  }, [formData.college, formData.role]);
 
   const onChange = (event) => {
     const { name, value } = event.target;
@@ -160,14 +194,7 @@ const SupervisorSignupPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Map frontend 'department' to backend 'college_id' expectation
-      // (Wait, the backend currently expects 'college_id' but we renamed it to department.
-      // Actually, AuthContext supervisorSignUp likely needs the department ID.)
-      const payload = {
-        ...formData,
-        college_id: Number(formData.department),
-      };
-      await supervisorSignUp(payload);
+      await supervisorSignUp(formData);
       navigate("/login", {
         replace: true,
         state: {
@@ -231,32 +258,55 @@ const SupervisorSignupPage = () => {
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Institution
+              {isAcademic ? "Institution" : "Student College"}
             </label>
-            <select
-              name="institution"
-              value={formData.institution}
-              onChange={onChange}
-              disabled={isLoadingInstitutions || isSubmitting}
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-            >
-              <option value="">
-                {isLoadingInstitutions ? "Loading..." : "Select institution"}
-              </option>
-              {institutions.map((inst) => (
-                <option key={inst.id} value={inst.id}>
-                  {inst.name}
+            {isAcademic ? (
+              <select
+                name="institution"
+                value={formData.institution}
+                onChange={onChange}
+                disabled={isLoadingInstitutions || isSubmitting}
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              >
+                <option value="">
+                  {isLoadingInstitutions ? "Loading..." : "Select institution"}
                 </option>
-              ))}
-            </select>
+                {institutions.map((inst) => (
+                  <option key={inst.id} value={inst.id}>
+                    {inst.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <select
+                name="college"
+                value={formData.college}
+                onChange={onChange}
+                disabled={isLoadingColleges || isSubmitting}
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              >
+                <option value="">
+                  {isLoadingColleges ? "Loading..." : "Select college of student"}
+                </option>
+                {colleges.map((college) => (
+                  <option key={college.id} value={college.id}>
+                    {college.name}
+                  </option>
+                ))}
+              </select>
+            )}
             {fieldErrors.institution && (
               <p className="mt-1 text-xs text-red-600">
                 {fieldErrors.institution}
               </p>
             )}
+            {fieldErrors.college && !isAcademic && (
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
+            )}
           </div>
 
-          <div>
+          {isAcademic && (
+            <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               College
             </label>
@@ -285,9 +335,11 @@ const SupervisorSignupPage = () => {
             {fieldErrors.college && (
               <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
             )}
-          </div>
+            </div>
+          )}
 
-          <div>
+          {isAcademic && (
+            <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
               Department
             </label>
@@ -318,7 +370,29 @@ const SupervisorSignupPage = () => {
                 {fieldErrors.department}
               </p>
             )}
-          </div>
+            </div>
+          )}
+
+          {!isAcademic && (
+            <div>
+              <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+                Organization
+              </label>
+              <input
+                name="organization"
+                type="text"
+                value={formData.organization}
+                onChange={onChange}
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+                placeholder="Enter your organization name"
+              />
+              {fieldErrors.organization && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.organization}
+                </p>
+              )}
+            </div>
+          )}
 
           <div>
             <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
@@ -361,6 +435,12 @@ const SupervisorSignupPage = () => {
           {error && (
             <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
               {error}
+            </div>
+          )}
+
+          {fieldErrors.role && (
+            <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
+              {fieldErrors.role}
             </div>
           )}
 
