@@ -6,15 +6,15 @@ import AdminSignupPage from "../pages/AdminSignupPage";
 jest.mock("../config/api", () => ({
   api: {
     academics: {
-      getInstitutions: jest.fn().mockResolvedValue([
-        { id: "1", name: "Institution A" },
-      ]),
-      getInstitutionColleges: jest.fn().mockResolvedValue([
-        { id: "1", name: "College A" },
-      ]),
-      getCollegeDepartments: jest.fn().mockResolvedValue([
-        { id: "1", name: "Department A" },
-      ]),
+      getInstitutions: jest
+        .fn()
+        .mockResolvedValue([{ id: "1", name: "Institution A" }]),
+      getInstitutionColleges: jest
+        .fn()
+        .mockResolvedValue([{ id: "1", name: "College A" }]),
+      getCollegeDepartments: jest
+        .fn()
+        .mockResolvedValue([{ id: "1", name: "Department A" }]),
     },
   },
 }));
@@ -50,8 +50,12 @@ test("renders form and shows validation errors", async () => {
     screen.getByRole("button", { name: /create admin account/i }),
   );
   expect(await screen.findByText(/full name is required/i)).toBeInTheDocument();
-  expect(await screen.findByText(/institution is required/i)).toBeInTheDocument();
-  expect(await screen.findByText(/department is required/i)).toBeInTheDocument();
+  expect(
+    await screen.findByText(/institution is required/i),
+  ).toBeInTheDocument();
+  expect(
+    await screen.findByText(/department is required/i),
+  ).toBeInTheDocument();
   expect(await screen.findByText(/college is required/i)).toBeInTheDocument();
   expect(
     await screen.findByText(/institutional email is required/i),
@@ -75,19 +79,31 @@ test("submits valid form and calls adminSignUp", async () => {
   });
 
   await waitFor(() => {
-    expect(screen.getByRole('option', { name: "Institution A" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Institution A" }),
+    ).toBeInTheDocument();
   });
-  fireEvent.change(document.querySelector('select[name="institution"]'), { target: { name: "institution", value: "1" } });
+  fireEvent.change(document.querySelector('select[name="institution"]'), {
+    target: { name: "institution", value: "1" },
+  });
 
   await waitFor(() => {
-    expect(screen.getByRole('option', { name: "College A" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "College A" }),
+    ).toBeInTheDocument();
   });
-  fireEvent.change(document.querySelector('select[name="college"]'), { target: { name: "college", value: "1" } });
+  fireEvent.change(document.querySelector('select[name="college"]'), {
+    target: { name: "college", value: "1" },
+  });
 
   await waitFor(() => {
-    expect(screen.getByRole('option', { name: "Department A" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("option", { name: "Department A" }),
+    ).toBeInTheDocument();
   });
-  fireEvent.change(document.querySelector('select[name="department"]'), { target: { name: "department", value: "1" } });
+  fireEvent.change(document.querySelector('select[name="department"]'), {
+    target: { name: "department", value: "1" },
+  });
 
   fireEvent.change(screen.getByPlaceholderText(/at least 8 characters/i), {
     target: { name: "password", value: "password123" },

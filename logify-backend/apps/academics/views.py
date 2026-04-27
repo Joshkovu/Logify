@@ -49,16 +49,16 @@ def get_accessible_department_ids(user):
 
     if user.role == User.STUDENT:
         return Departments.objects.filter(
-            college__institution_id__in=InternshipPlacements.objects.filter(intern=user).values_list(
-                "institution_id", flat=True
-            )
+            college__institution_id__in=InternshipPlacements.objects.filter(
+                intern=user
+            ).values_list("institution_id", flat=True)
         ).values_list("id", flat=True)
 
     if user.role == User.WORKPLACE_SUPERVISOR:
         return Departments.objects.filter(
             college__institution_id__in=InternshipPlacements.objects.filter(
                 workplace_supervisor=user
-			).values_list("institution_id", flat=True)
+            ).values_list("institution_id", flat=True)
         ).values_list("id", flat=True)
 
     if user.role == User.ACADEMIC_SUPERVISOR:
@@ -186,10 +186,7 @@ class CollegesListView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        if (
-            request.user.role == User.INTERNSHIP_ADMIN
-            or request.user.is_superuser
-        ):
+        if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
             serializer = CollegesSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
@@ -232,9 +229,7 @@ class CollegesDetailView(APIView):
         if request.user.role == User.INTERNSHIP_ADMIN or request.user.is_superuser:
             college = self.get_object(pk)
             college.delete()
-            return Response(
-                {"message": "College deleted successfully"}, status=status.HTTP_200_OK
-            )
+            return Response({"message": "College deleted successfully"}, status=status.HTTP_200_OK)
         return Response(
             {"error": "Only Internship Admins can delete colleges."},
             status=status.HTTP_403_FORBIDDEN,

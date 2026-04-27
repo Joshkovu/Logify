@@ -118,16 +118,14 @@ class TestInstitutionsDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
-        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
-        self.department = Departments.objects.create(
-            college=self.college, name="Department A"
+        self.other_college = Colleges.objects.create(
+            institution=self.other_institution, name="College B"
         )
+        self.department = Departments.objects.create(college=self.college, name="Department A")
         self.programme = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
         )
@@ -219,12 +217,8 @@ class TestDepartmentsListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
         Departments.objects.create(college=self.college, name="Department A")
         Departments.objects.create(college=self.college, name="Department B")
         self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN)
@@ -301,16 +295,14 @@ class TestDepartmentsDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
-        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
-        self.department = Departments.objects.create(
-            college=self.college, name="Department A"
+        self.other_college = Colleges.objects.create(
+            institution=self.other_institution, name="College B"
         )
+        self.department = Departments.objects.create(college=self.college, name="Department A")
         self.other_department = Departments.objects.create(
             college=self.other_college, name="Department B"
         )
@@ -398,19 +390,15 @@ class TestInstitutionDepartmentsListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
-        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
-        self.department_a = Departments.objects.create(
-            college=self.college, name="Department A"
+        self.other_college = Colleges.objects.create(
+            institution=self.other_institution, name="College B"
         )
-        self.department_b = Departments.objects.create(
-            college=self.college, name="Department B"
-        )
+        self.department_a = Departments.objects.create(college=self.college, name="Department A")
+        self.department_b = Departments.objects.create(college=self.college, name="Department B")
         Departments.objects.create(college=self.other_college, name="Department C")
         self.programme = Programmes.objects.create(
             department=self.department_a, name="Programme A", level="Level A", duration_years=3
@@ -498,12 +486,8 @@ class TestProgrammesListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
-        self.department = Departments.objects.create(
-            college=self.college, name="Department A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
+        self.department = Departments.objects.create(college=self.college, name="Department A")
         Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
         )
@@ -586,12 +570,8 @@ class TestProgrammesDetailView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
-        self.department = Departments.objects.create(
-            college=self.college, name="Department A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
+        self.department = Departments.objects.create(college=self.college, name="Department A")
         self.programme = Programmes.objects.create(
             department=self.department, name="Programme A", level="Level A", duration_years=3
         )
@@ -679,16 +659,14 @@ class TestDepartmentProgrammesListView(APITestCase):
         self.institution = Institutions.objects.create(
             name="University A", email_domain="@unia.com"
         )
-        self.college = Colleges.objects.create(
-            institution=self.institution, name="College A"
-        )
+        self.college = Colleges.objects.create(institution=self.institution, name="College A")
         self.other_institution = Institutions.objects.create(
             name="University B", email_domain="@unib.com"
         )
-        self.other_college = Colleges.objects.create(institution=self.other_institution, name='College B')
-        self.department = Departments.objects.create(
-            college=self.college, name="Department A"
+        self.other_college = Colleges.objects.create(
+            institution=self.other_institution, name="College B"
         )
+        self.department = Departments.objects.create(college=self.college, name="Department A")
         self.other_department = Departments.objects.create(
             college=self.other_college, name="Department B"
         )

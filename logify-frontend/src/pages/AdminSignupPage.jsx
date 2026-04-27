@@ -95,7 +95,9 @@ const AdminSignupPage = () => {
       const fetchColleges = async () => {
         setIsLoadingColleges(true);
         try {
-          const data = await api.academics.getInstitutionColleges(formData.institution);
+          const data = await api.academics.getInstitutionColleges(
+            formData.institution,
+          );
           setColleges(Array.isArray(data) ? data : []);
           setFormData((prev) => ({ ...prev, college: "", department: "" }));
         } catch {
@@ -116,7 +118,9 @@ const AdminSignupPage = () => {
       const fetchDepartments = async () => {
         setIsLoadingDepartments(true);
         try {
-          const data = await api.academics.getCollegeDepartments(formData.college);
+          const data = await api.academics.getCollegeDepartments(
+            formData.college,
+          );
           setDepartments(Array.isArray(data) ? data : []);
           setFormData((prev) => ({ ...prev, department: "" }));
         } catch {
@@ -231,7 +235,9 @@ const AdminSignupPage = () => {
               ))}
             </select>
             {fieldErrors.institution && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.institution}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.institution}
+              </p>
             )}
           </div>
 
@@ -243,11 +249,17 @@ const AdminSignupPage = () => {
               name="college"
               value={formData.college}
               onChange={onChange}
-              disabled={!formData.institution || isLoadingColleges || isSubmitting}
+              disabled={
+                !formData.institution || isLoadingColleges || isSubmitting
+              }
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
             >
               <option value="">
-                {!formData.institution ? "Select institution first" : isLoadingColleges ? "Loading..." : "Select college"}
+                {!formData.institution
+                  ? "Select institution first"
+                  : isLoadingColleges
+                    ? "Loading..."
+                    : "Select college"}
               </option>
               {colleges.map((college) => (
                 <option key={college.id} value={college.id}>
@@ -268,11 +280,17 @@ const AdminSignupPage = () => {
               name="department"
               value={formData.department}
               onChange={onChange}
-              disabled={!formData.college || isLoadingDepartments || isSubmitting}
+              disabled={
+                !formData.college || isLoadingDepartments || isSubmitting
+              }
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
             >
               <option value="">
-                {!formData.college ? "Select college first" : isLoadingDepartments ? "Loading..." : "Select department"}
+                {!formData.college
+                  ? "Select college first"
+                  : isLoadingDepartments
+                    ? "Loading..."
+                    : "Select department"}
               </option>
               {departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
@@ -281,7 +299,9 @@ const AdminSignupPage = () => {
               ))}
             </select>
             {fieldErrors.department && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.department}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.department}
+              </p>
             )}
           </div>
 

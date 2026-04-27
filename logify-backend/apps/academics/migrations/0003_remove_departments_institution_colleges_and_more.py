@@ -7,26 +7,38 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academics', '0002_create_makerere_with_colleges'),
+        ("academics", "0002_create_makerere_with_colleges"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='departments',
-            name='institution',
+            model_name="departments",
+            name="institution",
         ),
         migrations.CreateModel(
-            name='Colleges',
+            name="Colleges",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('institution', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='academics.institutions')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True, primary_key=True, serialize=False, verbose_name="ID"
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                (
+                    "institution",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="academics.institutions"
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='departments',
-            name='college',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='academics.colleges'),
+            model_name="departments",
+            name="college",
+            field=models.ForeignKey(
+                null=True, on_delete=django.db.models.deletion.CASCADE, to="academics.colleges"
+            ),
         ),
     ]
