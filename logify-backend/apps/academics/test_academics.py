@@ -232,9 +232,10 @@ class TestDepartmentsListView(APITestCase):
         response = self.client.get(reverse("departments-list"))
         self.assertEqual(response.data, [])
 
-    def test_unauthenticated_cannot_list_departments(self):
+    def test_unauthenticated_can_list_departments(self):
         response = self.client.get(reverse("departments-list"))
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 2)
 
     def test_admin_can_create_department(self):
         self.client.force_authenticate(user=self.admin)
