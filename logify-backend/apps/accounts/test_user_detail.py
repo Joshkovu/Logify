@@ -2,7 +2,10 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
+
 from .models import User
+from .models import StaffProfiles
 
 
 def make_user(email, role, **kwargs):
@@ -18,14 +21,55 @@ def make_user(email, role, **kwargs):
 
 class TestUserDetailView(APITestCase):
     def setUp(self):
+        self.institution = Institutions.objects.create(name="Institution A", email_domain="@a.test")
+        self.college_a = Colleges.objects.create(institution=self.institution, name="College A")
+        self.college_b = Colleges.objects.create(institution=self.institution, name="College B")
+        self.department_a = Departments.objects.create(college=self.college_a, name="Dept A")
+        self.department_b = Departments.objects.create(college=self.college_b, name="Dept B")
+        self.programme_a = Programmes.objects.create(
+            department=self.department_a,
+            name="Programme A",
+            level="BSc",
+            duration_years=4,
+        )
+        self.programme_b = Programmes.objects.create(
+            department=self.department_b,
+            name="Programme B",
+            level="BSc",
+            duration_years=4,
+        )
+
         self.academic_supervisor = make_user(
-            "as@test.com", User.ACADEMIC_SUPERVISOR, institution_id="2"
+            "as@test.com", User.ACADEMIC_SUPERVISOR, institution_id=str(self.institution.id)
         )
-        self.student = make_user("student@test.com", User.STUDENT, institution_id="1")
+        StaffProfiles.objects.create(
+            user=self.academic_supervisor,
+            staff_number="AS-001",
+            department=self.department_b,
+            title="Lecturer",
+        )
+
+        self.student = make_user(
+            "student@test.com",
+            User.STUDENT,
+            institution_id=str(self.institution.id),
+            programme_id=str(self.programme_a.id),
+        )
         self.same_scope_student = make_user(
-            "same.scope@student.com", User.STUDENT, institution_id="1"
+            "same.scope@student.com",
+            User.STUDENT,
+            institution_id=str(self.institution.id),
+            programme_id=str(self.programme_a.id),
         )
-        self.admin = make_user("admin@test.com", User.INTERNSHIP_ADMIN, institution_id="1")
+        self.admin = make_user(
+            "admin@test.com", User.INTERNSHIP_ADMIN, institution_id=str(self.institution.id)
+        )
+        StaffProfiles.objects.create(
+            user=self.admin,
+            staff_number="ADM-001",
+            department=self.department_a,
+            title="College Admin",
+        )
 
     def test_non_admin_cannot_view_other_user_by_pk(self):
         self.client.force_authenticate(user=self.student)
@@ -42,7 +86,7 @@ class TestUserDetailView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["email"], "same.scope@student.com")
 
-    def test_admin_cannot_view_user_in_other_institution(self):
+    def test_admin_cannot_view_user_in_other_college(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.get(
             reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
@@ -68,7 +112,7 @@ class TestUserDetailView(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertFalse(User.objects.filter(pk=self.same_scope_student.pk).exists())
 
-    def test_admin_cannot_delete_user_in_other_institution(self):
+    def test_admin_cannot_delete_user_in_other_college(self):
         self.client.force_authenticate(user=self.admin)
         response = self.client.delete(
             reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
