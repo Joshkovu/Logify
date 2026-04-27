@@ -1,5 +1,5 @@
 import pytest  # type: ignore
-from apps.academics.models import Departments, Institutions, Programmes
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.accounts.models import StaffProfiles, SupervisorApplication
 from django.contrib.auth import get_user_model
 from rest_framework import status
@@ -16,7 +16,8 @@ def api_client():
 @pytest.fixture
 def setup_data(db):
     institution = Institutions.objects.create(name="Test University")
-    department = Departments.objects.create(institution=institution, name="Engineering")
+    college = Colleges.objects.create(institution=institution, name="Test College")
+    department = Departments.objects.create(college=college, name="Engineering")
     programme = Programmes.objects.create(
         name="Computer Science", department=department, level="BSc", duration_years=4
     )
@@ -28,9 +29,9 @@ def setup_data(db):
 
 @pytest.fixture
 def setup_college_data(db):
-    institution = Institutions.objects.create(name="Institution For Colleges")
-    college_a = Departments.objects.create(institution=institution, name="College A")
-    college_b = Departments.objects.create(institution=institution, name="College B")
+    institution = Institutions.objects.create(name="Institution For Colleges", email_domain="@test.com")
+    college_a = Colleges.objects.create(institution=institution, name="College A")
+    college_b = Colleges.objects.create(institution=institution, name="College B")
     return {
         "institution": institution,
         "college_a": college_a,
@@ -266,7 +267,8 @@ class TestSupervisorAuth:
     def test_admin_cannot_approve_supervisor_from_other_institution(self, api_client):
         institution_a = Institutions.objects.create(name="Scoped Admin Institution")
         institution_b = Institutions.objects.create(name="Other Institution")
-        college_b = Departments.objects.create(institution=institution_b, name="College B")
+        college_root_b = Colleges.objects.create(institution=institution_b, name="College Root B")
+        college_b = Departments.objects.create(college=college_root_b, name="College B")
 
         supervisor = User.objects.create_user(
             email="other.supervisor@test.com",
@@ -423,8 +425,10 @@ class TestAuthMe:
             role=User.ACADEMIC_SUPERVISOR,  # type: ignore
             password="securepassword123",
         )
+        institution = Institutions.objects.create(name="Test Institution")
+        college = Colleges.objects.create(institution=institution, name="Test College")
         department = Departments.objects.create(
-            institution=Institutions.objects.create(name="Test Institution"),
+            college=college,
             name="Computer Science",
         )
         StaffProfiles.objects.create(

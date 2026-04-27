@@ -1,4 +1,4 @@
-from apps.academics.models import Departments, Institutions, Programmes
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.accounts.models import User
 from apps.logbook.models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 from apps.organizations.models import Organizations
@@ -14,7 +14,8 @@ class TestLogbook(APITestCase):
     def setUp(self):
         # Institution, Department, Programme
         institution = Institutions.objects.create(name="Test University", email_domain="test.edu")
-        department = Departments.objects.create(institution=institution, name="Engineering")
+        college = Colleges.objects.create(institution=institution, name="Engineering")
+        department = Departments.objects.create(college=college, name="Engineering")
         programme = Programmes.objects.create(
             department=department, name="Computer Science", level="BSc", duration_years=4
         )

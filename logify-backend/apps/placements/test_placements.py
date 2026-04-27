@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-from apps.academics.models import Departments
+from apps.academics.models import Colleges, Departments
 from apps.placements.models import (
     Institutions,
     InternshipPlacements,
@@ -60,8 +60,12 @@ class PlacementWorkflowTests(APITestCase):
             email_domain=f"s@{TEST_EMAIL_DOMAIN}",
         )
 
-        self.department = Departments.objects.create(
+        self.college = Colleges.objects.create(
             institution=self.institution,
+            name="College of Computing",
+        )
+        self.department = Departments.objects.create(
+            college=self.college,
             name="Computing",
         )
 
