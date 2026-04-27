@@ -14,7 +14,7 @@ def get_user_institution_id(user: User) -> Optional[int]:
             return None
 
     try:
-        return user.staffprofiles.department.institution_id
+        return user.staffprofiles.department.college.institution_id
     except StaffProfiles.DoesNotExist:
         return None
 
@@ -24,6 +24,6 @@ def is_user_in_institution(user: User, institution_id: int) -> bool:
         return True
 
     try:
-        return user.staffprofiles.department.institution_id == institution_id
+        return user.staffprofiles.department.college.institution_id == institution_id
     except StaffProfiles.DoesNotExist:
         return False

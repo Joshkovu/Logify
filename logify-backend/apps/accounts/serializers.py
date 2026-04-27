@@ -72,14 +72,14 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
         return value
 
     def validate_college_id(self, value):
-        from apps.academics.models import Departments
+        from apps.academics.models import Colleges
 
-        if not Departments.objects.filter(id=value).exists():
+        if not Colleges.objects.filter(id=value).exists():
             raise serializers.ValidationError("Invalid college selected.")
         return value
 
     def create(self, validated_data):
-        from apps.academics.models import Departments
+        from apps.academics.models import Colleges
 
         from .models import SupervisorApplication
 
@@ -89,7 +89,7 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
         staff_number = validated_data.pop("staff_number", None)
         title = validated_data.pop("title", None)
 
-        college = Departments.objects.get(id=college_id)
+        college = Colleges.objects.get(id=college_id)
         institution_id = college.institution_id
 
         # Create inactive user in the selected college's institution.
@@ -122,18 +122,18 @@ class AdminSignupSerializer(serializers.ModelSerializer):
         fields = ("email", "password", "first_name", "last_name", "phone", "college_id")
 
     def validate_college_id(self, value):
-        from apps.academics.models import Departments
+        from apps.academics.models import Colleges
 
-        if not Departments.objects.filter(id=value).exists():
+        if not Colleges.objects.filter(id=value).exists():
             raise serializers.ValidationError("Invalid college selected.")
         return value
 
     def create(self, validated_data):
-        from apps.academics.models import Departments
+        from apps.academics.models import Colleges
 
         password = validated_data.pop("password")
         college_id = validated_data.pop("college_id")
-        college = Departments.objects.get(id=college_id)
+        college = Colleges.objects.get(id=college_id)
         institution_id = college.institution_id
 
         user = User.objects.create_user(

@@ -119,7 +119,7 @@ class SupervisorApplicationListView(ListAPIView):
                 return queryset.none()
             queryset = queryset.filter(
                 Q(user__institution_id=str(institution_id))
-                | Q(user__staffprofiles__department__institution_id=institution_id)
+                | Q(user__staffprofiles__department__college__institution_id=institution_id)
             ).distinct()
 
         status_filter = self.request.query_params.get("status")  # type: ignore
