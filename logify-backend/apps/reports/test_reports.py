@@ -23,12 +23,6 @@ class TestInternshipReportModels(TestCase):
             first_name="Test",
             last_name="Student",
         )
-        institution = Institutions.objects.create(name="Test University", email_domain="test.edu")
-        college = Colleges.objects.create(institution=institution, name="Engineering")
-        department = Departments.objects.create(college=college, name="Engineering")
-        programme = Programmes.objects.create(
-            department=department, name="Computer Science", level="BSc", duration_years=4
-        )
         self.report = InternshipReport.objects.create(
             student=self.user,
             internship_start=date(2024, 1, 1),

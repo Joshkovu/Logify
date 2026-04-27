@@ -308,9 +308,7 @@ const StudentSignupPage = () => {
               ))}
             </select>
             {fieldErrors.college && (
-              <p className="mt-1 text-xs text-red-600">
-                {fieldErrors.college}
-              </p>
+              <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
             )}
           </div>
 

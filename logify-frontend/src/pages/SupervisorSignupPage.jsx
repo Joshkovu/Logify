@@ -101,9 +101,11 @@ const SupervisorSignupPage = () => {
       const fetchColleges = async () => {
         setIsLoadingColleges(true);
         try {
-          const data = await api.academics.getInstitutionColleges(formData.institution);
+          const data = await api.academics.getInstitutionColleges(
+            formData.institution,
+          );
           setColleges(Array.isArray(data) ? data : []);
-          setFormData(prev => ({ ...prev, college: "", department: "" }));
+          setFormData((prev) => ({ ...prev, college: "", department: "" }));
         } catch {
           setColleges([]);
         } finally {
@@ -122,9 +124,11 @@ const SupervisorSignupPage = () => {
       const fetchDepartments = async () => {
         setIsLoadingDepartments(true);
         try {
-          const data = await api.academics.getCollegeDepartments(formData.college);
+          const data = await api.academics.getCollegeDepartments(
+            formData.college,
+          );
           setDepartments(Array.isArray(data) ? data : []);
-          setFormData(prev => ({ ...prev, department: "" }));
+          setFormData((prev) => ({ ...prev, department: "" }));
         } catch {
           setDepartments([]);
         } finally {
@@ -156,12 +160,12 @@ const SupervisorSignupPage = () => {
     setIsSubmitting(true);
 
     try {
-      // Map frontend 'department' to backend 'college_id' expectation 
-      // (Wait, the backend currently expects 'college_id' but we renamed it to department. 
+      // Map frontend 'department' to backend 'college_id' expectation
+      // (Wait, the backend currently expects 'college_id' but we renamed it to department.
       // Actually, AuthContext supervisorSignUp likely needs the department ID.)
       const payload = {
         ...formData,
-        college_id: Number(formData.department) 
+        college_id: Number(formData.department),
       };
       await supervisorSignUp(payload);
       navigate("/login", {
@@ -178,7 +182,10 @@ const SupervisorSignupPage = () => {
     }
   };
 
-  const roleLabel = formData.role === "academic_supervisor" ? "Academic Supervisor" : "Workplace Supervisor";
+  const roleLabel =
+    formData.role === "academic_supervisor"
+      ? "Academic Supervisor"
+      : "Workplace Supervisor";
 
   return (
     <GuestOnlyRoute>
@@ -243,7 +250,9 @@ const SupervisorSignupPage = () => {
               ))}
             </select>
             {fieldErrors.institution && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.institution}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.institution}
+              </p>
             )}
           </div>
 
@@ -255,11 +264,17 @@ const SupervisorSignupPage = () => {
               name="college"
               value={formData.college}
               onChange={onChange}
-              disabled={!formData.institution || isLoadingColleges || isSubmitting}
+              disabled={
+                !formData.institution || isLoadingColleges || isSubmitting
+              }
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
             >
               <option value="">
-                {!formData.institution ? "Select institution first" : isLoadingColleges ? "Loading..." : "Select college"}
+                {!formData.institution
+                  ? "Select institution first"
+                  : isLoadingColleges
+                    ? "Loading..."
+                    : "Select college"}
               </option>
               {colleges.map((college) => (
                 <option key={college.id} value={college.id}>
@@ -280,11 +295,17 @@ const SupervisorSignupPage = () => {
               name="department"
               value={formData.department}
               onChange={onChange}
-              disabled={!formData.college || isLoadingDepartments || isSubmitting}
+              disabled={
+                !formData.college || isLoadingDepartments || isSubmitting
+              }
               className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
             >
               <option value="">
-                {!formData.college ? "Select college first" : isLoadingDepartments ? "Loading..." : "Select department"}
+                {!formData.college
+                  ? "Select college first"
+                  : isLoadingDepartments
+                    ? "Loading..."
+                    : "Select department"}
               </option>
               {departments.map((dept) => (
                 <option key={dept.id} value={dept.id}>
@@ -293,7 +314,9 @@ const SupervisorSignupPage = () => {
               ))}
             </select>
             {fieldErrors.department && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.department}</p>
+              <p className="mt-1 text-xs text-red-600">
+                {fieldErrors.department}
+              </p>
             )}
           </div>
 

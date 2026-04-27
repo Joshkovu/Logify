@@ -29,7 +29,9 @@ def setup_data(db):
 
 @pytest.fixture
 def setup_college_data(db):
-    institution = Institutions.objects.create(name="Institution For Colleges", email_domain="@test.com")
+    institution = Institutions.objects.create(
+        name="Institution For Colleges", email_domain="@test.com"
+    )
     college_a = Colleges.objects.create(institution=institution, name="College A")
     college_b = Colleges.objects.create(institution=institution, name="College B")
     return {

@@ -2,6 +2,7 @@ from apps.accounts.access import get_user_institution_id
 from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.accounts.serializers import UserDetailSerializer
+from apps.notifications.emails import send_logify_email
 from django.contrib.auth import get_user_model
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
@@ -32,13 +33,15 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
             institution_id = get_user_institution_id(user)
             if institution_id is None:
                 return User.objects.none()
-            
+
             queryset = User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
-            
+
             college_id = self.request.query_params.get("college_id")
             if college_id:
-                queryset = queryset.filter(programme_id__in=self._get_programme_ids_for_college(college_id))
-            
+                queryset = queryset.filter(
+                    programme_id__in=self._get_programme_ids_for_college(college_id)
+                )
+
             return queryset
 
         if user.role == User.STUDENT:
@@ -48,7 +51,10 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
 
     def _get_programme_ids_for_college(self, college_id):
         from apps.academics.models import Programmes
-        ids = Programmes.objects.filter(department__college_id=college_id).values_list("id", flat=True)
+
+        ids = Programmes.objects.filter(department__college_id=college_id).values_list(
+            "id", flat=True
+        )
         return [str(i) for i in ids]
 
     def get_object(self):
@@ -156,6 +162,13 @@ class StudentAuthViewSet(viewsets.ViewSet):
                     intake_year=intake_year,
                     is_active=True,
                 )
+            send_logify_email(
+                subject="Logify - Internship Student Account",
+                template_name="notifications/welcome.html",
+                context={"user": user},
+                recipient_list=[user.email],
+            )
+
         except Exception:
             return Response(
                 {"error": "An error occurred during signup."},
