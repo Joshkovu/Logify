@@ -32,12 +32,24 @@ class StudentRegistryViewSet(viewsets.ModelViewSet):
             institution_id = get_user_institution_id(user)
             if institution_id is None:
                 return User.objects.none()
-            return User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
+            
+            queryset = User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
+            
+            college_id = self.request.query_params.get("college_id")
+            if college_id:
+                queryset = queryset.filter(programme_id__in=self._get_programme_ids_for_college(college_id))
+            
+            return queryset
 
         if user.role == User.STUDENT:
             return User.objects.filter(role=User.STUDENT, id=user.id)
 
         return User.objects.none()
+
+    def _get_programme_ids_for_college(self, college_id):
+        from apps.academics.models import Programmes
+        ids = Programmes.objects.filter(department__college_id=college_id).values_list("id", flat=True)
+        return [str(i) for i in ids]
 
     def get_object(self):
         obj = super().get_object()
