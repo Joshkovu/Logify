@@ -1,7 +1,8 @@
 from apps.notifications.emails import send_logify_email
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import NotFound, PermissionDenied
 from rest_framework.generics import ListAPIView
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -9,6 +10,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken  # type: ignore
 from rest_framework_simplejwt.views import TokenObtainPairView  # type: ignore
 
+from .access import get_user_institution_id, is_user_in_institution
 from .models import SupervisorApplication, User
 from .permissions import IsInternshipAdmin
 from .serializers import (
@@ -67,6 +69,16 @@ class SupervisorApprovalView(APIView):
 
     def post(self, request, application_id):
         application = get_object_or_404(SupervisorApplication, id=application_id)
+
+        if not request.user.is_superuser and request.user.role == User.INTERNSHIP_ADMIN:
+            institution_id = get_user_institution_id(request.user)
+            if institution_id is None or not is_user_in_institution(
+                application.user, institution_id
+            ):
+                raise PermissionDenied(
+                    "You can only manage supervisor applications in your institution."
+                )
+
         action = request.data.get("action")
 
         if action == "approve":
@@ -99,6 +111,16 @@ class SupervisorApplicationListView(ListAPIView):
         queryset = SupervisorApplication.objects.select_related(
             "user", "user__staffprofiles", "user__staffprofiles__department"
         ).order_by("-created_at")
+
+        user = self.request.user
+        if not user.is_superuser:
+            institution_id = get_user_institution_id(user)
+            if institution_id is None:
+                return queryset.none()
+            queryset = queryset.filter(
+                Q(user__institution_id=str(institution_id))
+                | Q(user__staffprofiles__department__institution_id=institution_id)
+            ).distinct()
 
         status_filter = self.request.query_params.get("status")  # type: ignore
         if status_filter:
@@ -167,9 +189,22 @@ class UserDetailView(APIView):
 
     def get_object(self, pk):
         try:
-            return User.objects.get(pk=pk)
+            target = User.objects.get(pk=pk)
         except User.DoesNotExist:
             raise NotFound("User not found.")
+
+        requester = self.request.user
+        if requester.is_superuser or requester.id == target.id:
+            return target
+
+        if requester.role != User.INTERNSHIP_ADMIN:
+            raise PermissionDenied("You do not have permission to access this user.")
+
+        institution_id = get_user_institution_id(requester)
+        if institution_id is None or not is_user_in_institution(target, institution_id):
+            raise PermissionDenied("You can only access users in your institution.")
+
+        return target
 
     def delete(self, request, pk):
         if request.user.role != User.INTERNSHIP_ADMIN and not request.user.is_superuser:
