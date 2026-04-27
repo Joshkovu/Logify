@@ -1,0 +1,13 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<p>Hi {{ student_name }},</p>
+<p>Great news! Your weekly log has been <strong>approved</strong>.</p>
+
+<div style="background-color: #e8f5e9; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <p><strong>Week:</strong> {{ week_range }}</p>
+    <p><strong>Reviewed by:</strong> {{ supervisor_name }}</p>
+</div>
+
+<p>You can view your verified hours and feedback in your dashboard.</p>
+{% endblock %}

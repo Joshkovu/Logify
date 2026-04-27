@@ -1,0 +1,15 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<p>Hi {{ student_name }},</p>
+<p>Your weekly log for <strong>{{ week_range }}</strong> has been rejected by your supervisor.</p>
+
+<div style="background-color: #ffebee; padding: 15px; border-radius: 5px; margin: 20px 0; border-left: 4px solid #d32f2f;">
+    <p><strong>Reason for Rejection:</strong></p>
+    <p>{{ reason }}</p>
+</div>
+
+<p>Please review the comments above and submit a new log if necessary.</p>
+
+<a href="{{ dashboard_url }}" class="button">Go to Logbook</a>
+{% endblock %}
