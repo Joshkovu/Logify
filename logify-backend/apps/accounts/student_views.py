@@ -1,3 +1,4 @@
+from apps.accounts.access import get_user_institution_id
 from apps.accounts.models import User
 from apps.accounts.permissions import IsInternshipAdmin
 from apps.accounts.serializers import UserDetailSerializer
@@ -14,17 +15,48 @@ from rest_framework_simplejwt.tokens import RefreshToken
 class StudentRegistryViewSet(viewsets.ModelViewSet):
     queryset = User.objects.filter(role=User.STUDENT)
     serializer_class = UserDetailSerializer
+    permission_classes = [IsAuthenticated]
 
-    def get_patch_permissions(self):
+    def get_permissions(self):
         if self.action in ["retrieve", "partial_update"]:
             return [IsAuthenticated()]
         return [IsInternshipAdmin()]
 
+    def get_queryset(self):
+        user = self.request.user
+
+        if user.is_superuser:
+            return User.objects.filter(role=User.STUDENT)
+
+        if user.role == User.INTERNSHIP_ADMIN:
+            institution_id = get_user_institution_id(user)
+            if institution_id is None:
+                return User.objects.none()
+            return User.objects.filter(role=User.STUDENT, institution_id=str(institution_id))
+
+        if user.role == User.STUDENT:
+            return User.objects.filter(role=User.STUDENT, id=user.id)
+
+        return User.objects.none()
+
     def get_object(self):
         obj = super().get_object()
+        if self.request.user.is_superuser:
+            return obj
+
         if self.request.user.role == User.STUDENT:
             if str(obj.id) != str(self.request.user.id):
                 raise PermissionDenied("You can only access your own record.")
+            return obj
+
+        if self.request.user.role == User.INTERNSHIP_ADMIN:
+            institution_id = get_user_institution_id(self.request.user)
+            if institution_id is None or str(obj.institution_id) != str(institution_id):
+                raise PermissionDenied("You can only access students in your institution.")
+            return obj
+
+        raise PermissionDenied("You do not have permission to access this record.")
+
         return obj
 
 
