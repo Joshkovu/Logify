@@ -297,6 +297,11 @@ export const api = {
     deleteInstitution: (id) =>
       apiRequest(`/v1/academics/institutions/${id}/`, { method: "DELETE" }),
 
+    getColleges: () => apiRequest("/v1/academics/colleges/"),
+    getCollege: (id) => apiRequest(`/v1/academics/colleges/${id}/`),
+    getInstitutionColleges: (institutionId) =>
+      apiRequest(`/v1/academics/institutions/${institutionId}/colleges/`),
+
     getDepartments: () => apiRequest("/v1/academics/departments/"),
     getDepartment: (id) => apiRequest(`/v1/academics/departments/${id}/`),
     createDepartment: (data) =>
@@ -319,6 +324,9 @@ export const api = {
 
     getInstitutionDepartments: (institutionId) =>
       apiRequest(`/v1/academics/institutions/${institutionId}/departments/`),
+
+    getCollegeDepartments: (collegeId) =>
+      apiRequest(`/v1/academics/colleges/${collegeId}/departments/`),
 
     getProgrammes: () => apiRequest("/v1/academics/programmes/"),
     getProgramme: (id) => apiRequest(`/v1/academics/programmes/${id}/`),
