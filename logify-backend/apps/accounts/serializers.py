@@ -48,8 +48,8 @@ class StaffProfilesSerializer(serializers.ModelSerializer):
 
 class SupervisorSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    college_id = serializers.IntegerField(write_only=True)
     staff_number = serializers.CharField(write_only=True, required=False)
-    department = serializers.IntegerField(write_only=True, required=False)
     title = serializers.CharField(write_only=True, required=False)
 
     class Meta:
@@ -61,8 +61,8 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             "last_name",
             "role",
             "phone",
+            "college_id",
             "staff_number",
-            "department",
             "title",
         )
 
@@ -71,33 +71,43 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Invalid role for supervisor signup.")
         return value
 
+    def validate_college_id(self, value):
+        from apps.academics.models import Departments
+
+        if not Departments.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Invalid college selected.")
+        return value
+
     def create(self, validated_data):
+        from apps.academics.models import Departments
+
+        from .models import SupervisorApplication
+
         password = validated_data.pop("password")
         role = validated_data.pop("role", None)
+        college_id = validated_data.pop("college_id")
+        staff_number = validated_data.pop("staff_number", None)
+        title = validated_data.pop("title", None)
 
-        # Create inactive user
-        user = User.objects.create_user(is_active=False, **validated_data)
+        college = Departments.objects.get(id=college_id)
+        institution_id = college.institution_id
+
+        # Create inactive user in the selected college's institution.
+        user = User.objects.create_user(
+            is_active=False, institution_id=str(institution_id), **validated_data
+        )
         user.set_password(password)
         if role is not None:  # type: ignore
             user.role = role  # type: ignore
         user.save()
 
         # Create SupervisorApplication
-        from .models import SupervisorApplication
-
         SupervisorApplication.objects.create(user=user)
 
-        # Create StaffProfile if data provided
-        staff_number = validated_data.pop("staff_number", None)
-        department_id = validated_data.pop("department", None)
-        title = validated_data.pop("title", None)
-
-        if staff_number and department_id and title:
-            from apps.academics.models import Departments
-
-            department = Departments.objects.get(id=department_id)
+        # Link staff profile to the selected college when profile fields are provided.
+        if staff_number and title:
             StaffProfiles.objects.create(
-                user=user, staff_number=staff_number, department=department, title=title
+                user=user, staff_number=staff_number, department=college, title=title
             )
 
         return user
@@ -105,17 +115,32 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
 
 class AdminSignupSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    college_id = serializers.IntegerField(write_only=True)
 
     class Meta:
         model = User
-        fields = ("email", "password", "first_name", "last_name", "phone")
+        fields = ("email", "password", "first_name", "last_name", "phone", "college_id")
+
+    def validate_college_id(self, value):
+        from apps.academics.models import Departments
+
+        if not Departments.objects.filter(id=value).exists():
+            raise serializers.ValidationError("Invalid college selected.")
+        return value
 
     def create(self, validated_data):
+        from apps.academics.models import Departments
+
         password = validated_data.pop("password")
+        college_id = validated_data.pop("college_id")
+        college = Departments.objects.get(id=college_id)
+        institution_id = college.institution_id
+
         user = User.objects.create_user(
             role=User.INTERNSHIP_ADMIN,
             is_active=True,
             is_staff=True,
+            institution_id=str(institution_id),
             **validated_data,
         )
         user.set_password(password)
