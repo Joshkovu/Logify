@@ -95,7 +95,9 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
             try:
                 department = Departments.objects.select_related("college").get(id=department_id)
             except Departments.DoesNotExist:
-                raise serializers.ValidationError({"department_id": ["Invalid department selected."]})
+                raise serializers.ValidationError(
+                    {"department_id": ["Invalid department selected."]}
+                )
 
             if int(department.college_id) != int(college_id):
                 raise serializers.ValidationError(

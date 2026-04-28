@@ -176,7 +176,9 @@ class TestSupervisorAuth:
         assert response.status_code == status.HTTP_200_OK
         assert "access" in response.data
 
-    def test_workplace_supervisor_signup_requires_valid_organization(self, api_client, setup_college_data):
+    def test_workplace_supervisor_signup_requires_valid_organization(
+        self, api_client, setup_college_data
+    ):
         college = setup_college_data["college_a"]
 
         response = api_client.post(
@@ -371,15 +373,6 @@ class TestStudentRegistryScope:
     def test_admin_without_college_profile_cannot_list_students(self, api_client):
         institution_a = Institutions.objects.create(name="Institution A")
         institution_b = Institutions.objects.create(name="Institution B")
-
-        student_in_scope = User.objects.create_user(
-            email="student.a@test.com",
-            password="securepassword123",
-            first_name="Student",
-            last_name="A",
-            role=User.STUDENT,  # type: ignore
-            institution_id=str(institution_a.id),
-        )
         User.objects.create_user(
             email="student.b@test.com",
             password="securepassword123",
@@ -486,7 +479,9 @@ class TestStudentRegistryScope:
 
 @pytest.mark.django_db
 class TestSupervisorScope:
-    def test_admin_lists_only_supervisors_in_own_college_scope(self, api_client, setup_college_data):
+    def test_admin_lists_only_supervisors_in_own_college_scope(
+        self, api_client, setup_college_data
+    ):
         institution = setup_college_data["institution"]
         college_a = setup_college_data["college_a"]
         college_b = setup_college_data["college_b"]

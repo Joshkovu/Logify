@@ -4,6 +4,7 @@ from apps.accounts.permissions import (
     IsStudent,
     IsWorkplaceSupervisor,
 )
+from apps.notifications.emails import send_logify_email
 from django.conf import settings
 from django.utils import timezone
 from rest_framework import status
@@ -14,7 +15,6 @@ from rest_framework.views import APIView
 
 from .models import SupervisorReviews, WeeklyLogs, WeeklyLogStatusHistory
 from .serializer import SupervisorReviewsSerializer, WeeklyLogsSerializer
-from apps.notifications.emails import send_logify_email
 
 # Create your views here.
 
@@ -127,7 +127,9 @@ class SubmitWeeklyLogAPIView(APIView):
             "student_name": f"{student.first_name} {student.last_name}",
             "supervisor_name": f"{supervisor.first_name} {supervisor.last_name}",
             "week_range": f"{weekly_log.week_start_date} to {weekly_log.week_end_date}",
-            "submission_date": weekly_log.submitted_at.strftime("%B %d, %Y") if weekly_log.submitted_at else "",
+            "submission_date": (
+                weekly_log.submitted_at.strftime("%B %d, %Y") if weekly_log.submitted_at else ""
+            ),
             "dashboard_url": f"{settings.FRONTEND_URL}/logbook",
         }
         send_logify_email(
@@ -202,8 +204,6 @@ class ApproveWeeklyLogAPIView(APIView):
             },
             status=status.HTTP_200_OK,
         )
-    
-    
 
 
 class RejectWeeklyLogAPIView(APIView):
