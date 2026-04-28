@@ -2,6 +2,7 @@ import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { api, SESSION_CLEARED_EVENT } from "../config/api.js";
+import Loading from "../components/ui/Loading";
 
 const SESSION_STORAGE_KEY = "logify-auth-session";
 const ROLE_TO_PATH = {
@@ -237,6 +238,7 @@ const AuthProvider = ({ children }) => {
         adminSignUp,
       }}
     >
+      {isLoadingUser && <Loading />}
       {children}
     </AuthContext.Provider>
   );

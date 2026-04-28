@@ -286,7 +286,9 @@ const SupervisorSignupPage = () => {
                 className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
               >
                 <option value="">
-                  {isLoadingColleges ? "Loading..." : "Select college of student"}
+                  {isLoadingColleges
+                    ? "Loading..."
+                    : "Select college of student"}
                 </option>
                 {colleges.map((college) => (
                   <option key={college.id} value={college.id}>
@@ -307,69 +309,71 @@ const SupervisorSignupPage = () => {
 
           {isAcademic && (
             <div>
-            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              College
-            </label>
-            <select
-              name="college"
-              value={formData.college}
-              onChange={onChange}
-              disabled={
-                !formData.institution || isLoadingColleges || isSubmitting
-              }
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-            >
-              <option value="">
-                {!formData.institution
-                  ? "Select institution first"
-                  : isLoadingColleges
-                    ? "Loading..."
-                    : "Select college"}
-              </option>
-              {colleges.map((college) => (
-                <option key={college.id} value={college.id}>
-                  {college.name}
+              <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+                College
+              </label>
+              <select
+                name="college"
+                value={formData.college}
+                onChange={onChange}
+                disabled={
+                  !formData.institution || isLoadingColleges || isSubmitting
+                }
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              >
+                <option value="">
+                  {!formData.institution
+                    ? "Select institution first"
+                    : isLoadingColleges
+                      ? "Loading..."
+                      : "Select college"}
                 </option>
-              ))}
-            </select>
-            {fieldErrors.college && (
-              <p className="mt-1 text-xs text-red-600">{fieldErrors.college}</p>
-            )}
+                {colleges.map((college) => (
+                  <option key={college.id} value={college.id}>
+                    {college.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.college && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.college}
+                </p>
+              )}
             </div>
           )}
 
           {isAcademic && (
             <div>
-            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Department
-            </label>
-            <select
-              name="department"
-              value={formData.department}
-              onChange={onChange}
-              disabled={
-                !formData.college || isLoadingDepartments || isSubmitting
-              }
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-            >
-              <option value="">
-                {!formData.college
-                  ? "Select college first"
-                  : isLoadingDepartments
-                    ? "Loading..."
-                    : "Select department"}
-              </option>
-              {departments.map((dept) => (
-                <option key={dept.id} value={dept.id}>
-                  {dept.name}
+              <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+                Department
+              </label>
+              <select
+                name="department"
+                value={formData.department}
+                onChange={onChange}
+                disabled={
+                  !formData.college || isLoadingDepartments || isSubmitting
+                }
+                className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
+              >
+                <option value="">
+                  {!formData.college
+                    ? "Select college first"
+                    : isLoadingDepartments
+                      ? "Loading..."
+                      : "Select department"}
                 </option>
-              ))}
-            </select>
-            {fieldErrors.department && (
-              <p className="mt-1 text-xs text-red-600">
-                {fieldErrors.department}
-              </p>
-            )}
+                {departments.map((dept) => (
+                  <option key={dept.id} value={dept.id}>
+                    {dept.name}
+                  </option>
+                ))}
+              </select>
+              {fieldErrors.department && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.department}
+                </p>
+              )}
             </div>
           )}
 

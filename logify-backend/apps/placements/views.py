@@ -1,14 +1,14 @@
+from apps.accounts.access import (
+    get_programme_ids_for_college,
+    get_user_college_id,
+    get_user_institution_id,
+)
 from apps.accounts.models import User
 from apps.accounts.permissions import (
     IsAcademicSupervisor,
     IsInternshipAdmin,
     IsStudent,
     IsWorkplaceSupervisor,
-)
-from apps.accounts.access import (
-    get_programme_ids_for_college,
-    get_user_college_id,
-    get_user_institution_id,
 )
 from apps.notifications.emails import send_logify_email
 from django.db import transaction

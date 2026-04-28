@@ -1,11 +1,9 @@
+from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from apps.academics.models import Colleges, Departments, Institutions, Programmes
-
-from .models import User
-from .models import StaffProfiles
+from .models import StaffProfiles, User
 
 
 def make_user(email, role, **kwargs):
