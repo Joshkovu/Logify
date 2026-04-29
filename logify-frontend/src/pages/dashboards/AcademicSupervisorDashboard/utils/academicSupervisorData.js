@@ -186,6 +186,9 @@ export const loadAcademicSupervisorData = async () => {
   const scores = toArray(scoresResponse);
   const criteria = toArray(criteriaResponse);
   const results = toArray(resultsResponse);
+  const rubrics = toArray(rubricsResponse);
+  const programmes = toArray(programmesResponse);
+  const departments = toArray(departmentsResponse);
 
   const uniqueInternIds = [
     ...new Set(placements.map((item) => item.intern).filter(Boolean)),
