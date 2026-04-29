@@ -29,6 +29,7 @@ const mapEvaluationRecord = ({
   criteriaById,
   resultByPlacementId,
   feedbackDrafts,
+  workplaceFeedbackDrafts,
   scoreDrafts,
 }) => {
   const placement = placementById[evaluation.placement];
@@ -51,10 +52,14 @@ const mapEvaluationRecord = ({
     .filter(Boolean)
     .join("\n\n");
   const feedback =
-    feedbackDrafts[evaluation.id] ||
-    finalResult?.remarks ||
-    finalResult?.workplace_feedback ||
-    feedbackFromScores;
+    feedbackDrafts[evaluation.id] !== undefined
+      ? feedbackDrafts[evaluation.id]
+      : finalResult?.remarks || feedbackFromScores;
+
+  const workplaceFeedback =
+    workplaceFeedbackDrafts[evaluation.id] !== undefined
+      ? workplaceFeedbackDrafts[evaluation.id]
+      : finalResult?.workplace_feedback || "";
 
   return {
     id: evaluation.id,
@@ -82,6 +87,7 @@ const mapEvaluationRecord = ({
     logbookScore: finalResult?.logbook_score ?? null,
     academicScore: finalResult?.academic_score ?? null,
     feedback: feedback || "",
+    workplaceFeedback: workplaceFeedback || "",
     date: formatDate(evaluation.updated_at || evaluation.submitted_at),
     criteria,
   };
@@ -100,6 +106,12 @@ const findCurrentRubricForPlacement = (placement, rubrics) =>
       rubric.institution === placement.institution &&
       rubric.programme === placement.programme,
   ) ||
+  rubrics.find(
+    (rubric) =>
+      rubric.institution === null &&
+      rubric.programme === null &&
+      rubric.is_active !== false,
+  ) ||
   null;
 
 const mapApprovedPlacementRecord = ({
@@ -109,6 +121,7 @@ const mapApprovedPlacementRecord = ({
   organizationsById,
   criteriaById,
   feedbackDrafts,
+  workplaceFeedbackDrafts,
   scoreDrafts,
 }) => {
   const student = usersById[placement.intern];
@@ -140,6 +153,7 @@ const mapApprovedPlacementRecord = ({
     logbookScore: null,
     academicScore: null,
     feedback: feedbackDrafts[evaluation.id] || "",
+    workplaceFeedback: workplaceFeedbackDrafts[evaluation.id] || "",
     date: formatDate(placement.approved_at || placement.updated_at),
     criteria: rubric
       ? buildEvaluationCriteria({
@@ -158,6 +172,7 @@ const Evaluation = () => {
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [feedbackDrafts, setFeedbackDrafts] = useState({});
+  const [workplaceFeedbackDrafts, setWorkplaceFeedbackDrafts] = useState({});
   const [scoreDrafts, setScoreDrafts] = useState({});
   const [snapshot, setSnapshot] = useState({
     placements: [],
@@ -236,6 +251,7 @@ const Evaluation = () => {
           criteriaById,
           resultByPlacementId,
           feedbackDrafts,
+          workplaceFeedbackDrafts,
           scoreDrafts,
         }),
       ),
@@ -255,6 +271,7 @@ const Evaluation = () => {
             organizationsById,
             criteriaById,
             feedbackDrafts,
+            workplaceFeedbackDrafts,
             scoreDrafts,
           }),
         ),
@@ -263,6 +280,7 @@ const Evaluation = () => {
       criteriaById,
       evaluations,
       feedbackDrafts,
+      workplaceFeedbackDrafts,
       organizationsById,
       placementById,
       placements,
@@ -311,6 +329,17 @@ const Evaluation = () => {
     }
 
     setFeedbackDrafts((current) => ({
+      ...current,
+      [selectedEvaluation.id]: value,
+    }));
+  };
+
+  const handleWorkplaceFeedbackChange = (value) => {
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
+      return;
+    }
+
+    setWorkplaceFeedbackDrafts((current) => ({
       ...current,
       [selectedEvaluation.id]: value,
     }));
@@ -415,11 +444,13 @@ const Evaluation = () => {
     rubricId,
     finalResultId,
     remarks,
+    workplaceFeedback,
   }) => {
     const payload = {
       placement: placementId,
       rubric: rubricId,
       remarks,
+      workplace_feedback: workplaceFeedback,
     };
 
     const result = finalResultId
@@ -437,6 +468,11 @@ const Evaluation = () => {
     setFeedbackDrafts((current) => ({
       ...current,
       [evaluationId]: result.remarks || remarks || "",
+    }));
+
+    setWorkplaceFeedbackDrafts((current) => ({
+      ...current,
+      [evaluationId]: result.workplace_feedback || workplaceFeedback || "",
     }));
 
     return result;
@@ -494,6 +530,7 @@ const Evaluation = () => {
         rubricId: evaluationRecord.rubricId,
         finalResultId: evaluationRecord.finalResultId,
         remarks: evaluationRecord.feedback,
+        workplaceFeedback: evaluationRecord.workplaceFeedback,
       });
       setSnapshot((current) => ({
         ...current,
@@ -726,7 +763,7 @@ const Evaluation = () => {
 
                     {selectedEvaluation.category === "pending" &&
                       item.criterionId && (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-[180px_1fr]">
+                        <div className="mt-4">
                           <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
                             Score
                             <input
@@ -744,22 +781,6 @@ const Evaluation = () => {
                               className="mt-2 h-11 w-full rounded-xl border border-border/40 bg-card px-3 text-sm font-bold text-maroon-dark outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-100"
                             />
                           </label>
-
-                          <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
-                            Criterion Comment
-                            <textarea
-                              value={item.comment}
-                              onChange={(event) =>
-                                handleCriterionChange(
-                                  item,
-                                  "comment",
-                                  event.target.value,
-                                )
-                              }
-                              className="mt-2 min-h-[88px] w-full rounded-xl border border-border/40 bg-card px-3 py-2 text-sm font-medium normal-case tracking-normal text-muted-foreground outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-200"
-                              placeholder="Add a short note for this criterion..."
-                            />
-                          </label>
                         </div>
                       )}
                   </div>
@@ -768,6 +789,36 @@ const Evaluation = () => {
             </div>
 
             <div className="rounded-[12px] border border-border bg-card text-card-foreground">
+              <div className="rounded-2xl border border-border/30 bg-muted p-4 sm:p-6 lg:p-8 mb-6">
+                <div className="mb-6 flex items-start gap-4">
+                  <div className="rounded-xl bg-gold/10 p-3 text-gold dark:text-slate-300">
+                    <MessageSquare size={24} />
+                  </div>
+
+                  <div className="flex-1">
+                    <h3 className="mb-4 text-xl font-black tracking-tight text-maroon-dark dark:text-white">
+                      Workplace Feedback
+                    </h3>
+
+                    {selectedEvaluation.category === "pending" ? (
+                      <textarea
+                        value={selectedEvaluation.workplaceFeedback}
+                        onChange={(e) =>
+                          handleWorkplaceFeedbackChange(e.target.value)
+                        }
+                        className="min-h-[150px] w-full rounded-2xl border border-border/30 bg-card p-4 font-medium text-muted-foreground outline-none transition-all focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-200 sm:p-6"
+                        placeholder="Provide feedback from the workplace supervisor..."
+                      />
+                    ) : (
+                      <div className="min-h-[150px] rounded-2xl border border-border/30 bg-card p-4 font-medium text-muted-foreground dark:text-slate-200 sm:p-6">
+                        {selectedEvaluation.workplaceFeedback ||
+                          "No workplace feedback was recorded."}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="rounded-2xl border border-border/30 bg-muted p-4 sm:p-6 lg:p-8">
                 <div className="mb-6 flex items-start gap-4">
                   <div className="rounded-xl bg-gold/10 p-3 text-gold dark:text-slate-300">
