@@ -87,15 +87,83 @@ const mapEvaluationRecord = ({
   };
 };
 
+const findCurrentRubricForPlacement = (placement, rubrics) =>
+  rubrics.find(
+    (rubric) =>
+      rubric.institution === placement.institution &&
+      rubric.programme === placement.programme &&
+      rubric.is_current !== false &&
+      rubric.is_active !== false,
+  ) ||
+  rubrics.find(
+    (rubric) =>
+      rubric.institution === placement.institution &&
+      rubric.programme === placement.programme,
+  ) ||
+  null;
+
+const mapApprovedPlacementRecord = ({
+  placement,
+  rubric,
+  usersById,
+  organizationsById,
+  criteriaById,
+  feedbackDrafts,
+  scoreDrafts,
+}) => {
+  const student = usersById[placement.intern];
+  const organization = organizationsById[placement.organization];
+  const { weekLabel } = getPlacementProgress(placement);
+  const evaluation = {
+    id: `placement-${placement.id}`,
+    placement: placement.id,
+    rubric: rubric?.id || null,
+    status: "draft",
+    total_score: 0,
+  };
+
+  return {
+    id: evaluation.id,
+    isVirtual: true,
+    placementId: placement.id,
+    rubricId: rubric?.id || null,
+    finalResultId: null,
+    category: "pending",
+    name: getUserDisplayName(student, "Intern"),
+    type: "Pending Evaluation",
+    company: organization?.name || "Unknown organization",
+    status: rubric ? "Ready to Grade" : "Rubric Needed",
+    program: placement.internship_title || "Placement unavailable",
+    week: weekLabel,
+    score: 0,
+    finalGrade: "Pending",
+    logbookScore: null,
+    academicScore: null,
+    feedback: feedbackDrafts[evaluation.id] || "",
+    date: formatDate(placement.approved_at || placement.updated_at),
+    criteria: rubric
+      ? buildEvaluationCriteria({
+          evaluation,
+          scores: [],
+          criteriaById,
+          scoreDrafts,
+        })
+      : [],
+  };
+};
+
 const Evaluation = () => {
   const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [feedbackDrafts, setFeedbackDrafts] = useState({});
+  const [scoreDrafts, setScoreDrafts] = useState({});
   const [snapshot, setSnapshot] = useState({
+    placements: [],
     evaluations: [],
     scores: [],
+    rubrics: [],
     criteriaById: {},
     placementById: {},
     resultByPlacementId: {},
