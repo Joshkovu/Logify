@@ -387,13 +387,15 @@ export const api = {
       apiRequest(`/v1/placements/placements/${id}/complete/`, {
         method: "POST",
       }),
-    wsAcceptPlacement: (id) =>
+    wsAcceptPlacement: (id, data = {}) =>
       apiRequest(`/v1/placements/placements/${id}/ws-accept/`, {
         method: "POST",
+        body: JSON.stringify(data),
       }),
-    wsDenyPlacement: (id) =>
+    wsDenyPlacement: (id, data = {}) =>
       apiRequest(`/v1/placements/placements/${id}/ws-deny/`, {
         method: "POST",
+        body: JSON.stringify(data),
       }),
   },
 
