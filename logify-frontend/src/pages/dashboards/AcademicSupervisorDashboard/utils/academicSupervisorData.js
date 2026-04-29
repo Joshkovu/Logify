@@ -84,16 +84,23 @@ export const buildEvaluationCriteria = ({
       const criterion = criteriaById[score.criterion];
       const maxScore = criterion?.max_score || 100;
       const weightPercent = Number(criterion?.weight_percent || 0);
-      const numericScore = Number(score.score || 0);
+      const draftKey = `${evaluation.placement}-${criterion?.id || score.criterion}`;
+      const draft = scoreDrafts[draftKey];
+      const numericScore = Number(draft?.score ?? score.score ?? 0);
       return {
+        id: score.id,
+        criterionId: criterion?.id || score.criterion,
+        draftKey,
         title: criterion?.name || "Assessment Criterion",
         weight: weightPercent ? `${weightPercent}%` : "N/A",
         score: Math.round((numericScore / maxScore) * 100),
+        rawScore: numericScore,
+        maxScore,
         note: criterion?.description || "Criterion details unavailable.",
         contribution: weightPercent
           ? `${Math.round((numericScore / maxScore) * weightPercent)}%`
           : "N/A",
-        comment: score.comment || "",
+        comment: draft?.comment ?? score.comment ?? "",
       };
     });
 
