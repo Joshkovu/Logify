@@ -55,6 +55,8 @@ const Dashboard = () => {
           evaluations: data.evaluations,
           usersById: data.usersById,
           organizationsById: data.organizationsById,
+          programmeById: data.programmeById,
+          departmentById: data.departmentById,
         });
       } catch (loadError) {
         setError(loadError.message || "Unable to load dashboard data.");
