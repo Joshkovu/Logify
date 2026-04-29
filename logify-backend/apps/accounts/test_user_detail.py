@@ -1,7 +1,9 @@
 from apps.academics.models import Colleges, Departments, Institutions, Programmes
+from apps.organizations.models import Organizations
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from datetime import date
 
 from .models import StaffProfiles, User
 
@@ -75,6 +77,32 @@ class TestUserDetailView(APITestCase):
             reverse("user-detail", kwargs={"pk": self.academic_supervisor.pk})
         )
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_academic_supervisor_can_view_assigned_student(self):
+        organization = Organizations.objects.create(
+            name="Org A",
+            email="org@example.com",
+            address="123 Main St",
+        )
+        InternshipPlacements.objects.create(
+            intern=self.student,
+            academic_supervisor=self.academic_supervisor,
+            institution=self.institution,
+            programme=self.programme_a,
+            organization=organization,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 6, 1),
+            work_mode="Remote",
+            internship_title="Test Internship",
+            department_at_company="Engineering",
+        )
+
+        self.client.force_authenticate(user=self.academic_supervisor)
+        response = self.client.get(
+            reverse("user-detail", kwargs={"pk": self.student.pk})
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["email"], "student@test.com")
 
     def test_admin_can_view_user_in_same_institution(self):
         self.client.force_authenticate(user=self.admin)
