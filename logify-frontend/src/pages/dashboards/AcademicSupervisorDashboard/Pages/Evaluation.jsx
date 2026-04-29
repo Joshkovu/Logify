@@ -192,8 +192,10 @@ const Evaluation = () => {
       try {
         const data = await loadAcademicSupervisorData();
         setSnapshot({
+          placements: data.placements,
           evaluations: data.evaluations,
           scores: data.scores,
+          rubrics: data.rubrics,
           criteriaById: data.criteriaById,
           placementById: data.placementById,
           resultByPlacementId: data.resultByPlacementId,
@@ -211,8 +213,10 @@ const Evaluation = () => {
   }, []);
 
   const {
+    placements,
     evaluations,
     scores,
+    rubrics,
     criteriaById,
     placementById,
     resultByPlacementId,
@@ -222,26 +226,51 @@ const Evaluation = () => {
 
   const records = useMemo(
     () =>
-      evaluations.map((evaluation) =>
-        mapEvaluationRecord({
-          evaluation,
-          placementById,
-          usersById,
-          organizationsById,
-          scores,
-          criteriaById,
-          resultByPlacementId,
-          feedbackDrafts,
-        }),
-      ),
+      [
+        ...evaluations.map((evaluation) =>
+          mapEvaluationRecord({
+            evaluation,
+            placementById,
+            usersById,
+            organizationsById,
+            scores,
+            criteriaById,
+            resultByPlacementId,
+            feedbackDrafts,
+            scoreDrafts,
+          }),
+        ),
+        ...placements
+          .filter(
+            (placement) =>
+              ["approved", "active", "completed"].includes(placement.status) &&
+              !evaluations.some(
+                (evaluation) => evaluation.placement === placement.id,
+              ),
+          )
+          .map((placement) =>
+            mapApprovedPlacementRecord({
+              placement,
+              rubric: findCurrentRubricForPlacement(placement, rubrics),
+              usersById,
+              organizationsById,
+              criteriaById,
+              feedbackDrafts,
+              scoreDrafts,
+            }),
+          ),
+      ],
     [
       criteriaById,
       evaluations,
       feedbackDrafts,
       organizationsById,
       placementById,
+      placements,
       resultByPlacementId,
+      rubrics,
       scores,
+      scoreDrafts,
       usersById,
     ],
   );
