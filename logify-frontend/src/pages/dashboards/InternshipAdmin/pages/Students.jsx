@@ -350,10 +350,23 @@ const Students = () => {
                   <TableCell>{student.programme}</TableCell>
                   <TableCell>{student.placement}</TableCell>
                   <TableCell>
-                    <StatusBadge status={student.placementStatus} />
+                    { placements.map(p => String(p.id)).includes(String(student.placement_id)) ? (
+                    <StatusBadge status={placement.status} />
+) : (
+                    <StatusBadge status="pending" />
+                    )}
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={student.approvalStatus} />
+                    <StatusBadge
+                      status={
+                        approvalStatuses.has(
+                          String(student.placementStatus).toLowerCase(),
+                        )
+                          ? "approved"
+                          : "pending"
+                      }
+                    />
+        
                   </TableCell>
                   <TableCell>
                     {student.score > 0 ? (
