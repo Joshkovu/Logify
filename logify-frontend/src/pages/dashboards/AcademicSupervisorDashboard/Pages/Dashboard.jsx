@@ -325,7 +325,7 @@ const Dashboard = () => {
                         {intern.company}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground/80">
-                        {intern.course}
+                        {intern.role}
                       </p>
                     </div>
                   </div>
