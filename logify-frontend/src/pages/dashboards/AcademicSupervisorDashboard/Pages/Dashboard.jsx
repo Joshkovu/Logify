@@ -25,6 +25,8 @@ const Dashboard = () => {
     evaluations: [],
     usersById: {},
     organizationsById: {},
+    programmeById: {},
+    departmentById: {},
   });
 
   useEffect(() => {
