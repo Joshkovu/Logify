@@ -1,0 +1,20 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<h1 style="color: #28a745;">Placement Accepted! 🎉</h1>
+<p>Hello {{ student_name }},</p>
+<p>Great news! Your workplace supervisor, <strong>{{ supervisor_name }}</strong>, has accepted your internship placement at <strong>{{ organization_name }}</strong>.</p>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="margin-top: 0;">Placement Summary</h2>
+    <p><strong>Title:</strong> {{ placement_title }}</p>
+    <p><strong>Start Date:</strong> {{ start_date }}</p>
+    <p><strong>End Date:</strong> {{ end_date }}</p>
+</div>
+
+<p>Your placement is now <strong>Active</strong>. You can now start logging your weekly activities in your logbook.</p>
+
+<a href="{{ frontend_url }}/student/logbook" class="button">Go to Logbook</a>
+
+<p style="margin-top: 20px;">Best regards,<br>Logify Team</p>
+{% endblock %}

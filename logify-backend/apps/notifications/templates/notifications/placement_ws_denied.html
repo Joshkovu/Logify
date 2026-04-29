@@ -1,0 +1,21 @@
+{% extends "notifications/base_email.html" %}
+
+{% block content %}
+<h1 style="color: #dc3545;">Placement Denied</h1>
+<p>Hello {{ student_name }},</p>
+<p>We regret to inform you that your workplace supervisor, <strong>{{ supervisor_name }}</strong>, has declined your internship placement request at <strong>{{ organization_name }}</strong>.</p>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="margin-top: 0;">Placement Details</h2>
+    <p><strong>Title:</strong> {{ placement_title }}</p>
+    {% if reason %}
+    <p><strong>Reason provided:</strong> {{ reason }}</p>
+    {% endif %}
+</div>
+
+<p>Please contact your academic supervisor or the organization to discuss next steps. You may need to update your placement details or find a new supervisor.</p>
+
+<a href="{{ frontend_url }}/student/placements" class="button">View My Placements</a>
+
+<p style="margin-top: 20px;">Best regards,<br>Logify Team</p>
+{% endblock %}
