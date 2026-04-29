@@ -1,9 +1,26 @@
 {% extends "notifications/base_email.html" %}
 
 {% block content %}
-<h1>Intern Assigned!</h1>
-<p>You have been assigned to supervise an intern in their journey.</p>
-<p>We wish you the best as you partake on this new role as workplace supervisor.</p>
-<br>
-<p>Best regards,<br>Logify Team</p>
+<h1>Internship Supervision Request</h1>
+<p>Hello,</p>
+<p>You have been requested to supervise <strong>{{ student_name }}</strong> ({{ student_email }}) for their upcoming internship.</p>
+
+<div style="background-color: #f8f9fa; padding: 15px; border-radius: 5px; margin: 20px 0;">
+    <h2 style="margin-top: 0;">Placement Details</h2>
+    <p><strong>Title:</strong> {{ placement_title }}</p>
+    <p><strong>Organization:</strong> {{ organization_name }}</p>
+    {% if department_at_company %}<p><strong>Department:</strong> {{ department_at_company }}</p>{% endif %}
+    <p><strong>Duration:</strong> {{ start_date }} to {{ end_date }}</p>
+    <p><strong>Work Mode:</strong> {{ work_mode }}</p>
+</div>
+
+{% if is_reminder %}
+<p><strong>Note:</strong> This is a reminder that the academic supervisor has approved this placement, and it is now awaiting your final acceptance.</p>
+{% endif %}
+
+<p>Please log in to your dashboard to accept or deny this request.</p>
+
+<a href="{{ frontend_url }}/workplace-supervisor/pending-acceptances" class="button">View Pending Requests</a>
+
+<p style="margin-top: 20px;">Best regards,<br>Logify Team</p>
 {% endblock %}

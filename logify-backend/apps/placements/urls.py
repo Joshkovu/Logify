@@ -9,6 +9,8 @@ from .views import (
     PlacementCompleteView,
     PlacementRejectView,
     PlacementSubmitView,
+    WorkplaceSupervisorAcceptView,
+    WorkplaceSupervisorDenyView,
 )
 
 urlpatterns = [
@@ -24,4 +26,15 @@ urlpatterns = [
         "placements/<int:pk>/complete/", PlacementCompleteView.as_view(), name="placement-complete"
     ),
     path("placements/<int:pk>/cancel/", PlacementCancelView.as_view(), name="placement-cancel"),
+    # Workplace Supervisor accept / deny flow
+    path(
+        "placements/<int:pk>/ws-accept/",
+        WorkplaceSupervisorAcceptView.as_view(),
+        name="placement-ws-accept",
+    ),
+    path(
+        "placements/<int:pk>/ws-deny/",
+        WorkplaceSupervisorDenyView.as_view(),
+        name="placement-ws-deny",
+    ),
 ]

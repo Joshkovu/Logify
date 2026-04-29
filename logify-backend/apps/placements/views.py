@@ -65,18 +65,39 @@ class InternshipPlacementListCreateView(APIView):
             institution_id=request.user.institution_id,
             programme_id=request.user.programme_id,
         )
-        send_logify_email(
-            subject="Logify - Internship Placement",
-            template_name="notifications/placement_workplace_supervisor_assigned.html",
-            context={},
-            recipient_list=[placement.workplace_supervisor.email],
-        )
-        send_logify_email(
-            subject="Logify - Internship Placement",
-            template_name="notifications/placement_academic_supervisor_assigned.html",
-            context={},
-            recipient_list=[placement.academic_supervisor.email],
-        )
+
+        # Notify workplace supervisor with rich context and accept/deny prompt
+        if placement.workplace_supervisor:
+            send_logify_email(
+                subject="Logify - Internship Supervisor Assignment Request",
+                template_name="notifications/placement_workplace_supervisor_assigned.html",
+                context={
+                    "student_name": f"{request.user.first_name} {request.user.last_name}",
+                    "student_email": request.user.email,
+                    "placement_title": placement.internship_title,
+                    "organization_name": (
+                        placement.organization.name if placement.organization else "N/A"
+                    ),
+                    "department_at_company": placement.department_at_company,
+                    "start_date": placement.start_date,
+                    "end_date": placement.end_date,
+                    "work_mode": placement.work_mode,
+                    "placement_id": placement.id,
+                },
+                recipient_list=[placement.workplace_supervisor.email],
+            )
+
+        # Notify academic supervisor
+        if placement.academic_supervisor:
+            send_logify_email(
+                subject="Logify - Internship Placement",
+                template_name="notifications/placement_academic_supervisor_assigned.html",
+                context={
+                    "student_name": f"{request.user.first_name} {request.user.last_name}",
+                    "placement_title": placement.internship_title,
+                },
+                recipient_list=[placement.academic_supervisor.email],
+            )
 
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -225,12 +246,38 @@ class PlacementApproveView(APIView):
                 changed_by=request.user,
                 comment=request.data.get("comment", "Placement approved."),
             )
+
+            # Notify the student that their placement has been approved
             send_logify_email(
-                subject="Logify - Internship Placement",
+                subject="Logify - Internship Placement Approved",
                 template_name="notifications/placement_approved.html",
                 context={},
                 recipient_list=[placement.intern.email],
             )
+
+            # Re-notify workplace supervisor that approval is done and their acceptance is needed
+            if placement.workplace_supervisor:
+                send_logify_email(
+                    subject="Logify - Action Required: Accept Your Internship Supervisor Assignment",
+                    template_name="notifications/placement_workplace_supervisor_assigned.html",
+                    context={
+                        "student_name": (
+                            f"{placement.intern.first_name} {placement.intern.last_name}"
+                        ),
+                        "student_email": placement.intern.email,
+                        "placement_title": placement.internship_title,
+                        "organization_name": (
+                            placement.organization.name if placement.organization else "N/A"
+                        ),
+                        "department_at_company": placement.department_at_company,
+                        "start_date": placement.start_date,
+                        "end_date": placement.end_date,
+                        "work_mode": placement.work_mode,
+                        "placement_id": placement.id,
+                        "is_reminder": True,
+                    },
+                    recipient_list=[placement.workplace_supervisor.email],
+                )
 
         return Response(InternshipPlacementsSerializer(placement).data)
 
@@ -319,6 +366,144 @@ class PlacementActivateView(APIView):
                 subject="Logify - Internship Placement",
                 template_name="notifications/placement_active.html",
                 context={},
+                recipient_list=[placement.intern.email],
+            )
+
+        return Response(InternshipPlacementsSerializer(placement).data)
+
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class WorkplaceSupervisorAcceptView(APIView):
+    """
+    Workplace Supervisor accepts the internship placement assignment.
+    Requires the placement to be in 'approved' status (i.e. academic supervisor has approved it).
+    Transitions: approved → active
+    Notifies the student on success.
+    """
+
+    permission_classes = [IsWorkplaceSupervisor]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
+
+        if request.user != placement.workplace_supervisor:
+            return Response(
+                {"error": "Only the assigned Workplace Supervisor can accept this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status != "approved":
+            return Response(
+                {
+                    "error": (
+                        "This placement must be approved by the Academic Supervisor first "
+                        "before you can accept it."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "active"
+            placement.save()
+
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="active",
+                changed_by=request.user,
+                comment=request.data.get("comment", "Placement accepted by workplace supervisor."),
+            )
+
+            # Notify the student their placement is now active
+            send_logify_email(
+                subject="Logify - Your Internship Placement Has Been Accepted! 🎉",
+                template_name="notifications/placement_ws_accepted.html",
+                context={
+                    "student_name": (f"{placement.intern.first_name} {placement.intern.last_name}"),
+                    "supervisor_name": (f"{request.user.first_name} {request.user.last_name}"),
+                    "placement_title": placement.internship_title,
+                    "organization_name": (
+                        placement.organization.name if placement.organization else "N/A"
+                    ),
+                    "start_date": placement.start_date,
+                    "end_date": placement.end_date,
+                },
+                recipient_list=[placement.intern.email],
+            )
+
+        return Response(InternshipPlacementsSerializer(placement).data)
+
+    def get_object(self, pk):
+        try:
+            return InternshipPlacements.objects.get(pk=pk)
+        except InternshipPlacements.DoesNotExist:
+            raise NotFound("Placement not found")
+
+
+class WorkplaceSupervisorDenyView(APIView):
+    """
+    Workplace Supervisor denies the internship placement assignment.
+    Requires the placement to be in 'approved' status.
+    Transitions: approved → rejected
+    Notifies the student on denial.
+    """
+
+    permission_classes = [IsWorkplaceSupervisor]
+
+    def post(self, request, pk):
+        placement = self.get_object(pk)
+
+        if request.user != placement.workplace_supervisor:
+            return Response(
+                {"error": "Only the assigned Workplace Supervisor can deny this placement."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        if placement.status != "approved":
+            return Response(
+                {
+                    "error": (
+                        "This placement must be approved by the Academic Supervisor first "
+                        "before you can deny it."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            old_status = placement.status
+            placement.status = "rejected"
+            placement.save()
+
+            reason = request.data.get("comment", "")
+            PlacementStatusHistory.objects.create(
+                placement=placement,
+                from_status=old_status,
+                to_status="rejected",
+                changed_by=request.user,
+                comment=reason or "Placement denied by workplace supervisor.",
+            )
+
+            # Notify the student their placement was denied
+            send_logify_email(
+                subject="Logify - Your Internship Placement Was Denied",
+                template_name="notifications/placement_ws_denied.html",
+                context={
+                    "student_name": (f"{placement.intern.first_name} {placement.intern.last_name}"),
+                    "supervisor_name": (f"{request.user.first_name} {request.user.last_name}"),
+                    "placement_title": placement.internship_title,
+                    "organization_name": (
+                        placement.organization.name if placement.organization else "N/A"
+                    ),
+                    "reason": reason,
+                },
                 recipient_list=[placement.intern.email],
             )
 

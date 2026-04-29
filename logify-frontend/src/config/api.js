@@ -387,8 +387,14 @@ export const api = {
       apiRequest(`/v1/placements/placements/${id}/complete/`, {
         method: "POST",
       }),
-    cancelPlacement: (id) =>
-      apiRequest(`/v1/placements/placements/${id}/cancel/`, { method: "POST" }),
+    wsAcceptPlacement: (id) =>
+      apiRequest(`/v1/placements/placements/${id}/ws-accept/`, {
+        method: "POST",
+      }),
+    wsDenyPlacement: (id) =>
+      apiRequest(`/v1/placements/placements/${id}/ws-deny/`, {
+        method: "POST",
+      }),
   },
 
   logbook: {

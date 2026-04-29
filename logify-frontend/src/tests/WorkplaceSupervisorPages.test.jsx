@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 
 jest.mock("../config/api", () => ({
   api: {
@@ -8,6 +9,8 @@ jest.mock("../config/api", () => ({
       createPlacement: jest.fn(),
       patchPlacement: jest.fn(),
       submitPlacement: jest.fn(),
+      wsAcceptPlacement: jest.fn(),
+      wsDenyPlacement: jest.fn(),
     },
     evaluations: {
       getEvaluations: jest.fn(),
@@ -23,6 +26,9 @@ jest.mock("../config/api", () => ({
       updateWeeklyLog: jest.fn(),
       submitWeeklyLog: jest.fn(),
       deleteWeeklyLog: jest.fn(),
+      approveWeeklyLog: jest.fn(),
+      requestChangesWeeklyLog: jest.fn(),
+      rejectWeeklyLog: jest.fn(),
     },
     organizations: {
       getOrganization: jest.fn(),
@@ -31,6 +37,7 @@ jest.mock("../config/api", () => ({
     accounts: {
       getAcademicSupervisor: jest.fn(),
       getWorkplaceSupervisor: jest.fn(),
+      getUser: jest.fn(),
     },
     academics: {
       getInstitution: jest.fn(),
@@ -65,6 +72,7 @@ import Dashboard from "../pages/dashboards/WorkplaceSupervisor/components/dashbo
 import AssignedInterns from "../pages/dashboards/WorkplaceSupervisor/pages/AssignedInterns";
 import PendingLogReview from "../pages/dashboards/WorkplaceSupervisor/pages/PendingLogReview";
 import Profile from "../pages/dashboards/WorkplaceSupervisor/pages/Profile";
+import PendingAcceptances from "../pages/dashboards/WorkplaceSupervisor/pages/PendingAcceptances";
 
 const mockSnapshot = {
   me: {
@@ -88,10 +96,11 @@ const mockSnapshot = {
       id: 2,
       intern: 102,
       organization: 202,
-      status: "active",
+      status: "approved",
       internship_title: "Backend Intern",
       start_date: "2026-02-05",
       end_date: "2026-05-05",
+      work_mode: "onsite",
     },
   ],
   weeklyLogs: [
@@ -160,7 +169,11 @@ describe("Workplace supervisor pages", () => {
   });
 
   test("renders dashboard overview cards", async () => {
-    render(<Dashboard />);
+    render(
+      <MemoryRouter>
+        <Dashboard />
+      </MemoryRouter>,
+    );
     await waitForWorkplaceDashboardEffectsToSettle();
 
     expect(
@@ -175,11 +188,18 @@ describe("Workplace supervisor pages", () => {
     expect(
       await screen.findByText(/approval rate|approved rate/i),
     ).toBeInTheDocument();
-    expect(screen.getAllByText("Assigned Interns").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Active Interns").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Pending Acceptances").length).toBeGreaterThan(
+      0,
+    );
   });
 
   test("renders assigned interns page with intern names", async () => {
-    render(<AssignedInterns />);
+    render(
+      <MemoryRouter>
+        <AssignedInterns />
+      </MemoryRouter>,
+    );
 
     expect(
       await screen.findByRole("heading", {
@@ -195,7 +215,11 @@ describe("Workplace supervisor pages", () => {
   });
 
   test("renders pending log review page", async () => {
-    render(<PendingLogReview />);
+    render(
+      <MemoryRouter>
+        <PendingLogReview />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("Pending Log Reviews")).toBeInTheDocument();
     expect(
@@ -204,20 +228,25 @@ describe("Workplace supervisor pages", () => {
       ),
     ).toBeInTheDocument();
     expect(
-      await screen.findByRole("button", { name: /sarah johnson\s+- week 9/i }),
+      await screen.findByRole("button", { name: /Sarah Johnson/i }),
     ).toBeInTheDocument();
   });
 
   test("switches pending log details when another intern is selected", async () => {
-    render(<PendingLogReview />);
-
-    fireEvent.click(
-      await screen.findByRole("button", { name: /james martinez\s+- week 7/i }),
+    render(
+      <MemoryRouter>
+        <PendingLogReview />
+      </MemoryRouter>,
     );
+
+    const jamesButton = await screen.findByRole("button", {
+      name: /James Martinez/i,
+    });
+    fireEvent.click(jamesButton);
 
     expect(
       await screen.findByRole("heading", {
-        name: /james martinez\s+- week 7/i,
+        name: /James Martinez/i,
       }),
     ).toBeInTheDocument();
     expect(
@@ -226,7 +255,11 @@ describe("Workplace supervisor pages", () => {
   });
 
   test("renders workplace supervisor profile sections", async () => {
-    render(<Profile />);
+    render(
+      <MemoryRouter>
+        <Profile />
+      </MemoryRouter>,
+    );
 
     expect(
       await screen.findByRole("heading", { level: 1, name: /profile/i }),
@@ -239,5 +272,29 @@ describe("Workplace supervisor pages", () => {
         .length,
     ).toBeGreaterThan(0);
     expect(screen.getAllByText(/assigned interns/i).length).toBeGreaterThan(0);
+  });
+
+  test("renders pending acceptances page with student names", async () => {
+    render(
+      <MemoryRouter>
+        <PendingAcceptances />
+      </MemoryRouter>,
+    );
+
+    expect(
+      await screen.findByRole("heading", {
+        level: 1,
+        name: /pending acceptances/i,
+      }),
+    ).toBeInTheDocument();
+    expect(await screen.findByText("James Martinez")).toBeInTheDocument();
+    expect(await screen.findByText("Backend Intern")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Institute of Technology"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /accept intern/i }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /deny/i })).toBeInTheDocument();
   });
 });
