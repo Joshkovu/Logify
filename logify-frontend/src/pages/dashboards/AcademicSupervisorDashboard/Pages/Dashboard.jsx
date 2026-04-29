@@ -342,8 +342,37 @@ const Dashboard = () => {
                   />
                 </div>
 
-                <div className="text-right text-xs font-semibold text-muted-foreground">
+                <div className="mb-4 text-right text-xs font-semibold text-muted-foreground">
                   {intern.progress}%
+                </div>
+
+                <div className="grid gap-3 border-t border-border/40 pt-4 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Reg No.
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.studentNumber}</p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Department
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.department}</p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Internship
+                    </p>
+                    <p className="mt-1 font-semibold">
+                      {intern.companyDepartment} &bull; {intern.workMode}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Duration
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.duration}</p>
+                  </div>
                 </div>
               </div>
             ))}
