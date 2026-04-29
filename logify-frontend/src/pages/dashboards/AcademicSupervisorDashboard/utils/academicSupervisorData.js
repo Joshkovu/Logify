@@ -72,6 +72,15 @@ export const getUserDisplayName = (user, fallback = "Unknown User") => {
   return fullName || user.email || fallback;
 };
 
+export const getPlacementStudentName = (
+  placement,
+  usersById,
+  fallback = "Student",
+) => {
+  const student = usersById?.[placement?.intern];
+  return getUserDisplayName(student, fallback);
+};
+
 export const buildEvaluationCriteria = ({
   evaluation,
   scores,

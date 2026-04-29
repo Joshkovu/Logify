@@ -225,41 +225,40 @@ const Evaluation = () => {
   } = snapshot;
 
   const records = useMemo(
-    () =>
-      [
-        ...evaluations.map((evaluation) =>
-          mapEvaluationRecord({
-            evaluation,
-            placementById,
+    () => [
+      ...evaluations.map((evaluation) =>
+        mapEvaluationRecord({
+          evaluation,
+          placementById,
+          usersById,
+          organizationsById,
+          scores,
+          criteriaById,
+          resultByPlacementId,
+          feedbackDrafts,
+          scoreDrafts,
+        }),
+      ),
+      ...placements
+        .filter(
+          (placement) =>
+            ["approved", "active", "completed"].includes(placement.status) &&
+            !evaluations.some(
+              (evaluation) => evaluation.placement === placement.id,
+            ),
+        )
+        .map((placement) =>
+          mapApprovedPlacementRecord({
+            placement,
+            rubric: findCurrentRubricForPlacement(placement, rubrics),
             usersById,
             organizationsById,
-            scores,
             criteriaById,
-            resultByPlacementId,
             feedbackDrafts,
             scoreDrafts,
           }),
         ),
-        ...placements
-          .filter(
-            (placement) =>
-              ["approved", "active", "completed"].includes(placement.status) &&
-              !evaluations.some(
-                (evaluation) => evaluation.placement === placement.id,
-              ),
-          )
-          .map((placement) =>
-            mapApprovedPlacementRecord({
-              placement,
-              rubric: findCurrentRubricForPlacement(placement, rubrics),
-              usersById,
-              organizationsById,
-              criteriaById,
-              feedbackDrafts,
-              scoreDrafts,
-            }),
-          ),
-      ],
+    ],
     [
       criteriaById,
       evaluations,

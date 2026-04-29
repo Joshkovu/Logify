@@ -309,10 +309,7 @@ class FinalResultsSerializer(serializers.ModelSerializer):
             return 0
 
         submitted_weeks = (
-            WeeklyLogs.objects.filter(placement=placement)
-            .values("week_number")
-            .distinct()
-            .count()
+            WeeklyLogs.objects.filter(placement=placement).values("week_number").distinct().count()
         )
         scheduled_weeks = ceil(duration_days / 7)
         return max(scheduled_weeks, submitted_weeks)
