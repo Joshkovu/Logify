@@ -1,9 +1,11 @@
+from datetime import date
+
 from apps.academics.models import Colleges, Departments, Institutions, Programmes
 from apps.organizations.models import Organizations
+from apps.placements.models import InternshipPlacements
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from datetime import date
 
 from .models import StaffProfiles, User
 
@@ -98,9 +100,7 @@ class TestUserDetailView(APITestCase):
         )
 
         self.client.force_authenticate(user=self.academic_supervisor)
-        response = self.client.get(
-            reverse("user-detail", kwargs={"pk": self.student.pk})
-        )
+        response = self.client.get(reverse("user-detail", kwargs={"pk": self.student.pk}))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["email"], "student@test.com")
 
