@@ -382,11 +382,6 @@ const Reports = () => {
             Gain deep insights into intern performance, placement trends, and
             academic milestones.
           </p>
-          {error && (
-            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
-              {error}
-            </p>
-          )}
         </div>
 
         <button
