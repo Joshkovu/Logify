@@ -6,8 +6,8 @@ from django.db import models
 
 # Create your models here.
 class EvaluationRubrics(models.Model):
-    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE)
-    programme = models.ForeignKey(Programmes, on_delete=models.CASCADE)
+    institution = models.ForeignKey(Institutions, on_delete=models.CASCADE, null=True, blank=True)
+    programme = models.ForeignKey(Programmes, on_delete=models.CASCADE, null=True, blank=True)
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     version = models.CharField(max_length=32, default="1.0")
