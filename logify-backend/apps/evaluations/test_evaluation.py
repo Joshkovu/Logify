@@ -491,7 +491,7 @@ class TestFinalResultsViewSet(APITestCase):
             workplace_supervisor=self.workplace_supervisor,
             academic_supervisor=self.academic_supervisor,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 1, 14),
             work_mode="On-site",
             internship_title="Software Engineering Intern",
             department_at_company="IT",
