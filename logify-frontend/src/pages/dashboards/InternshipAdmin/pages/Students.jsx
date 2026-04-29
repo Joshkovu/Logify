@@ -350,10 +350,31 @@ const Students = () => {
                   <TableCell>{student.programme}</TableCell>
                   <TableCell>{student.placement}</TableCell>
                   <TableCell>
-                    <StatusBadge status={student.placementStatus} />
+                    <StatusBadge
+                      status={
+                        activeStatuses.has(
+                          String(student.placementStatus).toLowerCase(),
+                        )
+                          ? "active"
+                          : pendingStatuses.has(
+                              String(student.placementStatus).toLowerCase(),
+                            )
+                          ? "pending"
+                          : "approved"
+                      }
+                    />
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={student.approvalStatus} />
+                    <StatusBadge
+                      status={
+                        approvalStatuses.has(
+                          String(student.placementStatus).toLowerCase(),
+                        )
+                          ? "approved"
+                          : "pending"
+                      }
+                    />
+        
                   </TableCell>
                   <TableCell>
                     {student.score > 0 ? (
