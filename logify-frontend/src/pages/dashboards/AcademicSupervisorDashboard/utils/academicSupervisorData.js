@@ -164,6 +164,9 @@ export const loadAcademicSupervisorData = async () => {
     scoresResponse,
     criteriaResponse,
     resultsResponse,
+    rubricsResponse,
+    programmesResponse,
+    departmentsResponse,
   ] = await Promise.all([
     api.auth.me(),
     api.placements.getPlacements(),
