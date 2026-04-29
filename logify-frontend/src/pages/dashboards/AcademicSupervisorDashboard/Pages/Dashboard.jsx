@@ -405,10 +405,13 @@ const Dashboard = () => {
                     Student
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
+                    Department
+                  </th>
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Organization
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
-                    Role
+                    Internship
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Submitted On
