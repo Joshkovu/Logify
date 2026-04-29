@@ -452,20 +452,15 @@ const Evaluation = () => {
     setError("");
 
     try {
-      await upsertFinalResultForEvaluation({
-        evaluationId: selectedEvaluation.id,
-        placementId: selectedEvaluation.placementId,
-        rubricId: selectedEvaluation.rubricId,
-        finalResultId: selectedEvaluation.finalResultId,
-        remarks: selectedEvaluation.feedback,
-      });
-      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+      const evaluationRecord = await ensureEvaluationRecord(selectedEvaluation);
+      await upsertScoresForEvaluation(evaluationRecord);
+      await api.evaluations.patchEvaluation(evaluationRecord.id, {
         status: "submitted",
       });
       setSnapshot((current) => ({
         ...current,
         evaluations: current.evaluations.map((evaluation) =>
-          evaluation.id === selectedEvaluation.id
+          evaluation.id === evaluationRecord.id
             ? { ...evaluation, status: "submitted" }
             : evaluation,
         ),
@@ -489,26 +484,28 @@ const Evaluation = () => {
     setError("");
 
     try {
-      const result = await upsertFinalResultForEvaluation({
-        evaluationId: selectedEvaluation.id,
-        placementId: selectedEvaluation.placementId,
-        rubricId: selectedEvaluation.rubricId,
-        finalResultId: selectedEvaluation.finalResultId,
-        remarks: selectedEvaluation.feedback,
-      });
-      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+      const evaluationRecord = await ensureEvaluationRecord(selectedEvaluation);
+      await upsertScoresForEvaluation(evaluationRecord);
+      await api.evaluations.patchEvaluation(evaluationRecord.id, {
         status: "reviewed",
+      });
+      const result = await upsertFinalResultForEvaluation({
+        evaluationId: evaluationRecord.id,
+        placementId: evaluationRecord.placementId,
+        rubricId: evaluationRecord.rubricId,
+        finalResultId: evaluationRecord.finalResultId,
+        remarks: evaluationRecord.feedback,
       });
       setSnapshot((current) => ({
         ...current,
         evaluations: current.evaluations.map((evaluation) =>
-          evaluation.id === selectedEvaluation.id
+          evaluation.id === evaluationRecord.id
             ? { ...evaluation, status: "reviewed" }
             : evaluation,
         ),
         resultByPlacementId: {
           ...current.resultByPlacementId,
-          [selectedEvaluation.placementId]: result,
+          [evaluationRecord.placementId]: result,
         },
       }));
       toast.success("Evaluation authorized successfully");
