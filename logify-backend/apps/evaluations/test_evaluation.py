@@ -76,7 +76,7 @@ class TestEvaluation(TestCase):
             workplace_supervisor=self.workplace_supervisor,
             academic_supervisor=self.academic_supervisor,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 1, 14),
             work_mode="On-site",
             internship_title="Software Engineering Intern",
             department_at_company="IT",
@@ -566,6 +566,27 @@ class TestFinalResultsViewSet(APITestCase):
         self.assertEqual(response.data["logbook_score"], 50.0)  # type: ignore
         self.assertEqual(response.data["final_score"], 71.0)  # type: ignore
         self.assertEqual(response.data["final_grade"], "B")  # type: ignore
+
+    def test_logbook_score_counts_missing_expected_weeks(self):
+        self.client.force_authenticate(user=self.academic_supervisor)
+        self.placement.end_date = date(2024, 1, 28)
+        self.placement.save(update_fields=["end_date"])
+
+        response = self.client.post(
+            reverse("results-list"),
+            {
+                "placement": self.placement.id,
+                "rubric": self.rubric.id,
+                "remarks": "Score should include missing logbook weeks.",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["academic_score"], 80.0)  # type: ignore
+        self.assertEqual(response.data["logbook_score"], 25.0)  # type: ignore
+        self.assertEqual(response.data["final_score"], 63.5)  # type: ignore
+        self.assertEqual(response.data["final_grade"], "C")  # type: ignore
 
     def test_workplace_supervisor_cannot_create_final_result(self):
         self.client.force_authenticate(user=self.workplace_supervisor)
