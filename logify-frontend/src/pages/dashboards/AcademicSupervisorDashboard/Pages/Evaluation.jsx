@@ -724,6 +724,45 @@ const Evaluation = () => {
                         style={{ width: `${item.score}%` }}
                       />
                     </div>
+
+                    {selectedEvaluation.category === "pending" &&
+                      item.criterionId && (
+                        <div className="mt-4 grid gap-3 sm:grid-cols-[180px_1fr]">
+                          <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                            Score
+                            <input
+                              type="number"
+                              min="0"
+                              max={item.maxScore}
+                              value={item.rawScore}
+                              onChange={(event) =>
+                                handleCriterionChange(
+                                  item,
+                                  "score",
+                                  event.target.value,
+                                )
+                              }
+                              className="mt-2 h-11 w-full rounded-xl border border-border/40 bg-card px-3 text-sm font-bold text-maroon-dark outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-100"
+                            />
+                          </label>
+
+                          <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                            Criterion Comment
+                            <textarea
+                              value={item.comment}
+                              onChange={(event) =>
+                                handleCriterionChange(
+                                  item,
+                                  "comment",
+                                  event.target.value,
+                                )
+                              }
+                              className="mt-2 min-h-[88px] w-full rounded-xl border border-border/40 bg-card px-3 py-2 text-sm font-medium normal-case tracking-normal text-muted-foreground outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-200"
+                              placeholder="Add a short note for this criterion..."
+                            />
+                          </label>
+                        </div>
+                      )}
                   </div>
                 ))}
               </div>
@@ -763,7 +802,7 @@ const Evaluation = () => {
                       <button
                         type="button"
                         onClick={handleSaveReview}
-                        disabled={isSaving}
+                        disabled={isSaving || !selectedEvaluation.rubricId}
                         className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300"
                       >
                         <Send size={18} />
@@ -773,7 +812,7 @@ const Evaluation = () => {
                       <button
                         type="button"
                         onClick={handleAuthorizeRequest}
-                        disabled={isSaving}
+                        disabled={isSaving || !selectedEvaluation.rubricId}
                         className="flex items-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <CheckCircle2 size={18} />
