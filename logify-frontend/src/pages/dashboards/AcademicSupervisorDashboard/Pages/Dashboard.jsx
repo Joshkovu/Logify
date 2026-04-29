@@ -122,33 +122,63 @@ const Dashboard = () => {
     () =>
       placements.slice(0, 5).map((placement) => {
         const { progress, weekLabel } = getPlacementProgress(placement);
+        const student = usersById[placement.intern];
+        const programme = programmeById[placement.programme];
+        const department = programme
+          ? departmentById[programme.department]
+          : null;
         return {
           id: placement.id,
-          name: getUserDisplayName(usersById[placement.intern], "Intern"),
+          name: getUserDisplayName(student, "Intern"),
+          studentNumber: student?.student_number || "Unavailable",
+          yearOfStudy: student?.year_of_study || "N/A",
           company:
             organizationsById[placement.organization]?.name ||
             "Unknown organization",
-          course: placement.internship_title || "Placement unavailable",
+          course: programme?.name || "Programme unavailable",
+          department: department?.name || "Department unavailable",
+          role: placement.internship_title || "Internship Placement",
+          companyDepartment:
+            placement.department_at_company || "Department not provided",
+          workMode: placement.work_mode || "N/A",
+          duration: formatDateRange(placement.start_date, placement.end_date),
           progress,
           week: weekLabel,
         };
       }),
-    [organizationsById, placements, usersById],
+    [departmentById, organizationsById, placements, programmeById, usersById],
   );
 
   const approvals = useMemo(
     () =>
-      pendingApprovals.map((placement) => ({
-        id: placement.id,
-        student: getUserDisplayName(usersById[placement.intern], "Intern"),
-        org:
-          organizationsById[placement.organization]?.name ||
-          "Unknown organization",
-        role: placement.internship_title || "Internship Placement",
-        date: formatDate(placement.submitted_at || placement.created_at),
-        status: "Pending",
-      })),
-    [organizationsById, pendingApprovals, usersById],
+      pendingApprovals.map((placement) => {
+        const student = usersById[placement.intern];
+        const programme = programmeById[placement.programme];
+        const department = programme
+          ? departmentById[programme.department]
+          : null;
+
+        return {
+          id: placement.id,
+          student: getUserDisplayName(student, "Intern"),
+          studentNumber: student?.student_number || "Unavailable",
+          department: department?.name || "Department unavailable",
+          org:
+            organizationsById[placement.organization]?.name ||
+            "Unknown organization",
+          role: placement.internship_title || "Internship Placement",
+          duration: formatDateRange(placement.start_date, placement.end_date),
+          date: formatDate(placement.submitted_at || placement.created_at),
+          status: "Pending",
+        };
+      }),
+    [
+      departmentById,
+      organizationsById,
+      pendingApprovals,
+      programmeById,
+      usersById,
+    ],
   );
 
   const activities = useMemo(() => {
