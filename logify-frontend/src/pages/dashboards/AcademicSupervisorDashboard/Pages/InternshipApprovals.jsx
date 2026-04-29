@@ -13,6 +13,7 @@ import {
   Mail,
   Phone,
 } from "lucide-react";
+import { toast } from "react-toastify";
 import { api } from "../../../../config/api";
 import {
   formatDate,
@@ -174,8 +175,11 @@ const InternshipApprovals = () => {
     try {
       const response = await api.placements.approvePlacement(item.id);
       updatePlacementStatus(item.id, "approved", response || {});
+      toast.success("Placement approved");
     } catch (actionError) {
-      setError(actionError.message || "Unable to approve this request.");
+      const message = actionError.message || "Unable to approve this request.";
+      setError(message);
+      toast.error(message);
     } finally {
       setActionId(null);
     }
@@ -188,8 +192,11 @@ const InternshipApprovals = () => {
     try {
       const response = await api.placements.rejectPlacement(item.id);
       updatePlacementStatus(item.id, "rejected", response || {});
+      toast.success("Placement rejected");
     } catch (actionError) {
-      setError(actionError.message || "Unable to decline this request.");
+      const message = actionError.message || "Unable to decline this request.";
+      setError(message);
+      toast.error(message);
     } finally {
       setActionId(null);
     }

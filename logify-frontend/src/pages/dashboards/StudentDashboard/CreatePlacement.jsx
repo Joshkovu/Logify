@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 
@@ -95,10 +96,16 @@ const CreatePlacement = ({ isOpen, onClose, placement = null, onSuccess }) => {
       if (submitAction === "submit") {
         await api.placements.submitPlacement(result.id);
       }
+      toast.success(
+        submitAction === "submit" ? "Placement submitted" : "Placement drafted",
+      );
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err.message || "Failed to create placement. Please try again.");
+      const message =
+        err.message || "Failed to create placement. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

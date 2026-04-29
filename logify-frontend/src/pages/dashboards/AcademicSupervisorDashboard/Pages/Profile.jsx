@@ -20,6 +20,7 @@ import {
   getUserDisplayName,
   loadAcademicSupervisorData,
 } from "../utils/academicSupervisorData";
+import { toast } from "react-toastify";
 import { api } from "../../../../config/api";
 
 const Profile = () => {
@@ -242,8 +243,11 @@ const Profile = () => {
             updated.staff_profile?.department_name || current.department,
         }));
         setShowEditModal(false);
+        toast.success("Profile updated successfully");
       } catch (saveError) {
-        setError(saveError.message || "Unable to update your profile.");
+        const message = saveError.message || "Unable to update your profile.";
+        setError(message);
+        toast.error(message);
       } finally {
         setIsSavingProfile(false);
       }
@@ -286,8 +290,11 @@ const Profile = () => {
           newPassword: "",
           confirmPassword: "",
         });
+        toast.success("Password changed successfully");
       } catch (passwordError) {
-        setError(passwordError.message || "Unable to update password.");
+        const message = passwordError.message || "Unable to update password.";
+        setError(message);
+        toast.error(message);
       } finally {
         setIsUpdatingPassword(false);
       }

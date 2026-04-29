@@ -1,4 +1,5 @@
 from apps.notifications.emails import send_logify_email
+from apps.placements.models import InternshipPlacements
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from rest_framework import status
@@ -247,6 +248,16 @@ class UserDetailView(APIView):
         requester = self.request.user
         if requester.is_superuser or requester.id == target.id:
             return target
+
+        if requester.role == User.STUDENT:
+            is_assigned = (
+                InternshipPlacements.objects.filter(intern=requester)
+                .filter(Q(academic_supervisor=target) | Q(workplace_supervisor=target))
+                .exists()
+            )
+            if is_assigned:
+                return target
+            raise PermissionDenied("You can only view your assigned supervisors.")
 
         if requester.role != User.INTERNSHIP_ADMIN:
             raise PermissionDenied("You do not have permission to access this user.")

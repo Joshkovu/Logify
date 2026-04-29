@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   FileText,
 } from "lucide-react";
+import { toast } from "react-toastify";
 import { api } from "../../../../config/api";
 import {
   buildEvaluationCriteria,
@@ -276,8 +277,11 @@ const Evaluation = () => {
             : evaluation,
         ),
       }));
+      toast.success("Evaluation submitted successfully");
     } catch (saveError) {
-      setError(saveError.message || "Unable to save this review.");
+      const message = saveError.message || "Unable to save this review.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
@@ -314,8 +318,12 @@ const Evaluation = () => {
           [selectedEvaluation.placementId]: result,
         },
       }));
+      toast.success("Evaluation authorized successfully");
     } catch (saveError) {
-      setError(saveError.message || "Unable to authorize this evaluation.");
+      const message =
+        saveError.message || "Unable to authorize this evaluation.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }

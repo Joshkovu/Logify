@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { api } from "../../../config/api";
 import PropTypes from "prop-types";
 import { isNumber } from "chart.js/helpers";
@@ -127,10 +128,20 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
         const logId = weeklyLog?.id ?? result.weekly_log.id ?? result.id;
         await api.logbook.deleteWeeklyLog(logId, result);
       }
+      if (submitAction === "submit") {
+        toast.success("Weekly log submitted");
+      } else if (submitAction === "draft") {
+        toast.success("Weekly log drafted");
+      } else if (submitAction === "delete") {
+        toast.success("Weekly log deleted");
+      }
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err.message);
+      const message =
+        err.message || "Failed to save weekly log. Please try again.";
+      setError(message);
+      toast.error(message);
     } finally {
       if (submitAction === "submit") {
         setIsSubmitting(false);
