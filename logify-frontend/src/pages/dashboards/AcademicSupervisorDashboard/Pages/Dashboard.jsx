@@ -7,6 +7,7 @@ import {
   formatDateRange,
   formatRelativeTime,
   getPlacementProgress,
+  getPlacementStudentName,
   getUserDisplayName,
   loadAcademicSupervisorData,
 } from "../utils/academicSupervisorData";
@@ -129,7 +130,7 @@ const Dashboard = () => {
           : null;
         return {
           id: placement.id,
-          name: getUserDisplayName(student, "Intern"),
+          name: getPlacementStudentName(placement, usersById),
           studentNumber: student?.student_number || "Unavailable",
           yearOfStudy: student?.year_of_study || "N/A",
           company:
@@ -160,7 +161,7 @@ const Dashboard = () => {
 
         return {
           id: placement.id,
-          student: getUserDisplayName(student, "Intern"),
+          student: getPlacementStudentName(placement, usersById),
           studentNumber: student?.student_number || "Unavailable",
           department: department?.name || "Department unavailable",
           org:
@@ -192,9 +193,7 @@ const Dashboard = () => {
             log.status === "approved"
               ? "Weekly Log Updated"
               : "Weekly Log Submitted",
-          user: placement
-            ? getUserDisplayName(usersById[placement.intern], "Intern")
-            : "Intern",
+          user: placement ? getPlacementStudentName(placement, usersById) : "",
           desc: `Week ${log.week_number || "?"} progress update`,
           time: formatRelativeTime(log.submitted_at || log.updated_at),
           sortDate: log.submitted_at || log.updated_at,
@@ -207,7 +206,7 @@ const Dashboard = () => {
       .map((placement) => ({
         id: `placement-${placement.id}`,
         title: "Approved Placement",
-        user: getUserDisplayName(usersById[placement.intern], "Intern"),
+        user: getPlacementStudentName(placement, usersById),
         desc: `${
           organizationsById[placement.organization]?.name ||
           "Unknown organization"
@@ -226,9 +225,7 @@ const Dashboard = () => {
         return {
           id: `evaluation-${evaluation.id}`,
           title: "Completed Evaluation",
-          user: placement
-            ? getUserDisplayName(usersById[placement.intern], "Intern")
-            : "Intern",
+          user: placement ? getPlacementStudentName(placement, usersById) : "",
           desc: `Score: ${Math.round(evaluation.total_score || 0)}%`,
           time: formatRelativeTime(
             evaluation.updated_at || evaluation.submitted_at,
