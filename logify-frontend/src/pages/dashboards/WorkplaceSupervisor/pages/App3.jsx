@@ -1,9 +1,17 @@
 import { useEffect, useState } from "react";
-import { LayoutDashboard, Users, User, FileCheck, Menu } from "lucide-react";
+import {
+  LayoutDashboard,
+  Users,
+  User,
+  FileCheck,
+  Menu,
+  Bell,
+} from "lucide-react";
 import Dashboard from "../components/dashboard/Dashboard";
 import { Routes, Route } from "react-router-dom";
 import AssignedInterns from "./AssignedInterns";
 import PendingLogReview from "./PendingLogReview";
+import PendingAcceptances from "./PendingAcceptances";
 import Profile from "./Profile";
 import Side_bar from "../components/dashboard/Side_bar";
 import ThemeToggle from "../../../../components/ui/ThemeToggle";
@@ -15,6 +23,11 @@ const navParameters = [
     icon: LayoutDashboard,
     name: "Dashboard",
     path: "/workplace-supervisor",
+  },
+  {
+    icon: Bell,
+    name: "Pending Acceptances",
+    path: "/workplace-supervisor/pending-acceptances",
   },
   {
     icon: Users,
@@ -133,6 +146,10 @@ const WorkplaceSupervisorDashboard = () => {
         <main className="min-w-0 flex-1 overflow-y-auto overflow-x-hidden">
           <Routes>
             <Route index element={<Dashboard />} />
+            <Route
+              path="pending-acceptances"
+              element={<PendingAcceptances />}
+            />
             <Route path="assigned-interns" element={<AssignedInterns />} />
             <Route path="pending-log-review" element={<PendingLogReview />} />
             <Route path="profile" element={<Profile />} />
