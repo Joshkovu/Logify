@@ -4,6 +4,7 @@ import { User, CheckCircle2, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   formatDate,
+  formatDateRange,
   formatRelativeTime,
   getPlacementProgress,
   getUserDisplayName,
