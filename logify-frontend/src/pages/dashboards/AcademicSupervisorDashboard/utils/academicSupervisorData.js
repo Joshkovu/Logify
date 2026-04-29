@@ -76,6 +76,7 @@ export const buildEvaluationCriteria = ({
   evaluation,
   scores,
   criteriaById,
+  scoreDrafts = {},
 }) => {
   const linkedScores = scores
     .filter((score) => score.evaluation === evaluation.id)
