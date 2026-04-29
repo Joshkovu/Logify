@@ -175,6 +175,9 @@ export const loadAcademicSupervisorData = async () => {
     api.evaluations.getScores(),
     api.evaluations.getCriteria(),
     api.evaluations.getResults(),
+    api.evaluations.getRubrics(),
+    api.academics.getProgrammes(),
+    api.academics.getDepartments(),
   ]);
 
   const placements = toArray(placementsResponse);
