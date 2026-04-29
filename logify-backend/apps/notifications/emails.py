@@ -22,6 +22,10 @@ def send_logify_email(subject, template_name, context, recipient_list):
         bool: True if successful, False otherwise
     """
     try:
+        # Add frontend URL to context if not already there
+        if "frontend_url" not in context:
+            context["frontend_url"] = getattr(settings, "FRONTEND_URL", "http://localhost:3000")
+
         # Render HTML content
         html_message = render_to_string(template_name, context)
 
