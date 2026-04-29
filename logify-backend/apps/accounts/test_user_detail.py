@@ -83,8 +83,11 @@ class TestUserDetailView(APITestCase):
     def test_academic_supervisor_can_view_assigned_student(self):
         organization = Organizations.objects.create(
             name="Org A",
-            email="org@example.com",
+            contact_email="org@example.com",
             address="123 Main St",
+            industry="Tech",
+            city="Kampala",
+            contact_phone="123456789"
         )
         InternshipPlacements.objects.create(
             intern=self.student,
