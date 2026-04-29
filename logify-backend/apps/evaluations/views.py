@@ -18,6 +18,7 @@ from apps.evaluations.serializer import (
     EvaluationsSerializer,
     FinalResultsSerializer,
 )
+from django.db import models
 from rest_framework import permissions, viewsets
 
 
@@ -60,9 +61,13 @@ class EvaluationRubricsViewSet(viewsets.ModelViewSet):
         institution_id = self.request.query_params.get("institution")
         programme_id = self.request.query_params.get("programme")
         if institution_id:
-            queryset = queryset.filter(institution_id=institution_id)
+            queryset = queryset.filter(
+                models.Q(institution_id=institution_id) | models.Q(institution__isnull=True)
+            )
         if programme_id:
-            queryset = queryset.filter(programme_id=programme_id)
+            queryset = queryset.filter(
+                models.Q(programme_id=programme_id) | models.Q(programme__isnull=True)
+            )
         return queryset
 
 
