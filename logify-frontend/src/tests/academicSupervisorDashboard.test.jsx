@@ -11,6 +11,11 @@ jest.mock("../config/api", () => ({
       getScores: jest.fn(),
       getCriteria: jest.fn(),
       getResults: jest.fn(),
+      getRubrics: jest.fn(),
+    },
+    academics: {
+      getProgrammes: jest.fn(),
+      getDepartments: jest.fn(),
     },
     accounts: { getUser: jest.fn() },
     organizations: { getOrganization: jest.fn() },
@@ -59,6 +64,9 @@ const waitForDashboardEffectsToSettle = async () => {
     expect(api.evaluations.getScores).toHaveBeenCalled();
     expect(api.evaluations.getCriteria).toHaveBeenCalled();
     expect(api.evaluations.getResults).toHaveBeenCalled();
+    expect(api.evaluations.getRubrics).toHaveBeenCalled();
+    expect(api.academics.getProgrammes).toHaveBeenCalled();
+    expect(api.academics.getDepartments).toHaveBeenCalled();
   });
 };
 
@@ -67,6 +75,7 @@ const setupSuccessfulResponses = ({
     {
       id: 1,
       intern: 101,
+      programme: 901,
       organization: 201,
       internship_title: "Software Engineering Intern",
       status: "submitted",
@@ -90,6 +99,19 @@ const setupSuccessfulResponses = ({
   scores = [],
   criteria = [],
   results = [],
+  programmes = [
+    {
+      id: 901,
+      department: 801,
+      name: "Bachelor of Software Engineering",
+    },
+  ],
+  departments = [
+    {
+      id: 801,
+      name: "Computer Science",
+    },
+  ],
 } = {}) => {
   api.auth.me.mockResolvedValue({
     first_name: "Emily",
@@ -102,6 +124,9 @@ const setupSuccessfulResponses = ({
   api.evaluations.getScores.mockResolvedValue(scores);
   api.evaluations.getCriteria.mockResolvedValue(criteria);
   api.evaluations.getResults.mockResolvedValue(results);
+  api.evaluations.getRubrics.mockResolvedValue([]);
+  api.academics.getProgrammes.mockResolvedValue(programmes);
+  api.academics.getDepartments.mockResolvedValue(departments);
 
   api.accounts.getUser.mockResolvedValue({
     id: 101,
@@ -129,6 +154,9 @@ test("shows a loading message while dashboard data is being fetched", () => {
   api.evaluations.getScores.mockReturnValue(new Promise(() => {}));
   api.evaluations.getCriteria.mockReturnValue(new Promise(() => {}));
   api.evaluations.getResults.mockReturnValue(new Promise(() => {}));
+  api.evaluations.getRubrics.mockReturnValue(new Promise(() => {}));
+  api.academics.getProgrammes.mockReturnValue(new Promise(() => {}));
+  api.academics.getDepartments.mockReturnValue(new Promise(() => {}));
 
   render(<Dashboard />);
 
@@ -187,6 +215,9 @@ test("shows an error message when dashboard loading fails", async () => {
   api.evaluations.getScores.mockResolvedValue([]);
   api.evaluations.getCriteria.mockResolvedValue([]);
   api.evaluations.getResults.mockResolvedValue([]);
+  api.evaluations.getRubrics.mockResolvedValue([]);
+  api.academics.getProgrammes.mockResolvedValue([]);
+  api.academics.getDepartments.mockResolvedValue([]);
 
   render(<Dashboard />);
   await waitForDashboardEffectsToSettle();

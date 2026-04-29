@@ -1,3 +1,5 @@
+from math import ceil
+
 from apps.evaluations.models import (
     EvaluationCriteria,
     EvaluationRubrics,
@@ -286,11 +288,34 @@ class FinalResultsSerializer(serializers.ModelSerializer):
         return data
 
     def _compute_logbook_score(self, placement):
-        reviewed_logs = WeeklyLogs.objects.filter(placement=placement).exclude(status="draft")
-        if not reviewed_logs.exists():
+        expected_weeks = self._compute_expected_logbook_weeks(placement)
+        if expected_weeks == 0:
             return 0.0
-        approved_logs = reviewed_logs.filter(status="approved").count()
-        return round((approved_logs / reviewed_logs.count()) * 100, 2)
+
+        approved_logs = (
+            WeeklyLogs.objects.filter(placement=placement, status="approved")
+            .values("week_number")
+            .distinct()
+            .count()
+        )
+        return round((approved_logs / expected_weeks) * 100, 2)
+
+    def _compute_expected_logbook_weeks(self, placement):
+        if not placement.start_date or not placement.end_date:
+            return 0
+
+        duration_days = (placement.end_date - placement.start_date).days + 1
+        if duration_days <= 0:
+            return 0
+
+        submitted_weeks = (
+            WeeklyLogs.objects.filter(placement=placement)
+            .values("week_number")
+            .distinct()
+            .count()
+        )
+        scheduled_weeks = ceil(duration_days / 7)
+        return max(scheduled_weeks, submitted_weeks)
 
     def _compute_academic_score(self, placement, rubric):
         evaluations_qs = Evaluations.objects.filter(

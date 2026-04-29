@@ -4,6 +4,7 @@ import { User, CheckCircle2, ChevronRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import {
   formatDate,
+  formatDateRange,
   formatRelativeTime,
   getPlacementProgress,
   getUserDisplayName,
@@ -24,6 +25,8 @@ const Dashboard = () => {
     evaluations: [],
     usersById: {},
     organizationsById: {},
+    programmeById: {},
+    departmentById: {},
   });
 
   useEffect(() => {
@@ -52,6 +55,8 @@ const Dashboard = () => {
           evaluations: data.evaluations,
           usersById: data.usersById,
           organizationsById: data.organizationsById,
+          programmeById: data.programmeById,
+          departmentById: data.departmentById,
         });
       } catch (loadError) {
         setError(loadError.message || "Unable to load dashboard data.");
@@ -70,6 +75,8 @@ const Dashboard = () => {
     evaluations,
     usersById,
     organizationsById,
+    programmeById,
+    departmentById,
   } = snapshot;
 
   const pendingApprovals = useMemo(
@@ -115,33 +122,63 @@ const Dashboard = () => {
     () =>
       placements.slice(0, 5).map((placement) => {
         const { progress, weekLabel } = getPlacementProgress(placement);
+        const student = usersById[placement.intern];
+        const programme = programmeById[placement.programme];
+        const department = programme
+          ? departmentById[programme.department]
+          : null;
         return {
           id: placement.id,
-          name: getUserDisplayName(usersById[placement.intern], "Intern"),
+          name: getUserDisplayName(student, "Intern"),
+          studentNumber: student?.student_number || "Unavailable",
+          yearOfStudy: student?.year_of_study || "N/A",
           company:
             organizationsById[placement.organization]?.name ||
             "Unknown organization",
-          course: placement.internship_title || "Placement unavailable",
+          course: programme?.name || "Programme unavailable",
+          department: department?.name || "Department unavailable",
+          role: placement.internship_title || "Internship Placement",
+          companyDepartment:
+            placement.department_at_company || "Department not provided",
+          workMode: placement.work_mode || "N/A",
+          duration: formatDateRange(placement.start_date, placement.end_date),
           progress,
           week: weekLabel,
         };
       }),
-    [organizationsById, placements, usersById],
+    [departmentById, organizationsById, placements, programmeById, usersById],
   );
 
   const approvals = useMemo(
     () =>
-      pendingApprovals.map((placement) => ({
-        id: placement.id,
-        student: getUserDisplayName(usersById[placement.intern], "Intern"),
-        org:
-          organizationsById[placement.organization]?.name ||
-          "Unknown organization",
-        role: placement.internship_title || "Internship Placement",
-        date: formatDate(placement.submitted_at || placement.created_at),
-        status: "Pending",
-      })),
-    [organizationsById, pendingApprovals, usersById],
+      pendingApprovals.map((placement) => {
+        const student = usersById[placement.intern];
+        const programme = programmeById[placement.programme];
+        const department = programme
+          ? departmentById[programme.department]
+          : null;
+
+        return {
+          id: placement.id,
+          student: getUserDisplayName(student, "Intern"),
+          studentNumber: student?.student_number || "Unavailable",
+          department: department?.name || "Department unavailable",
+          org:
+            organizationsById[placement.organization]?.name ||
+            "Unknown organization",
+          role: placement.internship_title || "Internship Placement",
+          duration: formatDateRange(placement.start_date, placement.end_date),
+          date: formatDate(placement.submitted_at || placement.created_at),
+          status: "Pending",
+        };
+      }),
+    [
+      departmentById,
+      organizationsById,
+      pendingApprovals,
+      programmeById,
+      usersById,
+    ],
   );
 
   const activities = useMemo(() => {
@@ -288,7 +325,7 @@ const Dashboard = () => {
                         {intern.company}
                       </p>
                       <p className="mt-1 text-xs text-muted-foreground/80">
-                        {intern.course}
+                        {intern.role}
                       </p>
                     </div>
                   </div>
@@ -305,8 +342,37 @@ const Dashboard = () => {
                   />
                 </div>
 
-                <div className="text-right text-xs font-semibold text-muted-foreground">
+                <div className="mb-4 text-right text-xs font-semibold text-muted-foreground">
                   {intern.progress}%
+                </div>
+
+                <div className="grid gap-3 border-t border-border/40 pt-4 text-xs text-muted-foreground sm:grid-cols-2 lg:grid-cols-4">
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Reg No.
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.studentNumber}</p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Department
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.department}</p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Internship
+                    </p>
+                    <p className="mt-1 font-semibold">
+                      {intern.companyDepartment} &bull; {intern.workMode}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="font-bold uppercase tracking-[0.16em] text-maroon-dark/60 dark:text-slate-300">
+                      Duration
+                    </p>
+                    <p className="mt-1 font-semibold">{intern.duration}</p>
+                  </div>
                 </div>
               </div>
             ))}
@@ -339,10 +405,13 @@ const Dashboard = () => {
                     Student
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
+                    Department
+                  </th>
+                  <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Organization
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
-                    Role
+                    Internship
                   </th>
                   <th className="px-4 py-4 text-[10px] font-black uppercase tracking-[0.2em] text-maroon-dark/60 dark:text-slate-300 sm:px-6">
                     Submitted On
@@ -360,7 +429,7 @@ const Dashboard = () => {
                 {!isLoading && approvals.length === 0 && (
                   <tr>
                     <td
-                      colSpan="6"
+                      colSpan="7"
                       className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-6"
                     >
                       No pending placement approvals right now.
@@ -378,10 +447,19 @@ const Dashboard = () => {
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 font-bold text-gold dark:text-slate-300">
                           {approval.student.charAt(0)}
                         </div>
-                        <span className="text-sm font-bold text-maroon-dark dark:text-white">
-                          {approval.student}
-                        </span>
+                        <div>
+                          <span className="block text-sm font-bold text-maroon-dark dark:text-white">
+                            {approval.student}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {approval.studentNumber}
+                          </span>
+                        </div>
                       </div>
+                    </td>
+
+                    <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
+                      {approval.department}
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
@@ -389,7 +467,8 @@ const Dashboard = () => {
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
-                      {approval.role}
+                      <p>{approval.role}</p>
+                      <p className="mt-1 text-xs">{approval.duration}</p>
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">

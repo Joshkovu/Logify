@@ -29,6 +29,7 @@ const mapEvaluationRecord = ({
   criteriaById,
   resultByPlacementId,
   feedbackDrafts,
+  scoreDrafts,
 }) => {
   const placement = placementById[evaluation.placement];
   const student = placement ? usersById[placement.intern] : null;
@@ -43,6 +44,7 @@ const mapEvaluationRecord = ({
     evaluation,
     scores,
     criteriaById,
+    scoreDrafts,
   });
   const feedbackFromScores = criteria
     .map((item) => item.comment)
@@ -56,6 +58,7 @@ const mapEvaluationRecord = ({
 
   return {
     id: evaluation.id,
+    isVirtual: false,
     placementId: evaluation.placement,
     rubricId: evaluation.rubric,
     finalResultId: finalResult?.id || null,
@@ -84,15 +87,83 @@ const mapEvaluationRecord = ({
   };
 };
 
+const findCurrentRubricForPlacement = (placement, rubrics) =>
+  rubrics.find(
+    (rubric) =>
+      rubric.institution === placement.institution &&
+      rubric.programme === placement.programme &&
+      rubric.is_current !== false &&
+      rubric.is_active !== false,
+  ) ||
+  rubrics.find(
+    (rubric) =>
+      rubric.institution === placement.institution &&
+      rubric.programme === placement.programme,
+  ) ||
+  null;
+
+const mapApprovedPlacementRecord = ({
+  placement,
+  rubric,
+  usersById,
+  organizationsById,
+  criteriaById,
+  feedbackDrafts,
+  scoreDrafts,
+}) => {
+  const student = usersById[placement.intern];
+  const organization = organizationsById[placement.organization];
+  const { weekLabel } = getPlacementProgress(placement);
+  const evaluation = {
+    id: `placement-${placement.id}`,
+    placement: placement.id,
+    rubric: rubric?.id || null,
+    status: "draft",
+    total_score: 0,
+  };
+
+  return {
+    id: evaluation.id,
+    isVirtual: true,
+    placementId: placement.id,
+    rubricId: rubric?.id || null,
+    finalResultId: null,
+    category: "pending",
+    name: getUserDisplayName(student, "Intern"),
+    type: "Pending Evaluation",
+    company: organization?.name || "Unknown organization",
+    status: rubric ? "Ready to Grade" : "Rubric Needed",
+    program: placement.internship_title || "Placement unavailable",
+    week: weekLabel,
+    score: 0,
+    finalGrade: "Pending",
+    logbookScore: null,
+    academicScore: null,
+    feedback: feedbackDrafts[evaluation.id] || "",
+    date: formatDate(placement.approved_at || placement.updated_at),
+    criteria: rubric
+      ? buildEvaluationCriteria({
+          evaluation,
+          scores: [],
+          criteriaById,
+          scoreDrafts,
+        })
+      : [],
+  };
+};
+
 const Evaluation = () => {
   const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [feedbackDrafts, setFeedbackDrafts] = useState({});
+  const [scoreDrafts, setScoreDrafts] = useState({});
   const [snapshot, setSnapshot] = useState({
+    placements: [],
     evaluations: [],
     scores: [],
+    rubrics: [],
     criteriaById: {},
     placementById: {},
     resultByPlacementId: {},
@@ -121,8 +192,10 @@ const Evaluation = () => {
       try {
         const data = await loadAcademicSupervisorData();
         setSnapshot({
+          placements: data.placements,
           evaluations: data.evaluations,
           scores: data.scores,
+          rubrics: data.rubrics,
           criteriaById: data.criteriaById,
           placementById: data.placementById,
           resultByPlacementId: data.resultByPlacementId,
@@ -140,8 +213,10 @@ const Evaluation = () => {
   }, []);
 
   const {
+    placements,
     evaluations,
     scores,
+    rubrics,
     criteriaById,
     placementById,
     resultByPlacementId,
@@ -151,26 +226,51 @@ const Evaluation = () => {
 
   const records = useMemo(
     () =>
-      evaluations.map((evaluation) =>
-        mapEvaluationRecord({
-          evaluation,
-          placementById,
-          usersById,
-          organizationsById,
-          scores,
-          criteriaById,
-          resultByPlacementId,
-          feedbackDrafts,
-        }),
-      ),
+      [
+        ...evaluations.map((evaluation) =>
+          mapEvaluationRecord({
+            evaluation,
+            placementById,
+            usersById,
+            organizationsById,
+            scores,
+            criteriaById,
+            resultByPlacementId,
+            feedbackDrafts,
+            scoreDrafts,
+          }),
+        ),
+        ...placements
+          .filter(
+            (placement) =>
+              ["approved", "active", "completed"].includes(placement.status) &&
+              !evaluations.some(
+                (evaluation) => evaluation.placement === placement.id,
+              ),
+          )
+          .map((placement) =>
+            mapApprovedPlacementRecord({
+              placement,
+              rubric: findCurrentRubricForPlacement(placement, rubrics),
+              usersById,
+              organizationsById,
+              criteriaById,
+              feedbackDrafts,
+              scoreDrafts,
+            }),
+          ),
+      ],
     [
       criteriaById,
       evaluations,
       feedbackDrafts,
       organizationsById,
       placementById,
+      placements,
       resultByPlacementId,
+      rubrics,
       scores,
+      scoreDrafts,
       usersById,
     ],
   );
@@ -217,6 +317,99 @@ const Evaluation = () => {
     }));
   };
 
+  const handleCriterionChange = (criterion, field, value) => {
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
+      return;
+    }
+
+    setScoreDrafts((current) => ({
+      ...current,
+      [criterion.draftKey]: {
+        score: criterion.rawScore ?? 0,
+        comment: criterion.comment || "",
+        ...current[criterion.draftKey],
+        [field]:
+          field === "score"
+            ? Math.max(
+                0,
+                Math.min(Number(value || 0), criterion.maxScore || 100),
+              )
+            : value,
+      },
+    }));
+  };
+
+  const ensureEvaluationRecord = async (record) => {
+    if (!record.isVirtual) {
+      return record;
+    }
+
+    if (!record.rubricId) {
+      throw new Error("No current rubric is available for this placement.");
+    }
+
+    const created = await api.evaluations.createEvaluation({
+      placement: record.placementId,
+      rubric: record.rubricId,
+      status: "draft",
+      total_score: 0,
+    });
+
+    setSnapshot((current) => ({
+      ...current,
+      evaluations: [...current.evaluations, created],
+    }));
+    setFeedbackDrafts((current) => ({
+      ...current,
+      [created.id]: current[record.id] || record.feedback || "",
+    }));
+    setSelectedEvaluationId(created.id);
+
+    return {
+      ...record,
+      id: created.id,
+      isVirtual: false,
+    };
+  };
+
+  const upsertScoresForEvaluation = async (record) => {
+    const scoredCriteria = record.criteria.filter(
+      (criterion) => criterion.criterionId,
+    );
+
+    if (scoredCriteria.length === 0) {
+      return [];
+    }
+
+    const savedScores = await Promise.all(
+      scoredCriteria.map((criterion) => {
+        const payload = {
+          evaluation: record.id,
+          criterion: criterion.criterionId,
+          score: Number(criterion.rawScore || 0),
+          comment: criterion.comment || "",
+        };
+
+        return criterion.id
+          ? api.evaluations.patchScore(criterion.id, payload)
+          : api.evaluations.createScore(payload);
+      }),
+    );
+
+    setSnapshot((current) => {
+      const savedIds = new Set(savedScores.map((score) => score.id));
+      return {
+        ...current,
+        scores: [
+          ...current.scores.filter((score) => !savedIds.has(score.id)),
+          ...savedScores,
+        ],
+      };
+    });
+
+    return savedScores;
+  };
+
   const upsertFinalResultForEvaluation = async ({
     evaluationId,
     placementId,
@@ -259,20 +452,15 @@ const Evaluation = () => {
     setError("");
 
     try {
-      await upsertFinalResultForEvaluation({
-        evaluationId: selectedEvaluation.id,
-        placementId: selectedEvaluation.placementId,
-        rubricId: selectedEvaluation.rubricId,
-        finalResultId: selectedEvaluation.finalResultId,
-        remarks: selectedEvaluation.feedback,
-      });
-      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+      const evaluationRecord = await ensureEvaluationRecord(selectedEvaluation);
+      await upsertScoresForEvaluation(evaluationRecord);
+      await api.evaluations.patchEvaluation(evaluationRecord.id, {
         status: "submitted",
       });
       setSnapshot((current) => ({
         ...current,
         evaluations: current.evaluations.map((evaluation) =>
-          evaluation.id === selectedEvaluation.id
+          evaluation.id === evaluationRecord.id
             ? { ...evaluation, status: "submitted" }
             : evaluation,
         ),
@@ -296,26 +484,28 @@ const Evaluation = () => {
     setError("");
 
     try {
-      const result = await upsertFinalResultForEvaluation({
-        evaluationId: selectedEvaluation.id,
-        placementId: selectedEvaluation.placementId,
-        rubricId: selectedEvaluation.rubricId,
-        finalResultId: selectedEvaluation.finalResultId,
-        remarks: selectedEvaluation.feedback,
-      });
-      await api.evaluations.patchEvaluation(selectedEvaluation.id, {
+      const evaluationRecord = await ensureEvaluationRecord(selectedEvaluation);
+      await upsertScoresForEvaluation(evaluationRecord);
+      await api.evaluations.patchEvaluation(evaluationRecord.id, {
         status: "reviewed",
+      });
+      const result = await upsertFinalResultForEvaluation({
+        evaluationId: evaluationRecord.id,
+        placementId: evaluationRecord.placementId,
+        rubricId: evaluationRecord.rubricId,
+        finalResultId: evaluationRecord.finalResultId,
+        remarks: evaluationRecord.feedback,
       });
       setSnapshot((current) => ({
         ...current,
         evaluations: current.evaluations.map((evaluation) =>
-          evaluation.id === selectedEvaluation.id
+          evaluation.id === evaluationRecord.id
             ? { ...evaluation, status: "reviewed" }
             : evaluation,
         ),
         resultByPlacementId: {
           ...current.resultByPlacementId,
-          [selectedEvaluation.placementId]: result,
+          [evaluationRecord.placementId]: result,
         },
       }));
       toast.success("Evaluation authorized successfully");
@@ -534,6 +724,45 @@ const Evaluation = () => {
                         style={{ width: `${item.score}%` }}
                       />
                     </div>
+
+                    {selectedEvaluation.category === "pending" &&
+                      item.criterionId && (
+                        <div className="mt-4 grid gap-3 sm:grid-cols-[180px_1fr]">
+                          <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                            Score
+                            <input
+                              type="number"
+                              min="0"
+                              max={item.maxScore}
+                              value={item.rawScore}
+                              onChange={(event) =>
+                                handleCriterionChange(
+                                  item,
+                                  "score",
+                                  event.target.value,
+                                )
+                              }
+                              className="mt-2 h-11 w-full rounded-xl border border-border/40 bg-card px-3 text-sm font-bold text-maroon-dark outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-100"
+                            />
+                          </label>
+
+                          <label className="text-xs font-bold uppercase tracking-[0.16em] text-muted-foreground">
+                            Criterion Comment
+                            <textarea
+                              value={item.comment}
+                              onChange={(event) =>
+                                handleCriterionChange(
+                                  item,
+                                  "comment",
+                                  event.target.value,
+                                )
+                              }
+                              className="mt-2 min-h-[88px] w-full rounded-xl border border-border/40 bg-card px-3 py-2 text-sm font-medium normal-case tracking-normal text-muted-foreground outline-none transition focus:border-gold focus:ring-2 focus:ring-gold/20 dark:text-slate-200"
+                              placeholder="Add a short note for this criterion..."
+                            />
+                          </label>
+                        </div>
+                      )}
                   </div>
                 ))}
               </div>
@@ -573,7 +802,7 @@ const Evaluation = () => {
                       <button
                         type="button"
                         onClick={handleSaveReview}
-                        disabled={isSaving}
+                        disabled={isSaving || !selectedEvaluation.rubricId}
                         className="flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-colors hover:text-maroon disabled:cursor-not-allowed disabled:opacity-60 dark:text-slate-300"
                       >
                         <Send size={18} />
@@ -583,7 +812,7 @@ const Evaluation = () => {
                       <button
                         type="button"
                         onClick={handleAuthorizeRequest}
-                        disabled={isSaving}
+                        disabled={isSaving || !selectedEvaluation.rubricId}
                         className="flex items-center gap-2 rounded-lg border border-emerald-700 bg-emerald-600 px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
                       >
                         <CheckCircle2 size={18} />
