@@ -108,11 +108,46 @@ export const buildEvaluationCriteria = ({
     return linkedScores;
   }
 
+  const rubricCriteria = Object.values(criteriaById)
+    .filter((criterion) => criterion.rubric === evaluation.rubric)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  if (rubricCriteria.length > 0) {
+    return rubricCriteria.map((criterion) => {
+      const maxScore = criterion.max_score || 100;
+      const weightPercent = Number(criterion.weight_percent || 0);
+      const draftKey = `${evaluation.placement}-${criterion.id}`;
+      const draft = scoreDrafts[draftKey];
+      const numericScore = Number(draft?.score ?? 0);
+
+      return {
+        id: null,
+        criterionId: criterion.id,
+        draftKey,
+        title: criterion.name || "Assessment Criterion",
+        weight: weightPercent ? `${weightPercent}%` : "N/A",
+        score: Math.round((numericScore / maxScore) * 100),
+        rawScore: numericScore,
+        maxScore,
+        note: criterion.description || "Criterion details unavailable.",
+        contribution: weightPercent
+          ? `${Math.round((numericScore / maxScore) * weightPercent)}%`
+          : "N/A",
+        comment: draft?.comment ?? "",
+      };
+    });
+  }
+
   return [
     {
+      id: null,
+      criterionId: null,
+      draftKey: `${evaluation.placement}-overall`,
       title: "Overall Evaluation",
       weight: "100%",
       score: Math.round(Number(evaluation.total_score || 0)),
+      rawScore: Number(evaluation.total_score || 0),
+      maxScore: 100,
       note: "Detailed score criteria were not returned by the backend.",
       contribution: `${Math.round(Number(evaluation.total_score || 0))}%`,
       comment: "",
