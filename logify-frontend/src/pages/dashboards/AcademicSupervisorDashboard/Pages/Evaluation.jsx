@@ -317,6 +317,99 @@ const Evaluation = () => {
     }));
   };
 
+  const handleCriterionChange = (criterion, field, value) => {
+    if (!selectedEvaluation || selectedEvaluation.category !== "pending") {
+      return;
+    }
+
+    setScoreDrafts((current) => ({
+      ...current,
+      [criterion.draftKey]: {
+        score: criterion.rawScore ?? 0,
+        comment: criterion.comment || "",
+        ...current[criterion.draftKey],
+        [field]:
+          field === "score"
+            ? Math.max(
+                0,
+                Math.min(Number(value || 0), criterion.maxScore || 100),
+              )
+            : value,
+      },
+    }));
+  };
+
+  const ensureEvaluationRecord = async (record) => {
+    if (!record.isVirtual) {
+      return record;
+    }
+
+    if (!record.rubricId) {
+      throw new Error("No current rubric is available for this placement.");
+    }
+
+    const created = await api.evaluations.createEvaluation({
+      placement: record.placementId,
+      rubric: record.rubricId,
+      status: "draft",
+      total_score: 0,
+    });
+
+    setSnapshot((current) => ({
+      ...current,
+      evaluations: [...current.evaluations, created],
+    }));
+    setFeedbackDrafts((current) => ({
+      ...current,
+      [created.id]: current[record.id] || record.feedback || "",
+    }));
+    setSelectedEvaluationId(created.id);
+
+    return {
+      ...record,
+      id: created.id,
+      isVirtual: false,
+    };
+  };
+
+  const upsertScoresForEvaluation = async (record) => {
+    const scoredCriteria = record.criteria.filter(
+      (criterion) => criterion.criterionId,
+    );
+
+    if (scoredCriteria.length === 0) {
+      return [];
+    }
+
+    const savedScores = await Promise.all(
+      scoredCriteria.map((criterion) => {
+        const payload = {
+          evaluation: record.id,
+          criterion: criterion.criterionId,
+          score: Number(criterion.rawScore || 0),
+          comment: criterion.comment || "",
+        };
+
+        return criterion.id
+          ? api.evaluations.patchScore(criterion.id, payload)
+          : api.evaluations.createScore(payload);
+      }),
+    );
+
+    setSnapshot((current) => {
+      const savedIds = new Set(savedScores.map((score) => score.id));
+      return {
+        ...current,
+        scores: [
+          ...current.scores.filter((score) => !savedIds.has(score.id)),
+          ...savedScores,
+        ],
+      };
+    });
+
+    return savedScores;
+  };
+
   const upsertFinalResultForEvaluation = async ({
     evaluationId,
     placementId,
