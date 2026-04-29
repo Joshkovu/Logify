@@ -214,6 +214,13 @@ export const loadAcademicSupervisorData = async () => {
   const resultByPlacementId = Object.fromEntries(
     results.map((item) => [item.placement, item]),
   );
+  const rubricById = Object.fromEntries(rubrics.map((item) => [item.id, item]));
+  const programmeById = Object.fromEntries(
+    programmes.map((item) => [item.id, item]),
+  );
+  const departmentById = Object.fromEntries(
+    departments.map((item) => [item.id, item]),
+  );
 
   await Promise.all(
     uniqueInternIds.map(async (id) => {
@@ -253,11 +260,17 @@ export const loadAcademicSupervisorData = async () => {
     scores,
     criteria,
     results,
+    rubrics,
+    programmes,
+    departments,
     usersById,
     organizationsById,
     workplaceSupervisorsById,
     criteriaById,
     placementById,
     resultByPlacementId,
+    rubricById,
+    programmeById,
+    departmentById,
   };
 };
