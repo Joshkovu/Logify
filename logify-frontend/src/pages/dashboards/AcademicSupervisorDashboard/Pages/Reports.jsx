@@ -21,6 +21,7 @@ import {
   getUserDisplayName,
   loadAcademicSupervisorData,
 } from "../utils/academicSupervisorData";
+import { toast } from "react-toastify";
 
 ChartJS.register(
   CategoryScale,
@@ -214,8 +215,10 @@ const Reports = () => {
       link.download = "academic-supervisor-report.json";
       link.click();
       window.URL.revokeObjectURL(url);
+      toast.success("Semester report exported successfully");
     } catch {
       setError("Failed to export report.");
+      toast.error(error);
     }
   };
 
@@ -379,16 +382,11 @@ const Reports = () => {
             Gain deep insights into intern performance, placement trends, and
             academic milestones.
           </p>
-          {error && (
-            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
-              {error}
-            </p>
-          )}
         </div>
 
         <button
           onClick={handleExportReport}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300 md:w-auto"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-maroonCustom px-4 py-2 text-sm font-bold text-white transition-all hover:bg-red-800 active:scale-[0.98] dark:text-slate-300 md:w-auto"
         >
           <FileDown size={18} />
           Export Semester Report
@@ -596,7 +594,7 @@ const Reports = () => {
                   onClick={() =>
                     handleDownloadStudentReport(selectedReport.row.studentId)
                   }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon dark:text-slate-300"
+                  className="inline-flex items-center gap-2 rounded-lg bg-maroonCustom px-4 py-2 text-sm font-bold text-white transition-all hover:bg-red-800 hover:text-maroon dark:text-slate-300"
                 >
                   <FileDown size={16} />
                   Download CSV
