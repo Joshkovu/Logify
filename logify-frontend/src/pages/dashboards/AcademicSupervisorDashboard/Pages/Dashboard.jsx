@@ -429,7 +429,7 @@ const Dashboard = () => {
                 {!isLoading && approvals.length === 0 && (
                   <tr>
                     <td
-                      colSpan="6"
+                      colSpan="7"
                       className="px-4 py-8 text-center text-sm text-muted-foreground sm:px-6"
                     >
                       No pending placement approvals right now.
@@ -447,10 +447,19 @@ const Dashboard = () => {
                         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gold/10 font-bold text-gold dark:text-slate-300">
                           {approval.student.charAt(0)}
                         </div>
-                        <span className="text-sm font-bold text-maroon-dark dark:text-white">
-                          {approval.student}
-                        </span>
+                        <div>
+                          <span className="block text-sm font-bold text-maroon-dark dark:text-white">
+                            {approval.student}
+                          </span>
+                          <span className="block text-xs text-muted-foreground">
+                            {approval.studentNumber}
+                          </span>
+                        </div>
                       </div>
+                    </td>
+
+                    <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
+                      {approval.department}
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
@@ -458,7 +467,8 @@ const Dashboard = () => {
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
-                      {approval.role}
+                      <p>{approval.role}</p>
+                      <p className="mt-1 text-xs">{approval.duration}</p>
                     </td>
 
                     <td className="px-4 py-5 text-sm text-muted-foreground sm:px-6">
