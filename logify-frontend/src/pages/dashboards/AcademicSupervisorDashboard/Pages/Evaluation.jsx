@@ -29,6 +29,7 @@ const mapEvaluationRecord = ({
   criteriaById,
   resultByPlacementId,
   feedbackDrafts,
+  scoreDrafts,
 }) => {
   const placement = placementById[evaluation.placement];
   const student = placement ? usersById[placement.intern] : null;
