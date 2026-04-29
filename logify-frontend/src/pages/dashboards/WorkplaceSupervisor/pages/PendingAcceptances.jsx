@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Check, X, Info, AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
 import {
   formatDate,
   loadWorkplaceSupervisorData,
@@ -10,7 +11,6 @@ const PendingAcceptances = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [processingId, setProcessingId] = useState(null);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
   const [placements, setPlacements] = useState([]);
   const [usersById, setUsersById] = useState({});
   const [organizationsById, setOrganizationsById] = useState({});
@@ -43,13 +43,14 @@ const PendingAcceptances = () => {
     if (!window.confirm("Are you sure you want to accept this intern?")) return;
     setProcessingId(id);
     setError("");
-    setSuccess("");
     try {
       await api.placements.wsAcceptPlacement(id);
-      setSuccess("Placement accepted successfully!");
+      toast.success("Placement accepted successfully");
       fetchData(); // Refresh list
     } catch (err) {
-      setError(err.message || "Failed to accept placement.");
+      const message = err.message || "Failed to accept placement.";
+      setError(message);
+      toast.error(message);
     } finally {
       setProcessingId(null);
     }
@@ -63,13 +64,14 @@ const PendingAcceptances = () => {
 
     setProcessingId(id);
     setError("");
-    setSuccess("");
     try {
       await api.placements.wsDenyPlacement(id, { comment: reason });
-      setSuccess("Placement denied.");
+      toast.success("Placement denied");
       fetchData(); // Refresh list
     } catch (err) {
-      setError(err.message || "Failed to deny placement.");
+      const message = err.message || "Failed to deny placement.";
+      setError(message);
+      toast.error(message);
     } finally {
       setProcessingId(null);
     }
@@ -88,13 +90,6 @@ const PendingAcceptances = () => {
         <div className="mt-6 flex items-center gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
           <AlertCircle className="h-5 w-5" />
           {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="mt-6 flex items-center gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700 dark:border-emerald-900/60 dark:bg-emerald-950/30 dark:text-emerald-300">
-          <Check className="h-5 w-5" />
-          {success}
         </div>
       )}
 

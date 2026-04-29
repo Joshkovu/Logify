@@ -17,6 +17,7 @@ import {
 } from "../../../../components/ui/table";
 import { Button } from "../../../../components/ui/Button";
 import { Badge } from "../../../../components/ui/Badge";
+import { toast } from "react-toastify";
 import { api } from "../../../../config/api";
 
 const roleLabels = {
@@ -75,8 +76,15 @@ const Supervisors = () => {
     try {
       await api.accounts.reviewSupervisorApplication(applicationId, action);
       await loadApplications();
+      toast.success(
+        action === "approve"
+          ? "Supervisor application approved"
+          : "Supervisor application rejected",
+      );
     } catch (reviewError) {
-      setError(reviewError.message || "Unable to review application.");
+      const message = reviewError.message || "Unable to review application.";
+      setError(message);
+      toast.error(message);
     } finally {
       setActiveReviewId(null);
     }

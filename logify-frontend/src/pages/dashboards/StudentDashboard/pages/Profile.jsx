@@ -11,6 +11,7 @@ import {
 import { api } from "../../../../config/api.js";
 import ChangePassword from "../ChangePassword";
 import EditProfile from "../EditProfile";
+import { toast } from "react-toastify";
 import { useState, useEffect } from "react";
 
 const Profile = () => {
@@ -76,10 +77,12 @@ const Profile = () => {
         student_number: freshData.student_number,
       });
 
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully");
       return true;
-    } catch {
-      alert("Error updating profile. Please try again.");
+    } catch (updateError) {
+      const message =
+        updateError.message || "Error updating profile. Please try again.";
+      toast.error(message);
       return false;
     }
   };

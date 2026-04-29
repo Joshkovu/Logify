@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
 
 import { api } from "../../../../config/api";
 import {
@@ -74,16 +75,21 @@ const PendingLogReview = () => {
     try {
       if (action === "approve") {
         await api.logbook.approveWeeklyLog(selectedLog.id, { comment });
+        toast.success("Weekly log approved");
       } else if (action === "request_changes") {
         await api.logbook.requestChangesWeeklyLog(selectedLog.id, { comment });
+        toast.success("Changes requested for weekly log");
       } else {
         await api.logbook.rejectWeeklyLog(selectedLog.id, { comment });
+        toast.success("Weekly log rejected");
       }
 
       setComment("");
       await loadData();
     } catch (reviewError) {
-      setError(reviewError.message || "Unable to submit review.");
+      const message = reviewError.message || "Unable to submit review.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

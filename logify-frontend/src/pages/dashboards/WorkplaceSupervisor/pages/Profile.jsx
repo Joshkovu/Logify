@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Key, Save, Settings, X } from "lucide-react";
+import { toast } from "react-toastify";
 
 import {
   formatDate,
@@ -151,8 +152,12 @@ const Profile = () => {
         confirmPassword: "",
       });
       setShowPasswordModal(false);
+      toast.success("Password changed successfully");
     } catch (passwordError) {
-      setError(passwordError.message || "Unable to update your password.");
+      const message =
+        passwordError.message || "Unable to update your password.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsUpdatingPassword(false);
     }

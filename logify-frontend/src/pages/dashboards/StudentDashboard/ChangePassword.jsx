@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import PropTypes from "prop-types";
+import { toast } from "react-toastify";
 import { api } from "../../../config/api";
 
 const ChangePassword = ({ isOpen, onClose }) => {
@@ -68,8 +69,11 @@ const ChangePassword = ({ isOpen, onClose }) => {
         new_password: formData.newPassword,
       });
       onClose();
+      toast.success("Password changed successfully");
     } catch (err) {
-      setError(err.message || "Unable to update your password.");
+      const message = err.message || "Unable to update your password.";
+      setError(message);
+      toast.error(message);
     } finally {
       setIsSubmitting(false);
     }

@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { AuthProvider } from "./contexts/AuthContext";
 
 import TutorialPage from "./pages/TutorialPage";
@@ -61,6 +63,17 @@ function App() {
 
           <Route path="*" element={<NotFoundPage />} />
         </Routes>
+        <ToastContainer
+          position="top-right"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          pauseOnHover
+          draggable
+          pauseOnFocusLoss
+          theme="colored"
+        />
       </AuthProvider>
     </BrowserRouter>
   );
