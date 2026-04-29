@@ -44,6 +44,7 @@ const mapEvaluationRecord = ({
     evaluation,
     scores,
     criteriaById,
+    scoreDrafts,
   });
   const feedbackFromScores = criteria
     .map((item) => item.comment)
@@ -57,6 +58,7 @@ const mapEvaluationRecord = ({
 
   return {
     id: evaluation.id,
+    isVirtual: false,
     placementId: evaluation.placement,
     rubricId: evaluation.rubric,
     finalResultId: finalResult?.id || null,
