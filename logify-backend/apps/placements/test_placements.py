@@ -331,3 +331,72 @@ class PlacementWorkflowTests(APITestCase):
         self.assertEqual(response_b.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response_b.data), 1)
         self.assertEqual(response_b.data[0]["id"], other_placement.id)
+
+    def test_workplace_supervisor_can_accept_approved_placement(self):
+        """Test that a workplace supervisor can accept a placement approved by academic supervisor."""
+        self.placement.status = "approved"
+        self.placement.save()
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        accept_url = reverse("placement-ws-accept", kwargs={"pk": self.placement.pk})
+
+        response = self.client.post(accept_url)
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.placement.refresh_from_db()
+        self.assertEqual(self.placement.status, "active")
+        self.assertTrue(
+            PlacementStatusHistory.objects.filter(
+                to_status="active", changed_by=self.workplace_supervisor
+            ).exists()
+        )
+
+    def test_workplace_supervisor_can_deny_approved_placement(self):
+        """Test that a workplace supervisor can deny a placement."""
+        self.placement.status = "approved"
+        self.placement.save()
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        deny_url = reverse("placement-ws-deny", kwargs={"pk": self.placement.pk})
+
+        response = self.client.post(deny_url, {"comment": "Not enough space"})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.placement.refresh_from_db()
+        self.assertEqual(self.placement.status, "rejected")
+        self.assertTrue(
+            PlacementStatusHistory.objects.filter(
+                to_status="rejected", comment="Not enough space"
+            ).exists()
+        )
+
+    def test_workplace_supervisor_cannot_accept_submitted_placement(self):
+        """Test that WS cannot accept before academic supervisor approves."""
+        self.placement.status = "submitted"
+        self.placement.save()
+
+        self.client.force_authenticate(user=self.workplace_supervisor)
+        accept_url = reverse("placement-ws-accept", kwargs={"pk": self.placement.pk})
+
+        response = self.client.post(accept_url)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.placement.refresh_from_db()
+        self.assertEqual(self.placement.status, "submitted")
+
+    def test_unassigned_workplace_supervisor_cannot_accept(self):
+        """Test security: Unassigned WS cannot accept a placement."""
+        self.placement.status = "approved"
+        self.placement.save()
+
+        other_ws = User.objects.create_user(
+            email=f"otherws@{TEST_EMAIL_DOMAIN}",
+            password=f"{TEST_PASSWORD}",
+            role=User.WORKPLACE_SUPERVISOR,
+        )
+        self.client.force_authenticate(user=other_ws)
+        accept_url = reverse("placement-ws-accept", kwargs={"pk": self.placement.pk})
+
+        response = self.client.post(accept_url)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
