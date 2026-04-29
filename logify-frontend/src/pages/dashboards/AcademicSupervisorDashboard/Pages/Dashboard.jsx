@@ -75,6 +75,8 @@ const Dashboard = () => {
     evaluations,
     usersById,
     organizationsById,
+    programmeById,
+    departmentById,
   } = snapshot;
 
   const pendingApprovals = useMemo(
