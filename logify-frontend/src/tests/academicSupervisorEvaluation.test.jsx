@@ -128,6 +128,7 @@ test("authorizing an evaluation persists the final result and marks the evaluati
       placement: 21,
       rubric: 31,
       remarks: "Ready for sign-off",
+      workplace_feedback: "",
     });
   });
 
