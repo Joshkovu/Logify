@@ -30,7 +30,7 @@ class EvaluationRubricsSerializer(serializers.ModelSerializer):
             else:
                 is_current = True
 
-        if institution and programme and name:
+        if name:
             qs = EvaluationRubrics.objects.filter(
                 institution=institution,
                 programme=programme,
@@ -132,13 +132,14 @@ class EvaluationsSerializer(serializers.ModelSerializer):
         if not placement or not rubric or not evaluator:
             raise serializers.ValidationError("Placement, rubric, and evaluator are required.")
 
-        if (
-            rubric.institution_id != placement.institution_id
-            or rubric.programme_id != placement.programme_id
-        ):
-            raise serializers.ValidationError(
-                "The selected rubric does not belong to the placement's institution/programme."
-            )
+        if rubric.institution_id is not None and rubric.programme_id is not None:
+            if (
+                rubric.institution_id != placement.institution_id
+                or rubric.programme_id != placement.programme_id
+            ):
+                raise serializers.ValidationError(
+                    "The selected rubric does not belong to the placement's institution/programme."
+                )
 
         if evaluator_type is None:
             evaluator_type = evaluator.role
