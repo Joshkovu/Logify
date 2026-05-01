@@ -87,7 +87,7 @@ class TestUserDetailView(APITestCase):
             address="123 Main St",
             industry="Tech",
             city="Kampala",
-            contact_phone="123456789"
+            contact_phone="123456789",
         )
         InternshipPlacements.objects.create(
             intern=self.student,
