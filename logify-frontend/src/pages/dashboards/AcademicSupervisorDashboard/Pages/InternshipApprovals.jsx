@@ -23,7 +23,9 @@ import {
 } from "../utils/academicSupervisorData";
 
 const InternshipApprovals = () => {
-  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [actionId, setActionId] = useState(null);
