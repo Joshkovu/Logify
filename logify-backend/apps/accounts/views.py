@@ -259,6 +259,25 @@ class UserDetailView(APIView):
                 return target
             raise PermissionDenied("You can only view your assigned supervisors.")
 
+        if requester.role == User.WORKPLACE_SUPERVISOR:
+            is_assigned = (
+                InternshipPlacements.objects.filter(workplace_supervisor=requester)
+                .filter(intern=target)
+                .exists()
+            )
+            if is_assigned:
+                return target
+            raise PermissionDenied("You can only view interns assigned to you.")
+
+        if requester.role == User.ACADEMIC_SUPERVISOR:
+            is_assigned = (
+                InternshipPlacements.objects.filter(academic_supervisor=requester)
+                .filter(intern=target)
+                .exists()
+            )
+            if is_assigned:
+                return target
+            raise PermissionDenied("You can only view interns assigned to you.")
         if requester.role == User.ACADEMIC_SUPERVISOR:
             if target.role == User.STUDENT:
                 if InternshipPlacements.objects.filter(
