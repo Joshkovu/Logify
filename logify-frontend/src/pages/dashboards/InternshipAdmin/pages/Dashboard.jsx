@@ -177,7 +177,8 @@ const Dashboard = () => {
   }, []);
 
   const activePlacements = placements.filter(
-    (placement) => String(placement.status).toLowerCase() === "active",
+    (placement) =>
+      ["approved", "active"].includes(String(placement.status).toLowerCase()),
   ).length;
 
   const pendingReviews = evaluations.filter((evaluation) =>
@@ -222,6 +223,40 @@ const Dashboard = () => {
       }).length,
   );
 
+  const studentMap = students.reduce((acc, student) => {
+    acc[String(student.id)] = student;
+    return acc;
+  }, {});
+
+  const findPlacementStudent = (placement) =>
+    studentMap[String(placement.intern)] ||
+    students.find(
+      (student) =>
+        String(student.student_number || "") ===
+        String(
+          placement.student_number || placement.intern_student_number || "",
+        ),
+    ) ||
+    null;
+
+  const findResultStudent = (result) => {
+    const placement = placements.find(
+      (item) => String(item.id) === String(result.placement || ""),
+    );
+
+    if (placement) return findPlacementStudent(placement);
+
+    return (
+      studentMap[String(result.student || result.student_id || "")] ||
+      students.find(
+        (student) =>
+          String(student.student_number || "") ===
+          String(result.student_number || ""),
+      ) ||
+      null
+    );
+  };
+
   const activity = [
     ...students.map((student) => ({
       id: `student-${student.id}`,
@@ -229,19 +264,27 @@ const Dashboard = () => {
       description: `${toDisplayName(student)} was added to the registry.`,
       timestamp: student.created_at,
     })),
-    ...placements.map((placement) => ({
-      id: `placement-${placement.id}`,
-      title: `Placement ${formatStatus(placement.status) || "updated"}`,
-      description: `${placement.internship_title || "Internship placement"} is currently ${formatStatus(placement.status) || "in progress"}.`,
-      timestamp:
-        placement.updated_at || placement.approved_at || placement.created_at,
-    })),
-    ...results.map((result) => ({
-      id: `result-${result.id}`,
-      title: "Evaluation result computed",
-      description: `A final score of ${Number(result.final_score || result.total_score || 0).toFixed(1)}% was recorded.`,
-      timestamp: result.computed_at || result.created_at,
-    })),
+    ...placements.map((placement) => {
+      const studentName = toDisplayName(findPlacementStudent(placement) || {});
+
+      return {
+        id: `placement-${placement.id}`,
+        title: studentName,
+        description: `${placement.internship_title || "Internship placement"} is currently ${formatStatus(placement.status) || "in progress"}.`,
+        timestamp:
+          placement.updated_at || placement.approved_at || placement.created_at,
+      };
+    }),
+    ...results.map((result) => {
+      const studentName = toDisplayName(findResultStudent(result) || {});
+
+      return {
+        id: `result-${result.id}`,
+        title: studentName,
+        description: `A final score of ${Number(result.final_score || result.total_score || 0).toFixed(1)}% was recorded.`,
+        timestamp: result.computed_at || result.created_at,
+      };
+    }),
   ]
     .filter((item) => item.timestamp)
     .sort(
