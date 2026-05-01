@@ -24,7 +24,9 @@ import { toast } from "react-toastify";
 import { api } from "../../../../config/api";
 
 const Profile = () => {
-  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [profile, setProfile] = useState({
