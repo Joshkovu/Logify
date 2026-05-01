@@ -33,14 +33,16 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [reportError, setReportError] = useState("");
   const [reportType, setReportType] = useState("summary");
   const toCsvValue = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
   const [activeReportId, setActiveReportId] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [snapshot, setSnapshot] = useState({
     placements: [],
     evaluations: [],
@@ -90,7 +92,6 @@ const Reports = () => {
   const {
     placements,
     evaluations,
-    results,
     usersById,
     organizationsById,
     resultByPlacementId,
@@ -217,7 +218,10 @@ const Reports = () => {
         row.placementTitle,
       ]);
 
-      const csvLines = [headers.join(","), ...rows.map((row) => row.map(toCsvValue).join(","))];
+      const csvLines = [
+        headers.join(","),
+        ...rows.map((row) => row.map(toCsvValue).join(",")),
+      ];
       const csv = csvLines.join("\n");
       const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = window.URL.createObjectURL(blob);
