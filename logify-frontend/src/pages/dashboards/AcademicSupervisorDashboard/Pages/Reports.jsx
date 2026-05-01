@@ -36,10 +36,11 @@ const Reports = () => {
   const [error, setError] = useState("");
   const [reportError, setReportError] = useState("");
   const [reportType, setReportType] = useState("summary");
+  const toCsvValue = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
   const [activeReportId, setActiveReportId] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
   const [snapshot, setSnapshot] = useState({
     placements: [],
     evaluations: [],
@@ -54,10 +55,10 @@ const Reports = () => {
 
     if (isDark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      localStorage.setItem("logify-theme", "dark");
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      localStorage.setItem("logify-theme", "light");
     }
   }, [isDark]);
 
@@ -194,31 +195,41 @@ const Reports = () => {
     setError("");
 
     try {
-      const payload = {
-        generated_at: new Date().toISOString(),
-        summary: {
-          total_interns: totalInterns,
-          average_score: averageScore,
-          completion_rate: completionRate,
-          active_placements: activePlacements,
-          results_count: results.length,
-        },
-        students: reportRows,
-      };
+      const headers = [
+        "Student ID",
+        "Name",
+        "Organization",
+        "Progress",
+        "Status",
+        "Score",
+        "Date Range",
+        "Placement Title",
+      ];
 
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {
-        type: "application/json;charset=utf-8",
-      });
+      const rows = reportRows.map((row) => [
+        row.studentId,
+        row.name,
+        row.organization,
+        row.progress,
+        row.status,
+        row.score,
+        row.dateRange,
+        row.placementTitle,
+      ]);
+
+      const csvLines = [headers.join(","), ...rows.map((row) => row.map(toCsvValue).join(","))];
+      const csv = csvLines.join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "academic-supervisor-report.json";
+      link.download = "academic-supervisor-report.csv";
       link.click();
       window.URL.revokeObjectURL(url);
       toast.success("Semester report exported successfully");
-    } catch {
+    } catch (exportError) {
       setError("Failed to export report.");
-      toast.error(error);
+      toast.error(exportError.message || "Failed to export report.");
     }
   };
 
