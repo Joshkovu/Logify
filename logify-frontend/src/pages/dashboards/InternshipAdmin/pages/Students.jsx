@@ -21,6 +21,7 @@ const normalizeCollection = (payload, key) => {
 const toDisplayName = (student = {}) => {
   const fullName = [
     student.full_name,
+    student.name,
     [student.first_name, student.last_name].filter(Boolean).join(" ").trim(),
   ].find(Boolean);
 
@@ -196,14 +197,14 @@ const Students = () => {
       ) ||
       null;
 
-    const placementStatus =
+    const placementStatus = String(
       placement?.status ||
-      student.placement_status ||
-      student.internship_status ||
-      "Pending";
-    const approvalStatus = approvalStatuses.has(
-      String(placementStatus).toLowerCase(),
-    )
+        student.placement_status ||
+        student.internship_status ||
+        "Pending",
+    ).toLowerCase();
+
+    const approvalStatus = approvalStatuses.has(placementStatus)
       ? "Approved"
       : "Pending";
     const score = Number(
@@ -217,13 +218,14 @@ const Students = () => {
       programme:
         student.programme_name ||
         programmeMap[String(student.programme)] ||
+        programmeMap[String(student.program)] ||
         "Programme not set",
       placement:
         placement?.internship_title ||
         student.internship_title ||
         student.organization_name ||
         "--",
-      placementStatus: toTitleCase(String(placementStatus || "Pending")),
+      placementStatus: toTitleCase(placementStatus),
       approvalStatus,
       score,
     };

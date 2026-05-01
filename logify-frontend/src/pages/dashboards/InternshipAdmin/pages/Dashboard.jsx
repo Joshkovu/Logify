@@ -85,6 +85,26 @@ const toRelativeTime = (value) => {
   return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
 };
 
+const toDisplayName = (student = {}) => {
+  const fullName = [
+    student.full_name,
+    student.name,
+    [student.first_name, student.last_name].filter(Boolean).join(" ").trim(),
+  ].find(Boolean);
+
+  if (fullName) return fullName;
+
+  const emailName = student.webmail || student.email || "";
+  const localPart = emailName.split("@")[0];
+  if (!localPart) return "Unknown Student";
+
+  return localPart
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+};
+
 const Dashboard = () => {
   const [students, setStudents] = useState([]);
   const [placements, setPlacements] = useState([]);
@@ -206,7 +226,7 @@ const Dashboard = () => {
     ...students.map((student) => ({
       id: `student-${student.id}`,
       title: "Student registration processed",
-      description: `Student ID #${student.student_number || student.id} was added to the registry.`,
+      description: `${toDisplayName(student)} was added to the registry.`,
       timestamp: student.created_at,
     })),
     ...placements.map((placement) => ({
