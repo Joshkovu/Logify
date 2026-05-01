@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { CgSpinner } from "react-icons/cg";
 
 const messages = [
-  "Waking up the backend...",
+  "Crunching your data...",
   "Almost there...",
   "Just a few more seconds...",
   "Thanks for your patience...",
