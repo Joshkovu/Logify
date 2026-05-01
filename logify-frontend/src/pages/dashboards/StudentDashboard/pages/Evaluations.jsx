@@ -365,9 +365,6 @@ const Evaluations = () => {
                 <p>Loading...</p>
               ) : finalResult ? (
                 <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 italic text-text-secondary leading-relaxed relative">
-                  <span className="absolute top-4 left-4 text-4xl text-gold/20 font-serif">
-                    &quot;
-                  </span>
                   {workplaceFeedback}
                 </div>
               ) : (
