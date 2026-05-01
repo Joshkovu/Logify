@@ -204,20 +204,21 @@ const WeeklyLogs = () => {
                           : "Not submitted"}
                       </td>
                       <td className="py-5 px-4 text-right">
-                        {log.status.toLowerCase() !== "draft" && (
-                          <button
-                            onClick={() => {
-                              setSelectedLog(log);
-                              setIsModalOpen(true);
-                            }}
-                            className="hover:bg-gray-300 inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gray-300"
-                          >
-                            <Eye size={14} />
-                            View Details
-                          </button>
-                        )}{" "}
+                        {log.status.toLowerCase() !== "draft" &&
+                          log.status !== "changes_requested" && (
+                            <button
+                              onClick={() => {
+                                setSelectedLog(log);
+                                setIsModalOpen(true);
+                              }}
+                              className="hover:bg-gray-300 inline-flex items-center gap-2 text-xs font-bold text-gold hover:text-maroon transition-colors px-3 py-1.5 bg-gold/5 rounded-lg border border-gray-300"
+                            >
+                              <Eye size={14} />
+                              View Details
+                            </button>
+                          )}{" "}
                         {(log.status.toLowerCase() == "draft" ||
-                          log.status.toLowerCase() == "changes_requested") && (
+                          log.status == "changes_requested") && (
                           <button
                             onClick={() => {
                               setSelectedLog(log);

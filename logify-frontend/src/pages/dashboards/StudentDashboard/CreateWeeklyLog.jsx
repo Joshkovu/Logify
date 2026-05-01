@@ -193,8 +193,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <input
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="week_number"
               value={formData.week_number}
@@ -212,8 +212,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <input
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="week_start_date"
               value={formData.week_start_date}
@@ -229,8 +229,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <input
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="week_end_date"
               value={formData.week_end_date}
@@ -247,8 +247,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <textarea
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="activities"
               value={formData.activities}
@@ -264,8 +264,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <textarea
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="challenges"
               value={formData.challenges}
@@ -281,8 +281,8 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             <textarea
               disabled={
                 weeklyLog &&
-                (weeklyLog?.status.toLowerCase() !== "draft" ||
-                  weeklyLog?.status.toLowerCase() !== "changes_requested")
+                weeklyLog?.status.toLowerCase() !== "draft" &&
+                weeklyLog?.status !== "changes_requested"
               }
               name="learnings"
               value={formData.learnings}
@@ -314,7 +314,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
           <section className="mt-4 w-full flex gap-2 justify-end">
             {(!weeklyLog ||
               weeklyLog?.status.toLowerCase() === "draft" ||
-              weeklyLog?.status.toLowerCase() === "changes_requested") && (
+              weeklyLog?.status === "changes_requested") && (
               <>
                 <button
                   disabled={isSubmitting || isSaving || isDeleting}
@@ -343,7 +343,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
               </>
             )}
             {(weeklyLog?.status.toLowerCase() === "draft" ||
-              weeklyLog?.status.toLowerCase() === "changes_requested") && (
+              weeklyLog?.status === "changes_requested") && (
               <button
                 disabled={isSubmitting || isSaving || isDeleting}
                 onClick={() => setSubmitAction("delete")}
@@ -355,7 +355,7 @@ const CreateWeeklyLog = ({ isOpen, onClose, weeklyLog = null, onSuccess }) => {
             )}
             {weeklyLog &&
               (weeklyLog?.status.toLowerCase() !== "draft" ||
-                weeklyLog?.status.toLowerCase() !== "changes_requested") && (
+                weeklyLog?.status !== "changes_requested") && (
                 <button
                   disabled={isSubmitting || isSaving || isDeleting}
                   type="button"
