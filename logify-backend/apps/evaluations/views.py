@@ -1,8 +1,4 @@
-from apps.accounts.access import (
-    get_programme_ids_for_college,
-    get_user_college_id,
-    get_user_institution_id,
-)
+from apps.accounts.access import get_user_college_id, get_user_institution_id
 from apps.accounts.models import User
 from apps.accounts.permissions import (
     IsAcademicSupervisor,
@@ -62,13 +58,9 @@ def get_admin_college_placement_filter(user):
     if institution_id is None or admin_college_id is None:
         return None
 
-    programme_ids = get_programme_ids_for_college(admin_college_id)
-    if not programme_ids:
-        return None
-
     return {
         "placement__institution_id": institution_id,
-        "placement__programme_id__in": programme_ids,
+        "college_id": admin_college_id,
     }
 
 
@@ -118,7 +110,13 @@ class EvaluationsViewSet(viewsets.ModelViewSet):
             if user.role == User.STUDENT:  # type: ignore
                 return Evaluations.objects.filter(placement__intern=user)
             elif user.role == User.ACADEMIC_SUPERVISOR:  # type: ignore
-                return Evaluations.objects.filter(placement__academic_supervisor=user)
+                college_id = get_user_college_id(user)
+                if college_id is None:
+                    return Evaluations.objects.none()
+                return Evaluations.objects.filter(
+                    placement__academic_supervisor=user,
+                    college_id=college_id,
+                )
             elif user.role == User.WORKPLACE_SUPERVISOR:  # type: ignore
                 return Evaluations.objects.filter(placement__workplace_supervisor=user)
             elif user.role == User.INTERNSHIP_ADMIN:  # type: ignore
@@ -144,7 +142,13 @@ class EvaluationScoresViewSet(viewsets.ModelViewSet):
         elif user.role == User.STUDENT:
             queryset = queryset.filter(evaluation__placement__intern=user)
         elif user.role == User.ACADEMIC_SUPERVISOR:
-            queryset = queryset.filter(evaluation__placement__academic_supervisor=user)
+            college_id = get_user_college_id(user)
+            if college_id is None:
+                return EvaluationScores.objects.none()
+            queryset = queryset.filter(
+                evaluation__placement__academic_supervisor=user,
+                evaluation__college_id=college_id,
+            )
         elif user.role == User.WORKPLACE_SUPERVISOR:
             queryset = queryset.filter(evaluation__placement__workplace_supervisor=user)
         elif user.role == User.INTERNSHIP_ADMIN:
@@ -177,7 +181,13 @@ class FinalResultsViewSet(viewsets.ModelViewSet):
         if user_role == User.STUDENT:
             return FinalResults.objects.filter(placement__intern=user)
         elif user_role == User.ACADEMIC_SUPERVISOR:
-            return FinalResults.objects.filter(placement__academic_supervisor=user)
+            college_id = get_user_college_id(user)
+            if college_id is None:
+                return FinalResults.objects.none()
+            return FinalResults.objects.filter(
+                placement__academic_supervisor=user,
+                college_id=college_id,
+            )
         elif user_role == User.WORKPLACE_SUPERVISOR:
             return FinalResults.objects.filter(placement__workplace_supervisor=user)
         elif user_role == User.INTERNSHIP_ADMIN:
