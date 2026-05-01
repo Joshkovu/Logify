@@ -16,7 +16,9 @@ const sectionCardClassName =
   "rounded-[12px] border border-border bg-card text-card-foreground p-4 transition-all hover:scale-[1.005] sm:p-6 lg:p-8 xl:p-10";
 
 const Dashboard = () => {
-  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [snapshot, setSnapshot] = useState({
@@ -35,10 +37,10 @@ const Dashboard = () => {
 
     if (isDark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      localStorage.setItem("logify-theme", "dark");
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      localStorage.setItem("logify-theme", "light");
     }
   }, [isDark]);
 

@@ -176,9 +176,8 @@ const Dashboard = () => {
     };
   }, []);
 
-  const activePlacements = placements.filter(
-    (placement) =>
-      ["approved", "active"].includes(String(placement.status).toLowerCase()),
+  const activePlacements = placements.filter((placement) =>
+    ["approved", "active"].includes(String(placement.status).toLowerCase()),
   ).length;
 
   const pendingReviews = evaluations.filter((evaluation) =>

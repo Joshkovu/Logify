@@ -2,9 +2,10 @@
 
 from django.db import migrations
 
+
 def create_global_rubric(apps, schema_editor):
-    EvaluationRubrics = apps.get_model('evaluations', 'EvaluationRubrics')
-    EvaluationCriteria = apps.get_model('evaluations', 'EvaluationCriteria')
+    EvaluationRubrics = apps.get_model("evaluations", "EvaluationRubrics")
+    EvaluationCriteria = apps.get_model("evaluations", "EvaluationCriteria")
 
     # Create global rubric
     rubric, created = EvaluationRubrics.objects.get_or_create(
@@ -16,7 +17,7 @@ def create_global_rubric(apps, schema_editor):
             "version": "1.0",
             "is_current": True,
             "is_active": True,
-        }
+        },
     )
 
     # Create default criteria
@@ -56,15 +57,15 @@ def create_global_rubric(apps, schema_editor):
     ]
 
     for c in criteria:
-        EvaluationCriteria.objects.get_or_create(
-            rubric=rubric,
-            name=c["name"],
-            defaults=c
-        )
+        EvaluationCriteria.objects.get_or_create(rubric=rubric, name=c["name"], defaults=c)
+
 
 def remove_global_rubric(apps, schema_editor):
-    EvaluationRubrics = apps.get_model('evaluations', 'EvaluationRubrics')
-    EvaluationRubrics.objects.filter(institution=None, programme=None, name="Default Final Evaluation Rubric").delete()
+    EvaluationRubrics = apps.get_model("evaluations", "EvaluationRubrics")
+    EvaluationRubrics.objects.filter(
+        institution=None, programme=None, name="Default Final Evaluation Rubric"
+    ).delete()
+
 
 class Migration(migrations.Migration):
 
