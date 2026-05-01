@@ -164,6 +164,12 @@ class TestEvaluationViewSet(APITestCase):
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
+        StaffProfiles.objects.create(
+            user=self.user,
+            staff_number="STAFF-1",
+            department=self.department,
+            title="Supervisor",
+        )
         self.organization = Organizations.objects.create(
             name="Test Org",
             industry="Tech",
@@ -574,6 +580,12 @@ class TestEvaluationScoresViewSet(APITestCase):
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
+        StaffProfiles.objects.create(
+            user=self.academic_supervisor,
+            staff_number="STAFF-2",
+            department=self.department,
+            title="Supervisor",
+        )
 
         # Create Organization
         self.organization = Organizations.objects.create(
@@ -706,6 +718,12 @@ class TestFinalResultsViewSet(APITestCase):
         self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
+        )
+        StaffProfiles.objects.create(
+            user=self.academic_supervisor,
+            staff_number="STAFF-3",
+            department=self.department,
+            title="Supervisor",
         )
         self.organization = Organizations.objects.create(
             name="Final Test Org",
