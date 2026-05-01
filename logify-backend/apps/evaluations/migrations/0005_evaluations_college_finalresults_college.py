@@ -7,19 +7,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('academics', '0003_remove_departments_institution_colleges_and_more'),
-        ('evaluations', '0004_auto_20260429_2011'),
+        ("academics", "0003_remove_departments_institution_colleges_and_more"),
+        ("evaluations", "0004_auto_20260429_2011"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='evaluations',
-            name='college',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='academics.colleges'),
+            model_name="evaluations",
+            name="college",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="academics.colleges",
+            ),
         ),
         migrations.AddField(
-            model_name='finalresults',
-            name='college',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='academics.colleges'),
+            model_name="finalresults",
+            name="college",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="academics.colleges",
+            ),
         ),
     ]
