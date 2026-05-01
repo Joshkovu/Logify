@@ -167,7 +167,7 @@ const mapApprovedPlacementRecord = ({
 };
 
 const Evaluation = () => {
-  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -192,10 +192,10 @@ const Evaluation = () => {
 
     if (isDark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      localStorage.setItem("logify-theme", "dark");
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      localStorage.setItem("logify-theme", "light");
     }
   }, [isDark]);
 
