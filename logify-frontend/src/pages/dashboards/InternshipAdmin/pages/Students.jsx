@@ -127,7 +127,9 @@ const isPlacementForStudent = (placement, student) => {
       placement.intern?.email ||
       "",
   ).toLowerCase();
-  const studentEmail = String(student.webmail || student.email || "").toLowerCase();
+  const studentEmail = String(
+    student.webmail || student.email || "",
+  ).toLowerCase();
 
   return (
     (studentPlacementId && placementId === studentPlacementId) ||
@@ -161,17 +163,13 @@ const Students = () => {
       setError("");
     }
 
-    const [
-      studentsResult,
-      programmesResult,
-      placementsResult,
-      resultsResult,
-    ] = await Promise.allSettled([
-      api.registry.getStudents(),
-      api.academics.getProgrammes(),
-      api.placements.getPlacements(),
-      api.evaluations.getResults(),
-    ]);
+    const [studentsResult, programmesResult, placementsResult, resultsResult] =
+      await Promise.allSettled([
+        api.registry.getStudents(),
+        api.academics.getProgrammes(),
+        api.placements.getPlacements(),
+        api.evaluations.getResults(),
+      ]);
 
     if (studentsResult.status === "fulfilled") {
       setStudents(normalizeCollection(studentsResult.value, "students"));
@@ -227,7 +225,6 @@ const Students = () => {
       document.removeEventListener("visibilitychange", refreshData);
     };
   }, [fetchData]);
-
 
   const programmeMap = programmes.reduce((acc, programme) => {
     acc[String(programme.id)] =
@@ -303,8 +300,7 @@ const Students = () => {
       id: student.student_number || student.id || "--",
       name: toDisplayName(student),
       email: student.webmail || student.email || "--",
-      programme:
-        getProgrammeName(student, programmeMap),
+      programme: getProgrammeName(student, programmeMap),
       placement: getPlacementTitle(placement, student),
       placementStatus: toTitleCase(placementStatus),
       approvalStatus,
@@ -445,7 +441,6 @@ const Students = () => {
                           : "pending"
                       }
                     />
-        
                   </TableCell>
                   <TableCell>
                     {student.score > 0 ? (
