@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   Table,
   TableHead,
@@ -21,6 +21,7 @@ const normalizeCollection = (payload, key) => {
 const toDisplayName = (student = {}) => {
   const fullName = [
     student.full_name,
+    student.name,
     [student.first_name, student.last_name].filter(Boolean).join(" ").trim(),
   ].find(Boolean);
 
@@ -45,8 +46,107 @@ const toTitleCase = (value = "") =>
     .join(" ");
 
 const approvalStatuses = new Set(["approved", "active", "completed"]);
-const activeStatuses = new Set(["active"]);
+const activeStatuses = new Set(["approved", "active"]);
 const pendingStatuses = new Set(["draft", "submitted", "pending"]);
+
+const getId = (value) => {
+  if (value && typeof value === "object") return value.id || value.pk || "";
+  return value || "";
+};
+
+const getTimestamp = (record = {}) =>
+  record.updated_at ||
+  record.approved_at ||
+  record.submitted_at ||
+  record.created_at ||
+  0;
+
+const getProgrammeName = (student, programmeMap) => {
+  const directName =
+    student.programme_name ||
+    student.program_name ||
+    student.programme?.name ||
+    student.program?.name;
+
+  if (directName) return directName;
+
+  const programmeId =
+    getId(student.programme) ||
+    getId(student.program) ||
+    student.programme_id ||
+    student.program_id;
+
+  return programmeMap[String(programmeId)] || "Programme not set";
+};
+
+const getPlacementTitle = (placement, student) =>
+  placement?.internship_title ||
+  placement?.title ||
+  placement?.position ||
+  placement?.role ||
+  student.internship_title ||
+  student.placement_title ||
+  student.organization_name ||
+  placement?.organization_name ||
+  placement?.organization?.name ||
+  "--";
+
+const isPlacementForStudent = (placement, student) => {
+  const placementId = String(placement.id || "");
+  const studentPlacementId = String(
+    getId(student.placement) || student.placement_id || "",
+  );
+  const placementInternId = String(
+    getId(placement.intern) ||
+      placement.intern_id ||
+      getId(placement.student) ||
+      placement.student_id ||
+      "",
+  );
+  const studentIds = [
+    student.id,
+    getId(student.user),
+    student.user_id,
+    getId(student.account),
+    student.account_id,
+  ]
+    .filter(Boolean)
+    .map(String);
+  const placementStudentNumber = String(
+    placement.student_number ||
+      placement.intern_student_number ||
+      placement.intern?.student_number ||
+      placement.student?.student_number ||
+      "",
+  );
+  const studentNumber = String(student.student_number || "");
+  const placementEmail = String(
+    placement.student_email ||
+      placement.intern_email ||
+      placement.intern?.webmail ||
+      placement.intern?.email ||
+      "",
+  ).toLowerCase();
+  const studentEmail = String(
+    student.webmail || student.email || "",
+  ).toLowerCase();
+
+  return (
+    (studentPlacementId && placementId === studentPlacementId) ||
+    (placementInternId && studentIds.includes(placementInternId)) ||
+    (placementStudentNumber && placementStudentNumber === studentNumber) ||
+    (placementEmail && placementEmail === studentEmail)
+  );
+};
+
+const getLatestPlacementForStudent = (placements, student) =>
+  placements
+    .filter((placement) => isPlacementForStudent(placement, student))
+    .sort(
+      (a, b) =>
+        new Date(getTimestamp(b)).getTime() -
+        new Date(getTimestamp(a)).getTime(),
+    )[0] || null;
 
 const Students = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -57,78 +157,78 @@ const Students = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const fetchData = async () => {
+  const fetchData = useCallback(async ({ silent = false } = {}) => {
+    if (!silent) {
       setLoading(true);
       setError("");
+    }
 
-      const [
-        studentsResult,
-        programmesResult,
-        placementsResult,
-        resultsResult,
-      ] = await Promise.allSettled([
+    const [studentsResult, programmesResult, placementsResult, resultsResult] =
+      await Promise.allSettled([
         api.registry.getStudents(),
         api.academics.getProgrammes(),
         api.placements.getPlacements(),
         api.evaluations.getResults(),
       ]);
 
-      if (!isMounted) return;
+    if (studentsResult.status === "fulfilled") {
+      setStudents(normalizeCollection(studentsResult.value, "students"));
+    } else if (!silent) {
+      setStudents([]);
+    }
 
-      if (studentsResult.status === "fulfilled") {
-        setStudents(normalizeCollection(studentsResult.value, "students"));
-      } else {
-        setStudents([]);
-      }
+    if (programmesResult.status === "fulfilled") {
+      setProgrammes(normalizeCollection(programmesResult.value, "programmes"));
+    } else if (!silent) {
+      setProgrammes([]);
+    }
 
-      if (programmesResult.status === "fulfilled") {
-        setProgrammes(
-          normalizeCollection(programmesResult.value, "programmes"),
-        );
-      } else {
-        setProgrammes([]);
-      }
+    if (placementsResult.status === "fulfilled") {
+      setPlacements(normalizeCollection(placementsResult.value, "placements"));
+    } else if (!silent) {
+      setPlacements([]);
+    }
 
-      if (placementsResult.status === "fulfilled") {
-        setPlacements(
-          normalizeCollection(placementsResult.value, "placements"),
-        );
-      } else {
-        setPlacements([]);
-      }
+    if (resultsResult.status === "fulfilled") {
+      setResults(normalizeCollection(resultsResult.value, "results"));
+    } else if (!silent) {
+      setResults([]);
+    }
 
-      if (resultsResult.status === "fulfilled") {
-        setResults(normalizeCollection(resultsResult.value, "results"));
-      } else {
-        setResults([]);
-      }
+    const failures = [
+      studentsResult,
+      programmesResult,
+      placementsResult,
+      resultsResult,
+    ].filter((result) => result.status === "rejected");
 
-      const failures = [
-        studentsResult,
-        programmesResult,
-        placementsResult,
-        resultsResult,
-      ].filter((result) => result.status === "rejected");
+    if (failures.length === 4) {
+      setError("Unable to load student analytics right now.");
+    } else {
+      setError("");
+    }
 
-      if (failures.length === 4) {
-        setError("Unable to load student analytics right now.");
-      }
-
-      setLoading(false);
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false;
-    };
+    setLoading(false);
   }, []);
 
+  useEffect(() => {
+    void Promise.resolve().then(() => fetchData());
+
+    const refreshData = () => fetchData({ silent: true });
+    const intervalId = window.setInterval(refreshData, 15000);
+    window.addEventListener("focus", refreshData);
+    document.addEventListener("visibilitychange", refreshData);
+
+    return () => {
+      window.clearInterval(intervalId);
+      window.removeEventListener("focus", refreshData);
+      document.removeEventListener("visibilitychange", refreshData);
+    };
+  }, [fetchData]);
+
   const programmeMap = programmes.reduce((acc, programme) => {
-    acc[String(programme.id)] = programme.name;
+    acc[String(programme.id)] =
+      programme.name || programme.title || programme.code || "Programme";
     return acc;
   }, {});
 
@@ -169,21 +269,7 @@ const Students = () => {
     results.length > 0 ? (totalScore / results.length).toFixed(1) : "0.0";
 
   const tableRows = students.map((student) => {
-    const placement =
-      placements.find((item) => {
-        const placementId = String(item.id);
-        const studentPlacementId = String(
-          student.placement_id || student.placement || "",
-        );
-        const itemStudentNumber = String(
-          item.student_number || item.intern_student_number || "",
-        );
-        return (
-          (studentPlacementId && placementId === studentPlacementId) ||
-          (itemStudentNumber &&
-            itemStudentNumber === String(student.student_number || ""))
-        );
-      }) || null;
+    const placement = getLatestPlacementForStudent(placements, student);
 
     const result =
       resultsByPlacementId[String(placement?.id)] ||
@@ -196,14 +282,14 @@ const Students = () => {
       ) ||
       null;
 
-    const placementStatus =
+    const placementStatus = String(
       placement?.status ||
-      student.placement_status ||
-      student.internship_status ||
-      "Pending";
-    const approvalStatus = approvalStatuses.has(
-      String(placementStatus).toLowerCase(),
-    )
+        student.placement_status ||
+        student.internship_status ||
+        "Pending",
+    ).toLowerCase();
+
+    const approvalStatus = approvalStatuses.has(placementStatus)
       ? "Approved"
       : "Pending";
     const score = Number(
@@ -214,16 +300,9 @@ const Students = () => {
       id: student.student_number || student.id || "--",
       name: toDisplayName(student),
       email: student.webmail || student.email || "--",
-      programme:
-        student.programme_name ||
-        programmeMap[String(student.programme)] ||
-        "Programme not set",
-      placement:
-        placement?.internship_title ||
-        student.internship_title ||
-        student.organization_name ||
-        "--",
-      placementStatus: toTitleCase(String(placementStatus || "Pending")),
+      programme: getProgrammeName(student, programmeMap),
+      placement: getPlacementTitle(placement, student),
+      placementStatus: toTitleCase(placementStatus),
       approvalStatus,
       score,
     };
@@ -353,7 +432,15 @@ const Students = () => {
                     <StatusBadge status={student.placementStatus} />
                   </TableCell>
                   <TableCell>
-                    <StatusBadge status={student.approvalStatus} />
+                    <StatusBadge
+                      status={
+                        approvalStatuses.has(
+                          String(student.placementStatus).toLowerCase(),
+                        )
+                          ? "approved"
+                          : "pending"
+                      }
+                    />
                   </TableCell>
                   <TableCell>
                     {student.score > 0 ? (

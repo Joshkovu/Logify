@@ -72,10 +72,20 @@ export const getUserDisplayName = (user, fallback = "Unknown User") => {
   return fullName || user.email || fallback;
 };
 
+export const getPlacementStudentName = (
+  placement,
+  usersById,
+  fallback = "Student",
+) => {
+  const student = usersById?.[placement?.intern];
+  return getUserDisplayName(student, fallback);
+};
+
 export const buildEvaluationCriteria = ({
   evaluation,
   scores,
   criteriaById,
+  scoreDrafts = {},
 }) => {
   const linkedScores = scores
     .filter((score) => score.evaluation === evaluation.id)
@@ -83,16 +93,23 @@ export const buildEvaluationCriteria = ({
       const criterion = criteriaById[score.criterion];
       const maxScore = criterion?.max_score || 100;
       const weightPercent = Number(criterion?.weight_percent || 0);
-      const numericScore = Number(score.score || 0);
+      const draftKey = `${evaluation.placement}-${criterion?.id || score.criterion}`;
+      const draft = scoreDrafts[draftKey];
+      const numericScore = Number(draft?.score ?? score.score ?? 0);
       return {
+        id: score.id,
+        criterionId: criterion?.id || score.criterion,
+        draftKey,
         title: criterion?.name || "Assessment Criterion",
         weight: weightPercent ? `${weightPercent}%` : "N/A",
         score: Math.round((numericScore / maxScore) * 100),
+        rawScore: numericScore,
+        maxScore,
         note: criterion?.description || "Criterion details unavailable.",
         contribution: weightPercent
           ? `${Math.round((numericScore / maxScore) * weightPercent)}%`
           : "N/A",
-        comment: score.comment || "",
+        comment: draft?.comment ?? score.comment ?? "",
       };
     });
 
@@ -100,11 +117,46 @@ export const buildEvaluationCriteria = ({
     return linkedScores;
   }
 
+  const rubricCriteria = Object.values(criteriaById)
+    .filter((criterion) => criterion.rubric === evaluation.rubric)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  if (rubricCriteria.length > 0) {
+    return rubricCriteria.map((criterion) => {
+      const maxScore = criterion.max_score || 100;
+      const weightPercent = Number(criterion.weight_percent || 0);
+      const draftKey = `${evaluation.placement}-${criterion.id}`;
+      const draft = scoreDrafts[draftKey];
+      const numericScore = Number(draft?.score ?? 0);
+
+      return {
+        id: null,
+        criterionId: criterion.id,
+        draftKey,
+        title: criterion.name || "Assessment Criterion",
+        weight: weightPercent ? `${weightPercent}%` : "N/A",
+        score: Math.round((numericScore / maxScore) * 100),
+        rawScore: numericScore,
+        maxScore,
+        note: criterion.description || "Criterion details unavailable.",
+        contribution: weightPercent
+          ? `${Math.round((numericScore / maxScore) * weightPercent)}%`
+          : "N/A",
+        comment: draft?.comment ?? "",
+      };
+    });
+  }
+
   return [
     {
+      id: null,
+      criterionId: null,
+      draftKey: `${evaluation.placement}-overall`,
       title: "Overall Evaluation",
       weight: "100%",
       score: Math.round(Number(evaluation.total_score || 0)),
+      rawScore: Number(evaluation.total_score || 0),
+      maxScore: 100,
       note: "Detailed score criteria were not returned by the backend.",
       contribution: `${Math.round(Number(evaluation.total_score || 0))}%`,
       comment: "",
@@ -121,6 +173,9 @@ export const loadAcademicSupervisorData = async () => {
     scoresResponse,
     criteriaResponse,
     resultsResponse,
+    rubricsResponse,
+    programmesResponse,
+    departmentsResponse,
   ] = await Promise.all([
     api.auth.me(),
     api.placements.getPlacements(),
@@ -129,6 +184,9 @@ export const loadAcademicSupervisorData = async () => {
     api.evaluations.getScores(),
     api.evaluations.getCriteria(),
     api.evaluations.getResults(),
+    api.evaluations.getRubrics(),
+    api.academics.getProgrammes(),
+    api.academics.getDepartments(),
   ]);
 
   const placements = toArray(placementsResponse);
@@ -137,6 +195,9 @@ export const loadAcademicSupervisorData = async () => {
   const scores = toArray(scoresResponse);
   const criteria = toArray(criteriaResponse);
   const results = toArray(resultsResponse);
+  const rubrics = toArray(rubricsResponse);
+  const programmes = toArray(programmesResponse);
+  const departments = toArray(departmentsResponse);
 
   const uniqueInternIds = [
     ...new Set(placements.map((item) => item.intern).filter(Boolean)),
@@ -161,6 +222,13 @@ export const loadAcademicSupervisorData = async () => {
   );
   const resultByPlacementId = Object.fromEntries(
     results.map((item) => [item.placement, item]),
+  );
+  const rubricById = Object.fromEntries(rubrics.map((item) => [item.id, item]));
+  const programmeById = Object.fromEntries(
+    programmes.map((item) => [item.id, item]),
+  );
+  const departmentById = Object.fromEntries(
+    departments.map((item) => [item.id, item]),
   );
 
   await Promise.all(
@@ -201,11 +269,17 @@ export const loadAcademicSupervisorData = async () => {
     scores,
     criteria,
     results,
+    rubrics,
+    programmes,
+    departments,
     usersById,
     organizationsById,
     workplaceSupervisorsById,
     criteriaById,
     placementById,
     resultByPlacementId,
+    rubricById,
+    programmeById,
+    departmentById,
   };
 };

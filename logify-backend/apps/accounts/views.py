@@ -278,6 +278,51 @@ class UserDetailView(APIView):
             if is_assigned:
                 return target
             raise PermissionDenied("You can only view interns assigned to you.")
+        if requester.role == User.ACADEMIC_SUPERVISOR:
+            if target.role == User.STUDENT:
+                if InternshipPlacements.objects.filter(
+                    intern=target,
+                    academic_supervisor=requester,
+                ).exists():
+                    return target
+                raise PermissionDenied("You can only view your assigned students.")
+
+            if target.role == User.WORKPLACE_SUPERVISOR:
+                if InternshipPlacements.objects.filter(
+                    academic_supervisor=requester,
+                    workplace_supervisor=target,
+                ).exists():
+                    return target
+                raise PermissionDenied(
+                    "You can only view workplace supervisors assigned to your placements."
+                )
+
+            raise PermissionDenied(
+                "You can only view your assigned students or workplace supervisors."
+            )
+
+        if requester.role == User.WORKPLACE_SUPERVISOR:
+            if target.role == User.STUDENT:
+                if InternshipPlacements.objects.filter(
+                    intern=target,
+                    workplace_supervisor=requester,
+                ).exists():
+                    return target
+                raise PermissionDenied("You can only view your assigned students.")
+
+            if target.role == User.ACADEMIC_SUPERVISOR:
+                if InternshipPlacements.objects.filter(
+                    workplace_supervisor=requester,
+                    academic_supervisor=target,
+                ).exists():
+                    return target
+                raise PermissionDenied(
+                    "You can only view academic supervisors assigned to your placements."
+                )
+
+            raise PermissionDenied(
+                "You can only view your assigned students or academic supervisors."
+            )
 
         if requester.role != User.INTERNSHIP_ADMIN:
             raise PermissionDenied("You do not have permission to access this user.")

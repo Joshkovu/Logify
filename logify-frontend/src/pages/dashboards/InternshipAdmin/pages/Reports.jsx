@@ -23,6 +23,7 @@ import {
 } from "chart.js";
 import { Line } from "react-chartjs-2";
 import { Download } from "lucide-react";
+import { toast } from "react-toastify";
 
 ChartJS.register(
   CategoryScale,
@@ -137,7 +138,6 @@ const Reports = () => {
     String(new Date().getFullYear()),
   );
   const [activeReportId, setActiveReportId] = useState(null);
-  const [reportError, setReportError] = useState("");
   const [selectedReport, setSelectedReport] = useState(null);
 
   useEffect(() => {
@@ -421,16 +421,16 @@ const Reports = () => {
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
+    toast.success("Report exported successfully");
   };
 
   const handleViewReport = async (row) => {
     if (!row.studentId) {
-      setReportError("This placement is missing a linked student record.");
+      toast.error("This placement is missing a linked student record.");
       return;
     }
 
     setActiveReportId(row.id);
-    setReportError("");
 
     try {
       const report = await api.reports.getReport(row.studentId, {
@@ -442,9 +442,7 @@ const Reports = () => {
         data: report,
       });
     } catch (viewError) {
-      setReportError(
-        viewError.message || "Unable to load the selected report.",
-      );
+      toast.error(viewError.message || "Unable to load the selected report.");
     } finally {
       setActiveReportId(null);
     }
@@ -598,12 +596,6 @@ const Reports = () => {
         {error ? (
           <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700 dark:border-rose-900/40 dark:bg-rose-950/30 dark:text-rose-300">
             {error}
-          </div>
-        ) : null}
-
-        {reportError ? (
-          <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-300">
-            {reportError}
           </div>
         ) : null}
 

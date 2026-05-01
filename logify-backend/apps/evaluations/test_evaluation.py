@@ -1,6 +1,7 @@
 from datetime import date
 
 from apps.academics.models import Colleges, Departments, Institutions, Programmes
+from apps.accounts.models import StaffProfiles
 from apps.evaluations.models import (
     EvaluationCriteria,
     EvaluationRubrics,
@@ -76,7 +77,7 @@ class TestEvaluation(TestCase):
             workplace_supervisor=self.workplace_supervisor,
             academic_supervisor=self.academic_supervisor,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 1, 14),
             work_mode="On-site",
             internship_title="Software Engineering Intern",
             department_at_company="IT",
@@ -162,6 +163,12 @@ class TestEvaluationViewSet(APITestCase):
         self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
+        )
+        StaffProfiles.objects.create(
+            user=self.user,
+            staff_number="STAFF-1",
+            department=self.department,
+            title="Supervisor",
         )
         self.organization = Organizations.objects.create(
             name="Test Org",
@@ -250,6 +257,237 @@ class TestEvaluationViewSet(APITestCase):
         self.assertEqual(response.status_code, 201)
         self.assertEqual(response.data["evaluator"], self.user.id)  # type: ignore
         self.assertEqual(response.data["evaluator_type"], self.user.role)  # type: ignore
+
+
+class TestEvaluationCollegeScope(APITestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.institution = Institutions.objects.create(
+            name="Scoped University", email_domain="scoped.edu"
+        )
+        self.college_a = Colleges.objects.create(institution=self.institution, name="Engineering")
+        self.college_b = Colleges.objects.create(institution=self.institution, name="Business")
+        self.department_a = Departments.objects.create(
+            college=self.college_a, name="Computer Science"
+        )
+        self.department_b = Departments.objects.create(college=self.college_b, name="Accounting")
+        self.programme_a = Programmes.objects.create(
+            department=self.department_a,
+            name="Software Engineering",
+            level="BSc",
+            duration_years=4,
+        )
+        self.programme_b = Programmes.objects.create(
+            department=self.department_b,
+            name="Finance",
+            level="BSc",
+            duration_years=3,
+        )
+        self.organization = Organizations.objects.create(
+            name="Scoped Org",
+            industry="Tech",
+            city="Test City",
+            address="123 Test St",
+            contact_email="org@example.com",
+            contact_phone="1234567890",
+        )
+        self.admin_a = User.objects.create_user(
+            email="admin.a@scoped.edu",
+            password="testpassword",
+            first_name="Admin",
+            last_name="A",
+            role="internship_admin",
+            institution_id=str(self.institution.id),
+        )
+        self.admin_b = User.objects.create_user(
+            email="admin.b@scoped.edu",
+            password="testpassword",
+            first_name="Admin",
+            last_name="B",
+            role="internship_admin",
+            institution_id=str(self.institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=self.admin_a,
+            staff_number="ADM-A",
+            department=self.department_a,
+            title="College Admin",
+        )
+        StaffProfiles.objects.create(
+            user=self.admin_b,
+            staff_number="ADM-B",
+            department=self.department_b,
+            title="College Admin",
+        )
+        self.student_a = User.objects.create_user(
+            email="student.a@scoped.edu",
+            password="testpassword",
+            first_name="Student",
+            last_name="A",
+            role="student",
+            institution_id=str(self.institution.id),
+            programme_id=str(self.programme_a.id),
+        )
+        self.student_b = User.objects.create_user(
+            email="student.b@scoped.edu",
+            password="testpassword",
+            first_name="Student",
+            last_name="B",
+            role="student",
+            institution_id=str(self.institution.id),
+            programme_id=str(self.programme_b.id),
+        )
+        self.supervisor = User.objects.create_user(
+            email="supervisor@scoped.edu",
+            password="testpassword",
+            first_name="Academic",
+            last_name="Supervisor",
+            role="academic_supervisor",
+            institution_id=str(self.institution.id),
+        )
+        self.rubric_a = EvaluationRubrics.objects.create(
+            institution=self.institution,
+            programme=self.programme_a,
+            name="Engineering Rubric",
+            is_current=True,
+        )
+        self.rubric_b = EvaluationRubrics.objects.create(
+            institution=self.institution,
+            programme=self.programme_b,
+            name="Business Rubric",
+            is_current=True,
+        )
+        self.criteria_a = EvaluationCriteria.objects.create(
+            rubric=self.rubric_a,
+            name="Engineering Criteria",
+            description="Engineering criteria",
+            max_score=10,
+            weight_percent=100.0,
+            evaluator_type="academic_supervisor",
+        )
+        self.criteria_b = EvaluationCriteria.objects.create(
+            rubric=self.rubric_b,
+            name="Business Criteria",
+            description="Business criteria",
+            max_score=10,
+            weight_percent=100.0,
+            evaluator_type="academic_supervisor",
+        )
+        self.placement_a = InternshipPlacements.objects.create(
+            intern=self.student_a,
+            institution=self.institution,
+            programme=self.programme_a,
+            organization=self.organization,
+            academic_supervisor=self.supervisor,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 1, 14),
+            work_mode="On-site",
+            internship_title="Engineering Intern",
+            department_at_company="IT",
+            status="active",
+        )
+        self.placement_b = InternshipPlacements.objects.create(
+            intern=self.student_b,
+            institution=self.institution,
+            programme=self.programme_b,
+            organization=self.organization,
+            academic_supervisor=self.supervisor,
+            start_date=date(2024, 1, 1),
+            end_date=date(2024, 1, 14),
+            work_mode="On-site",
+            internship_title="Business Intern",
+            department_at_company="Finance",
+            status="active",
+        )
+        self.evaluation_a = Evaluations.objects.create(
+            placement=self.placement_a,
+            rubric=self.rubric_a,
+            evaluator=self.supervisor,
+            evaluator_type="academic_supervisor",
+            status="reviewed",
+            total_score=80.0,
+        )
+        self.evaluation_b = Evaluations.objects.create(
+            placement=self.placement_b,
+            rubric=self.rubric_b,
+            evaluator=self.supervisor,
+            evaluator_type="academic_supervisor",
+            status="reviewed",
+            total_score=90.0,
+        )
+        self.score_a = EvaluationScores.objects.create(
+            evaluation=self.evaluation_a,
+            criterion=self.criteria_a,
+            score=8,
+        )
+        self.score_b = EvaluationScores.objects.create(
+            evaluation=self.evaluation_b,
+            criterion=self.criteria_b,
+            score=9,
+        )
+        self.result_a = FinalResults.objects.create(
+            placement=self.placement_a,
+            rubric=self.rubric_a,
+            logbook_score=70.0,
+            academic_score=80.0,
+            final_score=77.0,
+            final_grade="B",
+        )
+        self.result_b = FinalResults.objects.create(
+            placement=self.placement_b,
+            rubric=self.rubric_b,
+            logbook_score=80.0,
+            academic_score=90.0,
+            final_score=87.0,
+            final_grade="A",
+        )
+
+    def test_internship_admin_lists_only_evaluations_in_own_college(self):
+        self.client.force_authenticate(user=self.admin_a)
+
+        response = self.client.get("/api/v1/evaluations/evaluations/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["id"] for item in response.data], [self.evaluation_a.id])  # type: ignore
+
+    def test_internship_admin_cannot_retrieve_evaluation_from_other_college(self):
+        self.client.force_authenticate(user=self.admin_a)
+
+        response = self.client.get(f"/api/v1/evaluations/evaluations/{self.evaluation_b.id}/")
+
+        self.assertEqual(response.status_code, 404)
+
+    def test_internship_admin_lists_only_scores_in_own_college(self):
+        self.client.force_authenticate(user=self.admin_a)
+
+        response = self.client.get("/api/v1/evaluations/scores/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["id"] for item in response.data], [self.score_a.id])  # type: ignore
+
+    def test_internship_admin_cannot_filter_scores_from_other_college(self):
+        self.client.force_authenticate(user=self.admin_a)
+
+        response = self.client.get(f"/api/v1/evaluations/scores/?evaluation={self.evaluation_b.id}")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.data, [])  # type: ignore
+
+    def test_internship_admin_lists_only_final_results_in_own_college(self):
+        self.client.force_authenticate(user=self.admin_a)
+
+        response = self.client.get("/api/v1/evaluations/results/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["id"] for item in response.data], [self.result_a.id])  # type: ignore
+
+    def test_other_college_admin_sees_their_own_college_evaluations(self):
+        self.client.force_authenticate(user=self.admin_b)
+
+        response = self.client.get("/api/v1/evaluations/evaluations/")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item["id"] for item in response.data], [self.evaluation_b.id])  # type: ignore
 
 
 class TestEvaluationCriteriaViewSet(APITestCase):
@@ -341,6 +579,12 @@ class TestEvaluationScoresViewSet(APITestCase):
         self.department = Departments.objects.create(college=self.college, name="Engineering")
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
+        )
+        StaffProfiles.objects.create(
+            user=self.academic_supervisor,
+            staff_number="STAFF-2",
+            department=self.department,
+            title="Supervisor",
         )
 
         # Create Organization
@@ -475,6 +719,12 @@ class TestFinalResultsViewSet(APITestCase):
         self.programme = Programmes.objects.create(
             department=self.department, name="Computer Science", level="BSc", duration_years=4
         )
+        StaffProfiles.objects.create(
+            user=self.academic_supervisor,
+            staff_number="STAFF-3",
+            department=self.department,
+            title="Supervisor",
+        )
         self.organization = Organizations.objects.create(
             name="Final Test Org",
             industry="Tech",
@@ -491,7 +741,7 @@ class TestFinalResultsViewSet(APITestCase):
             workplace_supervisor=self.workplace_supervisor,
             academic_supervisor=self.academic_supervisor,
             start_date=date(2024, 1, 1),
-            end_date=date(2024, 12, 31),
+            end_date=date(2024, 1, 14),
             work_mode="On-site",
             internship_title="Software Engineering Intern",
             department_at_company="IT",
@@ -566,6 +816,27 @@ class TestFinalResultsViewSet(APITestCase):
         self.assertEqual(response.data["logbook_score"], 50.0)  # type: ignore
         self.assertEqual(response.data["final_score"], 71.0)  # type: ignore
         self.assertEqual(response.data["final_grade"], "B")  # type: ignore
+
+    def test_logbook_score_counts_missing_expected_weeks(self):
+        self.client.force_authenticate(user=self.academic_supervisor)
+        self.placement.end_date = date(2024, 1, 28)
+        self.placement.save(update_fields=["end_date"])
+
+        response = self.client.post(
+            reverse("results-list"),
+            {
+                "placement": self.placement.id,
+                "rubric": self.rubric.id,
+                "remarks": "Score should include missing logbook weeks.",
+            },
+            format="json",
+        )
+
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.data["academic_score"], 80.0)  # type: ignore
+        self.assertEqual(response.data["logbook_score"], 25.0)  # type: ignore
+        self.assertEqual(response.data["final_score"], 63.5)  # type: ignore
+        self.assertEqual(response.data["final_grade"], "C")  # type: ignore
 
     def test_workplace_supervisor_cannot_create_final_result(self):
         self.client.force_authenticate(user=self.workplace_supervisor)

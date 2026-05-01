@@ -62,7 +62,7 @@ repos:
     hooks:
       - id: backend-test
         name: Backend Test
-        entry: python logify-backend/manage.py test
+        entry: python3 logify-backend/manage.py test
         language: system
         types: [python]
         pass_filenames: false

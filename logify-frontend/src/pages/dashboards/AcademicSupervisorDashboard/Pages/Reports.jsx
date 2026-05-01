@@ -21,6 +21,7 @@ import {
   getUserDisplayName,
   loadAcademicSupervisorData,
 } from "../utils/academicSupervisorData";
+import { toast } from "react-toastify";
 
 ChartJS.register(
   CategoryScale,
@@ -32,13 +33,16 @@ ChartJS.register(
 );
 
 const Reports = () => {
-  const [error, setError] = useState("");
+  const [, setError] = useState("");
   const [reportError, setReportError] = useState("");
   const [reportType, setReportType] = useState("summary");
+  const toCsvValue = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
   const [activeReportId, setActiveReportId] = useState(null);
   const [selectedReport, setSelectedReport] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isDark] = useState(() => localStorage.getItem("theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [snapshot, setSnapshot] = useState({
     placements: [],
     evaluations: [],
@@ -53,10 +57,10 @@ const Reports = () => {
 
     if (isDark) {
       root.classList.add("dark");
-      localStorage.setItem("theme", "dark");
+      localStorage.setItem("logify-theme", "dark");
     } else {
       root.classList.remove("dark");
-      localStorage.setItem("theme", "light");
+      localStorage.setItem("logify-theme", "light");
     }
   }, [isDark]);
 
@@ -88,7 +92,6 @@ const Reports = () => {
   const {
     placements,
     evaluations,
-    results,
     usersById,
     organizationsById,
     resultByPlacementId,
@@ -193,29 +196,44 @@ const Reports = () => {
     setError("");
 
     try {
-      const payload = {
-        generated_at: new Date().toISOString(),
-        summary: {
-          total_interns: totalInterns,
-          average_score: averageScore,
-          completion_rate: completionRate,
-          active_placements: activePlacements,
-          results_count: results.length,
-        },
-        students: reportRows,
-      };
+      const headers = [
+        "Student ID",
+        "Name",
+        "Organization",
+        "Progress",
+        "Status",
+        "Score",
+        "Date Range",
+        "Placement Title",
+      ];
 
-      const blob = new Blob([JSON.stringify(payload, null, 2)], {
-        type: "application/json;charset=utf-8",
-      });
+      const rows = reportRows.map((row) => [
+        row.studentId,
+        row.name,
+        row.organization,
+        row.progress,
+        row.status,
+        row.score,
+        row.dateRange,
+        row.placementTitle,
+      ]);
+
+      const csvLines = [
+        headers.join(","),
+        ...rows.map((row) => row.map(toCsvValue).join(",")),
+      ];
+      const csv = csvLines.join("\n");
+      const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = "academic-supervisor-report.json";
+      link.download = "academic-supervisor-report.csv";
       link.click();
       window.URL.revokeObjectURL(url);
-    } catch {
+      toast.success("Semester report exported successfully");
+    } catch (exportError) {
       setError("Failed to export report.");
+      toast.error(exportError.message || "Failed to export report.");
     }
   };
 
@@ -379,16 +397,11 @@ const Reports = () => {
             Gain deep insights into intern performance, placement trends, and
             academic milestones.
           </p>
-          {error && (
-            <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/60 dark:bg-red-950/30 dark:text-red-300">
-              {error}
-            </p>
-          )}
         </div>
 
         <button
           onClick={handleExportReport}
-          className="flex w-full items-center justify-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon active:scale-[0.98] dark:text-slate-300 md:w-auto"
+          className="flex w-full items-center justify-center gap-2 rounded-lg bg-maroonCustom px-4 py-2 text-sm font-bold text-white transition-all hover:bg-red-800 active:scale-[0.98] dark:text-slate-300 md:w-auto"
         >
           <FileDown size={18} />
           Export Semester Report
@@ -596,7 +609,7 @@ const Reports = () => {
                   onClick={() =>
                     handleDownloadStudentReport(selectedReport.row.studentId)
                   }
-                  className="inline-flex items-center gap-2 rounded-lg border border-gold/10 bg-gold/5 px-4 py-2 text-sm font-bold text-gold transition-all hover:bg-gold/10 hover:text-maroon dark:text-slate-300"
+                  className="inline-flex items-center gap-2 rounded-lg bg-maroonCustom px-4 py-2 text-sm font-bold text-white transition-all hover:bg-red-800 hover:text-maroon dark:text-slate-300"
                 >
                   <FileDown size={16} />
                   Download CSV

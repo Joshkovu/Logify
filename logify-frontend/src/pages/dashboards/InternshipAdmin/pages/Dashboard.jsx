@@ -85,6 +85,26 @@ const toRelativeTime = (value) => {
   return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
 };
 
+const toDisplayName = (student = {}) => {
+  const fullName = [
+    student.full_name,
+    student.name,
+    [student.first_name, student.last_name].filter(Boolean).join(" ").trim(),
+  ].find(Boolean);
+
+  if (fullName) return fullName;
+
+  const emailName = student.webmail || student.email || "";
+  const localPart = emailName.split("@")[0];
+  if (!localPart) return "Unknown Student";
+
+  return localPart
+    .split(/[._-]/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+};
+
 const Dashboard = () => {
   const [students, setStudents] = useState([]);
   const [placements, setPlacements] = useState([]);
@@ -156,8 +176,8 @@ const Dashboard = () => {
     };
   }, []);
 
-  const activePlacements = placements.filter(
-    (placement) => String(placement.status).toLowerCase() === "active",
+  const activePlacements = placements.filter((placement) =>
+    ["approved", "active"].includes(String(placement.status).toLowerCase()),
   ).length;
 
   const pendingReviews = evaluations.filter((evaluation) =>
@@ -202,26 +222,68 @@ const Dashboard = () => {
       }).length,
   );
 
+  const studentMap = students.reduce((acc, student) => {
+    acc[String(student.id)] = student;
+    return acc;
+  }, {});
+
+  const findPlacementStudent = (placement) =>
+    studentMap[String(placement.intern)] ||
+    students.find(
+      (student) =>
+        String(student.student_number || "") ===
+        String(
+          placement.student_number || placement.intern_student_number || "",
+        ),
+    ) ||
+    null;
+
+  const findResultStudent = (result) => {
+    const placement = placements.find(
+      (item) => String(item.id) === String(result.placement || ""),
+    );
+
+    if (placement) return findPlacementStudent(placement);
+
+    return (
+      studentMap[String(result.student || result.student_id || "")] ||
+      students.find(
+        (student) =>
+          String(student.student_number || "") ===
+          String(result.student_number || ""),
+      ) ||
+      null
+    );
+  };
+
   const activity = [
     ...students.map((student) => ({
       id: `student-${student.id}`,
       title: "Student registration processed",
-      description: `Student ID #${student.student_number || student.id} was added to the registry.`,
+      description: `${toDisplayName(student)} was added to the registry.`,
       timestamp: student.created_at,
     })),
-    ...placements.map((placement) => ({
-      id: `placement-${placement.id}`,
-      title: `Placement ${formatStatus(placement.status) || "updated"}`,
-      description: `${placement.internship_title || "Internship placement"} is currently ${formatStatus(placement.status) || "in progress"}.`,
-      timestamp:
-        placement.updated_at || placement.approved_at || placement.created_at,
-    })),
-    ...results.map((result) => ({
-      id: `result-${result.id}`,
-      title: "Evaluation result computed",
-      description: `A final score of ${Number(result.final_score || result.total_score || 0).toFixed(1)}% was recorded.`,
-      timestamp: result.computed_at || result.created_at,
-    })),
+    ...placements.map((placement) => {
+      const studentName = toDisplayName(findPlacementStudent(placement) || {});
+
+      return {
+        id: `placement-${placement.id}`,
+        title: studentName,
+        description: `${placement.internship_title || "Internship placement"} is currently ${formatStatus(placement.status) || "in progress"}.`,
+        timestamp:
+          placement.updated_at || placement.approved_at || placement.created_at,
+      };
+    }),
+    ...results.map((result) => {
+      const studentName = toDisplayName(findResultStudent(result) || {});
+
+      return {
+        id: `result-${result.id}`,
+        title: studentName,
+        description: `A final score of ${Number(result.final_score || result.total_score || 0).toFixed(1)}% was recorded.`,
+        timestamp: result.computed_at || result.created_at,
+      };
+    }),
   ]
     .filter((item) => item.timestamp)
     .sort(

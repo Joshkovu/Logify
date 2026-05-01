@@ -101,7 +101,8 @@ const Evaluations = () => {
         ]);
 
         const filteredCriteria = (criteriaResponse ?? []).filter(
-          (criterion) => criterion.rubric === evaluationData.rubric,
+          (criterion) =>
+            Number(criterion.rubric) === Number(evaluationData.rubric),
         );
         const filteredScores = (scoresResponse ?? []).filter(
           (score) => Number(score.evaluation) === Number(evaluationData.id),
@@ -125,7 +126,7 @@ const Evaluations = () => {
     () =>
       evaluationCriteria.map((criterion) => {
         const scoreObj = evaluationCriteriaScores.find(
-          (score) => score.criterion === criterion.id,
+          (score) => Number(score.criterion) === Number(criterion.id),
         );
         const scoreValue = Number(scoreObj?.score ?? 0);
         const maxScore = Number(criterion.max_score ?? 100);
@@ -364,25 +365,7 @@ const Evaluations = () => {
                 <p>Loading...</p>
               ) : finalResult ? (
                 <div className="p-8 bg-background/50 rounded-[12px] border border-border/30 italic text-text-secondary leading-relaxed relative">
-                  <span className="absolute top-4 left-4 text-4xl text-gold/20 font-serif">
-                    &quot;
-                  </span>
                   {workplaceFeedback}
-                  <div className="mt-8 not-italic flex items-center gap-4">
-                    <div className="h-10 w-10 rounded-full bg-maroonCustom flex items-center justify-center text-white font-bold text-xs">
-                      {academicSupervisor?.first_name?.[0]}
-                      {academicSupervisor?.last_name?.[0]}
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold text-maroon-dark">
-                        {academicSupervisor?.first_name}{" "}
-                        {academicSupervisor?.last_name}
-                      </p>
-                      <p className="text-[10px] uppercase font-bold text-text-secondary/60 tracking-widest">
-                        Academic Supervisor
-                      </p>
-                    </div>
-                  </div>
                 </div>
               ) : (
                 <p>Workplace feedback unavailable</p>

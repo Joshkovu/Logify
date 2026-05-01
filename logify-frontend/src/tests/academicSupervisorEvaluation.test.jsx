@@ -6,8 +6,11 @@ jest.mock("../config/api", () => ({
   api: {
     evaluations: {
       patchEvaluation: jest.fn(),
+      createEvaluation: jest.fn(),
       createResult: jest.fn(),
       patchResult: jest.fn(),
+      createScore: jest.fn(),
+      patchScore: jest.fn(),
     },
   },
 }));
@@ -42,6 +45,8 @@ jest.mock(
           updated_at: "2026-04-23T10:00:00Z",
         },
       ],
+      placements: [],
+      rubrics: [],
       scores: [],
       criteriaById: {},
       placementById: {
@@ -123,6 +128,7 @@ test("authorizing an evaluation persists the final result and marks the evaluati
       placement: 21,
       rubric: 31,
       remarks: "Ready for sign-off",
+      workplace_feedback: "",
     });
   });
 

@@ -21,6 +21,7 @@ const normalizeCollection = (payload, key) => {
 const toDisplayName = (student = {}) => {
   const fullName = [
     student.full_name,
+    student.name,
     [student.first_name, student.last_name].filter(Boolean).join(" ").trim(),
   ].find(Boolean);
 
