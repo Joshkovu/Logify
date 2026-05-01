@@ -1,4 +1,4 @@
-from apps.academics.models import Institutions, Programmes
+from apps.academics.models import Colleges, Institutions, Programmes
 from apps.accounts.models import User
 from apps.placements.models import InternshipPlacements
 from django.db import models
@@ -98,7 +98,16 @@ class Evaluations(models.Model):
     submitted_at = models.DateTimeField(null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
     total_score = models.FloatField()
+    college = models.ForeignKey(Colleges, on_delete=models.CASCADE, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.college_id and self.placement_id:
+            try:
+                self.college = self.placement.programme.department.college
+            except Exception:
+                pass
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Evaluation by {self.evaluator.email} " f"for {self.placement.internship_title}"
@@ -146,7 +155,16 @@ class FinalResults(models.Model):
     final_score = models.FloatField()
     final_grade = models.CharField(max_length=255)
     remarks = models.TextField(blank=True, null=True)
+    college = models.ForeignKey(Colleges, on_delete=models.CASCADE, null=True, blank=True)
     computed_at = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.college_id and self.placement_id:
+            try:
+                self.college = self.placement.programme.department.college
+            except Exception:
+                pass
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"Final Result for {self.placement.internship_title}"
