@@ -167,7 +167,9 @@ const mapApprovedPlacementRecord = ({
 };
 
 const Evaluation = () => {
-  const [isDark] = useState(() => localStorage.getItem("logify-theme") === "dark");
+  const [isDark] = useState(
+    () => localStorage.getItem("logify-theme") === "dark",
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
