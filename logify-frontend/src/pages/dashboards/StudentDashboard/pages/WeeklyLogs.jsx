@@ -216,7 +216,8 @@ const WeeklyLogs = () => {
                             View Details
                           </button>
                         )}{" "}
-                        {log.status.toLowerCase() == "draft" && (
+                        {(log.status.toLowerCase() == "draft" ||
+                          log.status.toLowerCase() == "changes_requested") && (
                           <button
                             onClick={() => {
                               setSelectedLog(log);
