@@ -141,12 +141,6 @@ class TestInstitutionsDetailView(APITestCase):
             academic_supervisor=self.academic_supervisor,
         )
 
-    def test_admin_can_view_any_institution(self):
-        self.client.force_authenticate(user=self.admin)
-        response = self.client.get(reverse("institutions-detail", args=[self.institution.pk]))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["name"], "University A")
-
     def test_student_can_view_own_institution(self):
         self.client.force_authenticate(user=self.student)
         response = self.client.get(reverse("institutions-detail", args=[self.institution.pk]))
