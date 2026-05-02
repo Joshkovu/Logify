@@ -136,7 +136,7 @@ class SupervisorSignupSerializer(serializers.ModelSerializer):
         user.save()
 
         # Create SupervisorApplication
-        SupervisorApplication.objects.create(user=user)
+        SupervisorApplication.objects.create(user=user, college=college)
 
         # Academic supervisors get a staff profile linked to their department.
         if role == User.ACADEMIC_SUPERVISOR and department_id:
@@ -297,6 +297,7 @@ class SupervisorApplicationSerializer(serializers.ModelSerializer):
             "phone",
             "is_active",
             "staff_profile",
+            "college",
         )
 
     def get_full_name(self, obj):

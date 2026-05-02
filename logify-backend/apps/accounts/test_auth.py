@@ -156,6 +156,9 @@ class TestSupervisorAuth:
             last_name="Admin",
             institution_id=str(institution.id),
         )
+        StaffProfiles.objects.create(
+            user=admin, staff_number="ADM001", department=department, title="Admin"
+        )
         api_client.force_authenticate(user=admin)
         app = SupervisorApplication.objects.get(user=user)
 
@@ -198,6 +201,9 @@ class TestSupervisorAuth:
     def test_admin_can_list_supervisor_applications(self, api_client, setup_college_data):
         institution = setup_college_data["institution"]
 
+        college = setup_college_data["college_a"]
+        department = Departments.objects.create(college=college, name="IT")
+
         pending_user = User.objects.create_user(
             email="pending.supervisor@test.com",
             password="securepassword123",
@@ -207,7 +213,7 @@ class TestSupervisorAuth:
             institution_id=str(institution.id),
             is_active=False,
         )
-        SupervisorApplication.objects.create(user=pending_user, status="pending")
+        SupervisorApplication.objects.create(user=pending_user, status="pending", college=college)
 
         approved_user = User.objects.create_user(
             email="approved.supervisor@test.com",
@@ -218,7 +224,7 @@ class TestSupervisorAuth:
             institution_id=str(institution.id),
             is_active=True,
         )
-        SupervisorApplication.objects.create(user=approved_user, status="approved")
+        SupervisorApplication.objects.create(user=approved_user, status="approved", college=college)
 
         admin = User.objects.create_user(
             email="admin.list@test.com",
@@ -227,6 +233,9 @@ class TestSupervisorAuth:
             first_name="Internship",
             last_name="Admin",
             institution_id=str(institution.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin, staff_number="ADM002", department=department, title="Admin"
         )
         api_client.force_authenticate(user=admin)
 
@@ -249,6 +258,9 @@ class TestSupervisorAuth:
         institution_a = Institutions.objects.create(name="Institution A")
         institution_b = Institutions.objects.create(name="Institution B")
 
+        college_a = Colleges.objects.create(institution=institution_a, name="College A")
+        dept_a = Departments.objects.create(college=college_a, name="Dept A")
+
         scoped_supervisor = User.objects.create_user(
             email="scoped.supervisor@test.com",
             password="securepassword123",
@@ -258,7 +270,9 @@ class TestSupervisorAuth:
             institution_id=str(institution_a.id),
             is_active=False,
         )
-        SupervisorApplication.objects.create(user=scoped_supervisor, status="pending")
+        SupervisorApplication.objects.create(
+            user=scoped_supervisor, status="pending", college=college_a
+        )
 
         other_supervisor = User.objects.create_user(
             email="other.institution.supervisor@test.com",
@@ -269,6 +283,7 @@ class TestSupervisorAuth:
             institution_id=str(institution_b.id),
             is_active=False,
         )
+        # Note: we don't care about college for other_supervisor since they are in a different institution
         SupervisorApplication.objects.create(user=other_supervisor, status="pending")
 
         scoped_admin = User.objects.create_user(
@@ -278,6 +293,9 @@ class TestSupervisorAuth:
             first_name="Scoped",
             last_name="Admin",
             institution_id=str(institution_a.id),
+        )
+        StaffProfiles.objects.create(
+            user=scoped_admin, staff_number="ADM-S", department=dept_a, title="Admin"
         )
         api_client.force_authenticate(user=scoped_admin)
 
@@ -310,6 +328,9 @@ class TestSupervisorAuth:
             title="Supervisor",
         )
 
+        college_root_a = Colleges.objects.create(institution=institution_a, name="College Root A")
+        dept_a = Departments.objects.create(college=college_root_a, name="Dept A")
+
         admin = User.objects.create_user(
             email="scoped.admin@test.com",
             password="adminpassword",
@@ -317,6 +338,9 @@ class TestSupervisorAuth:
             first_name="Scoped",
             last_name="Admin",
             institution_id=str(institution_a.id),
+        )
+        StaffProfiles.objects.create(
+            user=admin, staff_number="ADM-OA", department=dept_a, title="Admin"
         )
         api_client.force_authenticate(user=admin)
 

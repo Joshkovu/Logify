@@ -79,11 +79,18 @@ class SupervisorApprovalView(APIView):
 
         if not request.user.is_superuser and request.user.role == User.INTERNSHIP_ADMIN:
             institution_id = get_user_institution_id(request.user)
-            if institution_id is None or not is_user_in_institution(
-                application.user, institution_id
+            admin_college_id = get_user_college_id(request.user)
+            if (
+                institution_id is None
+                or admin_college_id is None
+                or not is_user_in_institution(application.user, institution_id)
+                or (
+                    application.college_id
+                    and int(application.college_id) != int(admin_college_id)
+                )
             ):
                 raise PermissionDenied(
-                    "You can only manage supervisor applications in your institution."
+                    "You can only manage supervisor applications in your college scope."
                 )
 
         action = request.data.get("action")
@@ -122,12 +129,13 @@ class SupervisorApplicationListView(ListAPIView):
         user = self.request.user
         if not user.is_superuser:
             institution_id = get_user_institution_id(user)
-            if institution_id is None:
+            admin_college_id = get_user_college_id(user)
+            if institution_id is None or admin_college_id is None:
                 return queryset.none()
             queryset = queryset.filter(
                 Q(user__institution_id=str(institution_id))
                 | Q(user__staffprofiles__department__college__institution_id=institution_id)
-            ).distinct()
+            ).filter(college_id=admin_college_id)
 
         status_filter = self.request.query_params.get("status")  # type: ignore
         if status_filter:
