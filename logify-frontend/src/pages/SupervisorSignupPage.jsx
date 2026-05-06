@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 
 import { api } from "../config/api.js";
 import { AuthContext } from "../contexts/AuthContext";
+import Loading from "../components/ui/Loading";
 import AuthActionButton from "../components/ui/AuthActionButton";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
@@ -216,6 +217,7 @@ const SupervisorSignupPage = () => {
 
   return (
     <GuestOnlyRoute>
+      {isSubmitting && <Loading />}
       <AuthLayout
         title={`${roleLabel} Signup`}
         subtitle="New supervisor accounts are marked pending approval by the Internship Admin."

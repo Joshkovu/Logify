@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
+import Loading from "../components/ui/Loading";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 import { api } from "../config/api.js";
@@ -238,6 +239,7 @@ const StudentSignupPage = () => {
 
   return (
     <GuestOnlyRoute>
+      {isSubmitting && <Loading />}
       <AuthLayout
         title="Student Signup"
         subtitle="Create a student account for internship logging."

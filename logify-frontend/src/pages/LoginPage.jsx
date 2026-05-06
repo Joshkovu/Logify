@@ -2,6 +2,7 @@ import { useContext, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { AuthContext } from "../contexts/AuthContext";
+import Loading from "../components/ui/Loading";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
@@ -44,6 +45,7 @@ const LoginPage = () => {
 
   return (
     <GuestOnlyRoute>
+      {isSubmitting && <Loading />}
       <AuthLayout
         title="Login"
         subtitle="Secure login for returning users. You will be redirected back to your workspace after authentication."
