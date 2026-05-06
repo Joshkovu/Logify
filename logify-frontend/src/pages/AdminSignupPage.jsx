@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 
 import { api } from "../config/api.js";
 import { AuthContext } from "../contexts/AuthContext";
+import Loading from "../components/ui/Loading";
 import AuthActionButton from "../components/ui/AuthActionButton";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
@@ -174,6 +175,7 @@ const AdminSignupPage = () => {
 
   return (
     <GuestOnlyRoute>
+      {isSubmitting && <Loading />}
       <AuthLayout
         title="Internship Admin Signup"
         subtitle="Create an internship administrator account for institution-level platform management."
