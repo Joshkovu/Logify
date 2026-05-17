@@ -10,9 +10,11 @@ function PasswordInput({
   placeholder = "Enter your password",
   error,
   className = "",
+  id,
   ...props
 }) {
   const [isVisible, setIsVisible] = useState(false);
+  const inputId = id || `password-input-${name}`;
 
   const toggleVisibility = () => {
     setIsVisible(!isVisible);
@@ -21,12 +23,16 @@ function PasswordInput({
   return (
     <div>
       {label && (
-        <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
+        <label
+          htmlFor={inputId}
+          className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold"
+        >
           {label}
         </label>
       )}
       <div className="relative mt-2">
         <input
+          id={inputId}
           type={isVisible ? "text" : "password"}
           name={name}
           value={value}
@@ -61,6 +67,7 @@ PasswordInput.propTypes = {
   placeholder: PropTypes.string,
   error: PropTypes.string,
   className: PropTypes.string,
+  id: PropTypes.string,
 };
 
 export default PasswordInput;
