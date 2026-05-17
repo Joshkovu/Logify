@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 
 import { AuthContext } from "../contexts/AuthContext";
 import Loading from "../components/ui/Loading";
+import PasswordInput from "../components/ui/PasswordInput";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 
@@ -76,23 +77,13 @@ const LoginPage = () => {
             />
           </div>
 
-          <div>
-            <label
-              htmlFor="password"
-              className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={onChange}
-              placeholder="Enter your password"
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none ring-0 transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-            />
-          </div>
+          <PasswordInput
+            label="Password"
+            name="password"
+            value={formData.password}
+            onChange={onChange}
+            placeholder="Enter your password"
+          />
 
           {error && (
             <div className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">

@@ -151,7 +151,7 @@ test("login page forwards the original destination to the login action", async (
   fireEvent.change(screen.getByLabelText(/email \/ webmail/i), {
     target: { value: "student@example.com" },
   });
-  fireEvent.change(screen.getByLabelText(/password/i), {
+  fireEvent.change(screen.getByLabelText(/^password$/i), {
     target: { value: "password123" },
   });
   fireEvent.click(screen.getByRole("button", { name: /login/i }));
