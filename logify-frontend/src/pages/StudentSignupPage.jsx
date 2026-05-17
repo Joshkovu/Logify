@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import Loading from "../components/ui/Loading";
+import PasswordInput from "../components/ui/PasswordInput";
 import AuthLayout from "./auth/AuthLayout";
 import GuestOnlyRoute from "./auth/GuestOnlyRoute";
 import { api } from "../config/api.js";
@@ -442,43 +443,23 @@ const StudentSignupPage = () => {
             )}
           </div>
 
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Password
-            </label>
-            <input
-              type="password"
-              name="password"
-              value={formData.password}
-              onChange={onChange}
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-              placeholder="At least 8 characters"
-            />
-            {fieldErrors.password && (
-              <p className="mt-1 text-xs text-red-600">
-                {fieldErrors.password}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            label="Password"
+            name="password"
+            value={formData.password}
+            onChange={onChange}
+            placeholder="At least 8 characters"
+            error={fieldErrors.password}
+          />
 
-          <div>
-            <label className="text-xs font-black uppercase tracking-widest text-maroon-dark dark:text-gold">
-              Confirm Password
-            </label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={formData.confirmPassword}
-              onChange={onChange}
-              className="mt-2 w-full rounded-xl border border-border bg-white px-4 py-3 text-sm outline-none transition focus:border-gold dark:border-slate-700 dark:bg-slate-800"
-              placeholder="Re-enter password"
-            />
-            {fieldErrors.confirmPassword && (
-              <p className="mt-1 text-xs text-red-600">
-                {fieldErrors.confirmPassword}
-              </p>
-            )}
-          </div>
+          <PasswordInput
+            label="Confirm Password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={onChange}
+            placeholder="Re-enter password"
+            error={fieldErrors.confirmPassword}
+          />
 
           {error && (
             <div className="my-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/70 dark:bg-red-950/40 dark:text-red-300">
